@@ -34,26 +34,20 @@ public class ComplaintMailSender extends AbstractEmailSender {
         sendCompliant(complaint);
     }
 
-    private void takeResponce(Complaint complaint, String subject, String template){
-        if (complaint.getStatus().equalsIgnoreCase("accept")){
-            subject = acceptComplaintSubj;
-            template = acceptComplaint;
-        }else if (complaint.getStatus().equalsIgnoreCase("solved")){
-            subject = solutionComplaintSubj;
-            template = solutionComplaint;
+    private String[] takeResponse(Complaint complaint){
+        if ("accept".equalsIgnoreCase(complaint.getStatus())){
+            return new String[] {acceptComplaint, acceptComplaintSubj};
+        }else if ("solved".equalsIgnoreCase(complaint.getStatus())){
+            return new String[] {solutionComplaint, solutionComplaintSubj};
         }else {
-            subject = changeStatusComplaintSubj;
-            template = changeStatusComplaint;
+            return new String[] {changeStatusComplaint, changeStatusComplaintSubj};
         }
     }
 
-
     private void sendCompliant(Complaint compliant) throws MessagingException {
-        String subject = "";
-        String template = "";
-        takeResponce(compliant, subject, template);
-        String bodyText = replace(compliant, getTemplate(template));
-        buildMail(compliant, subject, bodyText);
+        String [] response = takeResponse(compliant);
+        String bodyText = replace(compliant, getTemplate(response[0]));
+        buildMail(compliant, response[1], bodyText);
     }
 
 
