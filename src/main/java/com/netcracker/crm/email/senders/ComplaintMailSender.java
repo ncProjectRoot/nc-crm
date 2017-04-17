@@ -1,0 +1,125 @@
+package com.netcracker.crm.email.senders;
+
+
+import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.email.entity.Complaint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * Created by Pasha on 15.04.2017.
+ */
+@Service
+public class ComplaintMailSender extends AbstractEmailSender {
+    private String acceptComplaint;
+    private String changeStatusComplaint;
+    private String solutionComplaint;
+    private String acceptComplaintSubj;
+    private String changeStatusComplaintSubj;
+    private String solutionComplaintSubj;
+
+    @Autowired
+    private EmailBuilder emailBuilder;
+
+    @Autowired
+    private JavaMailSenderImpl mailSender;
+
+    private ReentrantLock lock = new ReentrantLock();
+
+    public void sendMail(Complaint complaint) throws MessagingException {
+        sendCompliant(complaint);
+    }
+
+    private void takeResponce(Complaint complaint, String subject, String template){
+        if (complaint.getStatus().equalsIgnoreCase("accept")){
+            subject = acceptComplaintSubj;
+            template = acceptComplaint;
+        }else if (complaint.getStatus().equalsIgnoreCase("solved")){
+            subject = solutionComplaintSubj;
+            template = solutionComplaint;
+        }else {
+            subject = changeStatusComplaintSubj;
+            template = changeStatusComplaint;
+        }
+    }
+
+
+    private void sendCompliant(Complaint compliant) throws MessagingException {
+        String subject = "";
+        String template = "";
+        takeResponce(compliant, subject, template);
+        String bodyText = replace(compliant, getTemplate(template));
+        buildMail(compliant, subject, bodyText);
+    }
+
+
+
+
+    private void buildMail(Complaint complaint, String subject, String body) throws MessagingException {
+        lock.lock();
+        emailBuilder.setContent(body);
+        emailBuilder.setAddress(complaint.getSender().getEmail());
+        emailBuilder.setSubject(subject);
+        mailSender.send(emailBuilder.generateMessage());
+        lock.unlock();
+    }
+
+    private String replace(Complaint complaint, String html) {
+        return html.replaceAll("%name%", complaint.getSender().getName())
+                .replaceAll("%surname%", complaint.getSender().getSurname())
+                .replaceAll("%complaintName%", complaint.getName())
+                .replaceAll("%complaintStatus%", complaint.getStatus());
+    }
+
+    public String getAcceptComplaint() {
+        return acceptComplaint;
+    }
+
+    public void setAcceptComplaint(String acceptComplaint) {
+        this.acceptComplaint = acceptComplaint;
+    }
+
+    public String getChangeStatusComplaint() {
+        return changeStatusComplaint;
+    }
+
+    public void setChangeStatusComplaint(String changeStatusComplaint) {
+        this.changeStatusComplaint = changeStatusComplaint;
+    }
+
+    public String getSolutionComplaint() {
+        return solutionComplaint;
+    }
+
+    public void setSolutionComplaint(String solutionComplaint) {
+        this.solutionComplaint = solutionComplaint;
+    }
+
+    public String getAcceptComplaintSubj() {
+        return acceptComplaintSubj;
+    }
+
+    public void setAcceptComplaintSubj(String acceptComplaintSubj) {
+        this.acceptComplaintSubj = acceptComplaintSubj;
+    }
+
+    public String getChangeStatusComplaintSubj() {
+        return changeStatusComplaintSubj;
+    }
+
+    public void setChangeStatusComplaintSubj(String changeStatusComplaintSubj) {
+        this.changeStatusComplaintSubj = changeStatusComplaintSubj;
+    }
+
+    public String getSolutionComplaintSubj() {
+        return solutionComplaintSubj;
+    }
+
+    public void setSolutionComplaintSubj(String solutionComplaintSubj) {
+        this.solutionComplaintSubj = solutionComplaintSubj;
+    }
+}
