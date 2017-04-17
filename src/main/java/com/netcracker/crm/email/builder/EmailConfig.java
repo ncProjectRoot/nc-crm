@@ -1,36 +1,35 @@
 package com.netcracker.crm.email.builder;
 
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import javax.annotation.Resource;
+
 import java.util.Properties;
 
 /**
  * Created by Pasha on 14.04.2017.
  */
 @Configuration
+@ConfigurationProperties("mail")
 @PropertySource("classpath:application.properties")
 public class EmailConfig {
-    private static final String MAIL_USERNAME = "mail.username";
-    private static final String MAIL_PASSWORD = "mail.password";
-    private static final String PROP_MAIL_SMPT_AUTH = "mail.smtp.auth";
-    private static final String PROP_MAIL_SMPT_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
-    private static final String PROP_MAIL_SMPT_HOST = "mail.smtp.host";
-    private static final String PROP_MAIL_SMPT_PORT = "mail.smtp.port";
-    @Resource
-    private Environment env;
+    private String username ;
+    private String password ;
+    private String auth;
+    private String starttls;
+    private String host;
+    private String port;
 
     @Bean
     public JavaMailSenderImpl mailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-        javaMailSender.setHost(env.getRequiredProperty(PROP_MAIL_SMPT_HOST));
-        javaMailSender.setUsername(env.getRequiredProperty(MAIL_USERNAME));
-        javaMailSender.setPassword(env.getRequiredProperty(MAIL_PASSWORD));
+        javaMailSender.setHost(host);
+        javaMailSender.setUsername(username);
+        javaMailSender.setPassword(password);
         javaMailSender.setJavaMailProperties(getProperties());
 
         return javaMailSender;
@@ -38,15 +37,64 @@ public class EmailConfig {
 
     private Properties getProperties(){
         Properties props = new Properties();
-        props.put(PROP_MAIL_SMPT_AUTH, env.getRequiredProperty(PROP_MAIL_SMPT_AUTH));
-        props.put(PROP_MAIL_SMPT_STARTTLS_ENABLE, env.getRequiredProperty(PROP_MAIL_SMPT_STARTTLS_ENABLE));
-        props.put(PROP_MAIL_SMPT_HOST, env.getRequiredProperty(PROP_MAIL_SMPT_HOST));
-        props.put(PROP_MAIL_SMPT_PORT, env.getRequiredProperty(PROP_MAIL_SMPT_PORT));
+        props.put("mail.smtp.auth", auth);
+        props.put("mail.smtp.starttls.enable", starttls);
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", port);
         return props;
     }
 
     @Bean
     public EmailBuilder emailBuilder(){
-        return new EmailBuilder(env.getRequiredProperty(MAIL_USERNAME), env.getRequiredProperty(MAIL_PASSWORD), getProperties());
+        return new EmailBuilder(username, password, getProperties());
+    }
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setAuth(String auth) {
+        this.auth = auth;
+    }
+
+    public String getStarttls() {
+        return starttls;
+    }
+
+    public void setStarttls(String starttls) {
+        this.starttls = starttls;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 }
