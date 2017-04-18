@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" strict="true">
+    <Properties>
+        <Property name="root">logs</Property>
+        <Property name="config">config</Property>
+        <Property name="model">model</Property>
+        <Property name="dao">dao</Property>
+        <Property name="services">services</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+
+        <RollingFile name="model" fileName="${root}/${model}/model.log"
+                     filePattern="${root}/${model}/model-%d{MM-dd-yyyy}-%i.log">
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="dao" fileName="${root}/${repository}/dao.log"
+                     filePattern="${root}/${repository}/dao-%d{MM-dd-yyyy}-%i.log">
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="services" fileName="${root}/${services}/services.log"
+                     filePattern="${root}/${services}/services-%d{MM-dd-yyyy}-%i.log">
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+
+
+        <Logger name="com.netcracker.crm.model" additivity="true" level="info">
+            <AppenderRef ref="model"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.dao" additivity="true" level="info">
+            <AppenderRef ref="dao"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.services" additivity="true" level="info">
+            <AppenderRef ref="services"/>
+        </Logger>
+    </Loggers>
+</Configuration>
