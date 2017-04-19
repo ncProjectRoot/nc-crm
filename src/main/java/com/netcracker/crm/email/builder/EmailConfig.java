@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 
@@ -45,6 +46,7 @@ public class EmailConfig {
     }
 
     @Bean
+    @Scope("prototype")
     public EmailBuilder emailBuilder(){
         return new EmailBuilder(username, password, getProperties());
     }

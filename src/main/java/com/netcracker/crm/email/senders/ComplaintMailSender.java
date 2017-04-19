@@ -2,18 +2,18 @@ package com.netcracker.crm.email.senders;
 
 
 import com.netcracker.crm.email.builder.EmailBuilder;
-import com.netcracker.crm.email.entity.Complaint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Pasha on 15.04.2017.
  */
 @Service
+@Scope("prototype")
 public class ComplaintMailSender extends AbstractEmailSender {
     private String acceptComplaint;
     private String changeStatusComplaint;
@@ -21,14 +21,13 @@ public class ComplaintMailSender extends AbstractEmailSender {
     private String acceptComplaintSubj;
     private String changeStatusComplaintSubj;
     private String solutionComplaintSubj;
+    private String feedback;
 
     @Autowired
     private EmailBuilder emailBuilder;
 
     @Autowired
     private JavaMailSenderImpl mailSender;
-
-    private ReentrantLock lock = new ReentrantLock();
 
     public void sendMail(Complaint complaint) throws MessagingException {
         sendCompliant(complaint);
@@ -46,7 +45,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
     private void sendCompliant(Complaint compliant) throws MessagingException {
         String [] response = takeResponse(compliant);
-        String bodyText = replace(compliant, getTemplate(response[0]));
+        String bodyText = replace(compliant, getTemplate(feedback).replace("%feedback%", response[0]));
         buildMail(compliant, response[1], bodyText);
     }
 
@@ -54,12 +53,10 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
 
     private void buildMail(Complaint complaint, String subject, String body) throws MessagingException {
-        lock.lock();
         emailBuilder.setContent(body);
         emailBuilder.setAddress(complaint.getSender().getEmail());
         emailBuilder.setSubject(subject);
         mailSender.send(emailBuilder.generateMessage());
-        lock.unlock();
     }
 
     private String replace(Complaint complaint, String html) {
@@ -115,5 +112,13 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
     public void setSolutionComplaintSubj(String solutionComplaintSubj) {
         this.solutionComplaintSubj = solutionComplaintSubj;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 }

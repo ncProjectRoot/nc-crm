@@ -3,11 +3,11 @@ package com.netcracker.crm.email.senders;
 import com.netcracker.crm.email.builder.EmailBuilder;
 import com.netcracker.crm.email.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Melnyk_Dmytro
@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 @Service
+@Scope("prototype")
 public class RegSuccessEmailSender extends AbstractEmailSender {
 
     //Name of template html file for email letter
@@ -29,8 +30,6 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
 
     @Autowired
     private JavaMailSenderImpl sender;
-
-    private ReentrantLock lock = new ReentrantLock();
 
     public RegSuccessEmailSender() {
     }
@@ -52,14 +51,12 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     }
 
     public void send(User user) throws MessagingException {
-        lock.lock();
         String template = getTemplate(regSuccessTempl);
         template = replaceFields(template, user);
         builder.setSubject(regSuccessSubj);
         builder.setAddress(user.getEmail());
         builder.setContent(template);
         sender.send(builder.generateMessage());
-        lock.unlock();
     }
 
     private String replaceFields(String templ, User user) {
