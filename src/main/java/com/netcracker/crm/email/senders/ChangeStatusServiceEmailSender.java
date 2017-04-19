@@ -3,6 +3,8 @@ package com.netcracker.crm.email.senders;
 
 import com.netcracker.crm.email.builder.EmailBuilder;
 import com.netcracker.crm.email.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -19,6 +21,8 @@ import javax.mail.MessagingException;
 @Service
 @Scope("prototype")
 public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
+
+    private static final Logger log = LoggerFactory.getLogger(ChangeStatusServiceEmailSender.class);
 
     //Name of template html file for email letter
     private String changeStatusServiceTempl ;
@@ -52,14 +56,17 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
 
     public void send(User user, ServiceEntity serviceEntity) throws MessagingException {
         String template = getTemplate(changeStatusServiceTempl);
-        template = replaceFields(template, user, serviceEntity);
+        template = replace(template, user, serviceEntity);
+        log.info("Start building email letter");
         builder.setSubject(changeStatusServiceSubj);
         builder.setAddress(user.getEmail());
         builder.setContent(template);
+        log.info("Sending email");
         sender.send(builder.generateMessage());
     }
 
-    private String replaceFields(String templ, User user, ServiceEntity serviceEntity) {
+    private String replace(String templ, User user, ServiceEntity serviceEntity) {
+        log.info("Start replacing values in email template file");
         return templ.replaceAll("%name%", user.getName())
                 .replaceAll("%surname%", user.getSurname())
                 .replaceAll("%service%", serviceEntity.getName())

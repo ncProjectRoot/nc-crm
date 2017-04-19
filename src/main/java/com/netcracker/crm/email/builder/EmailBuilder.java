@@ -1,5 +1,8 @@
 package com.netcracker.crm.email.builder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -16,6 +19,9 @@ import java.util.Properties;
  */
 
 public class EmailBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailBuilder.class);
+
     private String username = null;
     private String password = null;
 
@@ -34,6 +40,7 @@ public class EmailBuilder {
     }
 
     public MimeMessage generateMessage() throws MessagingException {
+        log.info("Generating message");
         MimeMessage message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(username));
         message.addRecipients(Message.RecipientType.TO, addresses.toArray(new InternetAddress[addresses.size()]));
@@ -50,6 +57,7 @@ public class EmailBuilder {
     }
 
     public void setContent(Object obj, String type) throws MessagingException {
+        log.info("Setting email content");
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setContent(obj, type);
         multipart.addBodyPart(bodyPart);
@@ -61,6 +69,7 @@ public class EmailBuilder {
     }
 
     public void setFile(File file) throws MessagingException {
+        log.info("Setting attaching file");
         MimeBodyPart bodyPart = new MimeBodyPart();
         DataSource dataSource = new FileDataSource(file);
         bodyPart.setDataHandler(new DataHandler(dataSource));

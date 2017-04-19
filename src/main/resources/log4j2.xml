@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" strict="true">
+    <Properties>
+        <Property name="root">logs</Property>
+        <Property name="config">config</Property>
+        <Property name="controller">controller</Property>
+        <Property name="model">model</Property>
+        <Property name="dao">dao</Property>
+        <Property name="service">service</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="rootlog" fileName="${root}/rootlog.log" filePattern="${root}/rootlog-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="config" fileName="${root}/${config}/config.log"
+                     filePattern="${root}/${config}/config-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="controller" fileName="${root}/${controller}/controller.log"
+                     filePattern="${root}/${controller}/controller-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="model" fileName="${root}/${model}/model.log"
+                     filePattern="${root}/${model}/model-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="dao" fileName="${root}/${dao}/dao.log"
+                     filePattern="${root}/${dao}/dao-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+        <RollingFile name="service" fileName="${root}/${service}/service.log"
+                     filePattern="${root}/${service}/service-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingFile>
+
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rootlog"/>
+        </Root>
+
+
+        <Logger name="com.netcracker.crm.config" additivity="true" level="info">
+            <AppenderRef ref="config"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.controller" additivity="true" level="info">
+            <AppenderRef ref="controller"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.model" additivity="true" level="info">
+            <AppenderRef ref="model"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.dao" additivity="true" level="info">
+            <AppenderRef ref="dao"/>
+        </Logger>
+
+        <Logger name="com.netcracker.crm.service" additivity="true" level="info">
+            <AppenderRef ref="service"/>
+        </Logger>
+    </Loggers>
+</Configuration>

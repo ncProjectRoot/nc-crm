@@ -1,5 +1,7 @@
 package com.netcracker.crm.email.senders;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 
@@ -19,9 +21,12 @@ import java.util.List;
 @PropertySource("classpath:application.properties")
 public abstract class AbstractEmailSender {
 
-    private static final String TEMPL_PACKAGE = "templates";
+    private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    public String getTemplate(String template) {
+    private static final String TEMPL_PACKAGE = "email";
+
+    public String getTemplate(String template ) {
+        log.info("Getting email template " + TEMPL_PACKAGE + "/" + template );
         StringBuilder stringBuilder = new StringBuilder();
         File file = new File(getClass().getClassLoader().getResource(TEMPL_PACKAGE + "/" + template).getFile());
         if (file.exists()) {
@@ -33,6 +38,8 @@ public abstract class AbstractEmailSender {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            log.error("File " + TEMPL_PACKAGE + "/" + template + " not found" );
         }
         return stringBuilder.toString();
     }

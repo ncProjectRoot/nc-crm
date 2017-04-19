@@ -2,6 +2,8 @@ package com.netcracker.crm.email.senders;
 
 
 import com.netcracker.crm.email.builder.EmailBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -15,6 +17,9 @@ import javax.mail.MessagingException;
 @Service
 @Scope("prototype")
 public class ComplaintMailSender extends AbstractEmailSender {
+
+    private static final Logger log = LoggerFactory.getLogger(ComplaintMailSender.class);
+
     private String acceptComplaint;
     private String changeStatusComplaint;
     private String solutionComplaint;
@@ -53,13 +58,16 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
 
     private void buildMail(Complaint complaint, String subject, String body) throws MessagingException {
+        log.info("Start building email letter");
         emailBuilder.setContent(body);
         emailBuilder.setAddress(complaint.getSender().getEmail());
         emailBuilder.setSubject(subject);
+        log.info("Sending email");
         mailSender.send(emailBuilder.generateMessage());
     }
 
     private String replace(Complaint complaint, String html) {
+        log.info("Start replacing values in email template file");
         return html.replaceAll("%name%", complaint.getSender().getName())
                 .replaceAll("%surname%", complaint.getSender().getSurname())
                 .replaceAll("%complaintName%", complaint.getName())
