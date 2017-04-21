@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,5 +44,10 @@ public abstract class AbstractEmailSender {
         }
         return stringBuilder.toString();
     }
+
+
+    public abstract void send()  throws MessagingException;
+
+    abstract String replace(String templ);
 
 }

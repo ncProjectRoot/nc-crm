@@ -29,11 +29,30 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
     //Subject for email letter
     private String changeStatusServiceSubj ;
 
+    private User user;
+    private ServiceEntity serviceEntity;
+
     @Autowired
     private EmailBuilder builder;
 
     @Autowired
     private JavaMailSenderImpl sender;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ServiceEntity getServiceEntity() {
+        return serviceEntity;
+    }
+
+    public void setServiceEntity(ServiceEntity serviceEntity) {
+        this.serviceEntity = serviceEntity;
+    }
 
     public String getChangeStatusServiceTempl() {
         return changeStatusServiceTempl;
@@ -54,18 +73,26 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
     public ChangeStatusServiceEmailSender() {
     }
 
-    public void send(User user, ServiceEntity serviceEntity) throws MessagingException {
-        String template = getTemplate(changeStatusServiceTempl);
-        template = replace(template, user, serviceEntity);
-        log.info("Start building email letter");
-        builder.setSubject(changeStatusServiceSubj);
-        builder.setAddress(user.getEmail());
-        builder.setContent(template);
-        log.info("Sending email");
-        sender.send(builder.generateMessage());
+    public void send() throws MessagingException {
+        if(user==null){
+            log.error("You must set user before sending");
+            throw new IllegalStateException("user is null");
+        } else if (serviceEntity==null){
+            log.error("You must set service before sending");
+            throw new IllegalStateException("service is null");
+        } else {
+            String template = getTemplate(changeStatusServiceTempl);
+            template = replace(template);
+            log.info("Start building email letter");
+            builder.setSubject(changeStatusServiceSubj);
+            builder.setAddress(user.getEmail());
+            builder.setContent(template);
+            log.info("Sending email");
+            sender.send(builder.generateMessage());
+        }
     }
 
-    private String replace(String templ, User user, ServiceEntity serviceEntity) {
+   String replace(String templ) {
         log.info("Start replacing values in email template file");
         return templ.replaceAll("%name%", user.getName())
                 .replaceAll("%surname%", user.getSurname())

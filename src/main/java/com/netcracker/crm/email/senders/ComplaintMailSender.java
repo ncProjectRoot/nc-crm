@@ -28,14 +28,21 @@ public class ComplaintMailSender extends AbstractEmailSender {
     private String solutionComplaintSubj;
     private String feedback;
 
+    private Complaint complaint;
+
     @Autowired
     private EmailBuilder emailBuilder;
 
     @Autowired
     private JavaMailSenderImpl mailSender;
 
-    public void sendMail(Complaint complaint) throws MessagingException {
-        sendCompliant(complaint);
+    public void send() throws MessagingException {
+        if (complaint == null) {
+            log.error("You must set complaint before sending");
+            throw new IllegalStateException("complaint is null");
+        } else {
+            sendCompliant(complaint);
+        }
     }
 
     private String[] takeResponse(Complaint complaint){
@@ -50,12 +57,9 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
     private void sendCompliant(Complaint compliant) throws MessagingException {
         String [] response = takeResponse(compliant);
-        String bodyText = replace(compliant, getTemplate(feedback).replace("%feedback%", response[0]));
+        String bodyText = replace(getTemplate(feedback).replace("%feedback%", response[0]));
         buildMail(compliant, response[1], bodyText);
     }
-
-
-
 
     private void buildMail(Complaint complaint, String subject, String body) throws MessagingException {
         log.info("Start building email letter");
@@ -66,7 +70,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
         mailSender.send(emailBuilder.generateMessage());
     }
 
-    private String replace(Complaint complaint, String html) {
+     String replace(String html) {
         log.info("Start replacing values in email template file");
         return html.replaceAll("%name%", complaint.getSender().getName())
                 .replaceAll("%surname%", complaint.getSender().getSurname())
@@ -128,5 +132,13 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public Complaint getComplaint() {
+        return complaint;
+    }
+
+    public void setComplaint(Complaint complaint) {
+        this.complaint = complaint;
     }
 }

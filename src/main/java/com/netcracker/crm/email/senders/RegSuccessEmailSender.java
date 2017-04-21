@@ -29,6 +29,8 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     //Subject for email letter
     private String regSuccessSubj;
 
+    private User user;
+
     @Autowired
     private EmailBuilder builder;
 
@@ -54,18 +56,31 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
         this.regSuccessSubj = regSuccessSubj;
     }
 
-    public void send(User user) throws MessagingException {
-        String template = getTemplate(regSuccessTempl);
-        template = replace(template, user);
-        log.info("Start building email letter");
-        builder.setSubject(regSuccessSubj);
-        builder.setAddress(user.getEmail());
-        builder.setContent(template);
-        log.info("Sending email");
-        sender.send(builder.generateMessage());
+    public User getUser() {
+        return user;
     }
 
-    private String replace(String templ, User user) {
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void send() throws MessagingException {
+        if(user==null){
+            log.error("You must set user before sending");
+            throw new IllegalStateException("user is null");
+        } else {
+            String template = getTemplate(regSuccessTempl);
+            template = replace(template);
+            log.info("Start building email letter");
+            builder.setSubject(regSuccessSubj);
+            builder.setAddress(user.getEmail());
+            builder.setContent(template);
+            log.info("Sending email");
+            sender.send(builder.generateMessage());
+        }
+    }
+
+    String replace(String templ) {
         log.info("Start replacing values in email template file");
         return templ.replaceAll("%email%", user.getEmail())
                 .replaceAll("%name%", user.getName())

@@ -21,14 +21,30 @@ public class MassiveEmailSender extends AbstractEmailSender {
     private static final Logger log = LoggerFactory.getLogger(MassiveEmailSender.class);
 
     private String informationAll;
+
+    private String[] receivers;
+    private String subject;
+    private String body;
+
     @Autowired
     private JavaMailSenderImpl mailSender;
     @Autowired
     private EmailBuilder emailBuilder;
 
-    public void sendMails(String[] to, String subject, String information) throws MessagingException {
-        String bodyText = replace(getTemplate(informationAll), information);
-        send(createMessage(to, subject, bodyText));
+    public void send() throws MessagingException {
+        if (receivers == null||receivers.length==0) {
+            log.error("You must set receivers before sending");
+            throw new IllegalStateException("receivers is null or no recipient");
+        } else if (subject == null) {
+            log.error("You must set subject before sending");
+            throw new IllegalStateException("subject is null");
+        } else if (body == null) {
+            log.error("You must set body before sending");
+            throw new IllegalStateException("body is null");
+        } else {
+            String bodyText = replace(getTemplate(informationAll));
+            sendMails(createMessage(receivers, subject, bodyText));
+        }
     }
 
     private MimeMessage createMessage(String[] to, String subject, String bodyText) throws MessagingException {
@@ -39,14 +55,14 @@ public class MassiveEmailSender extends AbstractEmailSender {
         return emailBuilder.generateMessage();
     }
 
-    private void send(MimeMessage message) throws MessagingException {
-        log.info("Sending email");
+    private void sendMails(MimeMessage message) throws MessagingException {
+        log.info("Sending emails");
         mailSender.send(message);
     }
 
-    private String replace(String html, String information) {
+    String replace(String html) {
         log.info("Start replacing values in email template file");
-        return html.replace("%information%", information);
+        return html.replace("%information%", body);
     }
 
     public String getInformationAll() {
@@ -55,5 +71,29 @@ public class MassiveEmailSender extends AbstractEmailSender {
 
     public void setInformationAll(String informationAll) {
         this.informationAll = informationAll;
+    }
+
+    public String[] getReceivers() {
+        return receivers;
+    }
+
+    public void setReceivers(String[] receivers) {
+        this.receivers = receivers;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

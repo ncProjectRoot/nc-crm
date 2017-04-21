@@ -40,7 +40,10 @@ public class EmailSendersTest {
         product.setStatus("Deactivated");
         product.setType("service");
 
-        changeStatusServiceEmailSender.send(user, product);
+        changeStatusServiceEmailSender.setServiceEntity(product);
+        changeStatusServiceEmailSender.setUser(user);
+
+        changeStatusServiceEmailSender.send();
 
     }
 
@@ -56,7 +59,8 @@ public class EmailSendersTest {
         complaint.setStatus("accept");
         complaint.setName("AnyName");
 
-        complaintMailSender.sendMail(complaint);
+        complaintMailSender.setComplaint(complaint);
+        complaintMailSender.send();
     }
 
 
@@ -66,7 +70,11 @@ public class EmailSendersTest {
         String information = "Some information";
         String subject = "Interesting subject";
 
-        massiveEmailSender.sendMails(addresses, subject, information);
+        massiveEmailSender.setSubject(subject);
+        massiveEmailSender.setBody(information);
+        massiveEmailSender.setReceivers(addresses);
+
+        massiveEmailSender.send();
     }
 
 
@@ -77,7 +85,8 @@ public class EmailSendersTest {
         user.setName("John");
         user.setSurname("Snow");
 
-        regSuccessEmailSender.send(user);
+        regSuccessEmailSender.setUser(user);
+        regSuccessEmailSender.send();
     }
 
 }
