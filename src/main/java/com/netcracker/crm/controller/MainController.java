@@ -3,7 +3,7 @@ package com.netcracker.crm.controller;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.netcracker.crm.model.PageInformation;
+import com.netcracker.crm.domain.PageInformation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

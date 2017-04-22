@@ -1,8 +1,8 @@
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.model.User;
-import com.netcracker.crm.model.UserRole;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

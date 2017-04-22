@@ -16,15 +16,15 @@ public interface UserSqlQuery {
 
     String SQL_FIND_USER_BY_EMAIL = "SELECT u.id, email, password, first_name, last_name, " +
             "middle_name, enable, role_id, role.name role_name " +
-            "FROM nc_crm.\"user\" u  " +
-            "INNER JOIN nc_crm.user_role role ON u.role_id = role.id " +
+            "FROM public.\"user\" u  " +
+            "INNER JOIN user_role role ON u.role_id = role.id " +
             "WHERE email = :email;";
     String SQL_FIND_USER_BY_ID = "SELECT u.id, email, password, first_name, last_name, " +
             "middle_name, enable, role_id, role.name role_name " +
-            "FROM nc_crm.\"user\" u  " +
-            "INNER JOIN nc_crm.user_role role ON u.role_id = role.id " +
+            "FROM public.\"user\" u  " +
+            "INNER JOIN user_role role ON u.role_id = role.id " +
             "WHERE u.id = :id;";
-    String SQL_CREATE_USER = "INSERT INTO nc_crm.\"user\"" +
+    String SQL_CREATE_USER = "INSERT INTO public.\"user\"" +
             "(email, password, first_name, last_name, middle_name, enable, role_id) " +
             "VALUES (:email, :password, :first_name, :last_name, :middle_name, :enable, :role_id);";
 }

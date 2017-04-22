@@ -1,4 +1,4 @@
-package com.netcracker.crm.model;
+package com.netcracker.crm.domain.model;
 
 /**
  * Created by bpogo on 4/22/2017.

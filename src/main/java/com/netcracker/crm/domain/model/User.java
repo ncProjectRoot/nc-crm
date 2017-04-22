@@ -1,4 +1,4 @@
-package com.netcracker.crm.model;
+package com.netcracker.crm.domain.model;
 
 /**
  * Created by bpogo on 4/22/2017.
@@ -12,6 +12,21 @@ public class User {
     private String password;
     private boolean enable;
     private UserRole userRole;
+
+
+    public User() {
+    }
+
+    public User(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.middleName = user.getMiddleName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.enable = user.isEnable();
+        this.userRole = user.getUserRole();
+    }
 
     public Long getId() {
         return id;

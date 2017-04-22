@@ -61,7 +61,13 @@
                         <ul id='dropdown-user' class='dropdown-content'>
                             <li><a href="#profile"><i class="small material-icons">person_pin</i>My Profile</a></li>
                             <li><a href="#settings"><i class="small material-icons">settings</i>Setting</a></li>
-                            <li><a href="/logout"><i class="small material-icons">settings_power</i>Log Out</a></li>
+                            <li>
+                                <%--<a href="/logout"><i class="small material-icons">settings_power</i>Log Out</a>--%>
+                                <form action="/logout" method="post">
+                                    <i class="small material-icons">settings_power</i><input type="submit" value="Log Out">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </li>

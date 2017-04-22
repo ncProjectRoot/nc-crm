@@ -1,4 +1,4 @@
-package com.netcracker.crm.model;
+package com.netcracker.crm.domain;
 
 /**
  * @author Karpunets

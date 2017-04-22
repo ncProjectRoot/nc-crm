@@ -21,7 +21,17 @@
 <h1 class="teal-text darken-3">NC-CRM</h1>
 <h5 class="teal-text lighten-5">Please, login into your account</h5>
 <div class="form-wrapper z-depth-1 grey lighten-4">
-    <form class="row" method="post">
+    <form action="/login" class="row" method="post">
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">
+                    ${error}
+            </div>
+        </c:if>
+        <c:if test="${not empty msg}">
+            <div class="alert alert-success">
+                    ${msg}
+            </div>
+        </c:if>
         <div class='input-field col s12'>
             <input class='validate' type='email' name='email' id='email' />
             <label for='email'>Enter your email</label>
@@ -31,7 +41,7 @@
             <label for='password'>Enter your password</label>
         </div>
         <div class='col s12'>
-            <input type='checkbox' name='remember' id='remember' checked="checked"/>
+            <input type='checkbox' name='remember-me' id='remember' />
             <label for='remember'>Remember Me</label>
         </div>
         <div class='col s12'>
@@ -42,6 +52,7 @@
                 <a class='blue-grey-text lighten-2' href='#!'><b>Forgot Password?</b></a>
             </label>
         </div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>

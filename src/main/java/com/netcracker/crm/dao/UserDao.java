@@ -1,6 +1,6 @@
 package com.netcracker.crm.dao;
 
-import com.netcracker.crm.model.User;
+import com.netcracker.crm.domain.model.User;
 
 /**
  * Created by bpogo on 4/22/2017.
