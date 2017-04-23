@@ -1,5 +1,6 @@
 package com.netcracker.crm.config;
 
+import com.netcracker.crm.security.PersistentTokenRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl db = new JdbcTokenRepositoryImpl();
+        PersistentTokenRepositoryImpl db = new PersistentTokenRepositoryImpl();
         db.setDataSource(dataSource);
         return db;
     }

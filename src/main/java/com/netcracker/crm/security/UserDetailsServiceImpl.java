@@ -34,7 +34,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             UserRole role = user.getUserRole();
             List<String> userRoles = new ArrayList<>();
             userRoles.add(role.getName());
-            System.out.println(role.getName());
             log.info("User successful find with email  : " + email);
             return new UserDetailsImpl(user, userRoles);
         }
