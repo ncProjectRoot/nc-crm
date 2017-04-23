@@ -40,14 +40,9 @@ INSERT INTO nccrmdb.user_role (id, name) VALUES (4, 'ROLE_PMG');
 
 CREATE TABLE nccrmdb.persistent_logins
 (
-    username character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    series character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    token character varying(64) COLLATE pg_catalog."default" NOT NULL,
+    username character varying(64) NOT NULL,
+    series character varying(64) NOT NULL,
+    token character varying(64) NOT NULL,
     last_used timestamp without time zone NOT NULL,
     CONSTRAINT persistent_logins_pkey PRIMARY KEY (series)
 );
-
-
--- Test insert into USER table with role - ADMIN, password - 123123
-INSERT INTO nccrmdb."user"(email, password, first_name, middle_name, last_name, enable, role_id)
-VALUES('johndoe@gmail.com', '$2a$10$xngLj3hjNXjizdt/iejDrOz1FG28PD7fPJ9OM90UI8zQKusyBXYla', 'John', 'Doe', 'Doevich', TRUE, 1);

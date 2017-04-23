@@ -1,6 +1,7 @@
 package com.netcracker.crm.security;
 
 import com.netcracker.crm.domain.model.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -23,7 +24,8 @@ import static com.netcracker.crm.domain.model.UserRole.*;
 @Component(value = "successHandler")
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler{
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    @Autowired
+    private RedirectStrategy redirectStrategy;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -66,8 +68,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
     }
 
     private boolean hasAnyRole(GrantedAuthority grantedAuthority){
-
-        return ROLE_ADMIN == UserRole.valueOf(String.valueOf(grantedAuthority)) || ROLE_CSR == UserRole.valueOf(String.valueOf(grantedAuthority))
-                || ROLE_CUSTOMER == UserRole.valueOf(String.valueOf(grantedAuthority)) || ROLE_PMG == UserRole.valueOf(String.valueOf(grantedAuthority));
+        return ROLE_ADMIN == UserRole.valueOf(grantedAuthority.getAuthority()) || ROLE_CSR == UserRole.valueOf(grantedAuthority.getAuthority())
+                || ROLE_CUSTOMER == UserRole.valueOf(grantedAuthority.getAuthority()) || ROLE_PMG == UserRole.valueOf(grantedAuthority.getAuthority());
     }
 }

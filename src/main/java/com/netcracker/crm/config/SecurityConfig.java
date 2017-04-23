@@ -4,6 +4,8 @@ import com.netcracker.crm.security.PersistentTokenRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,9 +13,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
@@ -31,10 +34,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationSuccessHandler successHandler;
     @Autowired
     private AccessDeniedHandler deniedHandler;
+    @Autowired
+    Environment env;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        if (env.acceptsProfiles("!production")){
+            auth.inMemoryAuthentication().withUser("admin@gmail.com").password("123456").roles("ADMIN");
+            auth.inMemoryAuthentication().withUser("csr@gmail.com").password("123456").roles("CSR");
+            auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
+            auth.inMemoryAuthentication().withUser("customer@gmail.com").password("123456").roles("CUSTOMER");
+        }else {
+            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        }
+
     }
 
     @Override
@@ -64,15 +77,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
+
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
-        PersistentTokenRepositoryImpl db = new PersistentTokenRepositoryImpl();
-        db.setDataSource(dataSource);
-        return db;
+        return new PersistentTokenRepositoryImpl(dataSource);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public RedirectStrategy redirectStrategy(){
+       return new DefaultRedirectStrategy();
     }
 }
