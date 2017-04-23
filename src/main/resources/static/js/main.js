@@ -35,6 +35,10 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
+    $("a.a-logout").on("click", function (e) {
+        $(this).find("form").submit();
+    })
+
     $(".menu-element").on('click', function (e) {
         var $contentHeader = $(".content-header");
         $contentHeader.find("i").text($(this).find('i').text());

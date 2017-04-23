@@ -45,8 +45,11 @@
                     </div>
                 </li>
                 <li class="hide-on-med-and-up">
-                    <a href="/logout" class="menu-left-item">
+                    <a href="." class="a-logout a-dummy menu-left-item">
                         <i class="black-text material-icons">settings_power</i>
+                        <form action="/logout" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        </form>
                     </a>
                 </li>
                 <li class="menu-item-user hide-on-small-only">
@@ -62,11 +65,13 @@
                             <li><a href="#profile"><i class="small material-icons">person_pin</i>My Profile</a></li>
                             <li><a href="#settings"><i class="small material-icons">settings</i>Setting</a></li>
                             <li>
-                                <%--<a href="/logout"><i class="small material-icons">settings_power</i>Log Out</a>--%>
-                                <form action="/logout" method="post">
-                                    <i class="small material-icons">settings_power</i><input type="submit" value="Log Out">
-                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                </form>
+                                <a href="." class="a-logout a-dummy">
+                                    <i class="small material-icons">settings_power</i>
+                                    Log Out
+                                    <form action="/logout" method="post">
+                                          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                    </form>
+                                </a>
                             </li>
                         </ul>
                     </div>

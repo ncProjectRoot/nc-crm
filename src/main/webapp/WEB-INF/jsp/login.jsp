@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,16 +23,6 @@
 <h5 class="teal-text lighten-5">Please, login into your account</h5>
 <div class="form-wrapper z-depth-1 grey lighten-4">
     <form action="/login" class="row" method="post">
-        <c:if test="${not empty error}">
-            <div class="alert alert-danger">
-                    ${error}
-            </div>
-        </c:if>
-        <c:if test="${not empty msg}">
-            <div class="alert alert-success">
-                    ${msg}
-            </div>
-        </c:if>
         <div class='input-field col s12'>
             <input class='validate' type='email' name='email' id='email' />
             <label for='email'>Enter your email</label>
@@ -57,5 +48,13 @@
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+<script>
+    <c:if test="${not empty error}">
+    Materialize.toast("${error}", 2000, 'rounded');
+    </c:if>
+    <c:if test="${not empty msg}">
+    Materialize.toast("${msg}", 2000, 'rounded');
+    </c:if>
+</script>
 </body>
 </html>
