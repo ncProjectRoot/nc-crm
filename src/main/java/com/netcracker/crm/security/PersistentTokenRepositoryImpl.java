@@ -39,9 +39,9 @@ public class PersistentTokenRepositoryImpl extends JdbcDaoImpl implements Persis
     public PersistentRememberMeToken getTokenForSeries(String seriesId) {
         try {
             return this.getJdbcTemplate().queryForObject(TOKEN_BY_SERIES, (rs, rowNum) ->
-                            new PersistentRememberMeToken(rs.getString("username"),
-                                    rs.getString("series"), rs.getString("token")
-                                    , rs.getTimestamp("last_used")), seriesId);
+                    new PersistentRememberMeToken(rs.getString("username"),
+                            rs.getString("series"), rs.getString("token")
+                            , rs.getTimestamp("last_used")), seriesId);
         } catch (EmptyResultDataAccessException emptyRs) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Querying token for series \'" + seriesId + "\' returned no results.", emptyRs);

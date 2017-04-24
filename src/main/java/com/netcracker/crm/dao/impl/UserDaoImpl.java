@@ -39,6 +39,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(PARAM_LAST_NAME, user.getLastName())
                 .addValue(PARAM_MIDDLE_NAME, user.getMiddleName())
                 .addValue(PARAM_IS_ENABLE, user.isEnable())
+                .addValue(PARAM_ACCOUNT_NON_LOCKED, user.isAccountNonLocked())
                 .addValue(PARAM_ROLE_ID, user.getUserRole().getId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -98,6 +99,7 @@ public class UserDaoImpl implements UserDao {
                 user.setLastName(rs.getString(PARAM_LAST_NAME));
                 user.setMiddleName(rs.getString(PARAM_MIDDLE_NAME));
                 user.setEnable(rs.getBoolean(PARAM_IS_ENABLE));
+                user.setAccountNonLocked(rs.getBoolean(PARAM_ACCOUNT_NON_LOCKED));
                 user.setUserRole(UserRole.valueOf(rs.getString(PARAM_ROLE_NAME)));
             }
             return user;
