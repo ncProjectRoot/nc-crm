@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -29,6 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationSuccessHandler successHandler;
     @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
     private AccessDeniedHandler deniedHandler;
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -43,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
             auth.inMemoryAuthentication().withUser("customer@gmail.com").password("123456").roles("CUSTOMER");
         } else {
-            auth.authenticationProvider(authenticationProvider);
+            auth.authenticationProvider(authenticationProvider).userDetailsService(userDetailsService);
         }
 
     }
