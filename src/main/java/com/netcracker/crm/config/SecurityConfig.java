@@ -4,13 +4,11 @@ import com.netcracker.crm.security.PersistentTokenRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -29,23 +27,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
     @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
     private AuthenticationSuccessHandler successHandler;
     @Autowired
     private AccessDeniedHandler deniedHandler;
     @Autowired
-    Environment env;
+    private AuthenticationProvider authenticationProvider;
+    @Autowired
+    private Environment env;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        if (env.acceptsProfiles("!production")){
+        if (env.acceptsProfiles("!production")) {
             auth.inMemoryAuthentication().withUser("admin@gmail.com").password("123456").roles("ADMIN");
             auth.inMemoryAuthentication().withUser("csr@gmail.com").password("123456").roles("CSR");
             auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
             auth.inMemoryAuthentication().withUser("customer@gmail.com").password("123456").roles("CUSTOMER");
-        }else {
-            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        } else {
+            auth.authenticationProvider(authenticationProvider);
         }
 
     }
@@ -90,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    public RedirectStrategy redirectStrategy(){
-       return new DefaultRedirectStrategy();
+    public RedirectStrategy redirectStrategy() {
+        return new DefaultRedirectStrategy();
     }
 }

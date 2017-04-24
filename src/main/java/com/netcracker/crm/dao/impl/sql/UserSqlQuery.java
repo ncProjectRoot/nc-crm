@@ -13,18 +13,26 @@ public interface UserSqlQuery {
     String PARAM_IS_ENABLE = "enable";
     String PARAM_ROLE_ID = "role_id";
     String PARAM_ROLE_NAME = "role_name";
+    String PARAM_ACCOUNT_NON_LOCKED = "account_non_locked";
 
     String SQL_FIND_USER_BY_EMAIL = "SELECT u.id, email, password, first_name, last_name, " +
-            "middle_name, enable, role_id, role.name role_name " +
+            "middle_name, enable, account_non_locked, role_id, role.name role_name " +
             "FROM nccrmdb.\"user\" u  " +
             "INNER JOIN nccrmdb.user_role role ON u.role_id = role.id " +
             "WHERE email = :email;";
     String SQL_FIND_USER_BY_ID = "SELECT u.id, email, password, first_name, last_name, " +
-            "middle_name, enable, role_id, role.name role_name " +
+            "middle_name, enable, account_non_locked, role_id, role.name role_name " +
             "FROM nccrmdb.\"user\" u  " +
             "INNER JOIN nccrmdb.user_role role ON u.role_id = role.id " +
             "WHERE u.id = :id;";
     String SQL_CREATE_USER = "INSERT INTO nccrmdb.\"user\"" +
-            "(email, password, first_name, last_name, middle_name, enable, role_id) " +
-            "VALUES (:email, :password, :first_name, :last_name, :middle_name, :enable, :role_id);";
+            "(email, password, first_name, last_name, middle_name, enable, account_non_locked, role_id) " +
+            "VALUES (:email, :password, :first_name, :last_name, :middle_name, :enable, :account_non_locked, :role_id);";
+
+    String SQL_USERS_UPDATE_LOCKED = "UPDATE nccrmdb.\"user\" " +
+            "SET account_non_locked = :account_non_locked " +
+            "WHERE email = :email;";
+    String SQL_USERS_COUNT = "SELECT count(*) " +
+            "FROM nccrmdb.\"user\" " +
+            "WHERE email = :email;";
 }

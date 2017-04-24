@@ -11,6 +11,7 @@ public class User {
     private String email;
     private String password;
     private boolean enable;
+    private boolean accountNonLocked;
     private UserRole userRole;
 
 
@@ -25,6 +26,7 @@ public class User {
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.enable = user.isEnable();
+        this.accountNonLocked = user.isAccountNonLocked();
         this.userRole = user.getUserRole();
     }
 
@@ -82,6 +84,14 @@ public class User {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
     }
 
     public UserRole getUserRole() {

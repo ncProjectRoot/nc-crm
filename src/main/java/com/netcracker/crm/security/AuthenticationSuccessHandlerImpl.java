@@ -22,7 +22,7 @@ import static com.netcracker.crm.domain.model.UserRole.*;
  * Created by Pasha on 21.04.2017.
  */
 @Component(value = "successHandler")
-public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler{
+public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
     @Autowired
     private RedirectStrategy redirectStrategy;
@@ -67,7 +67,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         return redirectStrategy;
     }
 
-    private boolean hasAnyRole(GrantedAuthority grantedAuthority){
+    private boolean hasAnyRole(GrantedAuthority grantedAuthority) {
         return ROLE_ADMIN == UserRole.valueOf(grantedAuthority.getAuthority()) || ROLE_CSR == UserRole.valueOf(grantedAuthority.getAuthority())
                 || ROLE_CUSTOMER == UserRole.valueOf(grantedAuthority.getAuthority()) || ROLE_PMG == UserRole.valueOf(grantedAuthority.getAuthority());
     }

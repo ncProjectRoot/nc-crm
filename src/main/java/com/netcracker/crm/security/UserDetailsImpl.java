@@ -23,7 +23,7 @@ public class UserDetailsImpl extends User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String roles= StringUtils.collectionToCommaDelimitedString(userRoles);
+        String roles = StringUtils.collectionToCommaDelimitedString(userRoles);
         return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
     }
 
@@ -41,15 +41,17 @@ public class UserDetailsImpl extends User implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
     public boolean isEnabled() {
         return super.isEnable();
