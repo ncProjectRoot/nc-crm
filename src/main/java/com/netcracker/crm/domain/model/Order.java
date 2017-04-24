@@ -11,7 +11,7 @@ public class Order {
     private Long id;
     private LocalDate date;
     private OrderStatus status;
-    private User user;
+    private User customer;
     private Product product;
     private User csr;
 
@@ -42,12 +42,12 @@ public class Order {
         this.status = status;
     }
 
-    public User getUser() {
-        return user;
+    public User getCustomer() {
+        return customer;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
 
     public Product getProduct() {
