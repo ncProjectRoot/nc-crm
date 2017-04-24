@@ -96,7 +96,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
             log.error("Update more 1 rows");
             return false;
         } else {
-            log.error("Update 0 rows");
+            log.info("Update 0 rows");
             return false;
         }
     }
@@ -117,7 +117,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int affectedRows = namedJdbcTemplate.update(SQL_USER_ATTEMPTS_INSERT, params, keyHolder);
         if (affectedRows == 1) {
-            Long id = (Long) keyHolder.getKeys().get(PARAM_ID);
+            Integer id = (Integer) keyHolder.getKeys().get(PARAM_ID);
             log.info("UserAttempts with id: " + id + " is successfully created.");
             return id;
         } else {
@@ -151,7 +151,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
                 userAttempts.setId(rs.getInt(PARAM_ID));
                 userAttempts.setUserMail(rs.getString(PARAM_EMAIL));
                 userAttempts.setAttempts(rs.getInt(PARAM_ATTEMPTS));
-                userAttempts.setLastModified(rs.getDate(PARAM_LAST_MODIFIED));
+                userAttempts.setLastModified(rs.getTimestamp(PARAM_LAST_MODIFIED));
             }
             return userAttempts;
         }

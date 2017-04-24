@@ -16,6 +16,6 @@ import java.io.IOException;
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException arg2) throws IOException, ServletException {
-        response.sendRedirect(request.getContextPath() + "/403");
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 }
