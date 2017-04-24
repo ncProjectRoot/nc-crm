@@ -6,12 +6,12 @@ package com.netcracker.crm.domain.model;
  * @since 24.04.2017
  */
 public enum OrderStatus implements Status {
-    NEW(1L, "NEW"),
-    IN_QUEUE(2L, "IN_QUEUE"),
-    PROCESSING(3L, "PROCESSING"),
-    ACTIVE(4L, "ACTIVE"),
-    DISABLED(5L, "DISABLED"),
-    PAUSED(6L, "PAUSED");
+    NEW(4L, "NEW"),
+    IN_QUEUE(5L, "IN_QUEUE"),
+    PROCESSING(6L, "PROCESSING"),
+    ACTIVE(7L, "ACTIVE"),
+    DISABLED(8L, "DISABLED"),
+    PAUSED(9L, "PAUSED");
 
     private Long id;
     private String name;

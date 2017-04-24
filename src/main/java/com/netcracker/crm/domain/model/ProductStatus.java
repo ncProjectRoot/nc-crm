@@ -6,9 +6,9 @@ package com.netcracker.crm.domain.model;
  * @since 24.04.2017
  */
 public enum ProductStatus implements Status {
-    PLANNED(1L, "PLANNED"),
-    ACTUAL(2L, "ACTUAL"),
-    OUTDATED(3L, "OUTDATED");
+    PLANNED(10L, "PLANNED"),
+    ACTUAL(11L, "ACTUAL"),
+    OUTDATED(12L, "OUTDATED");
 
     private Long id;
     private String name;

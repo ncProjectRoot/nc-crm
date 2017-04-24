@@ -12,7 +12,7 @@ public class Complaint {
     private String message;
     private ComplaintStatus status;
     private LocalDate date;
-    private User user;
+    private User customer;
     private User pmg;
     private Order order;
 
@@ -51,12 +51,12 @@ public class Complaint {
         this.date = date;
     }
 
-    public User getUser() {
-        return user;
+    public User getCustomer() {
+        return customer;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
 
     public User getPmg() {
