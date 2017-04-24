@@ -47,7 +47,7 @@ CREATE TABLE discount
      id BIGSERIAL  NOT NULL , 
      title VARCHAR (50)  NOT NULL , 
      percentage DOUBLE PRECISION  NOT NULL , 
-     discount_description VARCHAR (400)  NOT NULL , 
+     description VARCHAR (400)  NOT NULL , 
      date_start TIMESTAMP(0) , 
      date_finish TIMESTAMP(0) 
     ) 
@@ -110,8 +110,6 @@ CREATE TABLE "order"
 ;
 
 
---//////////////////////////////////////////////////////////////////////////////////
-
 
 
 ALTER TABLE "order" 
@@ -157,8 +155,8 @@ CREATE TABLE product
      id BIGSERIAL  NOT NULL , 
      title VARCHAR (50)  NOT NULL , 
      default_price DOUBLE PRECISION , 
-     product_status_id INTEGER  NOT NULL , 
-     product_description VARCHAR (400) , 
+     status_id INTEGER  NOT NULL , 
+     description VARCHAR (400) , 
      discount_id INTEGER  NOT NULL , 
      group_id INTEGER  NOT NULL 
     ) 
@@ -229,8 +227,8 @@ CREATE TABLE "user"
     ( 
      id BIGSERIAL  NOT NULL , 
      pass VARCHAR (100)  NOT NULL , 
-     name VARCHAR (50)  NOT NULL , 
-     surname VARCHAR (50)  NOT NULL , 
+     first_name VARCHAR (50)  NOT NULL , 
+     middle_name VARCHAR (50)  NOT NULL , 
      last_name VARCHAR (50) , 
      phone VARCHAR (20) , 
      email VARCHAR (320)  NOT NULL , 
@@ -272,6 +270,8 @@ ALTER TABLE user_roles
     ADD CONSTRAINT group_user_PK PRIMARY KEY ( id ) ;
 
 
+
+--//////////////////////////////////////////////////////////////////////////////////
 
 ALTER TABLE address 
     ADD CONSTRAINT address_region_FK FOREIGN KEY 
@@ -462,7 +462,7 @@ ALTER TABLE product
 ALTER TABLE product 
     ADD CONSTRAINT product_statuses_FK FOREIGN KEY 
     ( 
-     product_status_id
+     status_id
     ) 
     REFERENCES statuses 
     ( 
