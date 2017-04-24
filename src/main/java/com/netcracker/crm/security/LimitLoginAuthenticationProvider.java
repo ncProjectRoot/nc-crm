@@ -3,6 +3,7 @@ package com.netcracker.crm.security;
 import com.netcracker.crm.dao.UserAttemptsDao;
 import com.netcracker.crm.domain.UserAttempts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,7 +26,6 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
 
     @Autowired
     private UserAttemptsDao userAttemptsDao;
-
     @Autowired
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         super.setUserDetailsService(userDetailsService);
@@ -40,7 +40,7 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserAttempts userAttempts = userAttemptsDao.getUserAttempts(authentication.getName());
         try {
-            if (checkTimeout(userAttempts)) {
+            if (userAttempts != null && checkTimeout(userAttempts)) {
                 userAttemptsDao.lockUserAccount(authentication.getName(), false);
             }
             Authentication auth = super.authenticate(authentication);
@@ -70,8 +70,8 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
         long timeWait = new Date().getTime() - lastModified.getTime();
         long minutes = getMinutes(timeWait);
         long seconds = getSeconds(timeWait);
-        return "User account is locked! <br><br>Username : "
-                + userMail + "<br>Please wait : " + minutes + ":" + seconds;
+        return "User account is locked! Username : "
+                + userMail + "Please wait : " + minutes + ":" + seconds;
 
     }
 
