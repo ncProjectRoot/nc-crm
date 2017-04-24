@@ -234,7 +234,7 @@ CREATE TABLE "user"
      enable BOOLEAN  NOT NULL , 
      account_non_locked BOOLEAN  NOT NULL , 
      contact_person BOOLEAN  NOT NULL , 
-     address_id INTEGER  NOT NULL , 
+     address_id INTEGER  , 
      user_role_id INTEGER  NOT NULL , 
      org_id INTEGER 
     ) 
