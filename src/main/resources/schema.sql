@@ -226,7 +226,7 @@ ALTER TABLE statuses
 CREATE TABLE "user" 
     ( 
      id BIGSERIAL  NOT NULL , 
-     pass VARCHAR (100)  NOT NULL , 
+     password VARCHAR (100)  NOT NULL , 
      first_name VARCHAR (50)  NOT NULL , 
      middle_name VARCHAR (50)  NOT NULL , 
      last_name VARCHAR (50) , 
@@ -244,8 +244,8 @@ CREATE TABLE "user"
 
 CREATE INDEX user__IDX ON "user" 
     ( 
-     name ASC , 
-     surname ASC , 
+     first_name ASC , 
+     middle_name ASC , 
      last_name ASC 
     ) 
 ;
