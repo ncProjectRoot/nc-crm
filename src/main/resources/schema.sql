@@ -111,7 +111,6 @@ CREATE TABLE "order"
 
 
 
-
 ALTER TABLE "order" 
     ADD CONSTRAINT order_PK PRIMARY KEY ( id ) ;
 
@@ -232,12 +231,12 @@ CREATE TABLE "user"
      last_name VARCHAR (50) , 
      phone VARCHAR (20) , 
      email VARCHAR (320)  NOT NULL , 
-     enable CHAR (1)  NOT NULL , 
-     account_non_locked CHAR (1)  NOT NULL , 
+     enable BOOLEAN  NOT NULL , 
+     account_non_locked BOOLEAN  NOT NULL , 
+     contact_person BOOLEAN  NOT NULL , 
      address_id INTEGER  NOT NULL , 
      user_role_id INTEGER  NOT NULL , 
-     org_id INTEGER  NOT NULL , 
-     my_org_id INTEGER  NOT NULL 
+     org_id INTEGER 
     ) 
 ;
 
@@ -250,11 +249,30 @@ CREATE INDEX user__IDX ON "user"
     ) 
 ;
 
+-- Error - Index user_organization_FKv1v1 has no columns
+
+-- Error - Index user_organization_FKv1 has no columns
+
 ALTER TABLE "user" 
     ADD CONSTRAINT user_PK PRIMARY KEY ( id ) ;
 
 ALTER TABLE "user" 
     ADD CONSTRAINT user__UN UNIQUE ( email ) ;
+
+
+CREATE TABLE user_attempts 
+    ( 
+     id BIGSERIAL  NOT NULL , 
+     email character varying(320)  NOT NULL , 
+     attempts INTEGER, 
+     last_modified timestamp with time zone  NOT NULL 
+    ) 
+;
+
+
+
+ALTER TABLE user_attempts 
+    ADD CONSTRAINT user_attempts_PK PRIMARY KEY ( id ) ;
 
 
 CREATE TABLE user_roles 
@@ -268,8 +286,6 @@ CREATE TABLE user_roles
 
 ALTER TABLE user_roles 
     ADD CONSTRAINT group_user_PK PRIMARY KEY ( id ) ;
-
-
 
 --//////////////////////////////////////////////////////////////////////////////////
 
@@ -534,19 +550,7 @@ ALTER TABLE "user"
 
 
 ALTER TABLE "user" 
-    ADD CONSTRAINT user_organization_FKv1 FOREIGN KEY 
-    ( 
-     my_org_id
-    ) 
-    REFERENCES organization 
-    ( 
-     id
-    ) 
-;
-
-
-ALTER TABLE "user" 
-    ADD CONSTRAINT user_region_FKv1 FOREIGN KEY 
+    ADD CONSTRAINT user_user_roles_FK FOREIGN KEY 
     ( 
      user_role_id
     ) 
@@ -557,4 +561,3 @@ ALTER TABLE "user"
 ;
 
 commit;
-
