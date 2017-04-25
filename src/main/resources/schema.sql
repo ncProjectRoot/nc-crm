@@ -30,7 +30,7 @@ CREATE TABLE complaint
      message VARCHAR (400)  NOT NULL , 
      status_id INTEGER  NOT NULL , 
      "date" TIMESTAMP(0)  NOT NULL , 
-     customer_id INTEGER  NOT NULL , 
+     user_id INTEGER  NOT NULL , 
      pmg_id INTEGER  NOT NULL , 
      order_id INTEGER  NOT NULL 
     ) 
@@ -87,9 +87,8 @@ CREATE TABLE history
      old_status_id INTEGER  NOT NULL , 
      date_change_status TIMESTAMP(0)  NOT NULL , 
      desc_change_status VARCHAR (100)  NOT NULL , 
-     order_id INTEGER , 
-     complaint_id INTEGER , 
-     product_id INTEGER 
+     order_id INTEGER  NOT NULL , 
+     complaint_id INTEGER  NOT NULL 
     ) 
 ;
 
@@ -103,8 +102,8 @@ CREATE TABLE "order"
     ( 
      id BIGSERIAL  NOT NULL , 
      "date" TIMESTAMP(0)  NOT NULL , 
-     status_id INTEGER  NOT NULL , 
-     customer_id INTEGER  NOT NULL , 
+     actual_status_id INTEGER  NOT NULL , 
+     user_id INTEGER  NOT NULL , 
      product_id INTEGER  NOT NULL , 
      csr_id INTEGER  NOT NULL 
     ) 
@@ -116,7 +115,7 @@ ALTER TABLE "order"
     ADD CONSTRAINT order_PK PRIMARY KEY ( id ) ;
 
 ALTER TABLE "order" 
-    ADD CONSTRAINT order__UN UNIQUE ( "date" , customer_id ) ;
+    ADD CONSTRAINT order__UN UNIQUE ( "date" , user_id ) ;
 
 ALTER TABLE "order" 
     ADD CONSTRAINT order__UNv1 UNIQUE ( csr_id ) ;
@@ -133,9 +132,6 @@ CREATE TABLE organization
 
 ALTER TABLE organization 
     ADD CONSTRAINT organization_PK PRIMARY KEY ( id ) ;
-
-ALTER TABLE organization 
-    ADD CONSTRAINT organization__UN UNIQUE ( name ) ;
 
 
 CREATE TABLE persistent_logins 
@@ -238,7 +234,7 @@ CREATE TABLE "user"
      enable BOOLEAN  NOT NULL , 
      account_non_locked BOOLEAN  NOT NULL , 
      contact_person BOOLEAN  NOT NULL , 
-     address_id INTEGER , 
+     address_id INTEGER  , 
      user_role_id INTEGER  NOT NULL , 
      org_id INTEGER 
     ) 
@@ -252,6 +248,10 @@ CREATE INDEX user__IDX ON "user"
      last_name ASC 
     ) 
 ;
+
+-- Error - Index user_organization_FKv1v1 has no columns
+
+-- Error - Index user_organization_FKv1 has no columns
 
 ALTER TABLE "user" 
     ADD CONSTRAINT user_PK PRIMARY KEY ( id ) ;
@@ -330,7 +330,7 @@ ALTER TABLE complaint
 ALTER TABLE complaint 
     ADD CONSTRAINT complaint_user_FK FOREIGN KEY 
     ( 
-     customer_id
+     user_id
     ) 
     REFERENCES "user" 
     ( 
@@ -390,19 +390,6 @@ ALTER TABLE history
 
 
 ALTER TABLE history 
-    ADD CONSTRAINT history_product_FK FOREIGN KEY 
-    ( 
-     product_id
-    ) 
-    REFERENCES product 
-    ( 
-     id
-    ) 
-    ON DELETE CASCADE 
-;
-
-
-ALTER TABLE history 
     ADD CONSTRAINT history_statuses_FK FOREIGN KEY 
     ( 
      old_status_id
@@ -430,7 +417,7 @@ ALTER TABLE "order"
 ALTER TABLE "order" 
     ADD CONSTRAINT order_statuses_FK FOREIGN KEY 
     ( 
-     status_id
+     actual_status_id
     ) 
     REFERENCES statuses 
     ( 
@@ -442,7 +429,7 @@ ALTER TABLE "order"
 ALTER TABLE "order" 
     ADD CONSTRAINT order_user_FK FOREIGN KEY 
     ( 
-     customer_id
+     user_id
     ) 
     REFERENCES "user" 
     ( 
@@ -572,5 +559,16 @@ ALTER TABLE "user"
      id
     ) 
 ;
+
+INSERT INTO user_roles (id, name) VALUES (1, 'ROLE_ADMIN');
+INSERT INTO user_roles (id, name) VALUES (2, 'ROLE_CUSTOMER');
+INSERT INTO user_roles (id, name) VALUES (3, 'ROLE_CSR');
+INSERT INTO user_roles (id, name) VALUES (4, 'ROLE_PMG');
+
+INSERT INTO discount( title, percentage, description, date_start, date_finish)
+  VALUES ('test title', 0.5, 'test description', '2017-01-01', '2017-12-31');
+
+INSERT INTO region(name, discount_id)
+  VALUES ('test region', 1);
 
 commit;

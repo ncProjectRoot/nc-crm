@@ -3,36 +3,60 @@ package com.netcracker.crm.dao.impl.sql;
 /**
  * Created by bpogo on 4/22/2017.
  */
-public interface UserSqlQuery {
-    String PARAM_ID = "id";
-    String PARAM_EMAIL = "email";
-    String PARAM_PASSWORD = "password";
-    String PARAM_FIRST_NAME = "first_name";
-    String PARAM_LAST_NAME = "last_name";
-    String PARAM_MIDDLE_NAME = "middle_name";
-    String PARAM_IS_ENABLE = "enable";
-    String PARAM_ROLE_ID = "role_id";
-    String PARAM_ROLE_NAME = "role_name";
-    String PARAM_ACCOUNT_NON_LOCKED = "account_non_locked";
+public final class UserSqlQuery {
+    private UserSqlQuery() {
+    }
 
-    String SQL_FIND_USER_BY_EMAIL = "SELECT u.id, email, password, first_name, last_name, " +
-            "middle_name, enable, account_non_locked, role_id, role.name role_name " +
-            "FROM nccrmdb.\"user\" u  " +
-            "INNER JOIN nccrmdb.user_role role ON u.role_id = role.id " +
+    public static final String PARAM_USER_TABLE = "user";
+    public static final String PARAM_USER_ID = "id";
+    public static final String PARAM_USER_EMAIL = "email";
+    public static final String PARAM_USER_PHONE = "phone";
+    public static final String PARAM_USER_PASSWORD = "password";
+    public static final String PARAM_USER_FIRST_NAME = "first_name";
+    public static final String PARAM_USER_LAST_NAME = "last_name";
+    public static final String PARAM_USER_MIDDLE_NAME = "middle_name";
+    public static final String PARAM_USER_IS_ENABLE = "enable";
+    public static final String PARAM_USER_CONTACT_PERSON = "contact_person";
+    public static final String PARAM_USER_ACCOUNT_NON_LOCKED = "account_non_locked";
+
+    public static final String PARAM_USER_ROLE_ID = "user_role_id";
+    public static final String PARAM_USER_ROLE_NAME = "role_name";
+
+    public static final String PARAM_USER_ORG_ID = "org_id";
+    public static final String PARAM_USER_ORG_NAME = "org_name";
+
+    public static final String PARAM_USER_ADDRESS_ID = "address_id";
+    public static final String PARAM_USER_ADDRESS_LATITUDE = "addr_latitude";
+    public static final String PARAM_USER_ADDRESS_LONGITUDE = "addr_longitude";
+
+    public static final String SQL_FIND_USER_BY_EMAIL = "" +
+            "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
+            "enable, account_non_locked, user_role_id, role.name role_name, " +
+            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
+            "FROM \"user\" u  " +
+            "INNER JOIN user_roles role ON user_role_id = role.id " +
+            "INNER JOIN organization org ON org_id = org.id " +
+            "INNER JOIN address addr ON address_id = addr.id " +
             "WHERE email = :email;";
-    String SQL_FIND_USER_BY_ID = "SELECT u.id, email, password, first_name, last_name, " +
-            "middle_name, enable, account_non_locked, role_id, role.name role_name " +
-            "FROM nccrmdb.\"user\" u  " +
-            "INNER JOIN nccrmdb.user_role role ON u.role_id = role.id " +
+    public static final String SQL_FIND_USER_BY_ID = "" +
+            "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
+            "enable, account_non_locked, user_role_id, role.name role_name, " +
+            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
+            "FROM \"user\" u  " +
+            "INNER JOIN user_roles role ON user_role_id = role.id " +
+            "INNER JOIN organization org ON org_id = org.id " +
+            "INNER JOIN address addr ON address_id = addr.id " +
             "WHERE u.id = :id;";
-    String SQL_CREATE_USER = "INSERT INTO nccrmdb.\"user\"" +
-            "(email, password, first_name, last_name, middle_name, enable, account_non_locked, role_id) " +
-            "VALUES (:email, :password, :first_name, :last_name, :middle_name, :enable, :account_non_locked, :role_id);";
+    public static final String SQL_CREATE_USER = "INSERT INTO \"user\"" +
+            "(password, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, " +
+            "address_id, user_role_id, org_id) " +
+            "VALUES (:password, :first_name, :middle_name, :last_name, :phone, :email, :enable, :account_non_locked, " +
+            ":contact_person, :address_id, :user_role_id, :org_id);";
 
-    String SQL_USERS_UPDATE_LOCKED = "UPDATE nccrmdb.\"user\" " +
+    public static final String SQL_USERS_UPDATE_LOCKED = "UPDATE \"user\" " +
             "SET account_non_locked = :account_non_locked " +
             "WHERE email = :email;";
-    String SQL_USERS_COUNT = "SELECT count(*) " +
-            "FROM nccrmdb.\"user\" " +
+    public static final String SQL_USERS_COUNT = "SELECT count(*) " +
+            "FROM \"user\" " +
             "WHERE email = :email;";
 }
