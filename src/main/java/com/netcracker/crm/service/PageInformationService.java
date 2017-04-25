@@ -2,7 +2,6 @@ package com.netcracker.crm.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.netcracker.crm.domain.PageInformation;
 import com.netcracker.crm.domain.model.UserRole;
 import org.springframework.core.io.ClassPathResource;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Karpunets
@@ -30,22 +28,22 @@ public class PageInformationService {
     public PageInformationService() {
         roleMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         try {
             File file = new ClassPathResource(FILE_NAME).getFile();
-            pageInformationList = objectMapper.readValue(file, new TypeReference<Set<PageInformation>>(){});
+            pageInformationList = objectMapper.readValue(file, new TypeReference<List<PageInformation>>(){});
+            System.out.println(pageInformationList);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public List<PageInformation> getPageMenu(UserRole role) {
-        if (roleMap.containsKey(roleMap)) {
-            return roleMap.get(roleMap);
+        if (roleMap.containsKey(role)) {
+            return roleMap.get(role);
         }
         List<PageInformation> result = new ArrayList<>();
         for (PageInformation pageInformation: pageInformationList) {
-            if (role.equals(pageInformation.getRoles())) {
+            if (pageInformation.getRoles().contains(role)) {
                 result.add(pageInformation);
             }
         }

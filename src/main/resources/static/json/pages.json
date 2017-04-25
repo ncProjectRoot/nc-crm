@@ -1,0 +1,26 @@
+[ {
+  "title" : "Home",
+  "icon" : "home",
+  "href" : "",
+  "roles" : [ "ROLE_ADMIN", "ROLE_CSR", "ROLE_PMG", "ROLE_CUSTOMER" ]
+}, {
+  "title" : "My Profile",
+  "icon" : "person_pin",
+  "href" : "profile",
+  "roles" : [ "ROLE_ADMIN", "ROLE_CSR", "ROLE_PMG", "ROLE_CUSTOMER" ]
+}, {
+  "title" : "Create User",
+  "icon" : "queue",
+  "href" : "createUser",
+  "roles" : [ "ROLE_ADMIN" ]
+}, {
+  "title" : "Search",
+  "icon" : "search",
+  "href" : "search",
+  "roles" : [ "ROLE_ADMIN", "ROLE_CSR" ]
+}, {
+  "title" : "Profit",
+  "icon" : "business",
+  "href" : "profit",
+  "roles" : [ "ROLE_ADMIN" ]
+} ]

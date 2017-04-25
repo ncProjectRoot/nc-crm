@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     $.get("/page-information", {
-        "hash": location.hash.substr(2)
+        "href": location.hash.substr(1)
     }).success(function (data) {
         console.log(data);
         var $contentHeader = $(".content-header");
@@ -66,7 +66,7 @@ function downloadContent() {
     var $contentBody = $(".content-body");
     $contentBody.removeClass("content-body-visible");
     $(".progress").addClass("progress-active");
-    $.get("/admin/" + location.hash.substr(2))
+    $.get("/admin/" + location.hash.substr(1))
         .success(function (data) {
             window.setTimeout(function () {
                 $contentBody.html(data);
