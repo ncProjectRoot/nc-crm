@@ -30,13 +30,13 @@ public final class UserSqlQuery {
     public static final String PARAM_USER_ADDRESS_LONGITUDE = "addr_longitude";
 
     public static final String SQL_FIND_USER_BY_EMAIL = "" +
-            "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
-            "enable, account_non_locked, user_role_id, role.name role_name, " +
+            "SELECT u.id, email, password, phone, first_name, last_name, middle_name," +
+            "enable, account_non_locked, user_role_id, role.name role_name," +
             "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
-            "FROM \"user\" u  " +
+            "FROM \"user\" u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
-            "INNER JOIN organization org ON org_id = org.id " +
-            "INNER JOIN address addr ON address_id = addr.id " +
+            "LEFT JOIN organization org ON org_id = org.id " +
+            "LEFT JOIN address addr ON address_id = addr.id " +
             "WHERE email = :email;";
     public static final String SQL_FIND_USER_BY_ID = "" +
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
@@ -44,8 +44,8 @@ public final class UserSqlQuery {
             "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
             "FROM \"user\" u  " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
-            "INNER JOIN organization org ON org_id = org.id " +
-            "INNER JOIN address addr ON address_id = addr.id " +
+            "LEFT JOIN organization org ON org_id = org.id " +
+            "LEFT JOIN address addr ON address_id = addr.id " +
             "WHERE u.id = :id;";
     public static final String SQL_CREATE_USER = "INSERT INTO \"user\"" +
             "(password, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, " +
@@ -59,10 +59,4 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_COUNT = "SELECT count(*) " +
             "FROM \"user\" " +
             "WHERE email = :email;";
-
-
-    public static final String SQL_INSERT_USER_ADMIN = "INSERT INTO \"user\"(\n" +
-            "\tpassword, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, address_id, user_role_id, org_id)\n" +
-            "\tVALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich', \n" +
-            "            '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);";
 }

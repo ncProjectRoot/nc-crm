@@ -117,7 +117,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int affectedRows = namedJdbcTemplate.update(SQL_USER_ATTEMPTS_INSERT, params, keyHolder);
         if (affectedRows == 1) {
-            Integer id = (Integer) keyHolder.getKeys().get(PARAM_ID);
+            Long id = (Long) keyHolder.getKeys().get(PARAM_ID);
             log.info("UserAttempts with id: " + id + " is successfully created.");
             return id;
         } else {

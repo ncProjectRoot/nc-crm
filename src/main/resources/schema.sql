@@ -571,4 +571,11 @@ INSERT INTO discount( title, percentage, description, date_start, date_finish)
 INSERT INTO region(name, discount_id)
   VALUES ('test region', 1);
 
+
+INSERT INTO "user"(
+  password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
+  contact_person, address_id, user_role_id, org_id)
+VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
+    '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
+
 commit;
