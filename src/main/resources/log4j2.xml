@@ -113,7 +113,7 @@
             <AppenderRef ref="controller"/>
         </Logger>
 
-        <Logger name="com.netcracker.crm.model" additivity="true" level="info">
+        <Logger name="com.netcracker.crm.domain.model" additivity="true" level="info">
             <AppenderRef ref="model"/>
         </Logger>
 
