@@ -1,8 +1,9 @@
 package com.netcracker.crm.email.senders;
 
 
+import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.email.builder.EmailBuilder;
-import com.netcracker.crm.email.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
     private String changeStatusServiceSubj ;
 
     private User user;
-    private ServiceEntity serviceEntity;
+    private Order order;
 
     @Autowired
     private EmailBuilder builder;
@@ -46,12 +47,12 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
         this.user = user;
     }
 
-    public ServiceEntity getServiceEntity() {
-        return serviceEntity;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setServiceEntity(ServiceEntity serviceEntity) {
-        this.serviceEntity = serviceEntity;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public String getChangeStatusServiceTempl() {
@@ -77,27 +78,27 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
         if(user==null){
             log.error("You must set user before sending");
             throw new IllegalStateException("user is null");
-        } else if (serviceEntity==null){
-            log.error("You must set service before sending");
-            throw new IllegalStateException("service is null");
+        } else if (order==null){
+            log.error("You must set order before sending");
+            throw new IllegalStateException("order is null");
         } else {
             String template = getTemplate(changeStatusServiceTempl);
             template = replace(template);
-            log.info("Start building email letter");
+            log.debug("Start building  email letter");
             builder.setSubject(changeStatusServiceSubj);
             builder.setAddress(user.getEmail());
             builder.setContent(template);
-            log.info("Sending email");
+            log.debug("Sending email");
             sender.send(builder.generateMessage());
         }
     }
 
    String replace(String templ) {
-        log.info("Start replacing values in email template file");
-        return templ.replaceAll("%name%", user.getName())
-                .replaceAll("%surname%", user.getSurname())
-                .replaceAll("%service%", serviceEntity.getName())
-                .replaceAll("%status%", serviceEntity.getStatus());
+        log.debug("Start replacing values in email template file");
+        return templ.replaceAll("%name%", user.getFirstName())
+                .replaceAll("%surname%", user.getLastName())
+                .replaceAll("%service%", order.getProduct().getTitle())
+                .replaceAll("%status%", order.getStatus().name());
     }
 
 }
