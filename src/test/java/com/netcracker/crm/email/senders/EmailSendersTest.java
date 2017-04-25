@@ -29,7 +29,7 @@ public class EmailSendersTest {
     @Test
     public void orderStatusTest() throws Exception {
         User user = new User();
-        user.setEmail("ANYEMAILTOTEST@gmail.com");
+        user.setEmail("ANYADDRESS@gmail.com");
         user.setFirstName("John");
         user.setLastName("Snow");
 
@@ -39,8 +39,9 @@ public class EmailSendersTest {
         order.setProduct(product);
         order.setCustomer(user);
         order.setStatus(OrderStatus.DISABLED);
-
-        orderStatusEmailSender.send(order);
+        EmailMap emailMap = new EmailMap(EmailType.ORDER_STATUS);
+        emailMap.put("order", order);
+        orderStatusEmailSender.send(emailMap);
 
     }
 
@@ -49,35 +50,41 @@ public class EmailSendersTest {
     public void complaintTest() throws Exception {
         Complaint complaint = new Complaint();
         User user = new User();
-        user.setEmail("ANYEMAILTOTEST@gmail.com");
+        user.setEmail("ANYADDRESS@gmail.com");
         user.setFirstName("John");
         user.setLastName("Snow");
         complaint.setCustomer(user);
         complaint.setStatus(ComplaintStatus.CLOSED);
         complaint.setTitle("AnyTitle");
+        EmailMap emailMap = new EmailMap(EmailType.COMPLAINT);
+        emailMap.put("complaint", complaint);
 
-        complaintMailSender.send(complaint);
+        complaintMailSender.send(emailMap);
     }
 
 
     @Test
     public void massiveTest() throws Exception {
-        String[] addresses = {"ANYEMAILTOTEST@gmail.com", "ANYEMAILTOTEST2@gmail.com"};
+        String[] addresses = {"ANYADDRESS1@gmail.com", "ANYADDRESS2@gmail.com"};
         String information = "Some information";
         String subject = "Interesting subject";
-
-        massiveEmailSender.send(addresses, subject, information);
+        EmailMap emailMap = new EmailMap(EmailType.MASSIVE);
+        emailMap.put("receivers", addresses);
+        emailMap.put("subject", subject);
+        emailMap.put("body", information);
+        massiveEmailSender.send(emailMap);
     }
 
 
     @Test
     public void regSuccessTest() throws Exception {
         User user = new User();
-        user.setEmail("ANYEMAILTOTEST@gmail.com");
+        user.setEmail("ANYADDRESS@gmail.com");
         user.setFirstName("John");
         user.setLastName("Snow");
-
-        regSuccessEmailSender.send(user);
+        EmailMap emailMap = new EmailMap(EmailType.REGISTRATION);
+        emailMap.put("user", user);
+        regSuccessEmailSender.send(emailMap);
     }
 
 }

@@ -4,6 +4,7 @@ package com.netcracker.crm.email.senders;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,30 @@ public class ComplaintMailSender extends AbstractEmailSender {
     @Autowired
     private JavaMailSenderImpl mailSender;
 
-    public void send(Complaint complaint) throws MessagingException {
+    public void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException {
+        checkEmailMap(emailMap);
+        Complaint complaint = getComplaint(emailMap);
         if (complaint == null) {
             log.error("Complaint can't be null");
             throw new IllegalStateException("complaint is null");
         } else {
             sendCompliant(complaint);
+        }
+    }
+
+    @Override
+    protected void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException {
+        if (EmailType.COMPLAINT != emailMap.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type COMPLAINT but type " + emailMap.getEmailType());
+        }
+    }
+
+    private Complaint getComplaint(EmailMap emailMap) throws IncorrectEmailElementException {
+        Object o = emailMap.get("complaint");
+        if (o instanceof Complaint){
+            return (Complaint) o;
+        }else {
+            throw new IncorrectEmailElementException("Expected by key 'complaint' in map will be complaint");
         }
     }
 
@@ -58,7 +77,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
 
     private void sendCompliant(Complaint compliant) throws MessagingException {
         String[] response = takeResponse(compliant);
-        String bodyText = replace(getTemplate(feedback).replace("%feedback%", response[0]), compliant);
+        String bodyText = replace(getTemplate(feedback).replace("%complaint%", response[0]), compliant);
         buildMail(compliant, response[1], bodyText);
     }
 
@@ -75,7 +94,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
         log.debug("Start replacing values in email template file");
         return html.replaceAll("%name%", complaint.getCustomer().getFirstName())
                 .replaceAll("%surname%", complaint.getCustomer().getLastName())
-                .replaceAll("%complaintName%", complaint.getTitle())
+                .replaceAll("%complaintTitle%", complaint.getTitle())
                 .replaceAll("%complaintStatus%", complaint.getStatus().getName());
     }
 

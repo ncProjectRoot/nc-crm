@@ -1,5 +1,6 @@
 package com.netcracker.crm.email.senders;
 
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,6 +26,9 @@ public abstract class AbstractEmailSender {
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
     private static final String TEMPL_PACKAGE = "email";
+
+    public abstract void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException;
+    protected abstract void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException;
 
     public String getTemplate(String template) {
         log.debug("Getting email template " + TEMPL_PACKAGE + "/" + template);

@@ -1,6 +1,7 @@
 package com.netcracker.crm.email.senders;
 
 import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +29,42 @@ public class MassiveEmailSender extends AbstractEmailSender {
     @Autowired
     private EmailBuilder emailBuilder;
 
-    public void send(String[] receivers, String subject, String body) throws MessagingException {
-        if (receivers == null || receivers.length == 0) {
+    public void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException {
+        checkEmailMap(emailMap);
+        String[] receivers = getReceivers(emailMap);
+        String subject = getSubject(emailMap);
+        String body = getBody(emailMap);
+        String bodyText = replace(getTemplate(informationAll), body);
+        sendMails(createMessage(receivers, subject, bodyText));
+    }
+
+    private String[] getReceivers(EmailMap emailMap){
+        String[] receivers = (String[]) emailMap.get("receivers");
+        if (receivers == null || receivers.length == 0){
             log.error("Receivers can't be null or have zero length");
             throw new IllegalStateException("receivers is null or no recipient");
-        } else if (subject == null) {
+        }
+        return receivers;
+    }
+
+    private String getSubject(EmailMap emailMap){
+        String subject = (String) emailMap.get("subject");
+        if (subject == null){
             log.error("Subject can't be null");
             throw new IllegalStateException("subject is null");
-        } else if (body == null) {
+        }
+        return subject;
+    }
+
+    private String getBody(EmailMap emailMap){
+        String body = (String) emailMap.get("subject");
+        if (body == null){
             log.error("Body can't be null");
             throw new IllegalStateException("body is null");
-        } else {
-            String bodyText = replace(getTemplate(informationAll), body);
-            sendMails(createMessage(receivers, subject, bodyText));
         }
+        return body;
     }
+
 
     private MimeMessage createMessage(String[] to, String subject, String bodyText) throws MessagingException {
         log.debug("Start building email letter");
@@ -70,4 +92,10 @@ public class MassiveEmailSender extends AbstractEmailSender {
         this.informationAll = informationAll;
     }
 
+    @Override
+    protected void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException {
+        if (EmailType.MASSIVE != emailMap.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type MASSIVE but type " + emailMap.getEmailType());
+        }
+    }
 }

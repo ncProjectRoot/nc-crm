@@ -2,6 +2,7 @@ package com.netcracker.crm.email.senders;
 
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,26 +57,41 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     }
 
 
-    public void send(User user) throws MessagingException {
-        if (user == null) {
-            log.error("User can't be null");
-            throw new IllegalStateException("user is null");
-        } else {
-            String template = getTemplate(regSuccessTempl);
-            template = replace(user, template);
-            log.debug("Start building email letter");
-            builder.setSubject(regSuccessSubj);
-            builder.setAddress(user.getEmail());
-            builder.setContent(template);
-            log.debug("Sending email");
-            sender.send(builder.generateMessage());
+    public void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException {
+        checkEmailMap(emailMap);
+        User user = getUser(emailMap);
+
+        String template = replace(user, getTemplate(regSuccessTempl));
+        log.debug("Start building email letter");
+        builder.setSubject(regSuccessSubj);
+        builder.setAddress(user.getEmail());
+        builder.setContent(template);
+        log.debug("Sending email");
+        sender.send(builder.generateMessage());
+    }
+
+    private User getUser(EmailMap emailMap) throws IncorrectEmailElementException {
+        Object o = emailMap.get("user");
+        if (o instanceof User){
+            return (User) o;
+        }else {
+            throw new IncorrectEmailElementException("Expected by key 'user' in map will be user");
         }
     }
 
-    String replace(User user, String templ) {
+
+
+    private String replace(User user, String templ) {
         log.debug("Start replacing values in email template file");
         return templ.replaceAll("%email%", user.getEmail())
                 .replaceAll("%name%", user.getFirstName())
                 .replaceAll("%surname%", user.getLastName());
+    }
+
+    @Override
+    protected void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException {
+        if (EmailType.REGISTRATION != emailMap.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type REGISTRATION but type " + emailMap.getEmailType());
+        }
     }
 }
