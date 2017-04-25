@@ -1,4 +1,4 @@
-package com.netcracker.crm.controller;
+package com.netcracker.crm.controller.base;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;

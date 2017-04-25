@@ -4,6 +4,11 @@
   "href" : "",
   "roles" : [ "ROLE_ADMIN", "ROLE_CSR", "ROLE_PMG", "ROLE_CUSTOMER" ]
 }, {
+  "title" : "Dashboard",
+  "icon" : "dashboard",
+  "href" : "dashboard",
+  "roles" : [ "ROLE_ADMIN"]
+}, {
   "title" : "My Profile",
   "icon" : "person_pin",
   "href" : "profile",

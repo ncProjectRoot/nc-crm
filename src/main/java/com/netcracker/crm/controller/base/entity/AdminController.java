@@ -1,4 +1,4 @@
-package com.netcracker.crm.controller.entity;
+package com.netcracker.crm.controller.base.entity;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +10,12 @@ import java.util.Map;
  * @author Karpunets
  * @since 21.04.2017
  */
-@RequestMapping(value = "/admin")
+
+@RequestMapping(value = "/ROLE_ADMIN")
 @Controller
 public class AdminController {
 
-    @GetMapping({"/", "/home"})
+    @GetMapping("/")
     public String main(Map<String, Object> model) {
         return "home";
     }
@@ -29,4 +30,8 @@ public class AdminController {
         return "profile";
     }
 
+    @GetMapping("/dashboard")
+    public String dashboard(Map<String, Object> model) {
+        return "dashboard";
+    }
 }

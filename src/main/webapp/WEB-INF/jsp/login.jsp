@@ -22,7 +22,7 @@
 <h1 class="teal-text darken-3">NC-CRM</h1>
 <h5 class="teal-text lighten-5">Please, login into your account</h5>
 <div class="form-wrapper z-depth-1 grey lighten-4">
-    <form action="/login" class="row" method="post">
+    <form action="/login" class="row" method="post" id="auth-form">
         <div class='input-field col s12'>
             <input class='validate' type='email' name='email' id='email' />
             <label for='email'>Enter your email</label>
@@ -49,12 +49,21 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
 <script>
-    <c:if test="${not empty error}">
-    Materialize.toast("${error}", 2000, 'rounded');
-    </c:if>
-    <c:if test="${not empty msg}">
-    Materialize.toast("${msg}", 2000, 'rounded');
-    </c:if>
+    $(document).ready(function(){
+        <c:if test="${not empty error}">
+        Materialize.toast("${error}", 2000, 'rounded');
+        </c:if>
+        <c:if test="${not empty msg}">
+        Materialize.toast("${msg}", 2000, 'rounded');
+        </c:if>
+
+        $('#auth-form').submit(function() {
+            var el = $(this);
+            var hash = window.location.hash;
+            if (hash) el.prop('action', el.prop('action') + '#' + unescape(hash.substring(1)));
+            return true;
+        });
+    });
 </script>
 </body>
 </html>

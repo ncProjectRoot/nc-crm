@@ -66,7 +66,7 @@ function downloadContent() {
     var $contentBody = $(".content-body");
     $contentBody.removeClass("content-body-visible");
     $(".progress").addClass("progress-active");
-    $.get("/admin/" + location.hash.substr(1))
+    $.get("/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1))
         .success(function (data) {
             window.setTimeout(function () {
                 $contentBody.html(data);
