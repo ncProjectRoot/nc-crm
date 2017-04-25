@@ -572,6 +572,7 @@ INSERT INTO region(name, discount_id)
   VALUES ('test region', 1);
 
 
+-- password - 123123
 INSERT INTO "user"(
   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
   contact_person, address_id, user_role_id, org_id)
