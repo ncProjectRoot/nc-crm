@@ -1,6 +1,6 @@
 package com.netcracker.crm.config;
 
-import com.netcracker.crm.security.PersistentTokenRepositoryImpl;
+import com.netcracker.crm.dao.impl.PersistentTokenDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +18,11 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import javax.sql.DataSource;
-
 /**
  * Created by Pasha on 21.04.2017.
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private DataSource dataSource;
     @Autowired
     private AuthenticationSuccessHandler successHandler;
     @Autowired
@@ -81,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
-        return new PersistentTokenRepositoryImpl(dataSource);
+        return new PersistentTokenDaoImpl();
     }
 
     @Bean
