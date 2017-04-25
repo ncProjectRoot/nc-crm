@@ -87,7 +87,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
     public boolean lockUserAccount(String userMail, boolean lock) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_EMAIL, userMail)
-                .addValue(UserSqlQuery.PARAM_ACCOUNT_NON_LOCKED, !lock);
+                .addValue(UserSqlQuery.PARAM_USER_ACCOUNT_NON_LOCKED, !lock);
         int count = namedJdbcTemplate.update(UserSqlQuery.SQL_USERS_UPDATE_LOCKED, params);
         if (count == 1) {
             log.info("Update user with email : " + userMail + " is successful");
