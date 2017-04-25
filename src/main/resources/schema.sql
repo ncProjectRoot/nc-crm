@@ -27,6 +27,7 @@ ALTER TABLE address
 CREATE TABLE complaint 
     ( 
      id BIGSERIAL  NOT NULL , 
+     title VARCHAR (50)  NOT NULL , 
      message VARCHAR (400)  NOT NULL , 
      status_id INTEGER  NOT NULL , 
      "date" TIMESTAMP(0)  NOT NULL , 
