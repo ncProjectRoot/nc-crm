@@ -59,4 +59,10 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_COUNT = "SELECT count(*) " +
             "FROM \"user\" " +
             "WHERE email = :email;";
+
+
+    public static final String SQL_INSERT_USER_ADMIN = "INSERT INTO \"user\"(\n" +
+            "\tpassword, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, address_id, user_role_id, org_id)\n" +
+            "\tVALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich', \n" +
+            "            '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);";
 }
