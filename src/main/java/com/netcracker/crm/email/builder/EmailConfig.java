@@ -21,9 +21,9 @@ public class EmailConfig {
     private String username ;
     private String password ;
     private String auth;
-    private String starttls;
     private String host;
     private String port;
+    private String socketFactoryClass;
 
     @Bean
     public JavaMailSenderImpl mailSender(){
@@ -39,9 +39,10 @@ public class EmailConfig {
     private Properties getProperties(){
         Properties props = new Properties();
         props.put("mail.smtp.auth", auth);
-        props.put("mail.smtp.starttls.enable", starttls);
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);
+        props.put("mail.smtp.socketFactory.port", port);
+        props.put("mail.smtp.socketFactory.class", socketFactoryClass);
         return props;
     }
 
@@ -76,14 +77,6 @@ public class EmailConfig {
         this.auth = auth;
     }
 
-    public String getStarttls() {
-        return starttls;
-    }
-
-    public void setStarttls(String starttls) {
-        this.starttls = starttls;
-    }
-
     public String getHost() {
         return host;
     }
@@ -98,5 +91,13 @@ public class EmailConfig {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public String getSocketFactoryClass() {
+        return socketFactoryClass;
+    }
+
+    public void setSocketFactoryClass(String socketFactoryClass) {
+        this.socketFactoryClass = socketFactoryClass;
     }
 }

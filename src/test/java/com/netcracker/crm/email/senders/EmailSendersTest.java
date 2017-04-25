@@ -1,13 +1,11 @@
 package com.netcracker.crm.email.senders;
 
-import org.junit.Before;
+import com.netcracker.crm.domain.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.mail.MessagingException;
 
 
 /**
@@ -20,7 +18,7 @@ import javax.mail.MessagingException;
 public class EmailSendersTest {
 
     @Autowired
-    private ChangeStatusServiceEmailSender changeStatusServiceEmailSender;
+    private OrderStatusEmailSender orderStatusEmailSender;
     @Autowired
     private ComplaintMailSender complaintMailSender;
     @Autowired
@@ -29,21 +27,20 @@ public class EmailSendersTest {
     private RegSuccessEmailSender regSuccessEmailSender;
 
     @Test
-    public void changeStatusServiceTest() throws Exception {
+    public void orderStatusTest() throws Exception {
         User user = new User();
         user.setEmail("ANYEMAILTOTEST@gmail.com");
-        user.setName("John");
-        user.setSurname("Snow");
+        user.setFirstName("John");
+        user.setLastName("Snow");
 
-        ServiceEntity product = new ServiceEntity();
+        Order order = new Order();
+        Product product = new Product();
         product.setTitle("Internet");
-        product.setStatus("Deactivated");
-        product.setType("service");
+        order.setProduct(product);
+        order.setCustomer(user);
+        order.setStatus(OrderStatus.DISABLED);
 
-        changeStatusServiceEmailSender.setServiceEntity(product);
-        changeStatusServiceEmailSender.setUser(user);
-
-        changeStatusServiceEmailSender.send();
+        orderStatusEmailSender.send(order);
 
     }
 
@@ -53,14 +50,13 @@ public class EmailSendersTest {
         Complaint complaint = new Complaint();
         User user = new User();
         user.setEmail("ANYEMAILTOTEST@gmail.com");
-        user.setName("John");
-        user.setSurname("Snow");
-        complaint.setSender(user);
-        complaint.setStatus("accept");
-        complaint.setName("AnyName");
+        user.setFirstName("John");
+        user.setLastName("Snow");
+        complaint.setCustomer(user);
+        complaint.setStatus(ComplaintStatus.CLOSED);
+        complaint.setTitle("AnyTitle");
 
-        complaintMailSender.setComplaint(complaint);
-        complaintMailSender.send();
+        complaintMailSender.send(complaint);
     }
 
 
@@ -70,11 +66,7 @@ public class EmailSendersTest {
         String information = "Some information";
         String subject = "Interesting subject";
 
-        massiveEmailSender.setSubject(subject);
-        massiveEmailSender.setBody(information);
-        massiveEmailSender.setReceivers(addresses);
-
-        massiveEmailSender.send();
+        massiveEmailSender.send(addresses, subject, information);
     }
 
 
@@ -82,11 +74,10 @@ public class EmailSendersTest {
     public void regSuccessTest() throws Exception {
         User user = new User();
         user.setEmail("ANYEMAILTOTEST@gmail.com");
-        user.setName("John");
-        user.setSurname("Snow");
+        user.setFirstName("John");
+        user.setLastName("Snow");
 
-        regSuccessEmailSender.setUser(user);
-        regSuccessEmailSender.send();
+        regSuccessEmailSender.send(user);
     }
 
 }

@@ -1,11 +1,14 @@
 package com.netcracker.crm.email.senders;
 
 
+import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.email.builder.EmailBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +18,7 @@ import javax.mail.MessagingException;
  * Created by Pasha on 15.04.2017.
  */
 @Service
-@Scope("prototype")
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ComplaintMailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(ComplaintMailSender.class);
@@ -28,54 +31,52 @@ public class ComplaintMailSender extends AbstractEmailSender {
     private String solutionComplaintSubj;
     private String feedback;
 
-    private Complaint complaint;
-
     @Autowired
     private EmailBuilder emailBuilder;
 
     @Autowired
     private JavaMailSenderImpl mailSender;
 
-    public void send() throws MessagingException {
+    public void send(Complaint complaint) throws MessagingException {
         if (complaint == null) {
-            log.error("You must set complaint before sending");
+            log.error("Complaint can't be null");
             throw new IllegalStateException("complaint is null");
         } else {
             sendCompliant(complaint);
         }
     }
 
-    private String[] takeResponse(Complaint complaint){
-        if ("accept".equalsIgnoreCase(complaint.getStatus())){
-            return new String[] {acceptComplaint, acceptComplaintSubj};
-        }else if ("solved".equalsIgnoreCase(complaint.getStatus())){
-            return new String[] {solutionComplaint, solutionComplaintSubj};
-        }else {
-            return new String[] {changeStatusComplaint, changeStatusComplaintSubj};
+    private String[] takeResponse(Complaint complaint) {
+        if (ComplaintStatus.SOLVING.getName().equalsIgnoreCase(complaint.getStatus().getName())) {
+            return new String[]{acceptComplaint, acceptComplaintSubj};
+        } else if (ComplaintStatus.CLOSED.getName().equalsIgnoreCase(complaint.getStatus().getName())) {
+            return new String[]{solutionComplaint, solutionComplaintSubj};
+        } else {
+            return new String[]{changeStatusComplaint, changeStatusComplaintSubj};
         }
     }
 
     private void sendCompliant(Complaint compliant) throws MessagingException {
-        String [] response = takeResponse(compliant);
-        String bodyText = replace(getTemplate(feedback).replace("%feedback%", response[0]));
+        String[] response = takeResponse(compliant);
+        String bodyText = replace(getTemplate(feedback).replace("%feedback%", response[0]), compliant);
         buildMail(compliant, response[1], bodyText);
     }
 
     private void buildMail(Complaint complaint, String subject, String body) throws MessagingException {
-        log.info("Start building email letter");
+        log.debug("Start building email letter");
         emailBuilder.setContent(body);
-        emailBuilder.setAddress(complaint.getSender().getEmail());
+        emailBuilder.setAddress(complaint.getCustomer().getEmail());
         emailBuilder.setSubject(subject);
-        log.info("Sending email");
+        log.debug("Sending email");
         mailSender.send(emailBuilder.generateMessage());
     }
 
-     String replace(String html) {
-        log.info("Start replacing values in email template file");
-        return html.replaceAll("%name%", complaint.getSender().getName())
-                .replaceAll("%surname%", complaint.getSender().getSurname())
-                .replaceAll("%complaintName%", complaint.getName())
-                .replaceAll("%complaintStatus%", complaint.getStatus());
+    private String replace(String html, Complaint complaint) {
+        log.debug("Start replacing values in email template file");
+        return html.replaceAll("%name%", complaint.getCustomer().getFirstName())
+                .replaceAll("%surname%", complaint.getCustomer().getLastName())
+                .replaceAll("%complaintName%", complaint.getTitle())
+                .replaceAll("%complaintStatus%", complaint.getStatus().getName());
     }
 
     public String getAcceptComplaint() {
@@ -134,11 +135,4 @@ public class ComplaintMailSender extends AbstractEmailSender {
         this.feedback = feedback;
     }
 
-    public Complaint getComplaint() {
-        return complaint;
-    }
-
-    public void setComplaint(Complaint complaint) {
-        this.complaint = complaint;
-    }
 }

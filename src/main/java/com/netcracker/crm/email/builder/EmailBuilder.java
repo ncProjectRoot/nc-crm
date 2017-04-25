@@ -40,7 +40,7 @@ public class EmailBuilder {
     }
 
     public MimeMessage generateMessage() throws MessagingException {
-        log.info("Generating message");
+        log.debug("Generating message");
         MimeMessage message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(username));
         message.addRecipients(Message.RecipientType.TO, addresses.toArray(new InternetAddress[addresses.size()]));
@@ -57,7 +57,7 @@ public class EmailBuilder {
     }
 
     public void setContent(Object obj, String type) throws MessagingException {
-        log.info("Setting email content");
+        log.debug("Setting email content");
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setContent(obj, type);
         multipart.addBodyPart(bodyPart);
@@ -69,7 +69,7 @@ public class EmailBuilder {
     }
 
     public void setFile(File file) throws MessagingException {
-        log.info("Setting attaching file");
+        log.debug("Setting attaching file");
         MimeBodyPart bodyPart = new MimeBodyPart();
         DataSource dataSource = new FileDataSource(file);
         bodyPart.setDataHandler(new DataHandler(dataSource));

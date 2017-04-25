@@ -1,11 +1,12 @@
 package com.netcracker.crm.email.senders;
 
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.email.builder.EmailBuilder;
-import com.netcracker.crm.email.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import javax.mail.MessagingException;
 
 
 @Service
-@Scope("prototype")
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RegSuccessEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(RegSuccessEmailSender.class);
@@ -28,8 +29,6 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     private String regSuccessTempl;
     //Subject for email letter
     private String regSuccessSubj;
-
-    private User user;
 
     @Autowired
     private EmailBuilder builder;
@@ -56,34 +55,27 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
         this.regSuccessSubj = regSuccessSubj;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void send() throws MessagingException {
-        if(user==null){
-            log.error("You must set user before sending");
+    public void send(User user) throws MessagingException {
+        if (user == null) {
+            log.error("User can't be null");
             throw new IllegalStateException("user is null");
         } else {
             String template = getTemplate(regSuccessTempl);
-            template = replace(template);
-            log.info("Start building email letter");
+            template = replace(user, template);
+            log.debug("Start building email letter");
             builder.setSubject(regSuccessSubj);
             builder.setAddress(user.getEmail());
             builder.setContent(template);
-            log.info("Sending email");
+            log.debug("Sending email");
             sender.send(builder.generateMessage());
         }
     }
 
-    String replace(String templ) {
-        log.info("Start replacing values in email template file");
+    String replace(User user, String templ) {
+        log.debug("Start replacing values in email template file");
         return templ.replaceAll("%email%", user.getEmail())
-                .replaceAll("%name%", user.getName())
-                .replaceAll("%surname%", user.getSurname());
+                .replaceAll("%name%", user.getFirstName())
+                .replaceAll("%surname%", user.getLastName());
     }
 }

@@ -1,7 +1,5 @@
 package com.netcracker.crm;
 
-import com.netcracker.crm.email.entity.Complaint;
-import com.netcracker.crm.email.entity.User;
 import com.netcracker.crm.email.senders.ComplaintMailSender;
 import com.netcracker.crm.email.senders.MassiveEmailSender;
 import org.junit.Test;

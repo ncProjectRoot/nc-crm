@@ -9,6 +9,7 @@ import java.time.LocalDate;
  */
 public class Complaint {
     private Long id;
+    private String title;
     private String message;
     private ComplaintStatus status;
     private LocalDate date;
@@ -73,5 +74,13 @@ public class Complaint {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

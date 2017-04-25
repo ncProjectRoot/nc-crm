@@ -26,8 +26,8 @@ public abstract class AbstractEmailSender {
 
     private static final String TEMPL_PACKAGE = "email";
 
-    public String getTemplate(String template ) {
-        log.info("Getting email template " + TEMPL_PACKAGE + "/" + template );
+    public String getTemplate(String template) {
+        log.debug("Getting email template " + TEMPL_PACKAGE + "/" + template);
         StringBuilder stringBuilder = new StringBuilder();
         File file = new File(getClass().getClassLoader().getResource(TEMPL_PACKAGE + "/" + template).getFile());
         if (file.exists()) {
@@ -40,14 +40,9 @@ public abstract class AbstractEmailSender {
                 e.printStackTrace();
             }
         } else {
-            log.error("File " + TEMPL_PACKAGE + "/" + template + " not found" );
+            log.error("File " + TEMPL_PACKAGE + "/" + template + " not found");
         }
         return stringBuilder.toString();
     }
-
-
-    public abstract void send()  throws MessagingException;
-
-    abstract String replace(String templ);
 
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +21,15 @@ import javax.mail.MessagingException;
  */
 
 @Service
-@Scope("prototype")
-public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class OrderStatusEmailSender extends AbstractEmailSender {
 
-    private static final Logger log = LoggerFactory.getLogger(ChangeStatusServiceEmailSender.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderStatusEmailSender.class);
 
     //Name of template html file for email letter
-    private String changeStatusServiceTempl ;
+    private String orderStatusTempl;
     //Subject for email letter
-    private String changeStatusServiceSubj ;
-
-    private User user;
-    private Order order;
+    private String orderStatusSubj;
 
     @Autowired
     private EmailBuilder builder;
@@ -39,64 +37,45 @@ public class ChangeStatusServiceEmailSender extends AbstractEmailSender {
     @Autowired
     private JavaMailSenderImpl sender;
 
-    public User getUser() {
-        return user;
+    public String getOrderStatusTempl() {
+        return orderStatusTempl;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOrderStatusTempl(String orderStatusTempl) {
+        this.orderStatusTempl = orderStatusTempl;
     }
 
-    public Order getOrder() {
-        return order;
+    public String getOrderStatusSubj() {
+        return orderStatusSubj;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderStatusSubj(String orderStatusSubj) {
+        this.orderStatusSubj = orderStatusSubj;
     }
 
-    public String getChangeStatusServiceTempl() {
-        return changeStatusServiceTempl;
+    public OrderStatusEmailSender() {
     }
 
-    public void setChangeStatusServiceTempl(String changeStatusServiceTempl) {
-        this.changeStatusServiceTempl = changeStatusServiceTempl;
-    }
-
-    public String getChangeStatusServiceSubj() {
-        return changeStatusServiceSubj;
-    }
-
-    public void setChangeStatusServiceSubj(String changeStatusServiceSubj) {
-        this.changeStatusServiceSubj = changeStatusServiceSubj;
-    }
-
-    public ChangeStatusServiceEmailSender() {
-    }
-
-    public void send() throws MessagingException {
-        if(user==null){
-            log.error("You must set user before sending");
-            throw new IllegalStateException("user is null");
-        } else if (order==null){
-            log.error("You must set order before sending");
+    public void send(Order order) throws MessagingException {
+        if (order == null) {
+            log.error("Order can't be null");
             throw new IllegalStateException("order is null");
         } else {
-            String template = getTemplate(changeStatusServiceTempl);
-            template = replace(template);
+            String template = getTemplate(orderStatusTempl);
+            template = replace(template, order);
             log.debug("Start building  email letter");
-            builder.setSubject(changeStatusServiceSubj);
-            builder.setAddress(user.getEmail());
+            builder.setSubject(orderStatusSubj);
+            builder.setAddress(order.getCustomer().getEmail());
             builder.setContent(template);
             log.debug("Sending email");
             sender.send(builder.generateMessage());
         }
     }
 
-   String replace(String templ) {
+    private String replace(String templ, Order order) {
         log.debug("Start replacing values in email template file");
-        return templ.replaceAll("%name%", user.getFirstName())
-                .replaceAll("%surname%", user.getLastName())
+        return templ.replaceAll("%name%", order.getCustomer().getFirstName())
+                .replaceAll("%surname%", order.getCustomer().getLastName())
                 .replaceAll("%service%", order.getProduct().getTitle())
                 .replaceAll("%status%", order.getStatus().name());
     }
