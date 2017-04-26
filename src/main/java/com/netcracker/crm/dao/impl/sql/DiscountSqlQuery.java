@@ -20,6 +20,14 @@ public final class DiscountSqlQuery {
             "WHERE id=:id;";
 
 
-    public static final String SQL_DELETE_DISCOUNT = "DELETE from discount " +
+    public static final String SQL_DELETE_DISCOUNT = "DELETE FROM discount " +
             "WHERE id=?;";
+
+    public static final String SQL_FIND_DISC_BY_ID = "SELECT id, title, percentage, description, date_start, date_finish " +
+            "FROM discount " +
+            "WHERE id=:id;";
+
+    public static final String SQL_FIND_DISC_BY_TITLE = "SELECT id, title, percentage, description, date_start, date_finish " +
+            "FROM discount " +
+            "WHERE lower(title)=lower(:title);";
 }

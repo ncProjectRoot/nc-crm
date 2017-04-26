@@ -2,6 +2,8 @@ package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Discount;
 
+import java.util.List;
+
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -18,6 +20,6 @@ public interface DiscountDao {
 
     Discount findById(Long id);
 
-    Discount findByTitle(String title);
+    List<Discount> findByTitle(String title);
 
 }

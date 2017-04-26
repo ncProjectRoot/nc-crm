@@ -3,6 +3,8 @@ package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Group;
 
+import java.util.List;
+
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -20,5 +22,5 @@ public interface GroupDao {
 
     Group findById(Long id);
 
-    Group findByName(String name);
+    List<Group> findByName(String name);
 }
