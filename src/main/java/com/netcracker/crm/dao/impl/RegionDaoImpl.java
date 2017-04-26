@@ -7,8 +7,7 @@ import com.netcracker.crm.domain.model.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -106,12 +105,14 @@ public class RegionDaoImpl implements RegionDao {
     public Region findById(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, id);
-        return namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID, params, new RegionExtractor());
+        return namedJdbcTemplate.queryForObject(SQL_FIND_REGION_BY_ID, params, new RegionRowMapper());
     }
 
     @Override
     public List<Region> findByName(String name) {
-        return null;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_REGION_NAME, "%" + name + "%");
+        return namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionRowMapper());
     }
 
     @Autowired
@@ -131,35 +132,32 @@ public class RegionDaoImpl implements RegionDao {
         }
     }
 
-    private static final class RegionExtractor implements ResultSetExtractor<Region> {
+    private static final class RegionRowMapper implements RowMapper<Region> {
         @Override
-        public Region extractData(ResultSet rs) throws SQLException, DataAccessException {
-            log.debug("Start extracting data");
-            Region region = null;
-            while (rs.next()) {
-                region = new Region();
-                region.setId(rs.getLong(PARAM_REGION_ID));
-                region.setName(rs.getString(PARAM_REGION_NAME));
+        public Region mapRow(ResultSet rs, int rowNum) throws SQLException {
+            log.debug("Start mapping data");
+            Region region = new Region();
+            region.setId(rs.getLong(PARAM_REGION_ID));
+            region.setName(rs.getString(PARAM_REGION_NAME));
 
-                Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
-                if (discountId > 0) {
-                    Discount discount = new Discount();
-                    discount.setId(discountId);
-                    discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
-                    discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
-                    discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
-                    Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
-                    if (dateFromDB != null) {
-                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_FINISH);
-                    if (dateFromDB != null) {
-                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    region.setDiscount(discount);
+            Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
+            if (discountId > 0) {
+                Discount discount = new Discount();
+                discount.setId(discountId);
+                discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
+                discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
+                discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
+                Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
+                if (dateFromDB != null) {
+                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
                 }
+                dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_FINISH);
+                if (dateFromDB != null) {
+                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
+                }
+                region.setDiscount(discount);
             }
-            log.debug("End extracting data");
+            log.debug("End mapping data");
             return region;
         }
     }

@@ -29,5 +29,6 @@ public final class DiscountSqlQuery {
 
     public static final String SQL_FIND_DISC_BY_TITLE = "SELECT id, title, percentage, description, date_start, date_finish " +
             "FROM discount " +
-            "WHERE lower(title)=lower(:title);";
+            "WHERE UPPER(title) like UPPER(:title) " +
+            "ORDER BY id;";
 }

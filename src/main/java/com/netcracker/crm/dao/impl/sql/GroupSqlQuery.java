@@ -41,7 +41,8 @@ public final class GroupSqlQuery {
             "FROM \"group\" g " +
             "LEFT JOIN discount d " +
             "ON d.id = g.discount_id " +
-            "WHERE lower(g.name)=lower(:name);";
+            "WHERE UPPER(g.name) like UPPER(:name) " +
+            "ORDER BY g.id;";
 
 }
 

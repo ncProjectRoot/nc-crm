@@ -36,7 +36,8 @@ public final class RegionSqlQuery {
             "FROM region r " +
             "LEFT JOIN discount d " +
             "ON d.id = r.discount_id " +
-            "WHERE lower(r.name)=lower(:name);";
+            "WHERE UPPER(r.name) like UPPER(:name) " +
+            "ORDER BY r.id;";
 
 
 }
