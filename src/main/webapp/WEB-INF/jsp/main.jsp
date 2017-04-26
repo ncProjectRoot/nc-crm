@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css">
 
     <link href="${springCss}" rel="stylesheet"/>
     <link href="${springIcon}" rel="icon"/>
@@ -58,7 +59,7 @@
                             <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png"
                                  alt="" class="circle responsive-img z-depth-1">
                             <div>
-                                <span class="black-text title">${user.lastName} ${user.firstName}</span>
+                                <span class="black-text title" id="user-name">${user.lastName} ${user.firstName}</span>
                             </div>
                         </a>
                         <ul id='dropdown-user' class='dropdown-content'>
@@ -119,6 +120,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
     <script src="${springScript}"></script>
 </div>
 </body>

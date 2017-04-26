@@ -20,6 +20,11 @@ public class AdminController {
         return "home";
     }
 
+    @GetMapping("/dashboard")
+    public String dashboard(Map<String, Object> model) {
+        return "dashboardAdmin";
+    }
+
     @GetMapping("/createUser")
     public String createUser(Map<String, Object> model) {
         return "createUser";
@@ -30,8 +35,4 @@ public class AdminController {
         return "profile";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Map<String, Object> model) {
-        return "dashboard";
-    }
 }
