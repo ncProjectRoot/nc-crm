@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-
     .content-body-wrapper {
         width: 100%;
         display: flex;
@@ -20,42 +19,34 @@
         width: calc(100% - 30px);
     }
 
-    .ct-label {
+    .orders-dounut-chart .ct-label {
         fill: #fff;
         color: #fff;
         font-size: 0.75rem;
         line-height: 1;
     }
 
-    .region-errors-chart .ct-series:nth-child(3n-1) .ct-slice-donut-solid {
-        fill: #d50000;
+    .orders-dounut-chart .ct-series:nth-child(4n-1) .ct-slice-donut-solid {
+        fill: #9c27b0;
     }
 
-    .region-errors-chart .ct-series:nth-child(3n-2) .ct-slice-donut-solid {
-        fill: #f44336;
+    .orders-dounut-chart .ct-series:nth-child(4n-2) .ct-slice-donut-solid {
+        fill: #4a148c;
     }
 
-    .region-errors-chart .ct-series:nth-child(3n-3) .ct-slice-donut-solid {
-        fill: #b71c1c;
+    .orders-dounut-chart .ct-series:nth-child(4n-3) .ct-slice-donut-solid {
+        fill: #aa00ff;
     }
 
-    .region-orders-chart .ct-series:nth-child(3n-1) .ct-slice-donut-solid {
-        fill: #00c853
+    .orders-dounut-chart .ct-series:nth-child(4n-4) .ct-slice-donut-solid {
+        fill: #7b1fa2;
     }
 
-    .region-orders-chart .ct-series:nth-child(3n-2) .ct-slice-donut-solid {
-        fill: #1b5e20;
-    }
-
-    .region-orders-chart .ct-series:nth-child(3n-3) .ct-slice-donut-solid {
-        fill: #4caf50;
-    }
-
-    .region-profit-chart {
+    .orders-chart {
         margin-top: 50px;
     }
 
-    .region-profit-chart span {
+    .orders-chart span {
         color: #000;
     }
 
@@ -65,50 +56,53 @@
     }
 </style>
 <div class="content-body-wrapper">
+
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
-            <span class="card-title activator">Region Errors<i class="material-icons right">more_vert</i></span>
-            <div class="region-errors-chart-wrapper">
-                <div class="region-errors-chart"></div>
+            <span class="card-title activator">Orders (1 week) Bar<i class="material-icons right">more_vert</i></span>
+            <div class="orders-bar-chart-wrapper">
+                <div class="orders-bar-chart"></div>
             </div>
         </div>
         <div class="card-action">
-            <a href="#">See all information</a>
+            <a href="#search">See all information</a>
         </div>
         <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Region Error Information<i class="material-icons right">close</i></span>
-            <p>Kiev - 20</p>
-            <p>Lviv - 15</p>
-            <p>Zhitomir - 40</p>
+            <span class="card-title grey-text text-darken-4">Orders (1 week) Information<i class="material-icons right">close</i></span>
+            <p>10m/s - 800000</p>
+            <p>500m/s - 1200000</p>
+            <p>1000m/s - 1400000</p>
+            <p>2000m/s - 1300000</p>
         </div>
     </div>
 
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
-            <span class="card-title activator">Region Orders<i class="material-icons right">more_vert</i></span>
-            <div class="region-orders-chart-wrapper">
-                <div class="region-orders-chart"></div>
+            <span class="card-title activator">Orders (1 week) Dounut<i class="material-icons right">more_vert</i></span>
+            <div class="orders-dounut-chart">
+                <div class="orders-dounut-chart"></div>
             </div>
         </div>
         <div class="card-action">
-            <a href="#">See all information</a>
+            <a href="#search">See all information</a>
         </div>
         <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Region Orders Information<i class="material-icons right">close</i></span>
-            <p>Kiev - 99</p>
-            <p>Lviv - 12</p>
-            <p>Zhitomir - 5</p>
+            <span class="card-title grey-text text-darken-4">Orders (1 week) Information<i class="material-icons right">close</i></span>
+            <p>10m/s - 800000</p>
+            <p>500m/s - 1200000</p>
+            <p>1000m/s - 1400000</p>
+            <p>2000m/s - 1300000</p>
         </div>
     </div>
     <div class="content-element z-depth-1 element12 card">
         <div class="card-content">
-            <span class="card-title activator">Profit in the regions</span>
-            <div class="region-profit-chart-wrapper">
-                <div class="region-profit-chart"></div>
+            <span class="card-title activator">All orders (1 week)</span>
+            <div class="orders-chart-wrapper">
+                <div class="orders-chart"></div>
             </div>
         </div>
         <div class="card-action">
-            <a href="#profit">Read more</a>
+            <a href="#search">See all information</a>
         </div>
     </div>
     <div class="footer"></div>
@@ -142,6 +136,24 @@
         }
     };
 
+    var animateBar = function (data) {
+        if (data.type === 'bar') {
+            data.element.attr({
+                style: 'stroke-width: 30px'
+            });
+            seq++;
+            data.element.animate({
+                opacity: {
+                    begin: seq * durations,
+                    dur: durations,
+                    from: 0,
+                    to: 1,
+                    easing: 'easeOutQuart'
+                }
+            })
+        }
+    };
+
     var lineOption = {
         low: 0,
         height: 300,
@@ -152,23 +164,16 @@
         showLabel: true
     };
 
+    var barOption = {
+        stackBars: true,
+        height: 300,
+        chartPadding: 20
+    };
+
 
     var animateLine = function (data) {
         seq++;
         if (data.type === 'line' || data.type === 'area') {
-            if (data.type === 'line') {
-                var obj = $(data.element._node);
-                var index = "a";
-                lineLabels.forEach(function (element, i, array) {
-                    if (obj.is(".ct-series-" + index + " .ct-line")) {
-                        obj.tooltip({
-                            delay: 0
-                        });
-                        obj.attr("data-tooltip", element);
-                    }
-                    index = String.fromCharCode(index.charCodeAt(0) + 1);
-                });
-            }
             data.element.animate({
                 opacity: {
                     begin: seq * delays + 1000,
@@ -202,25 +207,24 @@
                 }
             })
         }
-    }
+    };
 
-    new Chartist.Pie('.region-errors-chart', {
-        labels: ['Kiev', 'Lviv', 'Zhitomir'],
-        series: [20, 15, 40],
-    }, pieOptions).on('draw', animatePie);
-
-    new Chartist.Pie('.region-orders-chart', {
-        labels: ['Kiev', 'Lviv', 'Zhitomir'],
-        series: [99, 12, 5],
-    }, pieOptions).on('draw', animatePie);
-
-    var lineLabels = ["Kiev", "Lviv", "Zhitomir"];
-    new Chartist.Line('.region-profit-chart', {
-        labels: [1, 2, 3, 4, 5, 6, 7],
+    new Chartist.Bar('.orders-bar-chart', {
+        labels: ['10m/s', '500m/s', '1000m/s', '2000m/s'],
         series: [
-            [12, 9, 7, 8, 5, 5, 7],
-            [2, 1, 3.5, 7, 3, 4, 5],
-            [1, 3, 4, 5, 6, 6, 5]
+            [800000, 1200000, 1400000, 1300000]
+        ]
+    }, barOption).on('draw', animateBar);
+
+    new Chartist.Pie('.orders-dounut-chart', {
+        labels: ['10m/s', '500m/s', '1000m/s', '2000m/s'],
+        series: [800000, 1200000, 1400000, 1300000]
+    }, pieOptions).on('draw', animatePie);
+
+    new Chartist.Line('.orders-chart', {
+        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        series: [
+            [12, 9, 7, 8, 5, 5, 7]
         ]
     }, lineOption).on('created', function () {
         seq = 0;
