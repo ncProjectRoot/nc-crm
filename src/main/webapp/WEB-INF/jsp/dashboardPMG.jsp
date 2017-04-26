@@ -59,7 +59,7 @@
 
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
-            <span class="card-title activator">Orders (1 week) Bar<i class="material-icons right">more_vert</i></span>
+            <span class="card-title activator">Complaints (1 week) Bar<i class="material-icons right">more_vert</i></span>
             <div class="orders-bar-chart-wrapper">
                 <div class="orders-bar-chart"></div>
             </div>
@@ -68,17 +68,17 @@
             <a href="#search">See all information</a>
         </div>
         <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Orders (1 week) Information<i class="material-icons right">close</i></span>
-            <p>10m/s - 800000</p>
-            <p>500m/s - 1200000</p>
-            <p>1000m/s - 1400000</p>
-            <p>2000m/s - 1300000</p>
+            <span class="card-title grey-text text-darken-4">Complaints (1 week) Information<i class="material-icons right">close</i></span>
+            <p>internet - 12</p>
+            <p>TV - 51</p>
+            <p>3G - 7</p>
+            <p>2G - 43</p>
         </div>
     </div>
 
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
-            <span class="card-title activator">Orders (1 week) Dounut<i class="material-icons right">more_vert</i></span>
+            <span class="card-title activator">Complaints (1 week) Dounut<i class="material-icons right">more_vert</i></span>
             <div class="orders-dounut-chart">
                 <div class="orders-dounut-chart"></div>
             </div>
@@ -87,16 +87,16 @@
             <a href="#search">See all information</a>
         </div>
         <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Orders (1 week) Information<i class="material-icons right">close</i></span>
-            <p>10m/s - 800000</p>
-            <p>500m/s - 1200000</p>
-            <p>1000m/s - 1400000</p>
-            <p>2000m/s - 1300000</p>
+            <span class="card-title grey-text text-darken-4">Complaints (1 week) Information<i class="material-icons right">close</i></span>
+            <p>internet - 12</p>
+            <p>TV - 51</p>
+            <p>3G - 7</p>
+            <p>2G - 43</p>
         </div>
     </div>
     <div class="content-element z-depth-1 element12 card">
         <div class="card-content">
-            <span class="card-title activator">All orders (1 week)</span>
+            <span class="card-title activator">All complaints (1 week)</span>
             <div class="orders-chart-wrapper">
                 <div class="orders-chart"></div>
             </div>
@@ -209,22 +209,23 @@
         }
     };
 
+
     new Chartist.Bar('.orders-bar-chart', {
-        labels: ['10m/s', '500m/s', '1000m/s', '2000m/s'],
+        labels: ['internet', 'TV', '3G', '2G'],
         series: [
-            [800000, 1200000, 1400000, 1300000]
+            [12, 51, 7, 43]
         ]
     }, barOption).on('draw', animateBar);
 
     new Chartist.Pie('.orders-dounut-chart', {
-        labels: ['10m/s', '500m/s', '1000m/s', '2000m/s'],
-        series: [800000, 1200000, 1400000, 1300000]
+        labels: ['internet', 'TV', '3G', '2G'],
+        series: [12, 51, 7, 43]
     }, pieOptions).on('draw', animatePie);
 
     new Chartist.Line('.orders-chart', {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         series: [
-            [12, 9, 7, 8, 5, 5, 7]
+            [3, 2, 9, 4, 4, 4, 2]
         ]
     }, lineOption).on('created', function () {
         seq = 0;

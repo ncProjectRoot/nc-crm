@@ -20,4 +20,9 @@ public class PMGController {
         return "home";
     }
 
+    @GetMapping("/dashboard")
+    public String dashboard(Map<String, Object> model) {
+        return "dashboardPMG";
+    }
+
 }

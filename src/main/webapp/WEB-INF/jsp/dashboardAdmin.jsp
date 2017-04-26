@@ -116,7 +116,7 @@
 <script>
     var seq = 0,
         delays = 80,
-        durations = 500;
+        durations = 250;
 
     var pieOptions = {
         height: 300,
