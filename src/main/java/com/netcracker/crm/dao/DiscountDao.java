@@ -14,6 +14,8 @@ public interface DiscountDao {
 
     long delete(Long id);
 
+    long delete(Discount discount);
+
     Discount findById(Long id);
 
     Discount findByTitle(String title);

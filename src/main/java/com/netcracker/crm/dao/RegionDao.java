@@ -15,6 +15,8 @@ public interface RegionDao {
 
     long delete(Long id);
 
+    long delete(Region region);
+
     Region findById(Long id);
 
     Region findByName(String name);

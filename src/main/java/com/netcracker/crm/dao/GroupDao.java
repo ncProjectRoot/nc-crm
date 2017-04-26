@@ -16,6 +16,8 @@ public interface GroupDao {
 
     long delete(Long id);
 
+    long delete(Group group);
+
     Group findById(Long id);
 
     Group findByName(String name);

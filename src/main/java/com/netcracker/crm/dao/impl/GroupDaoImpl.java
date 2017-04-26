@@ -56,12 +56,48 @@ public class GroupDaoImpl implements GroupDao {
 
     @Override
     public long update(Group group) {
-        return 0;
+        Long groupId = group.getId();
+        if (groupId == null) {
+            return -1L;
+        }
+        Long discountId = getDiscountId(group.getDiscount());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_ID, groupId)
+                .addValue(PARAM_GROUP_NAME, group.getName())
+                .addValue(PARAM_GROUP_DISCOUNT, discountId);
+        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_GROUP, params);
+        if (affectedRows == 0) {
+            log.error("Group has not been updated");
+            return -1L;
+        } else {
+            log.info("Group with id " + groupId + " was successfully updated");
+            return affectedRows;
+        }
     }
 
     @Override
     public long delete(Long id) {
-        return 0;
+        if (id < 1) {
+            return -1L;
+        }
+        int deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_GROUP, id);
+        if (deletedRows == 0) {
+            log.error("Group has not been deleted");
+            return -1L;
+        } else {
+            log.info("Group with id " + id + " was successfully deleted");
+            return deletedRows;
+        }
+    }
+
+    @Override
+    public long delete(Group group) {
+        Long groupId = group.getId();
+        if (groupId == null) {
+            return -1L;
+        } else {
+            return delete(groupId);
+        }
     }
 
     @Override

@@ -16,6 +16,13 @@ public final class GroupSqlQuery {
             "VALUES" +
             "(:name, :discount_id);";
 
+    public static final String SQL_UPDATE_GROUP = "UPDATE \"group\" " +
+            "SET name=:name, discount_id=:discount_id " +
+            "WHERE id=:id;";
+
+    public static final String SQL_DELETE_GROUP = "DELETE from \"group\" " +
+            "WHERE id=?;";
+
 }
 
 
