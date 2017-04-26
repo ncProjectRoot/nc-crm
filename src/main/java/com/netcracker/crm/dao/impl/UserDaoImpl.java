@@ -78,6 +78,24 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public long updatePassword(User user, String password) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_EMAIL, user.getEmail())
+                .addValue(PARAM_USER_PASSWORD, password);
+        long count = namedJdbcTemplate.update(SQL_USERS_UPDATE_PASSWORD, params);
+        if (count == 1) {
+            log.info("Update user password with email : " + user.getEmail() + " is successful");
+            return count;
+        } else if (count > 1) {
+            log.error("Update more 1 rows");
+            return count;
+        } else {
+            log.info("Update 0 rows");
+            return count;
+        }
+    }
+
+    @Override
     public long update(User user) {
         return 0;
     }

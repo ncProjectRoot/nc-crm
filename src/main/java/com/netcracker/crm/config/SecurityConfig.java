@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        if (env.acceptsProfiles("!production")) {
+        if (env.acceptsProfiles("production")) {
             auth.inMemoryAuthentication().withUser("admin@gmail.com").password("123456").roles("ADMIN");
             auth.inMemoryAuthentication().withUser("csr@gmail.com").password("123456").roles("CSR");
             auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/forgot**").permitAll()
                 .antMatchers("/").access("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
                 .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/pmg/**").access("hasRole('ROLE_PMG')")

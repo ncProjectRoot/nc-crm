@@ -41,7 +41,6 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
 
     @Override
     public void updateFailAttempts(String userMail) {
-
         UserAttempts user = getUserAttempts(userMail);
         if (user == null) {
             if (isUserExists(userMail)) {
@@ -56,7 +55,6 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
                 throw new LockedException("User Account is locked!");
             }
         }
-
     }
 
     @Override
@@ -69,7 +67,8 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
     @Override
     public boolean resetFailAttempts(String userMail) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_EMAIL, userMail);
+                .addValue(PARAM_EMAIL, userMail)
+                .addValue(PARAM_LAST_MODIFIED, new Date());
         int count = namedJdbcTemplate.update(SQL_USER_ATTEMPTS_RESET_ATTEMPTS, params);
         if (count == 1) {
             log.info("Reset UserAttempts with email : " + userMail + " is successful");

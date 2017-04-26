@@ -24,6 +24,6 @@ public final class UserAttemptSqlQuery {
             "SET attempts = attempts + 1, last_modified = :last_modified " +
             "WHERE email = :email";
     public static final String SQL_USER_ATTEMPTS_RESET_ATTEMPTS = "UPDATE user_attempts " +
-            "SET attempts = 0, last_modified = null " +
+            "SET attempts = 0, last_modified = :last_modified " +
             "WHERE email = :email";
 }

@@ -45,6 +45,21 @@
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
+    <%--<h1>Recovery password</h1>--%>
+    <%--<form action="/forgot" method="post">--%>
+        <%--<div class='input-field col s12'>--%>
+            <%--<input class='validate' type='email' name='email' id="email1"/>--%>
+            <%--<label for='email1'>Enter your email</label>--%>
+        <%--</div>--%>
+        <%--<div class='input-field col s12'>--%>
+            <%--<input class='validate' type='text' name='phone' id="phone"/>--%>
+            <%--<label for='phone'>Enter your phone</label>--%>
+        <%--</div>--%>
+        <%--<div class='col s12'>--%>
+            <%--<button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>Recovery</button>--%>
+        <%--</div>--%>
+        <%--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>--%>
+    <%--</form>--%>
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
