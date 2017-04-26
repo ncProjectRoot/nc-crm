@@ -115,6 +115,11 @@ public class RegionDaoImpl implements RegionDao {
         return namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionRowMapper());
     }
 
+    @Override
+    public long getCount() {
+        return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_REGION_COUNT, Long.class);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

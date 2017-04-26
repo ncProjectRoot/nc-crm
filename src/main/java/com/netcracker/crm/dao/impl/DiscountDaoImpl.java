@@ -113,6 +113,11 @@ public class DiscountDaoImpl implements DiscountDao {
         return namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountRowMapper());
     }
 
+    @Override
+    public long getCount() {
+        return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_DISC_COUNT, Long.class);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

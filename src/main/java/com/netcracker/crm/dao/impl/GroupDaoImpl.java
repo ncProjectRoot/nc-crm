@@ -120,6 +120,11 @@ public class GroupDaoImpl implements GroupDao {
         return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupRowMapper());
     }
 
+    @Override
+    public long getCount() {
+        return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_GROUP_COUNT, Long.class);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

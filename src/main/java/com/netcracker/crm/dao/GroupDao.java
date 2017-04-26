@@ -23,4 +23,6 @@ public interface GroupDao {
     Group findById(Long id);
 
     List<Group> findByName(String name);
+
+    long getCount();
 }

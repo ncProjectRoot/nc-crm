@@ -39,5 +39,8 @@ public final class RegionSqlQuery {
             "WHERE UPPER(r.name) like UPPER(:name) " +
             "ORDER BY r.id;";
 
+    public static final String SQL_GET_REGION_COUNT = "SELECT count(*) " +
+            "FROM region;";
+
 
 }

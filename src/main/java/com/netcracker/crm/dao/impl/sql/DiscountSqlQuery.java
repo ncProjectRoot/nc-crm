@@ -31,4 +31,7 @@ public final class DiscountSqlQuery {
             "FROM discount " +
             "WHERE UPPER(title) like UPPER(:title) " +
             "ORDER BY id;";
+
+    public static final String SQL_GET_DISC_COUNT = "SELECT count(*) " +
+            "FROM discount;";
 }

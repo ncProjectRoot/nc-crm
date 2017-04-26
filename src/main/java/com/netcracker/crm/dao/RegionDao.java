@@ -23,4 +23,6 @@ public interface RegionDao {
 
     List<Region> findByName(String name);
 
+    long getCount();
+
 }

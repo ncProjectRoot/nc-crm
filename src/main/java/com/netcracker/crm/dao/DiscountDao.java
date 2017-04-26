@@ -22,4 +22,6 @@ public interface DiscountDao {
 
     List<Discount> findByTitle(String title);
 
+    long getCount();
+
 }

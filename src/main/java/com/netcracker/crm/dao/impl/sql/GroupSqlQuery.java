@@ -44,6 +44,9 @@ public final class GroupSqlQuery {
             "WHERE UPPER(g.name) like UPPER(:name) " +
             "ORDER BY g.id;";
 
+    public static final String SQL_GET_GROUP_COUNT = "SELECT count(*) " +
+            "FROM \"group\";";
+
 }
 
 
