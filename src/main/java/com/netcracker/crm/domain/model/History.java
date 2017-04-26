@@ -14,6 +14,7 @@ public class History {
     private String descChangeStatus;
     private Order order;
     private Complaint complaint;
+    private Product product;
 
     public History() {
     }
@@ -64,5 +65,13 @@ public class History {
 
     public void setComplaint(Complaint complaint) {
         this.complaint = complaint;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }
