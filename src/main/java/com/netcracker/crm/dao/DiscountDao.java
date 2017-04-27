@@ -2,6 +2,7 @@ package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Discount;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,5 +24,7 @@ public interface DiscountDao {
     List<Discount> findByTitle(String title);
 
     long getCount();
+
+    List<Discount> findByDate(LocalDate fromDate, LocalDate toDate);
 
 }

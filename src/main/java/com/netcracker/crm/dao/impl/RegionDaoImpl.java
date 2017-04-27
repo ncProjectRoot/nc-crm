@@ -103,16 +103,22 @@ public class RegionDaoImpl implements RegionDao {
 
     @Override
     public Region findById(Long id) {
+        log.debug("Start finding region by id");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, id);
-        return namedJdbcTemplate.queryForObject(SQL_FIND_REGION_BY_ID, params, new RegionRowMapper());
+        Region region = namedJdbcTemplate.queryForObject(SQL_FIND_REGION_BY_ID, params, new RegionRowMapper());
+        log.debug("End finding region by id");
+        return region;
     }
 
     @Override
     public List<Region> findByName(String name) {
+        log.debug("Start finding regions by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_NAME, "%" + name + "%");
-        return namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionRowMapper());
+        List<Region> list = namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionRowMapper());
+        log.debug("End finding regions by name");
+        return list;
     }
 
     @Override

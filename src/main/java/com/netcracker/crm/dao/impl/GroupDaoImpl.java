@@ -108,16 +108,22 @@ public class GroupDaoImpl implements GroupDao {
 
     @Override
     public Group findById(Long id) {
+        log.debug("Start finding group by id");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, id);
-        return namedJdbcTemplate.queryForObject(SQL_FIND_GROUP_BY_ID, params, new GroupRowMapper());
+        Group group = namedJdbcTemplate.queryForObject(SQL_FIND_GROUP_BY_ID, params, new GroupRowMapper());
+        log.debug("End finding group by id");
+        return group;
     }
 
     @Override
     public List<Group> findByName(String name) {
+        log.debug("Start finding groups by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, "%" + name + "%");
-        return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupRowMapper());
+        List<Group> list = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupRowMapper());
+        log.debug("End finding groups by name");
+        return list;
     }
 
     @Override

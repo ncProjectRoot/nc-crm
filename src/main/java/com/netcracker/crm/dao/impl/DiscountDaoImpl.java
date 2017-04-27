@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.DiscountSqlQuery.*;
@@ -101,21 +102,38 @@ public class DiscountDaoImpl implements DiscountDao {
 
     @Override
     public Discount findById(Long id) {
+        log.debug("Start finding discount by id");
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_DISCOUNT_ID, id);
-        return namedJdbcTemplate.queryForObject(SQL_FIND_DISC_BY_ID, params, new DiscountRowMapper());
+        Discount discount = namedJdbcTemplate.queryForObject(SQL_FIND_DISC_BY_ID, params, new DiscountRowMapper());
+        log.debug("End finding discount by id");
+        return discount;
     }
 
     @Override
     public List<Discount> findByTitle(String title) {
+        log.debug("Start finding discounts by title");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_TITLE, "%" + title + "%");
-        return namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountRowMapper());
+        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountRowMapper());
+        log.debug("End finding discounts by title");
+        return list;
     }
 
     @Override
     public long getCount() {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_DISC_COUNT, Long.class);
+    }
+
+    @Override
+    public List<Discount> findByDate(LocalDate fromDate, LocalDate toDate) {
+        log.debug("Start finding discounts by date");
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_DISCOUNT_DATE_START, fromDate);
+        params.addValue(PARAM_DISCOUNT_DATE_FINISH, toDate);
+        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_DATE, params, new DiscountRowMapper());
+        log.debug("End finding discounts by date");
+        return list;
     }
 
     @Autowired
