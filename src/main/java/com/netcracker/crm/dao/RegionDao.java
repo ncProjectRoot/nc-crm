@@ -2,6 +2,8 @@ package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Region;
 
+import java.util.List;
+
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -15,8 +17,12 @@ public interface RegionDao {
 
     long delete(Long id);
 
+    long delete(Region region);
+
     Region findById(Long id);
 
-    Region findByName(String name);
+    List<Region> findByName(String name);
+
+    long getCount();
 
 }

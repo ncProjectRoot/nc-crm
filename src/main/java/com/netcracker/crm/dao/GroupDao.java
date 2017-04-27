@@ -3,6 +3,8 @@ package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Group;
 
+import java.util.List;
+
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -16,7 +18,11 @@ public interface GroupDao {
 
     long delete(Long id);
 
+    long delete(Group group);
+
     Group findById(Long id);
 
-    Group findByName(String name);
+    List<Group> findByName(String name);
+
+    long getCount();
 }
