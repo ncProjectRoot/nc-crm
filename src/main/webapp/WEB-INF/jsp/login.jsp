@@ -40,12 +40,38 @@
         </div>
         <div class="col s12">
             <label class="label-forgot center-align">
-                <a class='blue-grey-text lighten-2' href='#!'><b>Forgot Password?</b></a>
+                <a class='modal-trigger waves-effect waves-light blue-grey-text lighten-2' href='#modal1'><b>Forgot Password?</b></a>
             </label>
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </div>
+
+<div id="modal1" class="modal">
+    <form action="/forgot" method="post">
+        <div class="modal-content">
+            <h4>Recovery password</h4>
+
+            <div class='input-field'>
+                <input class='validate' type='email' name='email' id="email1"/>
+                <label for='email1'>Enter your email</label>
+            </div>
+            <div class='input-field'>
+                <input class='validate' type='tel' name='phone' id="phone"/>
+                <label for='phone'>Enter your phone</label>
+            </div>
+
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+        </div>
+        <div class="modal-footer">
+            <div class='col s12'>
+                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>Recovery</button>
+            </div>
+        </div>
+    </form>
+</div>
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
 <script>
@@ -63,6 +89,8 @@
             if (hash) el.prop('action', el.prop('action') + '#' + unescape(hash.substring(1)));
             return true;
         });
+
+        $('.modal-trigger').leanModal();
     });
 </script>
 </body>

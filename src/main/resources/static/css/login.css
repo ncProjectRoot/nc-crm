@@ -17,7 +17,7 @@ body .form-wrapper {
     display: inline-block;
     padding: 32px 48px 0 48px;
     border: 1px solid #EEE;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     max-width: 400px;
 }
 
@@ -46,4 +46,8 @@ body .form-wrapper {
 
 .label-forgot a:hover {
     color: #004d40 !important;
+}
+
+body .modal {
+    width: 35%;
 }
