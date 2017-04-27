@@ -67,15 +67,15 @@ public class HistoryDaoImpl implements HistoryDao{
     public long create(History history) {        
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
-        //Long productId = getProductId(history.getProduct());
+        Long productId = getProductId(history.getProduct());
         
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                //.addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
-                //.addValue(PARAM_HISTORY_PRODUCT_ID, productId)
+                .addValue(PARAM_HISTORY_PRODUCT_ID, productId)
                 ;
         
         KeyHolder keys = new GeneratedKeyHolder();
@@ -124,16 +124,16 @@ public class HistoryDaoImpl implements HistoryDao{
     public boolean update(History history) {
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
-        //Long productId = getProductId(history.getProduct());
+        Long productId = getProductId(history.getProduct());
         
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_ID, history.getId())
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                //.addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
-                //.addValue(PARAM_HISTORY_PRODUCT_ID, productId)
+                .addValue(PARAM_HISTORY_PRODUCT_ID, productId)
                 ;
         
         KeyHolder keys = new GeneratedKeyHolder();
