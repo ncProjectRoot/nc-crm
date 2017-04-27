@@ -6,4 +6,6 @@ package com.netcracker.crm.domain.model;
  * @since 24.04.2017
  */
 public interface Status {
+    public Long getId();
+    public String getName();
 }
