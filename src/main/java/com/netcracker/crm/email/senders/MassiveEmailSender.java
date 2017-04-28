@@ -5,19 +5,18 @@ import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Properties;
 
 /**
  * Created by Pasha on 14.04.2017.
  */
 @Service
-@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MassiveEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(MassiveEmailSender.class);
@@ -26,8 +25,9 @@ public class MassiveEmailSender extends AbstractEmailSender {
 
     @Autowired
     private JavaMailSenderImpl mailSender;
+    @Qualifier("emailProps")
     @Autowired
-    private EmailBuilder emailBuilder;
+    private Properties properties;
 
     public void send(EmailMap emailMap) throws MessagingException {
         checkEmailMap(emailMap);
@@ -67,6 +67,8 @@ public class MassiveEmailSender extends AbstractEmailSender {
 
 
     private MimeMessage createMessage(String[] to, String subject, String bodyText) throws MessagingException {
+        EmailBuilder emailBuilder = new EmailBuilder();
+        emailBuilder.setProperties(properties);
         log.debug("Start building email letter");
         emailBuilder.setAllAddress(to);
         emailBuilder.setSubject(subject);

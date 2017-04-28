@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @ConfigurationProperties("mail.templates")
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:email.properties")
 public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);

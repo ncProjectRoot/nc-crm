@@ -6,12 +6,12 @@ import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.util.Properties;
 
 /**
  * @author Melnyk_Dmytro
@@ -21,7 +21,6 @@ import javax.mail.MessagingException;
 
 
 @Service
-@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RegSuccessEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(RegSuccessEmailSender.class);
@@ -31,8 +30,9 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     //Subject for email letter
     private String regSuccessSubj;
 
+    @Qualifier("emailProps")
     @Autowired
-    private EmailBuilder builder;
+    private Properties properties;
 
     @Autowired
     private JavaMailSenderImpl sender;
@@ -62,12 +62,14 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
         User user = getUser(emailMap);
 
         String template = replace(user, getTemplate(regSuccessTempl));
+        EmailBuilder emailBuilder = new EmailBuilder();
+        emailBuilder.setProperties(properties);
         log.debug("Start building email letter");
-        builder.setSubject(regSuccessSubj);
-        builder.setAddress(user.getEmail());
-        builder.setContent(template);
+        emailBuilder.setSubject(regSuccessSubj);
+        emailBuilder.setAddress(user.getEmail());
+        emailBuilder.setContent(template);
         log.debug("Sending email");
-        sender.send(builder.generateMessage());
+        sender.send(emailBuilder.generateMessage());
     }
 
     private User getUser(EmailMap emailMap) {

@@ -5,7 +5,6 @@ import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.email.senders.EmailMap;
 import com.netcracker.crm.email.senders.EmailType;
 import com.netcracker.crm.email.senders.RecoveryPasswordSender;
-import com.netcracker.crm.exception.IncorrectEmailElementException;
 import com.netcracker.crm.exception.NoSuchEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

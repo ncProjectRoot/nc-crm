@@ -7,12 +7,12 @@ import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.util.Properties;
 
 /**
  * @author Melnyk_Dmytro
@@ -21,7 +21,6 @@ import javax.mail.MessagingException;
  */
 
 @Service
-@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class OrderStatusEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(OrderStatusEmailSender.class);
@@ -31,8 +30,9 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
     //Subject for email letter
     private String orderStatusSubj;
 
+    @Qualifier("emailProps")
     @Autowired
-    private EmailBuilder builder;
+    private Properties properties;
 
     @Autowired
     private JavaMailSenderImpl sender;
@@ -61,12 +61,15 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
         Order order = getOrder(emailMap);
 
         String template = replace(getTemplate(orderStatusTempl), order);
+        EmailBuilder emailBuilder = new EmailBuilder();
+        System.out.println(properties);
+        emailBuilder.setProperties(properties);
         log.debug("Start building  email letter");
-        builder.setSubject(orderStatusSubj);
-        builder.setAddress(order.getCustomer().getEmail());
-        builder.setContent(template);
+        emailBuilder.setSubject(orderStatusSubj);
+        emailBuilder.setAddress(order.getCustomer().getEmail());
+        emailBuilder.setContent(template);
         log.debug("Sending email");
-        sender.send(builder.generateMessage());
+        sender.send(emailBuilder.generateMessage());
     }
 
     private Order getOrder(EmailMap emailMap) {

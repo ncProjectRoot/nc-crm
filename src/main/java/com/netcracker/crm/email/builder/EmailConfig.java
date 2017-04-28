@@ -1,13 +1,12 @@
 package com.netcracker.crm.email.builder;
 
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
 
 import java.util.Properties;
 
@@ -16,7 +15,7 @@ import java.util.Properties;
  */
 @Configuration
 @ConfigurationProperties("mail")
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:email.properties")
 public class EmailConfig {
     private String username ;
     private String password ;
@@ -36,8 +35,12 @@ public class EmailConfig {
         return javaMailSender;
     }
 
-    private Properties getProperties(){
+    @Qualifier("emailProps")
+    @Bean
+    public Properties getProperties(){
         Properties props = new Properties();
+        props.put("mail.username", username);
+        props.put("mail.password", password);
         props.put("mail.smtp.auth", auth);
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", port);
@@ -45,13 +48,6 @@ public class EmailConfig {
         props.put("mail.smtp.socketFactory.class", socketFactoryClass);
         return props;
     }
-
-    @Bean
-    @Scope("prototype")
-    public EmailBuilder emailBuilder(){
-        return new EmailBuilder(username, password, getProperties());
-    }
-
 
     public String getUsername() {
         return username;

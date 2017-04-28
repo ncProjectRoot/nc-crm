@@ -22,19 +22,15 @@ public class EmailBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBuilder.class);
 
-    private String username = null;
-    private String password = null;
+    private String username = "mail.username";
+    private String password = "mail.password";
 
     private String subject = "";
     private List<InternetAddress> addresses;
     private Multipart multipart;
     private Properties properties;
 
-    public EmailBuilder(String username, String password, Properties properties) {
-
-        this.username = username;
-        this.password = password;
-        this.properties = properties;
+    public EmailBuilder() {
         addresses = new ArrayList<>();
         multipart = new MimeMultipart();
     }
@@ -42,13 +38,11 @@ public class EmailBuilder {
     public MimeMessage generateMessage() throws MessagingException {
         log.debug("Generating message");
         MimeMessage message = new MimeMessage(getSession());
-        message.setFrom(new InternetAddress(username));
+        message.setFrom(new InternetAddress(properties.getProperty(username)));
         message.addRecipients(Message.RecipientType.TO, addresses.toArray(new InternetAddress[addresses.size()]));
         message.setSubject(subject);
         message.setContent(multipart);
         multipart = new MimeMultipart();
-        addresses.clear();
-        subject = "";
         return message;
     }
 
@@ -81,7 +75,7 @@ public class EmailBuilder {
     private Session getSession() {
         return Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
+                return new PasswordAuthentication(properties.getProperty(username), properties.getProperty(password));
             }
         });
     }
@@ -110,5 +104,9 @@ public class EmailBuilder {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }
