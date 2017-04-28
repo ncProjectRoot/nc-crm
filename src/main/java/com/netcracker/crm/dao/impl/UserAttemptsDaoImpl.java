@@ -11,8 +11,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.stereotype.Repository;
 
@@ -32,10 +31,14 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
     private static final int MAX_ATTEMPTS = 3;
     private static final Logger log = LoggerFactory.getLogger(UserAttemptsDaoImpl.class);
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private SimpleJdbcInsert insert;
 
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
+        this.insert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_ATTEMPTS_TABLE)
+                .usingGeneratedKeyColumns(PARAM_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -113,16 +116,9 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
                 .addValue(PARAM_EMAIL, userMail)
                 .addValue(PARAM_ATTEMPTS, 1)
                 .addValue(PARAM_LAST_MODIFIED, new Date());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int affectedRows = namedJdbcTemplate.update(SQL_USER_ATTEMPTS_INSERT, params, keyHolder);
-        if (affectedRows == 1) {
-            Long id = (Long) keyHolder.getKeys().get(PARAM_ID);
-            log.info("UserAttempts with id: " + id + " is successfully created.");
-            return id;
-        } else {
-            log.error("UserAttempts is not created.");
-            return -1L;
-        }
+        long id = insert.executeAndReturnKey(params).longValue();
+        log.info("UserAttempts with id: " + id + " is successfully created.");
+        return id;
     }
 
     private long update(String userMail) {
@@ -141,7 +137,6 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
 
 
     private static final class UserAttemptsWithDetailExtractor implements ResultSetExtractor<UserAttempts> {
-
         @Override
         public UserAttempts extractData(ResultSet rs) throws SQLException, DataAccessException {
             UserAttempts userAttempts = null;
