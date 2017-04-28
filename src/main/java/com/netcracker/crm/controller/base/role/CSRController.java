@@ -1,4 +1,4 @@
-package com.netcracker.crm.controller.base.entity;
+package com.netcracker.crm.controller.base.role;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +11,9 @@ import java.util.Map;
  * @since 25.04.2017
  */
 
-@RequestMapping(value = "/ROLE_PMG")
+@RequestMapping(value = "/ROLE_CSR")
 @Controller
-public class PMGController {
+public class CSRController {
 
     @GetMapping("/")
     public String main(Map<String, Object> model) {
@@ -22,7 +22,7 @@ public class PMGController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboardPMG";
+        return "dashboardCSR";
     }
 
 }

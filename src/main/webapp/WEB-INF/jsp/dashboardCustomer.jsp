@@ -91,6 +91,10 @@
         width: 100%
     }
 </style>
+<div class="content-header z-depth-1 valign-wrapper">
+    <i class="black-text material-icons">dashboard</i>
+    <span>Dashboard</span>
+</div>
 <div class="content-body-wrapper">
 
     <div class="content-element z-depth-1 element12 card">
