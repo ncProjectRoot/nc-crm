@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class Order {
     private Long id;
     private LocalDate date;
+    private LocalDate preferedDate;
     private OrderStatus status;
     private User customer;
     private Product product;
@@ -64,5 +65,13 @@ public class Order {
 
     public void setCsr(User csr) {
         this.csr = csr;
+    }
+
+    public LocalDate getPreferedDate() {
+        return preferedDate;
+    }
+
+    public void setPreferedDate(LocalDate preferedDate) {
+        this.preferedDate = preferedDate;
     }
 }

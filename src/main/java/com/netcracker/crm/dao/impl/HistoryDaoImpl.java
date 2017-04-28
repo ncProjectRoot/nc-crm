@@ -5,26 +5,8 @@
  */
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.ComplaintDao;
-import com.netcracker.crm.dao.HistoryDao;
-import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.dao.StatusDao;
-import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
-import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.ComplaintStatus;
-import com.netcracker.crm.domain.model.History;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.ProductStatus;
-import com.netcracker.crm.domain.model.Status;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.sql.DataSource;
+import com.netcracker.crm.dao.*;
+import com.netcracker.crm.domain.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +20,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
 
 /**
  *

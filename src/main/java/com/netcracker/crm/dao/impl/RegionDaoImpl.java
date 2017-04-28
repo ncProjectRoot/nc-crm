@@ -16,10 +16,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,14 +171,8 @@ public class RegionDaoImpl implements RegionDao {
                     discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
                     discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
                     discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
-                    Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
-                    if (dateFromDB != null) {
-                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_FINISH);
-                    if (dateFromDB != null) {
-                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
+                    discount.setActive(rs.getBoolean(PARAM_REGION_DISC_ACTIVE));
+
                     region.setDiscount(discount);
                 }
                 regions.add(region);

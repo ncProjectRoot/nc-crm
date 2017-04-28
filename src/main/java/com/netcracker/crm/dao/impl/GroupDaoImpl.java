@@ -12,14 +12,12 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +35,7 @@ public class GroupDaoImpl implements GroupDao {
     @Autowired
     private DiscountDao discountDao;
 
+    private SimpleJdbcInsert insert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
@@ -51,17 +50,10 @@ public class GroupDaoImpl implements GroupDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT, discountId);
-        KeyHolder keys = new GeneratedKeyHolder();
-        int insertedRows = namedJdbcTemplate.update(SQL_CREATE_GROUP, params, keys);
-        if (insertedRows < 1) {
-            log.error("Group doesn't created.");
-            return -1L;
-        } else {
-            Long id = (Long) keys.getKeys().get(PARAM_GROUP_ID);
-            log.info("Group with id: " + id + " is successfully created.");
-            return id;
-        }
+        long id = insert.executeAndReturnKey(params).longValue();
 
+        log.info("Group with id: " + id + " is successfully created.");
+        return id;
     }
 
     @Override
@@ -148,6 +140,9 @@ public class GroupDaoImpl implements GroupDao {
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
+        this.insert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_GROUP_TABLE)
+                .usingGeneratedKeyColumns(PARAM_GROUP_ID);
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -176,14 +171,7 @@ public class GroupDaoImpl implements GroupDao {
                     discount.setPercentage(rs.getDouble(PARAM_GROUP_DISC_PERC));
                     discount.setTitle(rs.getString(PARAM_GROUP_DISC_TITLE));
                     discount.setDescription(rs.getString(PARAM_GROUP_DISC_DESC));
-                    Timestamp dateFromDB = rs.getTimestamp(PARAM_GROUP_DISC_START);
-                    if (dateFromDB != null) {
-                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    dateFromDB = rs.getTimestamp(PARAM_GROUP_DISC_FINISH);
-                    if (dateFromDB != null) {
-                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
+                    discount.setActive(rs.getBoolean(PARAM_GROUP_DISC_ACTIVE));
                     group.setDiscount(discount);
                 }
                 groups.add(group);

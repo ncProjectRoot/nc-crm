@@ -14,11 +14,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +43,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 .addValue(PARAM_DISCOUNT_TITLE, discount.getTitle())
                 .addValue(PARAM_DISCOUNT_PERCENTAGE, discount.getPercentage())
                 .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription())
-                .addValue(PARAM_DISCOUNT_DATE_START, discount.getDateStart())
-                .addValue(PARAM_DISCOUNT_DATE_FINISH, discount.getDateFinish());
+                .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive());
         Long id = discountInsert.executeAndReturnKey(params).longValue();
         discount.setId(id);
         log.info("Discount with id: " + id + " is successfully created.");
@@ -65,8 +61,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 .addValue(PARAM_DISCOUNT_TITLE, discount.getTitle())
                 .addValue(PARAM_DISCOUNT_PERCENTAGE, discount.getPercentage())
                 .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription())
-                .addValue(PARAM_DISCOUNT_DATE_START, discount.getDateStart())
-                .addValue(PARAM_DISCOUNT_DATE_FINISH, discount.getDateFinish());
+                .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive());
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_DISCOUNT, params);
         if (affectedRows == 0) {
             log.error("Discount has not been updated");
@@ -133,17 +128,6 @@ public class DiscountDaoImpl implements DiscountDao {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_DISC_COUNT, Long.class);
     }
 
-    @Override
-    public List<Discount> findByDate(LocalDate fromDate, LocalDate toDate) {
-        log.debug("Start finding discounts by date");
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(PARAM_DISCOUNT_DATE_START, fromDate);
-        params.addValue(PARAM_DISCOUNT_DATE_FINISH, toDate);
-        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_DATE, params, new DiscountExtractor());
-        log.debug("End finding discounts by date");
-        return list;
-    }
-
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -163,14 +147,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 discount.setDescription(rs.getString(PARAM_DISCOUNT_DESCRIPTION));
                 discount.setPercentage(rs.getDouble(PARAM_DISCOUNT_PERCENTAGE));
                 discount.setTitle(rs.getString(PARAM_DISCOUNT_TITLE));
-                Timestamp dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_START);
-                if (dateFromDB != null) {
-                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                }
-                dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_FINISH);
-                if (dateFromDB != null) {
-                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                }
+                discount.setActive(rs.getBoolean(PARAM_DISCOUNT_ACTIVE));
                 discounts.add(discount);
             }
             log.debug("End extracting data");

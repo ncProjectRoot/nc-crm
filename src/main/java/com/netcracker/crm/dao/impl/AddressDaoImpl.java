@@ -33,6 +33,7 @@ public class AddressDaoImpl implements AddressDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
                 .addValue(PARAM_ADDRESS_LONGITUDE, address.getLongitude())
+                .addValue(PARAM_ADDRESS_DETAILS, address.getDetails())
                 .addValue(PARAM_ADDRESS_REGION_ID, getRegionId(address));
 
         Long newId = addressInsert.executeAndReturnKey(params).longValue();

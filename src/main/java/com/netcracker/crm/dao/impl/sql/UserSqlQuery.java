@@ -7,7 +7,7 @@ public final class UserSqlQuery {
     private UserSqlQuery() {
     }
 
-    public static final String PARAM_USER_TABLE = "user";
+    public static final String PARAM_USER_TABLE = "users";
     public static final String PARAM_USER_ID = "id";
     public static final String PARAM_USER_EMAIL = "email";
     public static final String PARAM_USER_PHONE = "phone";
@@ -33,7 +33,7 @@ public final class UserSqlQuery {
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name," +
             "enable, account_non_locked, user_role_id, role.name role_name," +
             "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
-            "FROM \"user\" u " +
+            "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
             "LEFT JOIN organization org ON org_id = org.id " +
             "LEFT JOIN address addr ON address_id = addr.id " +
@@ -42,18 +42,18 @@ public final class UserSqlQuery {
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
             "enable, account_non_locked, user_role_id, role.name role_name, " +
             "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
-            "FROM \"user\" u  " +
+            "FROM users u  " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
             "LEFT JOIN organization org ON org_id = org.id " +
             "LEFT JOIN address addr ON address_id = addr.id " +
             "WHERE u.id = :id;";
-    public static final String SQL_CREATE_USER = "INSERT INTO \"user\"" +
+    public static final String SQL_CREATE_USER = "INSERT INTO users" +
             "(password, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, " +
             "address_id, user_role_id, org_id) " +
             "VALUES (:password, :first_name, :middle_name, :last_name, :phone, :email, :enable, :account_non_locked, " +
             ":contact_person, :address_id, :user_role_id, :org_id);";
 
-    public static final String SQL_USERS_UPDATE_LOCKED = "UPDATE \"user\" " +
+    public static final String SQL_USERS_UPDATE_LOCKED = "UPDATE users " +
             "SET account_non_locked = :account_non_locked " +
             "WHERE email = :email;";
     public static final String SQL_USERS_COUNT = "SELECT count(*) " +

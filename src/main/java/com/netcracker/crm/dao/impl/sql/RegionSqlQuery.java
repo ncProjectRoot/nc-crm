@@ -14,8 +14,7 @@ public final class RegionSqlQuery {
     public static final String PARAM_REGION_DISC_TITLE = "d_title";
     public static final String PARAM_REGION_DISC_PERC = "d_perc";
     public static final String PARAM_REGION_DISC_DESC = "d_desc";
-    public static final String PARAM_REGION_DISC_START = "d_start";
-    public static final String PARAM_REGION_DISC_FINISH = "d_finish";
+    public static final String PARAM_REGION_DISC_ACTIVE = "d_active";
 
     public static final String SQL_UPDATE_REGION = "UPDATE region " +
             "SET name=:name, discount_id=:discount_id " +

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,14 +124,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
                     discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
                     discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
                     discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
-                    Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
-                    if (dateFromDB != null) {
-                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
-                    if (dateFromDB != null) {
-                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
+                    discount.setActive(rs.getBoolean(PARAM_RG_DISC_ACTIVE));
                     region.setDiscount(discount);
                 }
                 regions.add(region);
@@ -158,14 +150,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
                     discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
                     discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
                     discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
-                    Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
-                    if (dateFromDB != null) {
-                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
-                    dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
-                    if (dateFromDB != null) {
-                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                    }
+                    discount.setActive(rs.getBoolean(PARAM_RG_DISC_ACTIVE));
                     group.setDiscount(discount);
                 }
                 groups.add(group);

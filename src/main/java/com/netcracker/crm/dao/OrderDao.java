@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author YARUS
  */
-public interface OrderDao extends CrudDao<Order{
+public interface OrderDao extends CrudDao<Order>{
     List<Order> findAllByDate(Date date);
     
     List<Order> findAllByProductId(Long id);

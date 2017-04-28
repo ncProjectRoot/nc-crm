@@ -11,6 +11,7 @@ public final class AddressSqlQuery {
     public static final String PARAM_ADDRESS_ID = "id";
     public static final String PARAM_ADDRESS_LATITUDE = "latitude";
     public static final String PARAM_ADDRESS_LONGITUDE = "longitude";
+    public static final String PARAM_ADDRESS_DETAILS = "details";
     public static final String PARAM_ADDRESS_REGION_ID = "region_id";
 
 }
