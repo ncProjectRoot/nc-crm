@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -42,7 +43,7 @@ public class UserDaoImpl implements UserDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public long create(User user) {
+    public Long create(User user) {
         Long addressId = getAddressId(user.getAddress());
         Long orgId = getOrgId(user.getOrganization());
 
@@ -78,13 +79,18 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public long update(User user) {
-        return 0;
+    public Long update(User user) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public long delete(Long id) {
-        return 0;
+    public Long delete(Long id) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Long delete(User object) {
+        throw new NotImplementedException();
     }
 
     @Override

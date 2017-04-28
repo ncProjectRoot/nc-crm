@@ -13,15 +13,7 @@ import java.util.List;
  *
  * @author YARUS
  */
-public interface ComplaintDao {
-    long create(Complaint complaint);
-
-    long update(Complaint complaint);
-
-    long delete(Long id);
-
-    Complaint findById(Long id);
-
+public interface ComplaintDao extends CrudDao<Complaint>{
     Complaint findByTitle(String title);
     
     List<Complaint> findAllByDate(Date date);

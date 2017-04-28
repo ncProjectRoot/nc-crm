@@ -10,18 +10,7 @@ import java.util.List;
  * @version 1.0
  * @since 26.04.2017
  */
-public interface GroupDao {
-
-    long create(Group group);
-
-    long update(Group group);
-
-    long delete(Long id);
-
-    long delete(Group group);
-
-    Group findById(Long id);
-
+public interface GroupDao extends CrudDao<Group>{
     List<Group> findByName(String name);
 
     long getCount();

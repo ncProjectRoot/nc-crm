@@ -41,7 +41,7 @@ public class RegionDaoImpl implements RegionDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public long create(Region region) {
+    public Long create(Region region) {
         if (region.getId() != null) {
             return -1L;
         }
@@ -56,7 +56,7 @@ public class RegionDaoImpl implements RegionDao {
 
 
     @Override
-    public long update(Region region) {
+    public Long update(Region region) {
         Long regionId = region.getId();
         if (regionId == null) {
             return -1L;
@@ -66,7 +66,7 @@ public class RegionDaoImpl implements RegionDao {
                 .addValue(PARAM_REGION_ID, regionId)
                 .addValue(PARAM_REGION_NAME, region.getName())
                 .addValue(PARAM_REGION_DISCOUNT, discountId);
-        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_REGION, params);
+        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_REGION, params);
         if (affectedRows == 0) {
             log.error("Region has not been updated");
             return -1L;
@@ -77,13 +77,13 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public long delete(Long id) {
+    public Long delete(Long id) {
         if (id < 1) {
             return -1L;
         }
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_REGION_ID, id);
-        int deletedRows = namedJdbcTemplate.update(SQL_DELETE_REGION, params);
+        long deletedRows = namedJdbcTemplate.update(SQL_DELETE_REGION, params);
         if (deletedRows == 0) {
             log.error("Region has not been deleted");
             return -1L;
@@ -94,7 +94,7 @@ public class RegionDaoImpl implements RegionDao {
     }
 
     @Override
-    public long delete(Region region) {
+    public Long delete(Region region) {
         Long regionId = region.getId();
         if (regionId == null) {
             return -1L;

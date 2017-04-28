@@ -37,6 +37,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -71,7 +72,7 @@ public class HistoryDaoImpl implements HistoryDao{
     }
     
     @Override
-    public long create(History history) {        
+    public Long create(History history) {
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
         Long productId = getProductId(history.getProduct());
@@ -128,7 +129,7 @@ public class HistoryDaoImpl implements HistoryDao{
     }
     
     @Override
-    public boolean update(History history) {
+    public Long update(History history) {
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
         Long productId = getProductId(history.getProduct());
@@ -144,30 +145,35 @@ public class HistoryDaoImpl implements HistoryDao{
                 ;
         
         KeyHolder keys = new GeneratedKeyHolder();
-        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_HISTORY, params, keys);
+        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_HISTORY, params, keys);
                 
         if (affectedRows > 0) {           
             log.info("History with id: " + history.getId() + " is successfully updated.");
-            return true;
+            return affectedRows;
         } else {
             log.error("History doesn't updated.");
-            return false;
+            return affectedRows;
         }
     }
 
     @Override
-    public boolean delete(Long id) {
+    public Long delete(Long id) {
         SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_HISTORY_ID, id);
         
-        int affectedRows = namedJdbcTemplate.update(SQL_DELETE_HISTORY, params);
+        long affectedRows = namedJdbcTemplate.update(SQL_DELETE_HISTORY, params);
                 
         if (affectedRows > 0) {                        
             log.info("History with id: " + id + " is successfully deleted.");
-            return true;
+            return affectedRows;
         } else {
             log.error("History doesn't deleted.");
-            return false;
+            return affectedRows;
         }
+    }
+
+    @Override
+    public Long delete(History object) {
+        throw new NotImplementedException();
     }
 
     @Override

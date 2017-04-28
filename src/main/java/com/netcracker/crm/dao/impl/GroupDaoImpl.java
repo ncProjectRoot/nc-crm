@@ -17,7 +17,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -41,7 +40,7 @@ public class GroupDaoImpl implements GroupDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public long create(Group group) {
+    public Long create(Group group) {
         if (group.getId() != null) {
             return -1L;
         }
@@ -63,7 +62,7 @@ public class GroupDaoImpl implements GroupDao {
     }
 
     @Override
-    public long update(Group group) {
+    public Long update(Group group) {
         Long groupId = group.getId();
         if (groupId == null) {
             return -1L;
@@ -73,7 +72,7 @@ public class GroupDaoImpl implements GroupDao {
                 .addValue(PARAM_GROUP_ID, groupId)
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT, discountId);
-        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_GROUP, params);
+        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_GROUP, params);
         if (affectedRows == 0) {
             log.error("Group has not been updated");
             return -1L;
@@ -84,13 +83,13 @@ public class GroupDaoImpl implements GroupDao {
     }
 
     @Override
-    public long delete(Long id) {
+    public Long delete(Long id) {
         if (id < 1) {
             return -1L;
         }
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, id);
-        int deletedRows = namedJdbcTemplate.update(SQL_DELETE_GROUP, params);
+        long deletedRows = namedJdbcTemplate.update(SQL_DELETE_GROUP, params);
         if (deletedRows == 0) {
             log.error("Group has not been deleted");
             return -1L;
@@ -101,7 +100,7 @@ public class GroupDaoImpl implements GroupDao {
     }
 
     @Override
-    public long delete(Group group) {
+    public Long delete(Group group) {
         Long groupId = group.getId();
         if (groupId == null) {
             return -1L;

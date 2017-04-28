@@ -10,17 +10,7 @@ import java.util.List;
  * @version 1.0
  * @since 26.04.2017
  */
-public interface DiscountDao {
-    long create(Discount discount);
-
-    long update(Discount discount);
-
-    long delete(Long id);
-
-    long delete(Discount discount);
-
-    Discount findById(Long id);
-
+public interface DiscountDao extends CrudDao<Discount> {
     List<Discount> findByTitle(String title);
 
     long getCount();

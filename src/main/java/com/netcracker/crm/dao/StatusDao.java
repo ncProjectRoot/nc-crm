@@ -11,14 +11,7 @@ import com.netcracker.crm.domain.model.Status;
  *
  * @author YARUS
  */
-public interface StatusDao {
-    long create(Status order);
-
-    long update(Status order);
-
-    long delete(Long id);
-
-    Status findById(Long id);
+public interface StatusDao extends CrudDao<Status>{
 
     Status findByName(String name);
 }

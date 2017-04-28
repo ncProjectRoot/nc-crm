@@ -5,17 +5,13 @@ import com.netcracker.crm.domain.model.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import static com.netcracker.crm.dao.impl.sql.AddressSqlQuery.*;
 
@@ -48,23 +44,35 @@ public class AddressDaoImpl implements AddressDao {
 
     private Long getRegionId(Address address) {
         //TODO: implement auto defining region for each address
-        return 1L;
+        throw new NotImplementedException();
     }
 
     @Override
     public Long update(Address address) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
     public Long delete(Long id) {
-        return null;
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Long delete(Address object) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Address findById(Long id) {
+        throw new NotImplementedException();
     }
 
     @Override
     public Address findByName(String name) {
-        return null;
+        throw new NotImplementedException();
     }
+
+
 
     @Autowired
     public void setDataSource(DataSource dataSource) {

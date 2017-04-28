@@ -13,15 +13,7 @@ import java.util.List;
  *
  * @author YARUS
  */
-public interface HistoryDao {
-    long create(History history);
-
-    boolean update(History history);
-
-    boolean delete(Long id);
-
-    History findById(Long id);
-    
+public interface HistoryDao extends CrudDao<History> {
     List<History> findAllByDate(Date date);
 
     List<History> findAllByOrderId(Long id);

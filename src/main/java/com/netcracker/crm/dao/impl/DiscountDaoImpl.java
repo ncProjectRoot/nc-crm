@@ -38,7 +38,7 @@ public class DiscountDaoImpl implements DiscountDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public long create(Discount discount) {
+    public Long create(Discount discount) {
         if (discount.getId() != null) {
             return -1L;
         }
@@ -55,7 +55,7 @@ public class DiscountDaoImpl implements DiscountDao {
     }
 
     @Override
-    public long update(Discount discount) {
+    public Long update(Discount discount) {
         Long discountId = discount.getId();
         if (discountId == null) {
             return -1L;
@@ -67,7 +67,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription())
                 .addValue(PARAM_DISCOUNT_DATE_START, discount.getDateStart())
                 .addValue(PARAM_DISCOUNT_DATE_FINISH, discount.getDateFinish());
-        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_DISCOUNT, params);
+        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_DISCOUNT, params);
         if (affectedRows == 0) {
             log.error("Discount has not been updated");
             return -1L;
@@ -78,11 +78,11 @@ public class DiscountDaoImpl implements DiscountDao {
     }
 
     @Override
-    public long delete(Long id) {
+    public Long delete(Long id) {
         if (id < 1) {
             return -1L;
         }
-        int deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_DISCOUNT, id);
+        long deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_DISCOUNT, id);
         if (deletedRows == 0) {
             log.error("Discount has not been deleted");
             return -1L;
@@ -93,7 +93,7 @@ public class DiscountDaoImpl implements DiscountDao {
     }
 
     @Override
-    public long delete(Discount discount) {
+    public Long delete(Discount discount) {
         Long discountId = discount.getId();
         if (discountId == null) {
             return -1L;

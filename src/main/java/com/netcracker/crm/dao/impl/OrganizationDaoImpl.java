@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -46,12 +47,22 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Long update(Organization org) {
-        return 0L;
+        throw new NotImplementedException();
     }
 
     @Override
     public Long delete(Long id) {
-        return 0L;
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Long delete(Organization object) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Organization findById(Long id) {
+        throw new NotImplementedException();
     }
 
     @Override
