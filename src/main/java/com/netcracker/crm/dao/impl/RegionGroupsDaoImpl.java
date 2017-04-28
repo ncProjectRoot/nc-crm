@@ -57,7 +57,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     public long delete(Region region, Group group) {
         Long regionId = region.getId();
         Long groupId = group.getId();
-        if (regionId == null||groupId==null) {
+        if (regionId == null || groupId == null) {
             return -1L;
         } else {
             return delete(regionId, groupId);
@@ -118,20 +118,23 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
                 Region region = new Region();
                 region.setId(rs.getLong(PARAM_RG_REGION_ID));
                 region.setName(rs.getString(PARAM_RG_REGION_NAME));
-                Discount discount = new Discount();
-                discount.setId(rs.getLong(PARAM_RG_REGION_DISC_ID));
-                discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
-                discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
-                discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
-                Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
-                if (dateFromDB != null) {
-                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                Long discountId = rs.getLong(PARAM_RG_REGION_DISC_ID);
+                if (discountId > 0) {
+                    Discount discount = new Discount();
+                    discount.setId(discountId);
+                    discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
+                    discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
+                    discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
+                    Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
+                    if (dateFromDB != null) {
+                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
+                    if (dateFromDB != null) {
+                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    region.setDiscount(discount);
                 }
-                dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
-                if (dateFromDB != null) {
-                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                }
-                region.setDiscount(discount);
                 regions.add(region);
             }
             log.debug("End extracting data");
@@ -148,20 +151,23 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
                 Group group = new Group();
                 group.setId(rs.getLong(PARAM_RG_GROUP_ID));
                 group.setName(rs.getString(PARAM_RG_GROUP_NAME));
-                Discount discount = new Discount();
-                discount.setId(rs.getLong(PARAM_RG_GROUP_DISC_ID));
-                discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
-                discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
-                discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
-                Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
-                if (dateFromDB != null) {
-                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                Long discountId = rs.getLong(PARAM_RG_GROUP_DISC_ID);
+                if (discountId > 0) {
+                    Discount discount = new Discount();
+                    discount.setId(discountId);
+                    discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
+                    discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
+                    discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
+                    Timestamp dateFromDB = rs.getTimestamp(PARAM_RG_DISC_START);
+                    if (dateFromDB != null) {
+                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
+                    if (dateFromDB != null) {
+                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    group.setDiscount(discount);
                 }
-                dateFromDB = rs.getTimestamp(PARAM_RG_DISC_FINISH);
-                if (dateFromDB != null) {
-                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                }
-                group.setDiscount(discount);
                 groups.add(group);
             }
             log.debug("End extracting data");
