@@ -38,5 +38,5 @@ public final class DiscountSqlQuery {
     public static final String SQL_FIND_DISC_BY_DATE = "SELECT id, title, percentage, description, date_start, date_finish " +
             "FROM discount " +
             "WHERE date_start>=:date_start and date_finish<=:date_finish " +
-            "ORDER BY date_start, date_finish;";
+            "ORDER BY date_start, date_finish, id;";
 }

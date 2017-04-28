@@ -7,7 +7,8 @@ import com.netcracker.crm.domain.model.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.RegionSqlQuery.*;
@@ -106,7 +108,13 @@ public class RegionDaoImpl implements RegionDao {
         log.debug("Start finding region by id");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, id);
-        Region region = namedJdbcTemplate.queryForObject(SQL_FIND_REGION_BY_ID, params, new RegionRowMapper());
+        List<Region> regions = namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID, params, new RegionExtractor());
+        Region region = null;
+        if (regions.size() != 1) {
+            //TODO throw SomeException
+        } else {
+            region = regions.get(0);
+        }
         log.debug("End finding region by id");
         return region;
     }
@@ -116,7 +124,7 @@ public class RegionDaoImpl implements RegionDao {
         log.debug("Start finding regions by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_NAME, "%" + name + "%");
-        List<Region> list = namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionRowMapper());
+        List<Region> list = namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionExtractor());
         log.debug("End finding regions by name");
         return list;
     }
@@ -143,33 +151,37 @@ public class RegionDaoImpl implements RegionDao {
         }
     }
 
-    private static final class RegionRowMapper implements RowMapper<Region> {
+    private static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
         @Override
-        public Region mapRow(ResultSet rs, int rowNum) throws SQLException {
-            log.debug("Start mapping data");
-            Region region = new Region();
-            region.setId(rs.getLong(PARAM_REGION_ID));
-            region.setName(rs.getString(PARAM_REGION_NAME));
+        public List<Region> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            log.debug("Start extracting data");
+            List<Region> regions = new ArrayList<>();
+            while (rs.next()) {
+                Region region = new Region();
+                region.setId(rs.getLong(PARAM_REGION_ID));
+                region.setName(rs.getString(PARAM_REGION_NAME));
 
-            Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
-            if (discountId > 0) {
-                Discount discount = new Discount();
-                discount.setId(discountId);
-                discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
-                discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
-                discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
-                Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
-                if (dateFromDB != null) {
-                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
+                if (discountId > 0) {
+                    Discount discount = new Discount();
+                    discount.setId(discountId);
+                    discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
+                    discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
+                    discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
+                    Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
+                    if (dateFromDB != null) {
+                        discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_FINISH);
+                    if (dateFromDB != null) {
+                        discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
+                    }
+                    region.setDiscount(discount);
                 }
-                dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_FINISH);
-                if (dateFromDB != null) {
-                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-                }
-                region.setDiscount(discount);
+                regions.add(region);
             }
-            log.debug("End mapping data");
-            return region;
+            log.debug("End extracting data");
+            return regions;
         }
     }
 }

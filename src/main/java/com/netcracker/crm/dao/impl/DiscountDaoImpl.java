@@ -5,7 +5,8 @@ import com.netcracker.crm.domain.model.Discount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.DiscountSqlQuery.*;
@@ -105,7 +107,13 @@ public class DiscountDaoImpl implements DiscountDao {
         log.debug("Start finding discount by id");
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_DISCOUNT_ID, id);
-        Discount discount = namedJdbcTemplate.queryForObject(SQL_FIND_DISC_BY_ID, params, new DiscountRowMapper());
+        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_ID, params, new DiscountExtractor());
+        Discount discount = null;
+        if (discounts.size() != 1) {
+            //TODO throw SomeException
+        } else {
+            discount = discounts.get(0);
+        }
         log.debug("End finding discount by id");
         return discount;
     }
@@ -115,9 +123,9 @@ public class DiscountDaoImpl implements DiscountDao {
         log.debug("Start finding discounts by title");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_TITLE, "%" + title + "%");
-        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountRowMapper());
+        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountExtractor());
         log.debug("End finding discounts by title");
-        return list;
+        return discounts;
     }
 
     @Override
@@ -131,7 +139,7 @@ public class DiscountDaoImpl implements DiscountDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_DISCOUNT_DATE_START, fromDate);
         params.addValue(PARAM_DISCOUNT_DATE_FINISH, toDate);
-        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_DATE, params, new DiscountRowMapper());
+        List<Discount> list = namedJdbcTemplate.query(SQL_FIND_DISC_BY_DATE, params, new DiscountExtractor());
         log.debug("End finding discounts by date");
         return list;
     }
@@ -144,25 +152,29 @@ public class DiscountDaoImpl implements DiscountDao {
                 .usingGeneratedKeyColumns(PARAM_DISCOUNT_ID);
     }
 
-    private static final class DiscountRowMapper implements RowMapper<Discount> {
+    private static final class DiscountExtractor implements ResultSetExtractor<List<Discount>> {
         @Override
-        public Discount mapRow(ResultSet rs, int rowNum) throws SQLException {
-            log.debug("Start mapping data");
-            Discount discount = new Discount();
-            discount.setId(rs.getLong(PARAM_DISCOUNT_ID));
-            discount.setDescription(rs.getString(PARAM_DISCOUNT_DESCRIPTION));
-            discount.setPercentage(rs.getDouble(PARAM_DISCOUNT_PERCENTAGE));
-            discount.setTitle(rs.getString(PARAM_DISCOUNT_TITLE));
-            Timestamp dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_START);
-            if (dateFromDB != null) {
-                discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+        public List<Discount> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            log.debug("Start extracting data");
+            List<Discount> discounts = new ArrayList<>();
+            while (rs.next()) {
+                Discount discount = new Discount();
+                discount.setId(rs.getLong(PARAM_DISCOUNT_ID));
+                discount.setDescription(rs.getString(PARAM_DISCOUNT_DESCRIPTION));
+                discount.setPercentage(rs.getDouble(PARAM_DISCOUNT_PERCENTAGE));
+                discount.setTitle(rs.getString(PARAM_DISCOUNT_TITLE));
+                Timestamp dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_START);
+                if (dateFromDB != null) {
+                    discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());
+                }
+                dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_FINISH);
+                if (dateFromDB != null) {
+                    discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
+                }
+                discounts.add(discount);
             }
-            dateFromDB = rs.getTimestamp(PARAM_DISCOUNT_DATE_FINISH);
-            if (dateFromDB != null) {
-                discount.setDateFinish(dateFromDB.toLocalDateTime().toLocalDate());
-            }
-            log.debug("End mapping data");
-            return discount;
+            log.debug("End extracting data");
+            return discounts;
         }
     }
 }
