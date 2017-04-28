@@ -1,10 +1,10 @@
-package com.netcracker.crm.security;
+package com.netcracker.crm.service.security;
 
 
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.dao.impl.UserDaoImpl;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.security.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

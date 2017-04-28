@@ -7,6 +7,7 @@ public final class PersistentTokenSqlQuery {
     private PersistentTokenSqlQuery() {
     }
 
+    public static final String PARAM_TOKEN_TABLE= "persistent_logins";
     public static final String PARAM_TOKEN_USERNAME = "username";
     public static final String PARAM_TOKEN_SERIES = "series";
     public static final String PARAM_TOKEN = "token";
@@ -15,8 +16,6 @@ public final class PersistentTokenSqlQuery {
     public static final String TOKEN_BY_SERIES = "SELECT username,series,token,last_used " +
             "FROM persistent_logins " +
             "WHERE series = :series;";
-    public static final String INSERT_TOKEN = "INSERT INTO persistent_logins (username, series, token, last_used) " +
-            "VALUES(:username, :series, :token, :last_used);";
     public static final String UPDATE_TOKEN = "UPDATE persistent_logins " +
             "SET token = :token, last_used = :last_used " +
             "WHERE series = :series;";

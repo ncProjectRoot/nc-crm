@@ -59,4 +59,8 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_COUNT = "SELECT count(*) " +
             "FROM \"user\" " +
             "WHERE email = :email;";
+    public static final String SQL_USERS_UPDATE_PASSWORD = "UPDATE \"user\" " +
+            "SET password = :password " +
+            "WHERE email = :email;";
+
 }

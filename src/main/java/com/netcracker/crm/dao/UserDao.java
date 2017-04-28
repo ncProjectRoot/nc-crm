@@ -15,4 +15,6 @@ public interface UserDao {
     User findById(Long id);
 
     User findByEmail(String email);
+
+    long updatePassword(User user, String password);
 }
