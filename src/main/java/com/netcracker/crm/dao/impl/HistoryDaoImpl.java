@@ -220,9 +220,6 @@ public class HistoryDaoImpl implements HistoryDao{
                 history.setDateChangeStatus(rs.getDate(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDate());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
                 
-                // Виправить !!!! Status - це інтерфейс. ДАО також повертає посилання на інтерфейс.
-                // Зробить один спільний enum для всіх статусів, або зробить звичайний клас, що
-                // підтягується з БД, як і всі інші.
                 long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
                 Status orderStatus = OrderStatus.valueOf(orderDao.findById(statusId).getStatus().getName());
                 Status complaintStatus = ComplaintStatus.valueOf(complaintDao.findById(statusId).getStatus().getName());

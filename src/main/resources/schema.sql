@@ -27,6 +27,7 @@ ALTER TABLE address
 CREATE TABLE complaint 
     ( 
      id BIGSERIAL  NOT NULL , 
+     title VARCHAR (50)  NOT NULL ,     
      message VARCHAR (400)  NOT NULL , 
      status_id INTEGER  NOT NULL , 
      "date" TIMESTAMP(0)  NOT NULL , 
@@ -105,7 +106,7 @@ CREATE TABLE "order"
      actual_status_id INTEGER  NOT NULL , 
      user_id INTEGER  NOT NULL , 
      product_id INTEGER  NOT NULL , 
-     csr_id INTEGER  NOT NULL 
+     csr_id INTEGER 
     ) 
 ;
 
@@ -116,9 +117,6 @@ ALTER TABLE "order"
 
 ALTER TABLE "order" 
     ADD CONSTRAINT order__UN UNIQUE ( "date" , user_id ) ;
-
-ALTER TABLE "order" 
-    ADD CONSTRAINT order__UNv1 UNIQUE ( csr_id ) ;
 
 
 CREATE TABLE organization 
