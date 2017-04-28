@@ -12,17 +12,24 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.StatusDao;
 import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.domain.model.Status;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -41,16 +48,16 @@ public class HistoryDaoImpl implements HistoryDao{
     private static final Logger log = LoggerFactory.getLogger(HistoryDaoImpl.class);
     
     @Autowired
-    private ComplaintDao complaintDao;
+    private static ComplaintDao complaintDao;
     
     @Autowired
-    private OrderDao orderDao;
+    private static OrderDao orderDao;
     
     @Autowired
-    private ProductDao productDao;
+    private static ProductDao productDao;
     
     @Autowired
-    private StatusDao statusDao;
+    private static StatusDao statusDao;
     
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -67,15 +74,15 @@ public class HistoryDaoImpl implements HistoryDao{
     public long create(History history) {        
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
-        //Long productId = getProductId(history.getProduct());
+        Long productId = getProductId(history.getProduct());
         
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                //.addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
-                //.addValue(PARAM_HISTORY_PRODUCT_ID, productId)
+                .addValue(PARAM_HISTORY_PRODUCT_ID, productId)
                 ;
         
         KeyHolder keys = new GeneratedKeyHolder();
@@ -124,16 +131,16 @@ public class HistoryDaoImpl implements HistoryDao{
     public boolean update(History history) {
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
-        //Long productId = getProductId(history.getProduct());
+        Long productId = getProductId(history.getProduct());
         
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_ID, history.getId())
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                //.addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
-                //.addValue(PARAM_HISTORY_PRODUCT_ID, productId)
+                .addValue(PARAM_HISTORY_PRODUCT_ID, productId)
                 ;
         
         KeyHolder keys = new GeneratedKeyHolder();
@@ -165,27 +172,89 @@ public class HistoryDaoImpl implements HistoryDao{
 
     @Override
     public History findById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_HISTORY_ID, id);
+        List<History> allHistory = namedJdbcTemplate.query(SQL_FIND_HISTORY_BY_ID, params, new HistoryWithDetailExtractor());
+        return allHistory.get(0);
     }
 
     @Override
     public List<History> findAllByDate(Date date) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, date);
+        List<History> allHistory = namedJdbcTemplate.query(SQL_FIND_ALL_HISTORY_BY_DATE, params, new HistoryWithDetailExtractor());
+        return allHistory;
     }
 
     @Override
     public List<History> findAllByOrderId(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_HISTORY_ORDER_ID, id);
+        List<History> allHistory = namedJdbcTemplate.query(SQL_FIND_ALL_HISTORY_BY_ORDER_ID, params, new HistoryWithDetailExtractor());
+        return allHistory;
     }
 
     @Override
     public List<History> findAllByComplaintId(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_HISTORY_COMPLAINT_ID, id);
+        List<History> allHistory = namedJdbcTemplate.query(SQL_FIND_ALL_HISTORY_BY_COMPLAINT_ID, params, new HistoryWithDetailExtractor());
+        return allHistory;
     }
 
     @Override
     public List<History> findAllByProductId(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_HISTORY_PRODUCT_ID, id);
+        List<History> allHistory = namedJdbcTemplate.query(SQL_FIND_ALL_HISTORY_BY_PRODUCT_ID, params, new HistoryWithDetailExtractor());
+        return allHistory;
     }
     
+    private static final class HistoryWithDetailExtractor implements ResultSetExtractor<List<History>> {
+        @Override
+        public List<History> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            ArrayList<History> allHistory = new ArrayList<>();
+            while (rs.next()) {
+                History history = new History();
+                history.setId(rs.getLong(PARAM_HISTORY_ID));
+                history.setDateChangeStatus(rs.getDate(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDate());
+                history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
+                
+                long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
+                Status orderStatus = OrderStatus.valueOf(orderDao.findById(statusId).getStatus().getName());
+                Status complaintStatus = ComplaintStatus.valueOf(complaintDao.findById(statusId).getStatus().getName());
+                Status productStatus = ProductStatus.valueOf(productDao.findById(statusId).getStatus().getName());
+                
+                if(orderStatus != null)
+                    history.setOldStatus(orderStatus);    
+                else if(complaintStatus != null)
+                    history.setOldStatus(complaintStatus);
+                else if(productStatus != null)
+                    history.setOldStatus(productStatus);
+                
+                //Status status = statusDao.findById(statusId);
+                //history.setOldStatus(status);              
+
+                Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
+                if (orderId > 0) {                    
+                    Order order = orderDao.findById(orderId);
+                    history.setOrder(order);
+                }
+
+                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
+                if (complaintId > 0) {                    
+                    Complaint complaint = complaintDao.findById(complaintId);
+                    history.setComplaint(complaint);
+                }
+                
+                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
+                if (productId > 0) {                    
+                    Product product = productDao.findById(productId);
+                    history.setProduct(product);
+                }
+                allHistory.add(history);
+            }            
+            return allHistory;
+        }
+    }
 }
