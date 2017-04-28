@@ -27,7 +27,7 @@ public final class GroupSqlQuery {
             "WHERE id=:id;";
 
     public static final String SQL_DELETE_GROUP = "DELETE from \"group\" " +
-            "WHERE id=?;";
+            "WHERE id=:id;";
 
     public static final String SQL_FIND_GROUP_BY_ID = "SELECT g.id, g.name, d.id d_id, d.title d_title, " +
             "d.percentage d_perc, d.description d_desc, d.date_start d_start, d.date_finish d_finish " +

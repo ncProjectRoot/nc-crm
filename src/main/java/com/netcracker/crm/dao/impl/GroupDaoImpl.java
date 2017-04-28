@@ -88,7 +88,9 @@ public class GroupDaoImpl implements GroupDao {
         if (id < 1) {
             return -1L;
         }
-        int deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_GROUP, id);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_ID, id);
+        int deletedRows = namedJdbcTemplate.update(SQL_DELETE_GROUP, params);
         if (deletedRows == 0) {
             log.error("Group has not been deleted");
             return -1L;
