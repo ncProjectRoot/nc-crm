@@ -51,7 +51,7 @@ CREATE TABLE discount
      title VARCHAR (50)  NOT NULL , 
      percentage DOUBLE PRECISION  NOT NULL , 
      description VARCHAR (400)  NOT NULL , 
-     active CHAR (1)  NOT NULL 
+     active BOOLEAN  NOT NULL 
     ) 
 ;
 
@@ -228,10 +228,10 @@ ALTER TABLE statuses
 
 CREATE TABLE user_attempts 
     ( 
-     id BIGSERIAL  NOT NULL , 
-     email character varying(320)  NOT NULL , 
-     attempts INTEGER, 
-     last_modified timestamp with time zone  NOT NULL 
+     id INTEGER  NOT NULL , 
+     attempts INTEGER  NOT NULL , 
+     last_modified timestamp with time zone  NOT NULL , 
+     user_id INTEGER  NOT NULL 
     ) 
 ;
 
@@ -239,6 +239,8 @@ CREATE TABLE user_attempts
 
 ALTER TABLE user_attempts 
     ADD CONSTRAINT user_attempts_PK PRIMARY KEY ( id ) ;
+
+
 
 
 CREATE TABLE user_roles 
@@ -263,9 +265,9 @@ CREATE TABLE users
      last_name VARCHAR (50) , 
      phone VARCHAR (20) , 
      email VARCHAR (320)  NOT NULL , 
-     enable CHAR (1)  NOT NULL , 
-     account_non_locked CHAR (1)  NOT NULL , 
-     contact_person CHAR (1)  NOT NULL , 
+     enable BOOLEAN  NOT NULL , 
+     account_non_locked BOOLEAN  NOT NULL , 
+     contact_person BOOLEAN  NOT NULL , 
      address_id INTEGER , 
      user_role_id INTEGER  NOT NULL , 
      org_id INTEGER 
@@ -592,15 +594,15 @@ INSERT INTO user_roles (id, name) VALUES (2, 'ROLE_CUSTOMER');
 INSERT INTO user_roles (id, name) VALUES (3, 'ROLE_CSR');
 INSERT INTO user_roles (id, name) VALUES (4, 'ROLE_PMG');
 
-INSERT INTO discount( title, percentage, description, date_start, date_finish)
-  VALUES ('test title', 0.5, 'test description', '2017-01-01', '2017-12-31');
+-- INSERT INTO discount( title, percentage, description, date_start, date_finish)
+--  VALUES ('test title', 0.5, 'test description', '2017-01-01', '2017-12-31');
 
-INSERT INTO region(name, discount_id)
-  VALUES ('test region', 1);
+-- INSERT INTO region(name, discount_id)
+--  VALUES ('test region', 1);
 
 
 -- password - 123123
-INSERT INTO "user"(
+INSERT INTO "users"(
   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
   contact_person, address_id, user_role_id, org_id)
 VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
