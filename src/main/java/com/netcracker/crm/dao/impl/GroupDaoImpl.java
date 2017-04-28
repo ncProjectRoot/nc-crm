@@ -44,7 +44,10 @@ public class GroupDaoImpl implements GroupDao {
         if (group.getId() != null) {
             return -1L;
         }
-        Long discountId = getDiscountId(group.getDiscount());
+        Long discountId = null;
+        if (group.getDiscount() != null) {
+            discountId = getDiscountId(group.getDiscount());
+        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT, discountId);
@@ -67,7 +70,10 @@ public class GroupDaoImpl implements GroupDao {
         if (groupId == null) {
             return -1L;
         }
-        Long discountId = getDiscountId(group.getDiscount());
+        Long discountId = null;
+        if (group.getDiscount() != null) {
+            discountId = getDiscountId(group.getDiscount());
+        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, groupId)
                 .addValue(PARAM_GROUP_NAME, group.getName())
@@ -167,8 +173,8 @@ public class GroupDaoImpl implements GroupDao {
                 if (discountId > 0) {
                     Discount discount = new Discount();
                     discount.setId(discountId);
-                    discount.setTitle(rs.getString(PARAM_GROUP_DISC_TITLE));
                     discount.setPercentage(rs.getDouble(PARAM_GROUP_DISC_PERC));
+                    discount.setTitle(rs.getString(PARAM_GROUP_DISC_TITLE));
                     discount.setDescription(rs.getString(PARAM_GROUP_DISC_DESC));
                     Timestamp dateFromDB = rs.getTimestamp(PARAM_GROUP_DISC_START);
                     if (dateFromDB != null) {

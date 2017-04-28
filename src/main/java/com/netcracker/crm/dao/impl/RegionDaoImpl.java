@@ -45,7 +45,10 @@ public class RegionDaoImpl implements RegionDao {
         if (region.getId() != null) {
             return -1L;
         }
-        Long discountId = getDiscountId(region.getDiscount());
+        Long discountId = null;
+        if (region.getDiscount() != null) {
+            discountId = getDiscountId(region.getDiscount());
+        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_NAME, region.getName())
                 .addValue(PARAM_REGION_DISCOUNT, discountId);
@@ -61,7 +64,10 @@ public class RegionDaoImpl implements RegionDao {
         if (regionId == null) {
             return -1L;
         }
-        Long discountId = getDiscountId(region.getDiscount());
+        Long discountId = null;
+        if (region.getDiscount() != null) {
+            discountId = getDiscountId(region.getDiscount());
+        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, regionId)
                 .addValue(PARAM_REGION_NAME, region.getName())
@@ -160,14 +166,13 @@ public class RegionDaoImpl implements RegionDao {
                 Region region = new Region();
                 region.setId(rs.getLong(PARAM_REGION_ID));
                 region.setName(rs.getString(PARAM_REGION_NAME));
-
                 Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
                 if (discountId > 0) {
                     Discount discount = new Discount();
                     discount.setId(discountId);
                     discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
-                    discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
                     discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
+                    discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
                     Timestamp dateFromDB = rs.getTimestamp(PARAM_REGION_DISC_START);
                     if (dateFromDB != null) {
                         discount.setDateStart(dateFromDB.toLocalDateTime().toLocalDate());

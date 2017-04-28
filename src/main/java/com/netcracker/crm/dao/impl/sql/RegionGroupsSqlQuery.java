@@ -33,7 +33,7 @@ public final class RegionGroupsSqlQuery {
             "FROM region_groups rg " +
             "INNER JOIN region r " +
             "ON rg.region_id = r.id " +
-            "INNER JOIN discount d " +
+            "LEFT JOIN discount d " +
             "ON r.discount_id = d.id " +
             "WHERE group_id=:group_id;";
 
@@ -42,7 +42,7 @@ public final class RegionGroupsSqlQuery {
             "FROM region_groups rg " +
             "INNER JOIN \"group\" g " +
             "ON rg.group_id = g.id " +
-            "INNER JOIN discount d " +
+            "LEFT JOIN discount d " +
             "ON g.discount_id = d.id " +
             "WHERE region_id=:region_id;";
 }
