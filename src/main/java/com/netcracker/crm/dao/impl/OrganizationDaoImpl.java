@@ -47,7 +47,17 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Long update(Organization org) {
-        throw new NotImplementedException();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORG_NAME, org.getName());
+
+        int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
+        if (updatedRows > 0) {
+            log.info("Organization with id: " + org.getId() + " is successfully updated.");
+            return org.getId();
+        } else {
+            log.error("Organization was not updated.");
+            return -1L;
+        }
     }
 
     @Override
@@ -62,7 +72,10 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Organization findById(Long id) {
-        throw new NotImplementedException();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORG_ID, id);
+
+        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, new OrganizationWithDetailExtractor());
     }
 
     @Override

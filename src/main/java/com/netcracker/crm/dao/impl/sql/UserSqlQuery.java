@@ -29,29 +29,31 @@ public final class UserSqlQuery {
     public static final String PARAM_USER_ADDRESS_LATITUDE = "addr_latitude";
     public static final String PARAM_USER_ADDRESS_LONGITUDE = "addr_longitude";
 
+    public static final String PARAM_USER_ADDRESS_REGION_ID = "region_id";
+    public static final String PARAM_USER_ADDRESS_REGION_NAME = "reg_name";
+
     public static final String SQL_FIND_USER_BY_EMAIL = "" +
-            "SELECT u.id, email, password, phone, first_name, last_name, middle_name," +
-            "enable, account_non_locked, user_role_id, role.name role_name," +
-            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
+            "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
+            "enable, account_non_locked, user_role_id, role.name role_name, contact_person, " +
+            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude, " +
+            "region_id, reg.name reg_name " +
             "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
             "LEFT JOIN organization org ON org_id = org.id " +
             "LEFT JOIN address addr ON address_id = addr.id " +
+            "LEFT JOIN region reg ON region_id = reg.id " +
             "WHERE email = :email;";
     public static final String SQL_FIND_USER_BY_ID = "" +
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
-            "enable, account_non_locked, user_role_id, role.name role_name, " +
-            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude " +
-            "FROM users u  " +
+            "enable, account_non_locked, user_role_id, role.name role_name, contact_person, " +
+            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude, " +
+            "region_id, reg.name reg_name " +
+            "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
             "LEFT JOIN organization org ON org_id = org.id " +
             "LEFT JOIN address addr ON address_id = addr.id " +
+            "LEFT JOIN region reg ON region_id = reg.id " +
             "WHERE u.id = :id;";
-    public static final String SQL_CREATE_USER = "INSERT INTO users" +
-            "(password, first_name, middle_name, last_name, phone, email, enable, account_non_locked, contact_person, " +
-            "address_id, user_role_id, org_id) " +
-            "VALUES (:password, :first_name, :middle_name, :last_name, :phone, :email, :enable, :account_non_locked, " +
-            ":contact_person, :address_id, :user_role_id, :org_id);";
 
     public static final String SQL_USERS_UPDATE_LOCKED = "UPDATE users " +
             "SET account_non_locked = :account_non_locked " +
@@ -59,4 +61,9 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_COUNT = "SELECT count(*) " +
             "FROM \"user\" " +
             "WHERE email = :email;";
+    public static final String SQL_UPDATE_USER = "UPDATE users " +
+            "SET password=:password, first_name=:first_name, middle_name=:middle_name, last_name=:last_name, " +
+            "phone=:phone, email=:email, enable=:enable, account_non_locked=:account_non_locked, " +
+            "contact_person=:contact_person, address_id=:address_id, user_role_id=:user_role_id, org_id=:org_id " +
+            "WHERE id=:id;";
 }
