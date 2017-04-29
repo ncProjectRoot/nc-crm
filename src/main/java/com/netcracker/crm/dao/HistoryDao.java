@@ -6,6 +6,8 @@
 package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.History;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +16,7 @@ import java.util.List;
  * @author YARUS
  */
 public interface HistoryDao extends CrudDao<History> {
-    List<History> findAllByDate(Date date);
+    List<History> findAllByDate(LocalDate date);
 
     List<History> findAllByOrderId(Long id);
     

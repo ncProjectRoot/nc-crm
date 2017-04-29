@@ -622,4 +622,30 @@ INSERT INTO public.statuses(id, name) VALUES (10, 'PLANNED');
 INSERT INTO public.statuses(id, name) VALUES (11, 'ACTUAL');
 INSERT INTO public.statuses(id, name) VALUES (12, 'OUTDATED');
 
+
+INSERT INTO public.groups(id, name) VALUES (1, 'group1');
+INSERT INTO public.groups(id, name) VALUES (2, 'group2');
+
+INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 5, ' some desc for test product', 1);
+INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 5, ' some desc for test product2', 1);
+
+INSERT INTO public."order"(id, date_finish, status_id, customer_id, product_id) 
+VALUES (1, '1994-10-10', 2, 1, 2);
+
+INSERT INTO public.history (old_status_id, date_change_status, desc_change_status, order_id) 
+VALUES ( 5, '10-10-1994', 'For test', 1);
+
+commit;
+
+INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id) 
+VALUES ( 5, '10-10-1994', 'For test3232', 1);
+
+INSERT INTO history (old_status_id, date_change_status, desc_change_status) 
+VALUES (5, '10-10-1994', 'For test76');
+
+INSERT INTO history (old_status_id, date_change_status, desc_change_status) 
+VALUES (5, '10-10-1994', 'For test76');
+
+
+
 commit;
