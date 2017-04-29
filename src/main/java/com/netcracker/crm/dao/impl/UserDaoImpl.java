@@ -185,7 +185,7 @@ public class UserDaoImpl implements UserDao {
                     address.setId(rs.getLong(PARAM_USER_ADDRESS_ID));
                     address.setLatitude(rs.getDouble(PARAM_USER_ADDRESS_LATITUDE));
                     address.setLongitude(rs.getDouble(PARAM_USER_ADDRESS_LONGITUDE));
-                    //TODO: figure out the right columns in address table
+                    address.setDetails(rs.getString(PARAM_USER_ADDRESS_DETAILS));
 
                     long regionId = rs.getLong(PARAM_USER_ADDRESS_REGION_ID);
                     if (regionId > 0) {

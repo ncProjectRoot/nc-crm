@@ -28,14 +28,16 @@ public final class UserSqlQuery {
     public static final String PARAM_USER_ADDRESS_ID = "address_id";
     public static final String PARAM_USER_ADDRESS_LATITUDE = "addr_latitude";
     public static final String PARAM_USER_ADDRESS_LONGITUDE = "addr_longitude";
-
     public static final String PARAM_USER_ADDRESS_REGION_ID = "region_id";
     public static final String PARAM_USER_ADDRESS_REGION_NAME = "reg_name";
+    public static final String PARAM_USER_ADDRESS_DETAILS = "details";
+
 
     public static final String SQL_FIND_USER_BY_EMAIL = "" +
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
             "enable, account_non_locked, user_role_id, role.name role_name, contact_person, " +
-            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude, " +
+            "org_id, org.name org_name, address_id, addr.latitude addr_latitude, addr.details, " +
+            "addr.longitude addr_longitude, " +
             "region_id, reg.name reg_name " +
             "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
@@ -46,7 +48,8 @@ public final class UserSqlQuery {
     public static final String SQL_FIND_USER_BY_ID = "" +
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
             "enable, account_non_locked, user_role_id, role.name role_name, contact_person, " +
-            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.longitude addr_longitude, " +
+            "org_id, org.name org_name, address_id , addr.latitude addr_latitude, addr.details, " +
+            "addr.longitude addr_longitude, " +
             "region_id, reg.name reg_name " +
             "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
