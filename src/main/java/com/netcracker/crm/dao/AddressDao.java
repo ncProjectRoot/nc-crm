@@ -7,5 +7,4 @@ import com.netcracker.crm.domain.model.Address;
  */
 public interface AddressDao extends CrudDao<Address> {
 
-    Address findByName(String name);
 }

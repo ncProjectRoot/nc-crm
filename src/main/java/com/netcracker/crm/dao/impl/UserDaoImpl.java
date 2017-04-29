@@ -3,10 +3,7 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.dao.OrganizationDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.Address;
-import com.netcracker.crm.domain.model.Organization;
-import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +13,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -44,6 +39,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Long create(User user) {
+        if (user.getId() != null) {
+            return -1L;
+        }
+
         Long addressId = getAddressId(user.getAddress());
         Long orgId = getOrgId(user.getOrganization());
 
@@ -61,26 +60,41 @@ public class UserDaoImpl implements UserDao {
                 .addValue(PARAM_USER_ADDRESS_ID, addressId)
                 .addValue(PARAM_USER_ORG_ID, orgId);
 
-        KeyHolder keys = new GeneratedKeyHolder();
-        int affectedRows = namedJdbcTemplate.update(SQL_CREATE_USER, params, keys);
+        long newId = userInsert.executeAndReturnKey(params)
+                .longValue();
 
-        Long newId = -1L;
-        if (affectedRows > 0) {
-            newId = (Long) keys.getKeys().get(PARAM_USER_ID);
-            user.setId(newId);
-
-            log.info("User with id: " + newId + " is successfully created.");
-            return newId;
-        } else {
-
-            log.error("User doesn't created.");
-            return newId;
-        }
+        log.info("User with id: " + newId + " is successfully created.");
+        return newId;
     }
 
     @Override
     public Long update(User user) {
-        throw new NotImplementedException();
+        Long addressId = getAddressId(user.getAddress());
+        Long orgId = getOrgId(user.getOrganization());
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_EMAIL, user.getEmail())
+                .addValue(PARAM_USER_PASSWORD, user.getPassword())
+                .addValue(PARAM_USER_FIRST_NAME, user.getFirstName())
+                .addValue(PARAM_USER_LAST_NAME, user.getLastName())
+                .addValue(PARAM_USER_MIDDLE_NAME, user.getMiddleName())
+                .addValue(PARAM_USER_CONTACT_PERSON, user.isContactPerson())
+                .addValue(PARAM_USER_PHONE, user.getPhone())
+                .addValue(PARAM_USER_IS_ENABLE, user.isEnable())
+                .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, user.isAccountNonLocked())
+                .addValue(PARAM_USER_ROLE_ID, user.getUserRole().getId())
+                .addValue(PARAM_USER_ADDRESS_ID, addressId)
+                .addValue(PARAM_USER_ORG_ID, orgId);
+
+        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_USER, params);
+
+        if (affectedRows > 0) {
+            log.info("User with id: " + user.getId() + " is successfully updated.");
+            return user.getId();
+        } else {
+            log.error("User was not updated.");
+            return -1L;
+        }
     }
 
     @Override
@@ -154,6 +168,7 @@ public class UserDaoImpl implements UserDao {
                 user.setEnable(rs.getBoolean(PARAM_USER_IS_ENABLE));
                 user.setAccountNonLocked(rs.getBoolean(PARAM_USER_ACCOUNT_NON_LOCKED));
                 user.setUserRole(UserRole.valueOf(rs.getString(PARAM_USER_ROLE_NAME)));
+                user.setContactPerson(rs.getBoolean(PARAM_USER_CONTACT_PERSON));
 
                 Long orgId = rs.getLong(PARAM_USER_ORG_ID);
                 if (orgId > 0) {
@@ -170,7 +185,16 @@ public class UserDaoImpl implements UserDao {
                     address.setId(rs.getLong(PARAM_USER_ADDRESS_ID));
                     address.setLatitude(rs.getDouble(PARAM_USER_ADDRESS_LATITUDE));
                     address.setLongitude(rs.getDouble(PARAM_USER_ADDRESS_LONGITUDE));
+                    address.setDetails(rs.getString(PARAM_USER_ADDRESS_DETAILS));
 
+                    long regionId = rs.getLong(PARAM_USER_ADDRESS_REGION_ID);
+                    if (regionId > 0) {
+                        Region region = new Region();
+                        region.setId(regionId);
+                        region.setName(PARAM_USER_ADDRESS_REGION_NAME);
+
+                        address.setRegion(region);
+                    }
                     user.setAddress(address);
                 }
             }
