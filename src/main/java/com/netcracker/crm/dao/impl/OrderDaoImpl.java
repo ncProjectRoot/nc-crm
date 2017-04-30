@@ -3,11 +3,9 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.dao.StatusDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.dao.impl.sql.OrderSqlQuery;
 import com.netcracker.crm.domain.model.Order;
-import java.util.Date;
+
 import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
