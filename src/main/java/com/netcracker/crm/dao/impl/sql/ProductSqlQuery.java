@@ -12,12 +12,6 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_DESCRIPTION = "description";
     public static final String PARAM_PRODUCT_DISCOUNT_ID = "discount_id";
     public static final String PARAM_PRODUCT_GROUP_ID = "group_id";
-
-
-//    public static final String SQL_CREATE_PRODUCT = "INSERT INTO product (title, "
-//            + "default_price, status_id, description, discount_id, group_id) "
-//            + "VALUES (:title, :default_price, :status_id, :description, "
-//            + ":discount_id, :group_id);";
     
     public static final String SQL_UPDATE_PRODUCT = "UPDATE product "
             + "SET title = :title, default_price = :default_price, "
@@ -34,11 +28,11 @@ public final class ProductSqlQuery {
             + "SELECT id, title, default_price,"
             + "status_id, description, discount_id, group_id "
             + "FROM product "
-            + "WHERE date_change_status = :date_change_status;";
+            + "WHERE title = :title;";
 
     public static final String SQL_FIND_ALL_PRODUCT_BY_GROUP_ID = ""
             + "SELECT id, title, default_price,"
             + "status_id, description, discount_id, group_id "
             + "FROM product "
-            + "WHERE WHERE date_change_status = :date_change_status;";
+            + "WHERE group_id = :group_id;";
 }

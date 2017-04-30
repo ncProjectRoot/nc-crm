@@ -7,8 +7,6 @@ import com.netcracker.crm.domain.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,7 +25,6 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class ComplaintDaoImplTest {
 
-    private static final Logger log = LoggerFactory.getLogger(ComplaintDaoImplTest.class);
     private Complaint complaint;
 
     @Autowired
@@ -49,7 +46,6 @@ public class ComplaintDaoImplTest {
         complaint.setCustomer(userDao.findById(1L));
         complaint.setOrder(orderDao.findById(1L));
         Long id = complaintDao.create(complaint);
-        log.info("Complaint with id " + id + " created");
         assertNotNull(id);
     }
 
@@ -62,7 +58,6 @@ public class ComplaintDaoImplTest {
     @Test
     public void findById() throws Exception {
         Complaint complaint = complaintDao.findById(this.complaint.getId());
-        log.info("Complaint with id " + complaint.getId() + " was found");
         assertNotNull(complaint);
         assertEquals(complaint.getId(), this.complaint.getId());
     }

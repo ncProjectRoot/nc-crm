@@ -55,13 +55,14 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_STATUS_ID, product.getStatus().getId())
                 .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription())
                 .addValue(PARAM_PRODUCT_DISCOUNT_ID, discountId)
-                .addValue(PARAM_PRODUCT_GROUP_ID, groupId)
-                ;
+                .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
 
         long newId = productInsert.executeAndReturnKey(params)
                 .longValue();
 
-        log.info("User with id: " + newId + " is successfully created.");
+        product.setId(newId);
+
+        log.info("Product with id: " + newId + " is successfully created.");
         return newId;
     }
 
@@ -71,6 +72,7 @@ public class ProductDaoImpl implements ProductDao {
         Long groupId = getGroupId(product.getGroup());
 
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, product.getId())
                 .addValue(PARAM_PRODUCT_TITLE, product.getTitle())
                 .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
                 .addValue(PARAM_PRODUCT_STATUS_ID, product.getStatus().getId())
@@ -127,23 +129,29 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     private Long getDiscountId(Discount discount) {
-        Long discountId = discount.getId();
-        if (discountId != null) {
+        if (discount != null) {
+            Long discountId = discount.getId();
+            if (discountId != null) {
+                return discountId;
+            }
+            discountId = discountDao.create(discount);
+
             return discountId;
         }
-        discountId = discountDao.create(discount);
-
-        return discountId;
+        return null;
     }
 
     private Long getGroupId(Group group) {
-        Long groupId = group.getId();
-        if (groupId != null) {
+        if (group != null) {
+            Long groupId = group.getId();
+            if (groupId != null) {
+                return groupId;
+            }
+            groupId = groupDao.create(group);
+
             return groupId;
         }
-        groupId = groupDao.create(group);
-
-        return groupId;
+        return null;
     }
 
     @Autowired
@@ -176,7 +184,7 @@ public class ProductDaoImpl implements ProductDao {
                 product.setDescription(rs.getString(PARAM_PRODUCT_DESCRIPTION));
 
                 long statusId = rs.getLong(PARAM_PRODUCT_STATUS_ID);
-                Status status = Status.getStatusByID(statusId);
+                Status status =  Status.getStatusByID(statusId);
 
                 if (status instanceof ProductStatus) {
                     product.setStatus((ProductStatus) status);

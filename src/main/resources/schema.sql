@@ -632,8 +632,8 @@ INSERT INTO public.statuses(id, name) VALUES (12, 'OUTDATED');
 INSERT INTO public.groups(id, name) VALUES (1, 'group1');
 INSERT INTO public.groups(id, name) VALUES (2, 'group2');
 
-INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 5, ' some desc for test product', 1);
-INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 5, ' some desc for test product2', 1);
+INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 10, ' some desc for test product', 1);
+INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 10, ' some desc for test product2', 1);
 
 INSERT INTO orders(date_finish, status_id, customer_id, product_id) 
 VALUES ('1994-10-10', 2, 2, 2);
