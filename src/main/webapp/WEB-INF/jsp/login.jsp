@@ -77,10 +77,10 @@
 <script>
     $(document).ready(function(){
         <c:if test="${not empty error}">
-        Materialize.toast("${error}", 2000, 'rounded');
+        Materialize.toast("${error}", 10000, 'rounded');
         </c:if>
         <c:if test="${not empty msg}">
-        Materialize.toast("${msg}", 2000, 'rounded');
+        Materialize.toast("${msg}", 10000, 'rounded');
         </c:if>
 
         $('#auth-form').submit(function() {

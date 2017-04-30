@@ -1,4 +1,4 @@
-package com.netcracker.crm.controller.base.entity;
+package com.netcracker.crm.controller.base.role;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +20,14 @@ public class AdminController {
         return "home";
     }
 
-    @GetMapping("/createUser")
+    @GetMapping("/dashboard")
+    public String dashboard(Map<String, Object> model) {
+        return "dashboardAdmin";
+    }
+
+    @GetMapping("/create")
     public String createUser(Map<String, Object> model) {
-        return "createUser";
+        return "create";
     }
 
     @GetMapping("/profile")
@@ -30,8 +35,4 @@ public class AdminController {
         return "profile";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Map<String, Object> model) {
-        return "dashboard";
-    }
 }

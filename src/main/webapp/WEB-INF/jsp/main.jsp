@@ -10,7 +10,8 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css">
 
     <link href="${springCss}" rel="stylesheet"/>
     <link href="${springIcon}" rel="icon"/>
@@ -58,7 +59,7 @@
                             <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png"
                                  alt="" class="circle responsive-img z-depth-1">
                             <div>
-                                <span class="black-text title">${user.lastName} ${user.firstName}</span>
+                                <span class="black-text title" id="user-name">${user.lastName} ${user.firstName}</span>
                             </div>
                         </a>
                         <ul id='dropdown-user' class='dropdown-content'>
@@ -93,32 +94,26 @@
         <li class="li-divider">
             <div class="divider"></div>
         </li>
-        <c:forEach items="${menuElements}" var="menuElement">
-            <li>
-                <a href="#${menuElement.href}" class="valign-wrapper menu-element">
-                    <i class="black-text material-icons">${menuElement.icon}</i>
-                    <h2>${menuElement.title}</h2>
-                </a>
-            </li>
-        </c:forEach>
+        <%@ include file="/WEB-INF/jsp/menu.jsp" %>
     </ul>
 </div>
 
 
 <div class="content">
-    <div class="content-header z-depth-1 valign-wrapper">
-        <i class="black-text material-icons"></i>
-        <span></span>
-    </div>
+    <%--<div class="content-header z-depth-1 valign-wrapper">--%>
+        <%--<i class="black-text material-icons"></i>--%>
+        <%--<span></span>--%>
+    <%--</div>--%>
     <div class="progress">
         <div class="indeterminate"></div>
     </div>
     <div class="content-body">
     </div>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+            src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
     <script src="${springScript}"></script>
 </div>
 </body>

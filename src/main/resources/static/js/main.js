@@ -1,15 +1,5 @@
 $(document).ready(function () {
 
-    $.get("/page-information", {
-        "href": location.hash.substr(1)
-    }).success(function (data) {
-        console.log(data);
-        var $contentHeader = $(".content-header");
-        $contentHeader.find("i").text(data.icon);
-        $contentHeader.find("span").text(data.title);
-        document.title = data.title;
-    });
-
     checkNewMessage();
 
     $(".button-collapse").sideNav({
@@ -39,14 +29,6 @@ $(document).ready(function () {
         $(this).find("form").submit();
     })
 
-    $(".menu-element").on('click', function (e) {
-        var $contentHeader = $(".content-header");
-        $contentHeader.find("i").text($(this).find('i').text());
-        var title = $(this).find('h2').text();
-        $contentHeader.find("span").text(title);
-        document.title = title;
-    });
-
     downloadContent();
     $(window).on('hashchange', function () {
         downloadContent();
@@ -72,6 +54,7 @@ function downloadContent() {
                 $contentBody.html(data);
                 $(".progress").removeClass("progress-active");
                 $contentBody.addClass("content-body-visible");
+                document.title = $contentBody.find(".content-header span").text();
             }, 1000);
         }).error(function (e) {
         window.setTimeout(function () {
