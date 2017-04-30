@@ -104,7 +104,7 @@ ALTER TABLE history
 CREATE TABLE "orders" 
     ( 
      id BIGSERIAL  NOT NULL , 
-     date_finish TIMESTAMP(0)  NOT NULL , 
+     date_finish TIMESTAMP(0) , 
      preferred_date TIMESTAMP(0) , 
      status_id INTEGER  NOT NULL , 
      customer_id INTEGER  NOT NULL , 
@@ -117,9 +117,6 @@ CREATE TABLE "orders"
 
 ALTER TABLE "orders" 
     ADD CONSTRAINT orders_PK PRIMARY KEY ( id ) ;
-
-ALTER TABLE "orders" 
-    ADD CONSTRAINT orders__UN UNIQUE ( date_finish , customer_id ) ;
 
 
 CREATE TABLE organization 
@@ -161,7 +158,7 @@ CREATE TABLE product
      status_id INTEGER  NOT NULL , 
      description VARCHAR (400) , 
      discount_id INTEGER , 
-     group_id INTEGER  NOT NULL 
+     group_id INTEGER 
     ) 
 ;
 
@@ -635,16 +632,20 @@ INSERT INTO public.groups(id, name) VALUES (2, 'group2');
 INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 10, ' some desc for test product', 1);
 INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 10, ' some desc for test product2', 1);
 
-INSERT INTO orders(date_finish, status_id, customer_id, product_id) 
-VALUES ('1994-10-10', 2, 2, 2);
+INSERT INTO orders(date_finish, status_id, customer_id, product_id, csr_id) 
+VALUES ('1994-10-10', 5, 2, 2, 2);
 
 INSERT INTO history (old_status_id, date_change_status, desc_change_status, order_id) 
 VALUES ( 5, '10-10-1994', 'For test', 1);
 
+INSERT INTO public.complaint(id, title, message, status_id, date, customer_id, pmg_id, order_id)
+VALUES (1, 'test_complaint', 'lalalal', 3, '1994-10-10', 1, 2, 1);
+
 commit;
 
-INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id) 
-VALUES ( 5, '10-10-1994', 'For test3232', 1);
+
+INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id, complaint_id) 
+VALUES ( 5, '10-10-1994', 'For test3232', 1, 1);
 
 INSERT INTO history (old_status_id, date_change_status, desc_change_status) 
 VALUES (5, '10-10-1994', 'For test76');

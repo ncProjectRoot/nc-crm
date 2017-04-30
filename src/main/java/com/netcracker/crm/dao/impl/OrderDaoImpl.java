@@ -44,8 +44,6 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private ProductDao productDao;
-
-    
     
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -169,12 +167,38 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Long delete(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (id == null || id <= 0) {
+            return -1L;
+        }
+        SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORDER_ID, id);
+
+        long affectedRows = namedJdbcTemplate.update(SQL_DELETE_ORDER, params);
+
+        if (affectedRows > 0) {
+            log.info("Order with id: " + id + " is successfully deleted.");
+            return affectedRows;
+        } else {
+            log.error("Order doesn't deleted.");
+            return affectedRows;
+        }
     }
 
     @Override
-    public Long delete(Order object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Long delete(Order order) {
+        if (order == null || order.getId() == null || order.getId() <= 0) {
+            return -1L;
+        }
+        SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORDER_ID, order.getId());
+
+        long affectedRows = namedJdbcTemplate.update(SQL_DELETE_ORDER, params);
+
+        if (affectedRows > 0) {
+            log.info("Order with id: " + order.getId() + " is successfully deleted.");
+            return affectedRows;
+        } else {
+            log.error("Order doesn't deleted.");
+            return affectedRows;
+        }
     }
 
     @Override
@@ -185,6 +209,8 @@ public class OrderDaoImpl implements OrderDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ID, id);
         List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, new HistoryWithDetailExtractor());
+        if(allOrder == null)
+            return null;
         return allOrder.get(0);
     }
     
