@@ -24,14 +24,14 @@ public final class RegionSqlQuery {
             "WHERE id=:id;";
 
     public static final String SQL_FIND_REGION_BY_ID = "SELECT r.id, r.name, d.id d_id, d.title d_title, " +
-            "d.percentage d_perc, d.description d_desc, d.date_start d_start, d.date_finish d_finish " +
+            "d.percentage d_perc, d.description d_desc, d.active d_active " +
             "FROM region r " +
             "LEFT JOIN discount d " +
             "ON d.id = r.discount_id " +
             "WHERE r.id=:id;";
 
     public static final String SQL_FIND_REGION_BY_NAME = "SELECT r.id, r.name, d.id d_id, d.title d_title, " +
-            "d.percentage d_perc, d.description d_desc, d.date_start d_start, d.date_finish d_finish " +
+            "d.percentage d_perc, d.description d_desc, d.active d_active " +
             "FROM region r " +
             "LEFT JOIN discount d " +
             "ON d.id = r.discount_id " +
