@@ -101,7 +101,7 @@ ALTER TABLE history
     ADD CONSTRAINT history_PK PRIMARY KEY ( id ) ;
 
 
-CREATE TABLE "order" 
+CREATE TABLE "orders" 
     ( 
      id BIGSERIAL  NOT NULL , 
      date_finish TIMESTAMP(0)  NOT NULL , 
@@ -115,11 +115,11 @@ CREATE TABLE "order"
 
 
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order_PK PRIMARY KEY ( id ) ;
+ALTER TABLE "orders" 
+    ADD CONSTRAINT orders_PK PRIMARY KEY ( id ) ;
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order__UN UNIQUE ( date_finish , customer_id ) ;
+ALTER TABLE "orders" 
+    ADD CONSTRAINT orders__UN UNIQUE ( date_finish , customer_id ) ;
 
 
 CREATE TABLE organization 
@@ -305,11 +305,11 @@ ALTER TABLE address
 
 
 ALTER TABLE complaint 
-    ADD CONSTRAINT complaint_order_FK FOREIGN KEY 
+    ADD CONSTRAINT complaint_orders_FK FOREIGN KEY 
     ( 
      order_id
     ) 
-    REFERENCES "order" 
+    REFERENCES orders 
     ( 
      id
     ) 
@@ -379,11 +379,11 @@ ALTER TABLE history
 
 
 ALTER TABLE history 
-    ADD CONSTRAINT history_order_FK FOREIGN KEY 
+    ADD CONSTRAINT history_orders_FK FOREIGN KEY 
     ( 
      order_id
     ) 
-    REFERENCES "order" 
+    REFERENCES orders 
     ( 
      id
     ) 
@@ -417,8 +417,8 @@ ALTER TABLE history
 ;
 
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order_product_FK FOREIGN KEY 
+ALTER TABLE orders 
+    ADD CONSTRAINT orders_product_FK FOREIGN KEY 
     ( 
      product_id
     ) 
@@ -429,8 +429,8 @@ ALTER TABLE "order"
 ;
 
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order_statuses_FK FOREIGN KEY 
+ALTER TABLE orders 
+    ADD CONSTRAINT orders_statuses_FK FOREIGN KEY 
     ( 
      status_id
     ) 
@@ -441,8 +441,8 @@ ALTER TABLE "order"
 ;
 
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order_user_FK FOREIGN KEY 
+ALTER TABLE orders 
+    ADD CONSTRAINT orders_user_FK FOREIGN KEY 
     ( 
      customer_id
     ) 
@@ -453,8 +453,8 @@ ALTER TABLE "order"
 ;
 
 
-ALTER TABLE "order" 
-    ADD CONSTRAINT order_user_FKv1 FOREIGN KEY 
+ALTER TABLE orders 
+    ADD CONSTRAINT orders_user_FKv1 FOREIGN KEY 
     ( 
      csr_id
     ) 
@@ -608,6 +608,12 @@ INSERT INTO "users"(
 VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
     '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
 
+INSERT INTO "users"(
+  password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
+  contact_person, address_id, user_role_id, org_id)
+VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John32', 'Doe26', 'Doevich1',
+    '0000000000', 'admin2@gmail.com', true, true, false, null, 1,null);
+
 
 INSERT INTO public.statuses(id, name) VALUES (1, 'OPEN');
 INSERT INTO public.statuses(id, name) VALUES (2, 'SOLVING');
@@ -629,10 +635,10 @@ INSERT INTO public.groups(id, name) VALUES (2, 'group2');
 INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 5, ' some desc for test product', 1);
 INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 5, ' some desc for test product2', 1);
 
-INSERT INTO public."order"(id, date_finish, status_id, customer_id, product_id) 
-VALUES (1, '1994-10-10', 2, 1, 2);
+INSERT INTO orders(date_finish, status_id, customer_id, product_id) 
+VALUES ('1994-10-10', 2, 2, 2);
 
-INSERT INTO public.history (old_status_id, date_change_status, desc_change_status, order_id) 
+INSERT INTO history (old_status_id, date_change_status, desc_change_status, order_id) 
 VALUES ( 5, '10-10-1994', 'For test', 1);
 
 commit;

@@ -69,6 +69,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Long update(User user) {
+        if(user == null)
+            return null;
         Long addressId = getAddressId(user.getAddress());
         Long orgId = getOrgId(user.getOrganization());
 
@@ -117,6 +119,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findByEmail(String email) {
+        if(email == null)
+            return null;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_EMAIL, email);
 
@@ -125,6 +129,8 @@ public class UserDaoImpl implements UserDao {
 
 
     private Long getAddressId(Address address) {
+        if(address == null)
+            return null;
         Long addressId = address.getId();
         if (addressId != null) {
             return addressId;
@@ -135,6 +141,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     private Long getOrgId(Organization org) {
+        if(org == null)
+            return null;
         Long orgId = org.getId();
         if (orgId != null) {
             return orgId;

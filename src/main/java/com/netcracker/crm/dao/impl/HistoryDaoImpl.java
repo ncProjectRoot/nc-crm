@@ -53,8 +53,6 @@ public class HistoryDaoImpl implements HistoryDao {
     @Autowired
     private ProductDao productDao;
 
-//    @Autowired
-//    private StatusDao statusDao;
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -74,18 +72,20 @@ public class HistoryDaoImpl implements HistoryDao {
         Long orderId = getOrderId(history.getOrder());
         Long complaintId = getComplaintId(history.getComplaint());
         Long productId = getProductId(history.getProduct());
-
+        Long statusId = null;
+        if(history.getOldStatus() != null)
+            statusId = history.getOldStatus().getId();
+        
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_OLD_STATUS_ID, statusId)
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_HISTORY_PRODUCT_ID, productId);
 
         KeyHolder keys = new GeneratedKeyHolder();
         int affectedRows = namedJdbcTemplate.update(SQL_CREATE_HISTORY, params, keys);
-
         Long newId = -1L;
         if (affectedRows > 0) {
             newId = (Long) keys.getKeys().get(PARAM_HISTORY_ID);
@@ -269,35 +269,10 @@ public class HistoryDaoImpl implements HistoryDao {
 
                 long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
                 if (statusId > 0) {
-                    Status orderStatus = null;
-                    Status complaintStatus = null;
-                    Status productStatus = null;
-
-                    Order testOrder = orderDao.findById(statusId);
-                    Complaint testComplaint = complaintDao.findById(statusId);
-                    Product testProduct = productDao.findById(statusId);
-
-                    if (testOrder != null && testOrder.getStatus() != null && testOrder.getStatus().getName() != null) {
-                        orderStatus = OrderStatus.valueOf(testOrder.getStatus().getName());
-                    }
-                    if (testComplaint != null && testComplaint.getStatus() != null && testComplaint.getStatus().getName() != null) {
-                        complaintStatus = ComplaintStatus.valueOf(testComplaint.getStatus().getName());
-                    }
-                    if (testProduct != null && testProduct.getStatus() != null && testProduct.getStatus().getName() != null) {
-                        productStatus = ProductStatus.valueOf(productDao.findById(statusId).getStatus().getName());
-                    }
-
-                    if (orderStatus != null) {
-                        history.setOldStatus(orderStatus);
-                    } else if (complaintStatus != null) {
-                        history.setOldStatus(complaintStatus);
-                    } else if (productStatus != null) {
-                        history.setOldStatus(productStatus);
-                    }
+                    Status status = Status.getStatusByID(statusId);  
+                    history.setOldStatus( status);
                 }
-
-                //Status status = statusDao.findById(statusId);
-                //history.setOldStatus(status);              
+                           
                 Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
                 if (orderId > 0) {
                     Order order = orderDao.findById(orderId);
@@ -320,65 +295,4 @@ public class HistoryDaoImpl implements HistoryDao {
             return allHistory;
         }
     }
-//    private final class HistoryWithDetailExtractor implements ResultSetExtractor<History> {
-//
-//        @Override
-//        public History extractData(ResultSet rs) throws SQLException, DataAccessException {
-//            History history = null;
-//            while (rs.next()) {
-//                history = new History();
-//                history.setId(rs.getLong(PARAM_HISTORY_ID));
-//                history.setDateChangeStatus(rs.getDate(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDate());
-//                history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
-//
-//                long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
-//                if (statusId > 0) {
-//                    Status orderStatus = null;
-//                    Status complaintStatus = null;
-//                    Status productStatus = null;
-//                    
-//                    Order testOrder = orderDao.findById(statusId);                    
-//                    Complaint testComplaint = complaintDao.findById(statusId);
-//                    Product testProduct = productDao.findById(statusId);
-//                    
-//                    if(testOrder != null && testOrder.getStatus() != null && testOrder.getStatus().getName() != null)
-//                        orderStatus = OrderStatus.valueOf(testOrder.getStatus().getName());
-//                    if(testComplaint != null && testComplaint.getStatus() != null && testComplaint.getStatus().getName() != null)
-//                        complaintStatus = ComplaintStatus.valueOf(testComplaint.getStatus().getName());
-//                    if(testProduct != null && testProduct.getStatus() != null && testProduct.getStatus().getName() != null)
-//                        productStatus = ProductStatus.valueOf(productDao.findById(statusId).getStatus().getName());
-//
-//                    if (orderStatus != null) {
-//                        history.setOldStatus(orderStatus);
-//                    } else if (complaintStatus != null) {
-//                        history.setOldStatus(complaintStatus);
-//                    } else if (productStatus != null) {
-//                        history.setOldStatus(productStatus);
-//                    }
-//                }
-//
-//                //Status status = statusDao.findById(statusId);
-//                //history.setOldStatus(status);              
-//                Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
-//                if (orderId > 0) {
-//                    Order order = orderDao.findById(orderId);
-//                    history.setOrder(order);
-//                }
-//
-//                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
-//                if (complaintId > 0) {
-//                    Complaint complaint = complaintDao.findById(complaintId);
-//                    history.setComplaint(complaint);
-//                }
-//
-//                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
-//                if (productId > 0) {
-//                    Product product = productDao.findById(productId);
-//                    history.setProduct(product);
-//                }
-//
-//            }
-//            return history;
-//        }
-//    }
 }

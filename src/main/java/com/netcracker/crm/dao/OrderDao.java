@@ -6,6 +6,7 @@
 package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Order;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +15,10 @@ import java.util.List;
  * @author YARUS
  */
 public interface OrderDao extends CrudDao<Order>{
-    List<Order> findAllByDate(Date date);
+    List<Order> findAllByDateFinish(LocalDate date);
     
+    List<Order> findAllByPreferredDate(LocalDate date);
+            
     List<Order> findAllByProductId(Long id);
     
     List<Order> findAllByCustomerId(Long id);

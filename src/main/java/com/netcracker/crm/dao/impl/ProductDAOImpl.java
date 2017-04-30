@@ -20,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Karpunets
  * @since 29.04.2017
  */
+@Repository
 public class ProductDAOImpl implements ProductDao {
 
     private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
@@ -101,11 +103,12 @@ public class ProductDAOImpl implements ProductDao {
 
     @Override
     public Product findById(Long id) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_ID, id);
-
-        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, new ProductWithDetailExtractor());
-        return allProduct.get(0);
+//        SqlParameterSource params = new MapSqlParameterSource()
+//                .addValue(PARAM_PRODUCT_ID, id);
+//
+//        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, new ProductWithDetailExtractor());
+//        return allProduct.get(0);
+        return null;
     }
 
     @Override
