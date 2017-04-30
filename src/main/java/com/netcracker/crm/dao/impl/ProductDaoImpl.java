@@ -103,12 +103,11 @@ public class ProductDAOImpl implements ProductDao {
 
     @Override
     public Product findById(Long id) {
-//        SqlParameterSource params = new MapSqlParameterSource()
-//                .addValue(PARAM_PRODUCT_ID, id);
-//
-//        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, new ProductWithDetailExtractor());
-//        return allProduct.get(0);
-        return null;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, id);
+
+        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, new ProductWithDetailExtractor());
+        return allProduct.get(0);
     }
 
     @Override
