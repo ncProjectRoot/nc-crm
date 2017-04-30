@@ -104,7 +104,7 @@ ALTER TABLE history
 CREATE TABLE "orders" 
     ( 
      id BIGSERIAL  NOT NULL , 
-     date_finish TIMESTAMP(0)  NOT NULL , 
+     date_finish TIMESTAMP(0) , 
      preferred_date TIMESTAMP(0) , 
      status_id INTEGER  NOT NULL , 
      customer_id INTEGER  NOT NULL , 
@@ -117,9 +117,6 @@ CREATE TABLE "orders"
 
 ALTER TABLE "orders" 
     ADD CONSTRAINT orders_PK PRIMARY KEY ( id ) ;
-
-ALTER TABLE "orders" 
-    ADD CONSTRAINT orders__UN UNIQUE ( date_finish , customer_id ) ;
 
 
 CREATE TABLE organization 
@@ -161,7 +158,7 @@ CREATE TABLE product
      status_id INTEGER  NOT NULL , 
      description VARCHAR (400) , 
      discount_id INTEGER , 
-     group_id INTEGER  NOT NULL 
+     group_id INTEGER 
     ) 
 ;
 
