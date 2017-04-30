@@ -27,19 +27,18 @@ import org.springframework.stereotype.Repository;
  * @since 29.04.2017
  */
 @Repository
-public class ProductDAOImpl implements ProductDao {
+public class ProductDaoImpl implements ProductDao {
 
     private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
 
     @Autowired
-    private static DiscountDao discountDao;
+    private DiscountDao discountDao;
     @Autowired
-    private static GroupDao groupDao;
-    @Autowired
-    private static StatusDao statusDao;
+    private GroupDao groupDao;
 
     private SimpleJdbcInsert productInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private ProductWithDetailExtractor productWithDetailExtractor;
 
     @Override
     public Long create(Product product) {
@@ -106,7 +105,7 @@ public class ProductDAOImpl implements ProductDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ID, id);
 
-        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, new ProductWithDetailExtractor());
+        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, productWithDetailExtractor);
         return allProduct.get(0);
     }
 
@@ -115,7 +114,7 @@ public class ProductDAOImpl implements ProductDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_TITLE, title);
 
-        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_TITLE, params, new ProductWithDetailExtractor());
+        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_TITLE, params, productWithDetailExtractor);
         return allProduct.get(0);
     }
 
@@ -124,7 +123,7 @@ public class ProductDAOImpl implements ProductDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
 
-        return  namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, new ProductWithDetailExtractor());
+        return  namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
     }
 
     private Long getDiscountId(Discount discount) {
@@ -153,9 +152,19 @@ public class ProductDAOImpl implements ProductDao {
         this.productInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_PRODUCT_TABLE)
                 .usingGeneratedKeyColumns(PARAM_PRODUCT_ID);
+        productWithDetailExtractor = new ProductWithDetailExtractor(discountDao, groupDao);
     }
 
     private static final class ProductWithDetailExtractor implements ResultSetExtractor<List<Product>> {
+
+        private DiscountDao discountDao;
+        private GroupDao groupDao;
+
+        public ProductWithDetailExtractor(DiscountDao discountDao, GroupDao groupDao) {
+            this.discountDao = discountDao;
+            this.groupDao = groupDao;
+        }
+
         @Override
         public List<Product> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Product> allProduct = new ArrayList<>();
@@ -167,7 +176,7 @@ public class ProductDAOImpl implements ProductDao {
                 product.setDescription(rs.getString(PARAM_PRODUCT_DESCRIPTION));
 
                 long statusId = rs.getLong(PARAM_PRODUCT_STATUS_ID);
-                Status status = statusDao.findById(statusId);
+                Status status = Status.getStatusByID(statusId);
 
                 if (status instanceof ProductStatus) {
                     product.setStatus((ProductStatus) status);

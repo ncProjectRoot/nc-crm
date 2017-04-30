@@ -31,13 +31,14 @@ public class ComplaintDaoImpl implements ComplaintDao {
     private static final Logger log = LoggerFactory.getLogger(ComplaintDaoImpl.class);
 
     @Autowired
-    private static UserDao userDao;
+    private UserDao userDao;
 
     @Autowired
-    private static OrderDao orderDao;
+    private OrderDao orderDao;
 
     private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private ComplaintWithDetailExtractor complaintWithDetailExtractor;
 
     @Override
     public Long create(Complaint complaint) {
@@ -105,7 +106,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     public Complaint findById(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_ID, id);
-        List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_ID, params, new ComplaintWithDetailExtractor());
+        List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_ID, params, complaintWithDetailExtractor);
         return allComplaint.get(0);
     }
 
@@ -113,7 +114,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     public Complaint findByTitle(String title) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_TITLE, title);
-        List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_TITLE, params, new ComplaintWithDetailExtractor());
+        List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_TITLE, params, complaintWithDetailExtractor);
         return allComplaint.get(0);
     }
 
@@ -121,7 +122,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     public List<Complaint> findAllByDate(Date date) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_DATE, date);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_DATE, params, new ComplaintWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_DATE, params, complaintWithDetailExtractor);
     }
 
     private Long getUserId(User user) {
@@ -150,9 +151,18 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 .withTableName(PARAM_COMPLAINT_TABLE)
                 .usingGeneratedKeyColumns(PARAM_COMPLAINT_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.complaintWithDetailExtractor = new ComplaintWithDetailExtractor(userDao, orderDao);
     }
 
     private static final class ComplaintWithDetailExtractor implements ResultSetExtractor<List<Complaint>> {
+        private UserDao userDao;
+        private OrderDao orderDao;
+
+        public ComplaintWithDetailExtractor(UserDao userDao, OrderDao orderDao) {
+            this.userDao = userDao;
+            this.orderDao = orderDao;
+        }
+
         @Override
         public List<Complaint> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Complaint> allComplaint = new ArrayList<>();

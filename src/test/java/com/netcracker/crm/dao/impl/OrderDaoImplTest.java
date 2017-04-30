@@ -6,6 +6,8 @@
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.OrderDao;
+import com.netcracker.crm.dao.ProductDao;
+import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
@@ -36,6 +38,12 @@ public class OrderDaoImplTest {
     
     @Autowired
     private OrderDao orderDao;
+    
+    @Autowired
+    private ProductDao productDao;
+    
+    @Autowired
+    private UserDao userDao;
     
     public OrderDaoImplTest() {
     }
@@ -115,20 +123,38 @@ public class OrderDaoImplTest {
             fail("result <= 0");
     }
 
-//    /**
-//     * Test of delete method, of class OrderDaoImpl.
-//     */
-//    @Test
-//    public void testDelete() {
-//        System.out.println("delete");
-//        Long id = null;
-//        OrderDaoImpl instance = new OrderDaoImpl();
-//        long expResult = 0L;
-//        long result = instance.delete(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of delete method, of class OrderDaoImpl.
+     */
+    @Test
+    public void testDelete() {
+        System.out.println("delete");  
+        /////////////////////////Create test customer///////////////////////////
+        User customer = new User();
+        customer.setEmail("yarus32@mail.ru");
+        customer.setFirstName("Yarus32");
+        customer.setMiddleName("Mus32");
+        customer.setEnable(true);
+        customer.setUserRole(UserRole.ROLE_CUSTOMER);
+        customer.setPassword("412asdf132");
+        customer.setAccountNonLocked(true);
+        customer.setContactPerson(true);
+        //////////////////////////Create test order///////////////////////////
+        Order order = new Order();
+        order.setDate(LocalDate.now());
+        order.setPreferedDate(LocalDate.MIN);        
+        order.setStatus(OrderStatus.NEW);               
+        order.setCustomer(customer);
+        Product product = new Product();
+        product.setId(1L);
+        order.setProduct(product);        
+        long id = orderDao.create(order);
+        ///////////////////////////Delete test customer///////////////////////////
+        long result = orderDao.delete(id);
+        assertNotEquals(result, -1);
+        if(result <= 0)
+            fail("result <= 0");
+    }
 
     /**
      * Test of findById method, of class OrderDaoImpl.
@@ -138,70 +164,62 @@ public class OrderDaoImplTest {
         System.out.println("findById");
         Order result = orderDao.findById(1L);
         assertNotNull(result);
-        if(result.getStatus().getId() != 2L)
-            fail("status_id != 2");
+        assertNotNull(result.getDate());            
+        if(result.getStatus().getId() != 5L)
+            fail("status_id != 5");
         
-        assertEquals(result.getDate(), LocalDate.now());
+        assertEquals(result.getDate(), LocalDate.of(1994, 10, 10));
     }
 
-//    /**
-//     * Test of findAllByDate method, of class OrderDaoImpl.
-//     */
-//    @Test
-//    public void testFindAllByDate() {
-//        System.out.println("findAllByDate");
-//        Date date = null;
-//        OrderDaoImpl instance = new OrderDaoImpl();
-//        List<Order> expResult = null;
-//        List<Order> result = instance.findAllByDate(date);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of findAllByProductId method, of class OrderDaoImpl.
-//     */
-//    @Test
-//    public void testFindAllByProductId() {
-//        System.out.println("findAllByProductId");
-//        Long id = null;
-//        OrderDaoImpl instance = new OrderDaoImpl();
-//        List<Order> expResult = null;
-//        List<Order> result = instance.findAllByProductId(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of findAllByCustomerId method, of class OrderDaoImpl.
-//     */
-//    @Test
-//    public void testFindAllByCustomerId() {
-//        System.out.println("findAllByCustomerId");
-//        Long id = null;
-//        OrderDaoImpl instance = new OrderDaoImpl();
-//        List<Order> expResult = null;
-//        List<Order> result = instance.findAllByCustomerId(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of findAllByCsrId method, of class OrderDaoImpl.
-//     */
-//    @Test
-//    public void testFindAllByCsrId() {
-//        System.out.println("findAllByCsrId");
-//        Long id = null;
-//        OrderDaoImpl instance = new OrderDaoImpl();
-//        List<Order> expResult = null;
-//        List<Order> result = instance.findAllByCsrId(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of findAllByDate method, of class OrderDaoImpl.
+     */
+    @Test
+    public void testFindAllByDate() {
+        System.out.println("findAllByDate");
+        List<Order> result = orderDao.findAllByDateFinish(LocalDate.of(1994, 10, 10));
+        assertNotNull(result);
+        if(result.size() <= 0)
+            fail("list is empty");        
+    }
+
+    /**
+     * Test of findAllByProductId method, of class OrderDaoImpl.
+     */
+    @Test
+    public void testFindAllByProductId() {
+        System.out.println("findAllByProductId");
+        List<Order> result = orderDao.findAllByProductId(2L);
+        assertNotNull(result);
+        if(result.size() <= 0)
+            fail("list is empty");  
+        assertNotNull(productDao.findById(result.get(0).getId()));
+    }
+
+    /**
+     * Test of findAllByCustomerId method, of class OrderDaoImpl.
+     */
+    @Test
+    public void testFindAllByCustomerId() {
+        System.out.println("findAllByCustomerId");
+        List<Order> result = orderDao.findAllByCustomerId(2L);
+        assertNotNull(result);
+        if(result.size() <= 0)
+            fail("list is empty");  
+        assertNotNull(userDao.findById(result.get(0).getId()));
+    }
+
+    /**
+     * Test of findAllByCsrId method, of class OrderDaoImpl.
+     */
+    @Test
+    public void testFindAllByCsrId() {
+        System.out.println("findAllByCsrId");
+        List<Order> result = orderDao.findAllByCustomerId(2L);
+        assertNotNull(result);
+        if(result.size() <= 0)
+            fail("list is empty");
+        assertNotNull(userDao.findById(result.get(0).getId()));
+    }
     
 }
