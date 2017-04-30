@@ -24,13 +24,21 @@ public final class ProductSqlQuery {
             + "status_id = :status_id, description = :description, "
             + "discount_id = :discount_id, group_id = :group_id WHERE id = :id;";
     
-    public static final String SQL_FIND_PRODUCT_BY_ID = "SELECT * FROM history "
+    public static final String SQL_FIND_PRODUCT_BY_ID = ""
+            + "SELECT id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
+            + "FROM product "
             + "WHERE id = :id;";
     
-    public static final String SQL_FIND_PRODUCT_BY_TITLE = "SELECT * FROM history "
+    public static final String SQL_FIND_PRODUCT_BY_TITLE = ""
+            + "SELECT id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
+            + "FROM product "
             + "WHERE date_change_status = :date_change_status;";
 
-    public static final String SQL_FIND_ALL_PRODUCT_BY_GROUP_ID = "SELECT * FROM history "
-            + "WHERE date_change_status = :date_change_status;";
-
+    public static final String SQL_FIND_ALL_PRODUCT_BY_GROUP_ID = ""
+            + "SELECT id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
+            + "FROM product "
+            + "WHERE WHERE date_change_status = :date_change_status;";
 }
