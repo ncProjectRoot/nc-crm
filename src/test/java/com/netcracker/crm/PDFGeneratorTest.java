@@ -1,9 +1,6 @@
 package com.netcracker.crm;
 
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.pdf.PDFGenerator;
 import org.junit.Test;
 
@@ -21,17 +18,23 @@ public class PDFGeneratorTest {
 
         Order order = new Order();
         Product product = new Product();
+        Discount discount = new Discount();
+
+        discount.setId(1488l);
+        discount.setPercentage(5.5);
         product.setTitle("Internet");
         product.setDescription("25 mb/s");
         product.setDefaultPrice(55.5);
+        product.setDiscount(discount);
+
         order.setProduct(product);
         order.setId(214748l);
         order.setDate(LocalDate.MAX);
         order.setCustomer(user);
         order.setStatus(OrderStatus.DISABLED);
 
-        PDFGenerator pdfTest = new PDFGenerator();
-        pdfTest.generate(order);
+        PDFGenerator pdfGenerator = new PDFGenerator();
+        pdfGenerator.generate(order);
 
     }
 }

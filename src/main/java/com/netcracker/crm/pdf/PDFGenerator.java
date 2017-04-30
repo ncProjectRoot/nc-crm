@@ -4,13 +4,13 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 import com.netcracker.crm.domain.model.Order;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class PDFGenerator {
 
@@ -18,10 +18,11 @@ public class PDFGenerator {
     final static Font SIMPLE_FONT = new Font(Font.FontFamily.HELVETICA, 12);
 
     public void generate(Order order) throws DocumentException, IOException, MessagingException {
-        new PDFGenerator().createPdf("testPDF.pdf", order.getProduct().getTitle(), order.getProduct().getDescription(), order.getProduct().getDefaultPrice(), order.getId(), order.getDate(), order.getCustomer().getFirstName(), order.getCustomer().getLastName(), order.getCustomer().getPhone(), order.getCustomer().getEmail());
+
+        new PDFGenerator().createPdf(generateFileName(), order.getProduct().getTitle(), order.getProduct().getDescription(), order.getProduct().getDefaultPrice(), order.getProduct().getDiscount().getPercentage(), order.getId(), order.getDate(), order.getCustomer().getFirstName(), order.getCustomer().getLastName(), order.getCustomer().getPhone(), order.getCustomer().getEmail());
     }
 
-    private void createPdf(String filename, String name, String description, double price, Long orderNum, LocalDate date, String fName, String lName, String phoneNumber, String email)
+    private void createPdf(String filename, String name, String description, double price, double discount,Long orderNum, LocalDate date, String fName, String lName, String phoneNumber, String email)
             throws DocumentException, IOException {
 
         Document document = new Document();
@@ -37,11 +38,8 @@ public class PDFGenerator {
         //insert table
         document.add(createTable(name, description, String.valueOf(price)));
 
-        //insert customer details
-        document.add(createGlueOrderInfo(price));
-        document.add(new Paragraph(fName + " " + lName, SIMPLE_FONT));
-        document.add(new Paragraph(phoneNumber, SIMPLE_FONT));
-        document.add(new Paragraph(email, SIMPLE_FONT));
+        //insert customer's order details
+        document.add(createOrderInfoTable(fName, lName, price, discount, phoneNumber, email));
 
         document.close();
     }
@@ -65,16 +63,28 @@ public class PDFGenerator {
 
     }
 
-    private Paragraph createGlueOrderInfo(double price) {
 
-        Chunk glueOrderInfo = new Chunk(new VerticalPositionMark());
-        Paragraph p = new Paragraph("Customer information:", BOLD_FONT);
-        p.add(new Chunk(glueOrderInfo));
-        p.add("Order total: " + price + "UAH");
-        return p;
+    private PdfPTable createOrderInfoTable(String fName, String lName, double price, double discount, String phone, String email) {
+        PdfPTable infoTable = new PdfPTable(3);
+
+        infoTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+        infoTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        infoTable.addCell(new Paragraph("Customer information:", BOLD_FONT));
+        infoTable.addCell("");
+        infoTable.addCell(new Paragraph("Subtotal: " + price + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph(fName + " " + lName, SIMPLE_FONT));
+        infoTable.addCell("");
+        infoTable.addCell(new Paragraph("Discount: " + discount + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph(phone));
+        infoTable.addCell("");
+        infoTable.addCell(new Paragraph("Total order: " + (price - discount) + " UAH", BOLD_FONT));
+        infoTable.addCell(email);
+        infoTable.addCell("");
+        infoTable.addCell("");
+
+        return  infoTable;
 
     }
-
     private PdfPTable createTable(String name, String description, String price) {
 
         PdfPTable table = new PdfPTable(3);
@@ -94,7 +104,14 @@ public class PDFGenerator {
         table.addCell(description);
         table.addCell(price);
         table.setSpacingAfter(15);
+
         return table;
 
+    }
+
+    private String generateFileName() {
+        UUID fileName = UUID.randomUUID();
+
+        return fileName.toString() + ".pdf";
     }
 }
