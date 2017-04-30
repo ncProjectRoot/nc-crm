@@ -15,10 +15,11 @@ import org.springframework.stereotype.Repository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.ComplaintSqlQuery.*;
@@ -54,13 +55,15 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
                 .addValue(PARAM_COMPLAINT_MESSAGE, complaint.getMessage())
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
-                .addValue(PARAM_COMPLAINT_DATE, complaint.getDate())
+                .addValue(PARAM_COMPLAINT_DATE, Date.valueOf(complaint.getDate()))
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, customerId)
                 .addValue(PARAM_COMPLAINT_PMG_ID, pmgId)
                 .addValue(PARAM_COMPLAINT_ORDER_ID, orderId);
 
         long newId = complaintInsert.executeAndReturnKey(params)
                 .longValue();
+
+        complaint.setId(newId);
 
         log.info("Complaint with id: " + newId + " is successfully created.");
         return newId;
@@ -73,6 +76,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
         Long orderId = getOrderId(complaint.getOrder());
 
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ID, complaint.getId())
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
                 .addValue(PARAM_COMPLAINT_MESSAGE, complaint.getMessage())
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
@@ -111,38 +115,43 @@ public class ComplaintDaoImpl implements ComplaintDao {
     }
 
     @Override
-    public Complaint findByTitle(String title) {
+    public List<Complaint> findByTitle(String title) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_TITLE, title);
-        List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_TITLE, params, complaintWithDetailExtractor);
-        return allComplaint.get(0);
+        return namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_TITLE, params, complaintWithDetailExtractor);
     }
 
     @Override
-    public List<Complaint> findAllByDate(Date date) {
+    public List<Complaint> findAllByDate(LocalDate date) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_DATE, date);
         return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_DATE, params, complaintWithDetailExtractor);
     }
 
     private Long getUserId(User user) {
-        Long userId = user.getId();
-        if (userId != null) {
+        if (user != null) {
+            Long userId = user.getId();
+            if (userId != null) {
+                return userId;
+            }
+            userId = userDao.create(user);
+
             return userId;
         }
-        userId = userDao.create(user);
-
-        return userId;
+        return null;
     }
 
     private Long getOrderId(Order order) {
-        Long orderId = order.getId();
-        if (orderId != null) {
+        if (order != null) {
+            Long orderId = order.getId();
+            if (orderId != null) {
+                return orderId;
+            }
+            orderId = orderDao.create(order);
+
             return orderId;
         }
-        orderId = orderDao.create(order);
-
-        return orderId;
+        return null;
     }
 
     @Autowired

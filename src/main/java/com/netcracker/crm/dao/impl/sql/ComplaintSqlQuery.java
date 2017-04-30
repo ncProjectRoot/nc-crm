@@ -18,20 +18,20 @@ public final class ComplaintSqlQuery {
     public static final String PARAM_COMPLAINT_ORDER_ID = "order_id";
 
     public static final String SQL_FIND_COMPLAINT_BY_ID = "" +
-            "SELECT * FROM complaint" +
-            "WHERE email = :email;";
+            "SELECT * FROM complaint " +
+            "WHERE id = :id;";
 
     public static final String SQL_FIND_COMPLAINT_BY_TITLE = "" +
-            "SELECT * FROM complaint" +
+            "SELECT * FROM complaint " +
             "WHERE title = :title;";
 
     public static final String SQL_FIND_ALL_COMPLAINT_BY_DATE = "" +
-            "SELECT * FROM complaint" +
+            "SELECT * FROM complaint " +
             "WHERE date = :date;";
 
     public static final String SQL_UPDATE_COMPLAINT = "UPDATE complaint " +
             "SET title=:title, message=:message, status_id=:status_id, date=:date, " +
-            "customer_id=:customer_id, pmg_id=:pmg_id, order_id=:order_id" +
+            "customer_id=:customer_id, pmg_id=:pmg_id, order_id=:order_id " +
             "WHERE id=:id;";
 
 }
