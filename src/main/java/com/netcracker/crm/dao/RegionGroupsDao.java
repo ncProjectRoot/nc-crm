@@ -12,11 +12,11 @@ import java.util.List;
  */
 public interface RegionGroupsDao {
 
-    long create(Region region, Group group);
+    Long create(Region region, Group group);
 
-    long delete(Region region, Group group);
+    Long delete(Region region, Group group);
 
-    long delete(Long idRegion, Long idGroup);
+    Long delete(Long idRegion, Long idGroup);
 
     List<Group> findGroupsByRegion(Region region);
 

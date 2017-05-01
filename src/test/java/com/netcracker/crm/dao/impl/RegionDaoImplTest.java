@@ -1,8 +1,9 @@
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.RegionDao;
-import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Region;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Melnyk_Dmytro
@@ -24,60 +27,34 @@ public class RegionDaoImplTest {
     @Autowired
     private RegionDao regionDao;
 
-    @Test
+    private Region regionCreated;
+
+    @Before
     public void create() throws Exception {
-        Discount discount = new Discount();
-        discount.setTitle("Discount_for_Region_Ukraine");
-        discount.setDescription("descr");
-        discount.setPercentage(0.5);
-        discount.setActive(false);
-
-        Region region = new Region();
-        region.setDiscount(discount);
-        region.setName("Ukraine");
-
-        regionDao.create(region);
-
+        regionCreated = new Region();
+        regionCreated.setName("test region name");
+        regionDao.create(regionCreated);
+        assertNotNull(regionCreated.getId());
     }
 
     @Test
-    public void update() throws Exception {
-        Discount discount = new Discount();
-        discount.setId(6L);
+    public void findAndUpdateAndCount() throws Exception {
+        Region regionFoundById = regionDao.findById(regionCreated.getId());
+        assertEquals(regionCreated.getName(), regionFoundById.getName());
 
-        Region region = new Region();
-        region.setId(1L);
-        region.setDiscount(discount);
-        region.setName("Germany");
+        List<Region> regionsFoundByName = regionDao.findByName(regionCreated.getName());
+        assertEquals(regionsFoundByName.get(0).getId(), regionFoundById.getId());
 
-        regionDao.update(region);
+        regionCreated.setName("test update region name");
+        assertEquals(regionDao.update(regionCreated), regionCreated.getId());
+
+        assertEquals(regionDao.getCount(), new Long(1));
     }
 
-    @Test
+    @After
     public void delete() throws Exception {
-        Region region = new Region();
-        region.setId(11L);
-
-        System.out.println(regionDao.delete(region));
-    }
-
-    @Test
-    public void findById() throws Exception {
-        Region region = regionDao.findById(10L);
-        System.out.println(region);
-    }
-
-    @Test
-    public void findByName() throws Exception {
-        List<Region> list = regionDao.findByName("");
-        for (Region region : list) {
-            System.out.println(region);
-        }
-    }
-
-    @Test
-    public void getCount() throws Exception {
-        System.out.println(regionDao.getCount());
+        long affectedRows = regionDao.delete(regionCreated);
+        assertEquals(affectedRows, 1L);
     }
 
 }

@@ -45,11 +45,11 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public long create(Region region, Group group) {
+    public Long create(Region region, Group group) {
         Long regionId = getRegionId(region);
         Long groupId = getGroupId(group);
         if (regionId == null || groupId == null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_RG_GROUP_ID, groupId)
@@ -60,20 +60,20 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     }
 
     @Override
-    public long delete(Region region, Group group) {
+    public Long delete(Region region, Group group) {
         Long regionId = region.getId();
         Long groupId = group.getId();
         if (regionId == null || groupId == null) {
-            return -1L;
+            return null;
         } else {
             return delete(regionId, groupId);
         }
     }
 
     @Override
-    public long delete(Long regionId, Long groupId) {
+    public Long delete(Long regionId, Long groupId) {
         if (regionId < 1 || groupId < 1) {
-            return -1L;
+            return null;
         }
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_RG_REGION_ID, regionId)
@@ -81,7 +81,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         long deletedRows = namedJdbcTemplate.update(SQL_DELETE_RG, params);
         if (deletedRows == 0) {
             log.error("Row has not been deleted");
-            return -1L;
+            return null;
         } else {
             log.info("Group with id " + groupId + " was deleted from Region " + regionId);
             return deletedRows;

@@ -13,6 +13,6 @@ public interface RegionDao extends CrudDao<Region> {
 
     List<Region> findByName(String name);
 
-    long getCount();
+    Long getCount();
 
 }

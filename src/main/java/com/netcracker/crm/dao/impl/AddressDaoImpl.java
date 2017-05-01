@@ -38,7 +38,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public Long create(Address address) {
         if (address.getId() != null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
@@ -78,7 +78,7 @@ public class AddressDaoImpl implements AddressDao {
             return address.getId();
         } else {
             log.error("Address was not updated.");
-            return -1L;
+            return null;
         }
     }
 
@@ -89,15 +89,15 @@ public class AddressDaoImpl implements AddressDao {
 
             return (long) namedJdbcTemplate.update(SQL_DELETE_ADDRESS, params);
         }
-        return -1L;
+        return null;
     }
 
     @Override
-    public Long delete(Address object) {
-        if (object != null) {
-            return delete(object.getId());
+    public Long delete(Address address) {
+        if (address != null) {
+            return delete(address.getId());
         }
-        return -1L;
+        return null;
     }
 
     @Override

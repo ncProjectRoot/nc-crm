@@ -32,7 +32,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     @Override
     public Long create(Organization org) {
         if (org.getId() != null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_NAME, org.getName());
@@ -56,7 +56,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
             return org.getId();
         } else {
             log.error("Organization was not updated.");
-            return -1L;
+            return null;
         }
     }
 
@@ -67,7 +67,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
             return (long) namedJdbcTemplate.update(SQL_DELETE_ORGANIZATION, params);
         }
-        return -1L;
+        return null;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         if (org != null) {
             return delete(org.getId());
         }
-        return -1L;
+        return null;
     }
 
     @Override

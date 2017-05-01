@@ -37,19 +37,17 @@ public class RegionDaoImpl implements RegionDao {
 
     private SimpleJdbcInsert regionInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private RegionExtractor regionExtractor;
 
     @Override
     public Long create(Region region) {
         if (region.getId() != null) {
-            return -1L;
+            return null;
         }
-        Long discountId = null;
-        if (region.getDiscount() != null) {
-            discountId = getDiscountId(region.getDiscount());
-        }
+        Long discountId = getDiscountId(region.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_NAME, region.getName())
-                .addValue(PARAM_REGION_DISCOUNT, discountId);
+                .addValue(PARAM_REGION_DISCOUNT_ID, discountId);
         Long id = regionInsert.executeAndReturnKey(params).longValue();
         region.setId(id);
         log.info("Region with id: " + id + " is successfully created.");
@@ -61,20 +59,17 @@ public class RegionDaoImpl implements RegionDao {
     public Long update(Region region) {
         Long regionId = region.getId();
         if (regionId == null) {
-            return -1L;
+            return null;
         }
-        Long discountId = null;
-        if (region.getDiscount() != null) {
-            discountId = getDiscountId(region.getDiscount());
-        }
+        Long discountId = getDiscountId(region.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, regionId)
                 .addValue(PARAM_REGION_NAME, region.getName())
-                .addValue(PARAM_REGION_DISCOUNT, discountId);
+                .addValue(PARAM_REGION_DISCOUNT_ID, discountId);
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_REGION, params);
         if (affectedRows == 0) {
             log.error("Region has not been updated");
-            return -1L;
+            return null;
         } else {
             log.info("Region with id " + regionId + " was successfully updated");
             return affectedRows;
@@ -83,29 +78,27 @@ public class RegionDaoImpl implements RegionDao {
 
     @Override
     public Long delete(Long id) {
-        if (id < 1) {
-            return -1L;
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue(PARAM_REGION_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_REGION, params);
+            if (deletedRows == 0) {
+                log.error("Region has not been deleted");
+                return null;
+            } else {
+                log.info("Region with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
         }
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(PARAM_REGION_ID, id);
-        long deletedRows = namedJdbcTemplate.update(SQL_DELETE_REGION, params);
-        if (deletedRows == 0) {
-            log.error("Region has not been deleted");
-            return -1L;
-        } else {
-            log.info("Region with id " + id + " was successfully deleted");
-            return deletedRows;
-        }
+        return null;
     }
 
     @Override
     public Long delete(Region region) {
-        Long regionId = region.getId();
-        if (regionId == null) {
-            return -1L;
-        } else {
-            return delete(regionId);
+        if (region != null) {
+            return delete(region.getId());
         }
+        return null;
     }
 
     @Override
@@ -113,11 +106,9 @@ public class RegionDaoImpl implements RegionDao {
         log.debug("Start finding region by id");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, id);
-        List<Region> regions = namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID, params, new RegionExtractor());
+        List<Region> regions = namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID, params, regionExtractor);
         Region region = null;
-        if (regions.size() != 1) {
-            //TODO throw SomeException
-        } else {
+        if (regions.size() != 0) {
             region = regions.get(0);
         }
         log.debug("End finding region by id");
@@ -129,13 +120,13 @@ public class RegionDaoImpl implements RegionDao {
         log.debug("Start finding regions by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_NAME, "%" + name + "%");
-        List<Region> list = namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, new RegionExtractor());
+        List<Region> list = namedJdbcTemplate.query(SQL_FIND_REGION_BY_NAME, params, regionExtractor);
         log.debug("End finding regions by name");
         return list;
     }
 
     @Override
-    public long getCount() {
+    public Long getCount() {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_REGION_COUNT, Long.class);
     }
 
@@ -145,18 +136,29 @@ public class RegionDaoImpl implements RegionDao {
         regionInsert = new SimpleJdbcInsert(dataSource)
                 .usingGeneratedKeyColumns(PARAM_REGION_ID)
                 .withTableName(PARAM_REGION_TABLE);
+        regionExtractor = new RegionExtractor(discountDao);
     }
 
     private Long getDiscountId(Discount discount) {
-        Long discountId = discount.getId();
-        if (discountId != null) {
-            return discountId;
-        } else {
-            return discountDao.create(discount);
+        if (discount != null) {
+            Long discountId = discount.getId();
+            if (discountId != null) {
+                return discountId;
+            } else {
+                return discountDao.create(discount);
+            }
         }
+        return null;
     }
 
     private static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
+
+        private DiscountDao discountDao;
+
+        RegionExtractor(DiscountDao discountDao) {
+            this.discountDao = discountDao;
+        }
+
         @Override
         public List<Region> extractData(ResultSet rs) throws SQLException, DataAccessException {
             log.debug("Start extracting data");
@@ -165,16 +167,9 @@ public class RegionDaoImpl implements RegionDao {
                 Region region = new Region();
                 region.setId(rs.getLong(PARAM_REGION_ID));
                 region.setName(rs.getString(PARAM_REGION_NAME));
-                Long discountId = rs.getLong(PARAM_REGION_DISC_ID);
+                Long discountId = rs.getLong(PARAM_REGION_ID);
                 if (discountId > 0) {
-                    Discount discount = new Discount();
-                    discount.setId(discountId);
-                    discount.setTitle(rs.getString(PARAM_REGION_DISC_TITLE));
-                    discount.setDescription(rs.getString(PARAM_REGION_DISC_DESC));
-                    discount.setPercentage(rs.getDouble(PARAM_REGION_DISC_PERC));
-                    discount.setActive(rs.getBoolean(PARAM_REGION_DISC_ACTIVE));
-
-                    region.setDiscount(discount);
+                    region.setDiscount(discountDao.findById(discountId));
                 }
                 regions.add(region);
             }
