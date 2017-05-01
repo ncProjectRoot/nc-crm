@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -34,6 +33,7 @@ public class AddressDaoImpl implements AddressDao {
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert addressInsert;
+    private AddressWithDetailExtractor addressWithDetailExtractor;
 
     @Override
     public Long create(Address address) {
@@ -66,6 +66,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public Long update(Address address) {
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ADDRESS_ID, address.getId())
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
                 .addValue(PARAM_ADDRESS_LONGITUDE, address.getLongitude())
                 .addValue(PARAM_ADDRESS_DETAILS, address.getDetails())
@@ -83,12 +84,20 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public Long delete(Long id) {
-        throw new NotImplementedException();
+        if (id != null && id > 0) {
+            SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ADDRESS_ID, id);
+
+            return (long) namedJdbcTemplate.update(SQL_DELETE_ADDRESS, params);
+        }
+        return -1L;
     }
 
     @Override
     public Long delete(Address object) {
-        throw new NotImplementedException();
+        if (object != null) {
+            return delete(object.getId());
+        }
+        return -1L;
     }
 
     @Override
@@ -96,7 +105,7 @@ public class AddressDaoImpl implements AddressDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ADDRESS_ID, id);
 
-        return namedJdbcTemplate.query(SQL_FIND_ADDRESS_BY_ID, params, new AddressWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_ADDRESS_BY_ID, params, addressWithDetailExtractor);
     }
 
     @Autowired
@@ -105,14 +114,21 @@ public class AddressDaoImpl implements AddressDao {
                 .withTableName(PARAM_ADDRESS_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ADDRESS_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.addressWithDetailExtractor = new AddressWithDetailExtractor(regionDao);
     }
 
     private static final class AddressWithDetailExtractor implements ResultSetExtractor<Address> {
 
+        private RegionDao regionDao;
+
+        AddressWithDetailExtractor(RegionDao regionDao) {
+            this.regionDao = regionDao;
+        }
+
         @Override
         public Address extractData(ResultSet rs) throws SQLException, DataAccessException {
             Address address = null;
-            while (rs.next()) {
+            if (rs.next()) {
                 address = new Address();
                 address.setId(rs.getLong(PARAM_ADDRESS_ID));
                 address.setLatitude(rs.getDouble(PARAM_ADDRESS_LATITUDE));
@@ -120,13 +136,7 @@ public class AddressDaoImpl implements AddressDao {
                 address.setDetails(rs.getString(PARAM_ADDRESS_DETAILS));
 
                 long regionId = rs.getLong(PARAM_ADDRESS_REGION_ID);
-                if (regionId > 0) {
-                    Region region = new Region();
-                    region.setId(regionId);
-                    region.setName(PARAM_ADDRESS_REGION_NAME);
-
-                    address.setRegion(region);
-                }
+                address.setRegion(regionDao.findById(regionId));
             }
             return address;
         }
