@@ -94,12 +94,27 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Long delete(Long id) {
-        throw new NotImplementedException();
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_PRODUCT_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_PRODUCT, params);
+            if (deletedRows == 0) {
+                log.error("Product has not been deleted");
+                return null;
+            } else {
+                log.info("Product with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
+        }
+        return null;
     }
 
     @Override
-    public Long delete(Product object) {
-        throw new NotImplementedException();
+    public Long delete(Product product) {
+        if (product != null) {
+            return delete(product.getId());
+        }
+        return null;
     }
 
     @Override

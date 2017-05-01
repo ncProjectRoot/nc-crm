@@ -12,10 +12,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -44,7 +42,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     @Override
     public Long create(Complaint complaint) {
         if (complaint.getId() != null) {
-            return -1L;
+            return null;
         }
 
         Long customerId = getUserId(complaint.getCustomer());
@@ -55,7 +53,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
                 .addValue(PARAM_COMPLAINT_MESSAGE, complaint.getMessage())
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
-                .addValue(PARAM_COMPLAINT_DATE, Date.valueOf(complaint.getDate()))
+                .addValue(PARAM_COMPLAINT_DATE, complaint.getDate())
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, customerId)
                 .addValue(PARAM_COMPLAINT_PMG_ID, pmgId)
                 .addValue(PARAM_COMPLAINT_ORDER_ID, orderId);
@@ -71,12 +69,16 @@ public class ComplaintDaoImpl implements ComplaintDao {
 
     @Override
     public Long update(Complaint complaint) {
+        Long complaintId = complaint.getId();
+        if (complaintId == null) {
+            return null;
+        }
         Long customerId = getUserId(complaint.getCustomer());
         Long pmgId = getUserId(complaint.getPmg());
         Long orderId = getOrderId(complaint.getOrder());
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_COMPLAINT_ID, complaint.getId())
+                .addValue(PARAM_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
                 .addValue(PARAM_COMPLAINT_MESSAGE, complaint.getMessage())
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
@@ -89,21 +91,36 @@ public class ComplaintDaoImpl implements ComplaintDao {
 
         if (updatedRows > 0) {
             log.info("Complaint with id: " + complaint.getId() + " is successfully updated.");
-            return complaint.getId();
+            return complaintId;
         } else {
             log.error("Complaint was not updated.");
-            return -1L;
+            return null;
         }
     }
 
     @Override
     public Long delete(Long id) {
-        throw new NotImplementedException();
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_COMPLAINT_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_COMPLAINT, params);
+            if (deletedRows == 0) {
+                log.error("Complaint has not been deleted");
+                return null;
+            } else {
+                log.info("Complaint with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
+        }
+        return null;
     }
 
     @Override
-    public Long delete(Complaint object) {
-        throw new NotImplementedException();
+    public Long delete(Complaint complaint) {
+        if (complaint != null) {
+            return delete(complaint.getId());
+        }
+        return null;
     }
 
     @Override
@@ -111,7 +128,11 @@ public class ComplaintDaoImpl implements ComplaintDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_ID, id);
         List<Complaint> allComplaint = namedJdbcTemplate.query(SQL_FIND_COMPLAINT_BY_ID, params, complaintWithDetailExtractor);
-        return allComplaint.get(0);
+        Complaint complaint = null;
+        if (allComplaint.size() != 0) {
+            complaint = allComplaint.get(0);
+        }
+        return complaint;
     }
 
     @Override
@@ -167,7 +188,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
         private UserDao userDao;
         private OrderDao orderDao;
 
-        public ComplaintWithDetailExtractor(UserDao userDao, OrderDao orderDao) {
+        ComplaintWithDetailExtractor(UserDao userDao, OrderDao orderDao) {
             this.userDao = userDao;
             this.orderDao = orderDao;
         }
@@ -192,20 +213,17 @@ public class ComplaintDaoImpl implements ComplaintDao {
 
                 Long customerId = rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID);
                 if (customerId > 0) {
-                    User customer = userDao.findById(customerId);
-                    complaint.setCustomer(customer);
+                    complaint.setCustomer(userDao.findById(customerId));
                 }
 
                 Long pmgId = rs.getLong(PARAM_COMPLAINT_PMG_ID);
                 if (pmgId > 0) {
-                    User pmg = userDao.findById(pmgId);
-                    complaint.setCustomer(pmg);
+                    complaint.setCustomer(userDao.findById(pmgId));
                 }
 
                 Long orderId = rs.getLong(PARAM_COMPLAINT_ORDER_ID);
                 if (orderId > 0) {
-                    Order order = orderDao.findById(orderId);
-                    complaint.setOrder(order);
+                    complaint.setOrder(orderDao.findById(orderId));
                 }
                 allComplaint.add(complaint);
             }

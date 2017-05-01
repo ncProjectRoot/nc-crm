@@ -2,8 +2,10 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.OrderDao;
+import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,65 +27,75 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class ComplaintDaoImplTest {
 
-    private Complaint complaint;
-
     @Autowired
     private ComplaintDao complaintDao;
-
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private OrderDao orderDao;
+    @Autowired
+    private ProductDao productDao;
+
+    private Complaint complaintCreated;
+    private User userCreated;
+    private Order orderCreated;
+    private Product productCreated;
 
     @Before
     public void create() throws Exception {
-        complaint = new Complaint();
-        complaint.setTitle("test title complaint");
-        complaint.setMessage("test message complaint");
-        complaint.setStatus(ComplaintStatus.OPEN);
-        complaint.setDate(LocalDate.of(1967, 06, 22));
-        complaint.setCustomer(userDao.findById(1L));
-        complaint.setOrder(orderDao.findById(1L));
-        Long id = complaintDao.create(complaint);
-        assertNotNull(id);
+        complaintCreated = new Complaint();
+        complaintCreated.setTitle("test title complaint");
+        complaintCreated.setMessage("test message complaint");
+        complaintCreated.setStatus(ComplaintStatus.OPEN);
+        complaintCreated.setDate(LocalDate.now());
+
+        userCreated = new User();
+        userCreated.setPassword("test password");
+        userCreated.setFirstName("test first name");
+        userCreated.setMiddleName("test middle name");
+        userCreated.setEmail("test email");
+        userCreated.setEnable(false);
+        userCreated.setAccountNonLocked(false);
+        userCreated.setContactPerson(false);
+        userCreated.setUserRole(UserRole.ROLE_CUSTOMER);
+        complaintCreated.setCustomer(userCreated);
+
+        orderCreated = new Order();
+        orderCreated.setStatus(OrderStatus.NEW);
+        orderCreated.setCustomer(userCreated);
+
+        productCreated = new Product();
+        productCreated.setTitle("test product title");
+        productCreated.setStatus(ProductStatus.OUTDATED);
+        orderCreated.setProduct(productCreated);
+
+        complaintCreated.setOrder(orderCreated);
+
+        assertNotNull(complaintDao.create(complaintCreated));
     }
 
     @Test
-    public void update() throws Exception {
-        complaint.setMessage("update test message complaint");
-        assertEquals(complaintDao.update(complaint), complaint.getId());
+    public void findAndUpdateAndCount() throws Exception {
+        Complaint complaintFoundById = complaintDao.findById(complaintCreated.getId());
+        assertEquals(complaintCreated.getTitle(), complaintFoundById.getTitle());
+
+        List<Complaint> complaintsFoundByTitle = complaintDao.findByTitle(complaintCreated.getTitle());
+        assertEquals(complaintCreated.getId(), complaintsFoundByTitle.get(0).getId());
+
+        List<Complaint> complaintsFoundByDate = complaintDao.findAllByDate(complaintCreated.getDate());
+        assertEquals(complaintCreated.getId(), complaintsFoundByDate.get(0).getId());
+
+        complaintCreated.setMessage("update test message complaint");
+        assertEquals(complaintDao.update(complaintCreated), complaintCreated.getId());
     }
 
-    @Test
-    public void findById() throws Exception {
-        Complaint complaint = complaintDao.findById(this.complaint.getId());
-        assertNotNull(complaint);
-        assertEquals(complaint.getId(), this.complaint.getId());
-    }
-
-    @Test
-    public void findByTitle() throws Exception {
-        List<Complaint> complaintList = complaintDao.findByTitle(this.complaint.getTitle());
-        boolean assertListContains = false;
-        for (Complaint complaint : complaintList) {
-            if (complaint.getId().equals(this.complaint.getId())) {
-                assertListContains = true;
-            }
-        }
-        assertTrue(assertListContains);
-    }
-
-    @Test
-    public void findAllByDate() throws Exception {
-        List<Complaint> complaintList = complaintDao.findAllByDate(this.complaint.getDate());
-        boolean assertListContains = false;
-        for (Complaint complaint : complaintList) {
-            if (complaint.getId().equals(this.complaint.getId())) {
-                assertListContains = true;
-            }
-        }
-        assertTrue(assertListContains);
+    @After
+    public void delete() throws Exception {
+        long affectedRows = complaintDao.delete(complaintCreated);
+        assertEquals(affectedRows, 1L);
+        orderDao.delete(orderCreated);
+        productDao.delete(productCreated);
+        userDao.delete(userCreated);
     }
 
 }

@@ -6,6 +6,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.Order;
 
+import java.sql.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -281,13 +282,15 @@ public class OrderDaoImpl implements OrderDao {
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getLong(PARAM_ORDER_ID));
-                order.setDate(rs.getDate(PARAM_ORDER_DATE_FINISH).toLocalDate());
-                java.sql.Date d = rs.getDate(PARAM_ORDER_PREFERRED_DATE);
-                LocalDate date = null;
-                if(d != null)
-                    date = d.toLocalDate();
-                order.setPreferedDate(date);
-                
+                Date dateFinish = rs.getDate(PARAM_ORDER_DATE_FINISH);
+                if (dateFinish != null) {
+                    order.setDate(dateFinish.toLocalDate());
+                }
+                Date datePreferred = rs.getDate(PARAM_ORDER_PREFERRED_DATE);
+                if (datePreferred != null) {
+                    order.setPreferedDate(datePreferred.toLocalDate());
+
+                }
                 long statusId = rs.getLong(PARAM_ORDER_STATUS);
                 if (statusId > 0) {
                     Status status = Status.getStatusByID(statusId);  
