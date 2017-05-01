@@ -72,7 +72,7 @@ public class RegionDaoImpl implements RegionDao {
             return null;
         } else {
             log.info("Region with id " + regionId + " was successfully updated");
-            return affectedRows;
+            return regionId;
         }
     }
 

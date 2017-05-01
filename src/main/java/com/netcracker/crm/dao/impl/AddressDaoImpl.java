@@ -65,8 +65,12 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public Long update(Address address) {
+        Long addressId = address.getId();
+        if (addressId == null) {
+            return null;
+        }
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_ADDRESS_ID, address.getId())
+                .addValue(PARAM_ADDRESS_ID, addressId)
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
                 .addValue(PARAM_ADDRESS_LONGITUDE, address.getLongitude())
                 .addValue(PARAM_ADDRESS_DETAILS, address.getDetails())
@@ -74,8 +78,8 @@ public class AddressDaoImpl implements AddressDao {
 
         int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ADDRESS, params);
         if (updatedRows > 0) {
-            log.info("Address with id: " + address.getId() + " is successfully updated.");
-            return address.getId();
+            log.info("Address with id: " + addressId + " is successfully updated.");
+            return addressId;
         } else {
             log.error("Address was not updated.");
             return null;

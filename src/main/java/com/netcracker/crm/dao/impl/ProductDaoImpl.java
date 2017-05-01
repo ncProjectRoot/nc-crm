@@ -68,11 +68,15 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Long update(Product product) {
+        Long productId = product.getId();
+        if (productId == null) {
+            return null;
+        }
         Long discountId = getDiscountId(product.getDiscount());
         Long groupId = getGroupId(product.getGroup());
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_ID, product.getId())
+                .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_PRODUCT_TITLE, product.getTitle())
                 .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
                 .addValue(PARAM_PRODUCT_STATUS_ID, product.getStatus().getId())
@@ -83,8 +87,8 @@ public class ProductDaoImpl implements ProductDao {
         int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_PRODUCT, params);
 
         if (affectedRows > 0) {
-            log.info("Product with id: " + product.getId() + " is successfully updated.");
-            return product.getId();
+            log.info("Product with id: " + productId + " is successfully updated.");
+            return productId;
         } else {
             log.error("Product was not updated.");
             return -1L;

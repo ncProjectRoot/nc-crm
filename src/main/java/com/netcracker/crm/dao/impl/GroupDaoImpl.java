@@ -71,7 +71,7 @@ public class GroupDaoImpl implements GroupDao {
             return null;
         } else {
             log.info("Group with id " + groupId + " was successfully updated");
-            return affectedRows;
+            return groupId;
         }
     }
 

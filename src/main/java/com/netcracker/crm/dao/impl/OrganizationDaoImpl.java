@@ -47,14 +47,18 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Long update(Organization org) {
+        Long orgId = org.getId();
+        if (orgId == null) {
+            return null;
+        }
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_ORG_ID, org.getId())
+                .addValue(PARAM_ORG_ID, orgId)
                 .addValue(PARAM_ORG_NAME, org.getName());
 
         int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
         if (updatedRows > 0) {
-            log.info("Organization with id: " + org.getId() + " is successfully updated.");
-            return org.getId();
+            log.info("Organization with id: " + orgId + " is successfully updated.");
+            return orgId;
         } else {
             log.error("Organization was not updated.");
             return null;

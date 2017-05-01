@@ -96,7 +96,7 @@ public class UserDaoImpl implements UserDao {
 
         if (affectedRows > 0) {
             log.info("User with id: " + userId + " is successfully updated.");
-            return user.getId();
+            return userId;
         } else {
             log.error("User was not updated.");
             return null;

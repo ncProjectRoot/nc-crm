@@ -69,7 +69,7 @@ public class ProductDaoImplTest {
         Product productFoundByTitle = productDao.findByTitle(productCreated.getTitle());
         assertEquals(productCreated.getId(), productFoundByTitle.getId());
 
-        List<Product> productsFoundByGroupId = productDao.findAllByGroupId(productCreated.getId());
+        List<Product> productsFoundByGroupId = productDao.findAllByGroupId(groupCreated.getId());
         assertEquals(productCreated.getId(), productsFoundByGroupId.get(0).getId());
 
         productCreated.setStatus(ProductStatus.OUTDATED);

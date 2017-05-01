@@ -133,7 +133,7 @@ public class HistoryDaoImpl implements HistoryDao {
 
         if (updatedRows > 0) {
             log.info("History with id: " + historyId + " is successfully updated.");
-            return orderId;
+            return historyId;
         } else {
             log.error("History was not updated.");
             return null;

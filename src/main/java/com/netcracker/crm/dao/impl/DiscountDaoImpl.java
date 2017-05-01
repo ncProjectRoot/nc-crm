@@ -69,7 +69,7 @@ public class DiscountDaoImpl implements DiscountDao {
             return null;
         } else {
             log.info("Discount with id " + discountId + " was successfully updated");
-            return affectedRows;
+            return discountId;
         }
     }
 

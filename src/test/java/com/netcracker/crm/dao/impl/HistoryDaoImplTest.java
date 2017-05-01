@@ -74,7 +74,7 @@ public class HistoryDaoImplTest {
         historyCreated = new History();
         historyCreated.setOldStatus(OrderStatus.PAUSED);
         historyCreated.setDateChangeStatus(LocalDate.now());
-        historyCreated.setDescChangeStatus("test desc change status");
+        historyCreated.setDescChangeStatus("test History desc change status");
         historyCreated.setOrder(orderCreated);
         historyCreated.setComplaint(complaintCreated);
         historyCreated.setProduct(productCreated);
@@ -88,16 +88,16 @@ public class HistoryDaoImplTest {
         assertEquals(historyCreated.getOldStatus(), historyFoundById.getOldStatus());
 
         List<History> historyFoundByProductId = historyDao.findAllByProductId(productCreated.getId());
-        assertEquals(orderCreated.getId(), historyFoundByProductId.get(0).getId());
+        assertEquals(historyCreated.getId(), historyFoundByProductId.get(0).getId());
 
         List<History> historyFoundByComplaintId = historyDao.findAllByComplaintId(complaintCreated.getId());
-        assertEquals(orderCreated.getId(), historyFoundByComplaintId.get(0).getId());
+        assertEquals(historyCreated.getId(), historyFoundByComplaintId.get(0).getId());
 
         List<History> historyFoundByOrderId = historyDao.findAllByOrderId(orderCreated.getId());
-        assertEquals(orderCreated.getId(), historyFoundByOrderId.get(0).getId());
+        assertEquals(historyCreated.getId(), historyFoundByOrderId.get(0).getId());
 
         List<History> historyFoundByDate = historyDao.findAllByDate(historyCreated.getDateChangeStatus());
-        assertEquals(orderCreated.getId(), historyFoundByDate.get(0).getId());
+        assertEquals(historyCreated.getId(), historyFoundByDate.get(0).getId());
 
         historyCreated.setOldStatus(OrderStatus.ACTIVE);
         assertEquals(historyDao.update(historyCreated), historyCreated.getId());
