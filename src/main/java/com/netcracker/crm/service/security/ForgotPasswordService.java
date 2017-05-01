@@ -1,4 +1,4 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.security;
 
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.User;

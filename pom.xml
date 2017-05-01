@@ -120,6 +120,12 @@
 			<version>1.5.2.RELEASE</version>
 		</dependency>
 
+		<!--Model Mapper-->
+		<dependency>
+			<groupId>org.modelmapper.extensions</groupId>
+			<artifactId>modelmapper-spring</artifactId>
+			<version>0.7.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>
