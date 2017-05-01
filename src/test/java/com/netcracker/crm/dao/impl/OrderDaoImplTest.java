@@ -95,15 +95,4 @@ public class OrderDaoImplTest {
         userDao.delete(userCreated);
     }
 
-
-
-//    @Test
-//    public void testFindAllByDate() {
-//        System.out.println("findAllByDate");
-//        List<Order> result = orderDao.findAllByDateFinish(LocalDate.of(1994, 10, 10));
-//        assertNotNull(result);
-//        if(result.size() <= 0)
-//            fail("list is empty");
-//    }
-//
 }

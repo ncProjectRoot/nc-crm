@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,7 +43,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public Long create(Product product) {
         if (product.getId() != null) {
-            return -1L;
+            return null;
         }
 
         Long discountId = getDiscountId(product.getDiscount());
@@ -78,8 +78,7 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_STATUS_ID, product.getStatus().getId())
                 .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription())
                 .addValue(PARAM_PRODUCT_DISCOUNT_ID, discountId)
-                .addValue(PARAM_PRODUCT_GROUP_ID, groupId)
-                ;
+                .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
 
         int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_PRODUCT, params);
 
@@ -123,7 +122,11 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_ID, id);
 
         List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, productWithDetailExtractor);
-        return allProduct.get(0);
+        Product product = null;
+        if (allProduct.size() != 0) {
+            product = allProduct.get(0);
+        }
+        return product;
     }
 
     @Override
@@ -132,7 +135,11 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_TITLE, title);
 
         List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_TITLE, params, productWithDetailExtractor);
-        return allProduct.get(0);
+        Product product = null;
+        if (allProduct.size() != 0) {
+            product = allProduct.get(0);
+        }
+        return product;
     }
 
     @Override
@@ -140,7 +147,7 @@ public class ProductDaoImpl implements ProductDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
 
-        return  namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
     }
 
     private Long getDiscountId(Discount discount) {
@@ -198,24 +205,19 @@ public class ProductDaoImpl implements ProductDao {
                 product.setDefaultPrice(rs.getDouble(PARAM_PRODUCT_DEFAULT_PRICE));
                 product.setDescription(rs.getString(PARAM_PRODUCT_DESCRIPTION));
 
-                long statusId = rs.getLong(PARAM_PRODUCT_STATUS_ID);
-                Status status =  Status.getStatusByID(statusId);
-
+                Status status = Status.getStatusByID(rs.getLong(PARAM_PRODUCT_STATUS_ID));
                 if (status instanceof ProductStatus) {
                     product.setStatus((ProductStatus) status);
                 }
 
-
                 Long discountId = rs.getLong(PARAM_PRODUCT_DISCOUNT_ID);
                 if (discountId > 0) {
-                    Discount discount = discountDao.findById(discountId);
-                    product.setDiscount(discount);
+                    product.setDiscount(discountDao.findById(discountId));
                 }
 
                 Long groupId = rs.getLong(PARAM_PRODUCT_GROUP_ID);
                 if (groupId > 0) {
-                    Group group = groupDao.findById(groupId);
-                    product.setGroup(group);
+                    product.setGroup(groupDao.findById(groupId));
                 }
 
                 allProduct.add(product);
