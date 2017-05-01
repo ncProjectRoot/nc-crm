@@ -75,7 +75,7 @@ public class ComplaintDaoImplTest {
     }
 
     @Test
-    public void findAndUpdateAndCount() throws Exception {
+    public void findAndUpdate() throws Exception {
         Complaint complaintFoundById = complaintDao.findById(complaintCreated.getId());
         assertEquals(complaintCreated.getTitle(), complaintFoundById.getTitle());
 

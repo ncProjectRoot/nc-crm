@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.netcracker.crm.dao.impl.sql;
 
 /**
@@ -19,11 +14,6 @@ public final class OrderSqlQuery {
     public static final String PARAM_CUSTOMER_ID = "customer_id";
     public static final String PARAM_PRODUCT_ID = "product_id";
     public static final String PARAM_CSR_ID = "csr_id";
-
-    public static final String SQL_CREATE_ORDER = "INSERT INTO orders(date_finish, "
-            + "preferred_date, status_id, customer_id, product_id, csr_id) "
-            + "VALUES (:date_finish, :preferred_date, :status_id, :customer_id, "
-            + ":product_id, :csr_id);";
 
     public static final String SQL_UPDATE_ORDER = "UPDATE orders "
             + "SET date_finish = :date_finish, preferred_date = :preferred_date, "

@@ -90,7 +90,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
         int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_COMPLAINT, params);
 
         if (updatedRows > 0) {
-            log.info("Complaint with id: " + complaint.getId() + " is successfully updated.");
+            log.info("Complaint with id: " + complaintId + " is successfully updated.");
             return complaintId;
         } else {
             log.error("Complaint was not updated.");

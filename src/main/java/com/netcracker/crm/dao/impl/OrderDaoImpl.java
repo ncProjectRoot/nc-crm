@@ -1,4 +1,3 @@
-
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.OrderDao;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import static com.netcracker.crm.dao.impl.sql.OrderSqlQuery.*;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.Status;
@@ -28,12 +26,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+
+import static com.netcracker.crm.dao.impl.sql.OrderSqlQuery.*;
 
 /**
- *
- * @author YARUS
+ * @author Karpunets
+ * @since 01.06.2017
  */
 @Repository
 public class OrderDaoImpl implements OrderDao {
@@ -42,239 +40,184 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private ProductDao productDao;
     
-    private SimpleJdbcInsert simpleInsert;
+    private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private HistoryWithDetailExtractor historyWithDetailExtractor;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
+        this.complaintInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_ORDER_TABLE)
+                .usingGeneratedKeyColumns(PARAM_ORDER_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.simpleInsert = new SimpleJdbcInsert(dataSource)
-                .usingGeneratedKeyColumns(PARAM_ORDER_ID)
-                .withTableName(PARAM_ORDER_TABLE);
+        this.historyWithDetailExtractor = new HistoryWithDetailExtractor(userDao, productDao);
     }
 
     @Override
     public Long create(Order order) {
-        if (order == null) {
-            return -1L;
+        if (order.getId() != null) {
+            return null;
         }
-        Long customerId = getCustomerId(order.getCustomer());
+        Long customerId = getUserId(order.getCustomer());
         Long productId = getProductId(order.getProduct());
-        Long csrId = getCsrId(order.getCsr());
-        Long statusId = null;
-        if (order.getStatus() != null) {
-            statusId = order.getStatus().getId();
-        }
+        Long csrId = getUserId(order.getCsr());
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_DATE_FINISH, order.getDate())
                 .addValue(PARAM_ORDER_PREFERRED_DATE, order.getPreferedDate())
-                .addValue(PARAM_ORDER_STATUS, statusId)
+                .addValue(PARAM_ORDER_STATUS, order.getStatus().getId())
                 .addValue(PARAM_CUSTOMER_ID, customerId)
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CSR_ID, csrId);
 
-        KeyHolder keys = new GeneratedKeyHolder();
-        int affectedRows = affectedRows = namedJdbcTemplate.update(SQL_CREATE_ORDER, params, keys);
+        long newId = complaintInsert.executeAndReturnKey(params)
+                .longValue();
+        order.setId(newId);
 
-        Long newId = -1L;
-        if (affectedRows > 0) {
-            newId = (Long) keys.getKeys().get(PARAM_ORDER_ID);
-            order.setId(newId);
-            log.info("Order with id: " + newId + " is successfully created.");
-            return newId;
-        } else {
-            log.error("Order doesn't created.");
-            return newId;
-        }
-
-//        Long id = simpleInsert.executeAndReturnKey(params).longValue();
-//        order.setId(id);
-//        log.info("Order with id: " + id + " is successfully created.");
-//        return id;
+        log.info("Order with id: " + newId + " is successfully created.");
+        return newId;
     }
 
-    private Long getCustomerId(User customer) {
-        if (customer == null) {
-            return null;
+    private Long getUserId(User user) {
+        if (user != null) {
+            Long userId = user.getId();
+            if (userId != null) {
+                return userId;
+            }
+            userId = userDao.create(user);
+
+            return userId;
         }
-        Long customerId = customer.getId();
-        if (customerId == null || customerId <= 0) {
-            log.info("Start creating customer.");
-            customerId = userDao.create(customer);
-        }
-        return customerId;
+        return null;
     }
 
     private Long getProductId(Product product) {
-        if (product == null) {
-            return null;
-        }
-        Long productId = product.getId();
-        if (productId == null || productId <= 0) {
+        if (product != null) {
+            Long productId = product.getId();
+            if (productId != null) {
+                return productId;
+            }
             productId = productDao.create(product);
-        }
-        return productId;
-    }
 
-    private Long getCsrId(User csr) {
-        if (csr == null) {
-            return null;
+            return productId;
         }
-        Long csrId = csr.getId();
-        if (csrId == null || csrId <= 0) {
-            csrId = userDao.create(csr);
-        }
-        return csrId;
+        return null;
     }
 
     @Override
     public Long update(Order order) {
-        if (order == null) {
-            return -1L;
+        Long orderId = order.getId();
+        if (orderId == null) {
+            return null;
         }
-        Long customerId = getCustomerId(order.getCustomer());
+        Long customerId = getUserId(order.getCustomer());
         Long productId = getProductId(order.getProduct());
-        Long csrId = getCsrId(order.getCsr());
-        Long statusId = null;
-        if (order.getStatus() != null) {
-            statusId = order.getStatus().getId();
-        }
+        Long csrId = getUserId(order.getCsr());
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_ORDER_ID, order.getId())
+                .addValue(PARAM_ORDER_ID, orderId)
                 .addValue(PARAM_ORDER_DATE_FINISH, order.getDate())
                 .addValue(PARAM_ORDER_PREFERRED_DATE, order.getPreferedDate())
-                .addValue(PARAM_ORDER_STATUS, statusId)
+                .addValue(PARAM_ORDER_STATUS, order.getStatus().getId())
                 .addValue(PARAM_CUSTOMER_ID, customerId)
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CSR_ID, csrId);
 
-        KeyHolder keys = new GeneratedKeyHolder();
-        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_ORDER, params, keys);
+        int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORDER, params);
 
-        if (affectedRows > 0) {
-            log.info("Order with id: " + order.getId() + " is successfully updated.");
-            return affectedRows;
+        if (updatedRows > 0) {
+            log.info("Order with id: " + orderId + " is successfully updated.");
+            return orderId;
         } else {
-            log.error("Order doesn't updated.");
-            return affectedRows;
+            log.error("Order was not updated.");
+            return null;
         }
     }
 
     @Override
     public Long delete(Long id) {
-        if (id == null || id <= 0) {
-            return -1L;
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_ORDER_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_ORDER, params);
+            if (deletedRows == 0) {
+                log.error("Order has not been deleted");
+                return null;
+            } else {
+                log.info("Order with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
         }
-        SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORDER_ID, id);
-
-        long affectedRows = namedJdbcTemplate.update(SQL_DELETE_ORDER, params);
-
-        if (affectedRows > 0) {
-            log.info("Order with id: " + id + " is successfully deleted.");
-            return affectedRows;
-        } else {
-            log.error("Order doesn't deleted.");
-            return affectedRows;
-        }
+        return null;
     }
 
     @Override
     public Long delete(Order order) {
-        if (order == null || order.getId() == null || order.getId() <= 0) {
-            return -1L;
+        if (order != null) {
+            return delete(order.getId());
         }
-        SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORDER_ID, order.getId());
-
-        long affectedRows = namedJdbcTemplate.update(SQL_DELETE_ORDER, params);
-
-        if (affectedRows > 0) {
-            log.info("Order with id: " + order.getId() + " is successfully deleted.");
-            return affectedRows;
-        } else {
-            log.error("Order doesn't deleted.");
-            return affectedRows;
-        }
+        return null;
     }
 
     @Override
     public Order findById(Long id) {
-        if (id == null || id <= 0) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ID, id);
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, new HistoryWithDetailExtractor());
-        if(allOrder == null)
-            return null;
-        return allOrder.get(0);
+        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, historyWithDetailExtractor);
+        Order order = null;
+        if (allOrder.size() != 0) {
+            order = allOrder.get(0);
+        }
+        return order;
     }
     
     @Override
     public List<Order> findAllByDateFinish(LocalDate date) {
-        if (date == null) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_DATE_FINISH, date);
-
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_DATE_FINISH, params, new HistoryWithDetailExtractor());
-        return allOrder;
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_DATE_FINISH, params, historyWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByPreferredDate(LocalDate date) {
-        if (date == null) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_PREFERRED_DATE, date);
-
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE, params, new HistoryWithDetailExtractor());
-        return allOrder;
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE, params, historyWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByProductId(Long id) {
-        if (id == null || id <= 0) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ID, id);
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PRODUCT_ID, params, new HistoryWithDetailExtractor());
-        return allOrder;
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PRODUCT_ID, params, historyWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByCustomerId(Long id) {
-        if (id == null || id <= 0) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_CUSTOMER_ID, id);
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID, params, new HistoryWithDetailExtractor());
-        return allOrder;
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID, params, historyWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByCsrId(Long id) {
-        if (id == null || id <= 0) {
-            return null;
-        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_CSR_ID, id);
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID, params, new HistoryWithDetailExtractor());
-        return allOrder;
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID, params, historyWithDetailExtractor);
     }
 
-    
+    private static final class HistoryWithDetailExtractor implements ResultSetExtractor<List<Order>> {
 
-    private final class HistoryWithDetailExtractor implements ResultSetExtractor<List<Order>> {
+        private UserDao userDao;
+        private ProductDao productDao;
+
+        HistoryWithDetailExtractor(UserDao userDao, ProductDao productDao) {
+            this.userDao = userDao;
+            this.productDao = productDao;
+        }
 
         @Override
         public List<Order> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -282,39 +225,37 @@ public class OrderDaoImpl implements OrderDao {
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getLong(PARAM_ORDER_ID));
+
                 Date dateFinish = rs.getDate(PARAM_ORDER_DATE_FINISH);
                 if (dateFinish != null) {
                     order.setDate(dateFinish.toLocalDate());
                 }
+
                 Date datePreferred = rs.getDate(PARAM_ORDER_PREFERRED_DATE);
                 if (datePreferred != null) {
                     order.setPreferedDate(datePreferred.toLocalDate());
 
                 }
+
                 long statusId = rs.getLong(PARAM_ORDER_STATUS);
-                if (statusId > 0) {
-                    Status status = Status.getStatusByID(statusId);  
-                    if (status instanceof OrderStatus) {
-                        order.setStatus((OrderStatus) status);
-                    }
+                Status status = Status.getStatusByID(statusId);
+                if (status instanceof OrderStatus) {
+                    order.setStatus((OrderStatus) status);
                 }
                            
                 Long customerId = rs.getLong(PARAM_CUSTOMER_ID);
                 if (customerId > 0) {
-                    User customer = userDao.findById(customerId);
-                    order.setCustomer(customer);
+                    order.setCustomer(userDao.findById(customerId));
                 }
 
                 Long productId = rs.getLong(PARAM_PRODUCT_ID);
                 if (productId > 0) {
-                    Product product = productDao.findById(productId);
-                    order.setProduct(product);
+                    order.setProduct(productDao.findById(productId));
                 }
                 
                 Long csrId = rs.getLong(PARAM_CSR_ID);
                 if (csrId > 0) {
-                    User csr = userDao.findById(csrId);
-                    order.setCsr(csr);
+                    order.setCsr(userDao.findById(csrId));
                 }
                 
                 allOrder.add(order);
