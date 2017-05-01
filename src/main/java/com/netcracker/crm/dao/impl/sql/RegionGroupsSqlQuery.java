@@ -12,18 +12,6 @@ public final class RegionGroupsSqlQuery {
     public static final String PARAM_RG_GROUP_ID = "group_id";
     public static final String PARAM_RG_REGION_ID = "region_id";
 
-    public static final String PARAM_RG_GROUP_NAME = "g_name";
-    public static final String PARAM_RG_GROUP_DISC_ID = "g_disc_id";
-
-    public static final String PARAM_RG_REGION_NAME = "r_name";
-    public static final String PARAM_RG_REGION_DISC_ID = "r_disc_id";
-
-    public static final String PARAM_RG_DISC_TITLE = "d_title";
-    public static final String PARAM_RG_DISC_PERC = "d_perc";
-    public static final String PARAM_RG_DISC_DESC = "d_desc";
-    public static final String PARAM_RG_DISC_ACTIVE = "d_active";
-
-
     public static final String SQL_DELETE_RG = "DELETE FROM region_groups " +
             "WHERE region_id=:region_id AND group_id=:group_id";
 

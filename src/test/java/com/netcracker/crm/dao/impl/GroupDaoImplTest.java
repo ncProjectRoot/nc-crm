@@ -3,6 +3,8 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Melnyk_Dmytro
@@ -20,63 +24,38 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GroupDaoImplTest {
+
     @Autowired
     private GroupDao groupDao;
 
-    @Test
+    private Group groupCreated;
+
+    @Before
     public void create() throws Exception {
-        Discount discount = new Discount();
-        discount.setTitle("Discount_for_Group");
-        discount.setDescription("descr");
-        discount.setPercentage(0.5);
-        discount.setActive(true);
-
-        Group group = new Group();
-        group.setDiscount(discount);
-        group.setName("Internet");
-
-        groupDao.create(group);
+        groupCreated = new Group();
+        groupCreated.setName("test group name");
+        groupDao.create(groupCreated);
+        assertNotNull(groupCreated.getId());
     }
 
     @Test
-    public void update() throws Exception {
-        Discount discount = new Discount();
-        discount.setId(5L);
+    public void findAndUpdateAndCount() throws Exception {
+        Group groupFoundById = groupDao.findById(groupCreated.getId());
+        assertEquals(groupCreated.getName(), groupFoundById.getName());
 
-        Group group = new Group();
-        group.setId(3L);
-        group.setDiscount(discount);
-        group.setName("Service_Internet");
+        List<Group> groupsFoundByName = groupDao.findByName(groupCreated.getName());
+        assertEquals(groupCreated.getId(), groupsFoundByName.get(0).getId());
 
-        System.out.println(groupDao.update(group));
+        groupCreated.setName("test update group name");
+        assertEquals(groupDao.update(groupCreated), groupCreated.getId());
+
+        assertEquals(groupDao.getCount(), new Long(1));
     }
 
-    @Test
+    @After
     public void delete() throws Exception {
-        Group group = new Group();
-        group.setId(1L);
-
-        System.out.println(groupDao.delete(group));
+        long affectedRows = groupDao.delete(groupCreated);
+        assertEquals(affectedRows, 1L);
     }
-
-    @Test
-    public void findById() throws Exception {
-        System.out.println(groupDao.findById(3L));
-    }
-
-    @Test
-    public void findByName() throws Exception {
-       List<Group> list =  groupDao.findByName("teR");
-        for (Group group : list) {
-            System.out.println(group);
-        }
-    }
-
-    @Test
-    public void getCount() throws Exception {
-        System.out.println(groupDao.getCount());
-    }
-
-
 
 }

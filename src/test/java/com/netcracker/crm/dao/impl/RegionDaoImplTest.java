@@ -43,7 +43,7 @@ public class RegionDaoImplTest {
         assertEquals(regionCreated.getName(), regionFoundById.getName());
 
         List<Region> regionsFoundByName = regionDao.findByName(regionCreated.getName());
-        assertEquals(regionsFoundByName.get(0).getId(), regionFoundById.getId());
+        assertEquals(regionCreated.getId(), regionsFoundByName.get(0).getId());
 
         regionCreated.setName("test update region name");
         assertEquals(regionDao.update(regionCreated), regionCreated.getId());

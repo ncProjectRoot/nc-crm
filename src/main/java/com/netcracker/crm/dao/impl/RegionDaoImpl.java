@@ -151,7 +151,7 @@ public class RegionDaoImpl implements RegionDao {
         return null;
     }
 
-    protected static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
+    static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
 
         private DiscountDao discountDao;
 

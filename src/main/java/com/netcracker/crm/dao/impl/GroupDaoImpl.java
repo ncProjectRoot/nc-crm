@@ -37,16 +37,14 @@ public class GroupDaoImpl implements GroupDao {
 
     private SimpleJdbcInsert insert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private GroupExtractor groupExtractor;
 
     @Override
     public Long create(Group group) {
         if (group.getId() != null) {
-            return -1L;
+            return null;
         }
-        Long discountId = null;
-        if (group.getDiscount() != null) {
-            discountId = getDiscountId(group.getDiscount());
-        }
+        Long discountId = getDiscountId(group.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT_ID, discountId);
@@ -60,12 +58,9 @@ public class GroupDaoImpl implements GroupDao {
     public Long update(Group group) {
         Long groupId = group.getId();
         if (groupId == null) {
-            return -1L;
+            return null;
         }
-        Long discountId = null;
-        if (group.getDiscount() != null) {
-            discountId = getDiscountId(group.getDiscount());
-        }
+        Long discountId = getDiscountId(group.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, groupId)
                 .addValue(PARAM_GROUP_NAME, group.getName())
@@ -73,7 +68,7 @@ public class GroupDaoImpl implements GroupDao {
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_GROUP, params);
         if (affectedRows == 0) {
             log.error("Group has not been updated");
-            return -1L;
+            return null;
         } else {
             log.info("Group with id " + groupId + " was successfully updated");
             return affectedRows;
@@ -82,29 +77,27 @@ public class GroupDaoImpl implements GroupDao {
 
     @Override
     public Long delete(Long id) {
-        if (id < 1) {
-            return -1L;
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_GROUP_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_GROUP, params);
+            if (deletedRows == 0) {
+                log.error("Group has not been deleted");
+                return null;
+            } else {
+                log.info("Group with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
         }
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_GROUP_ID, id);
-        long deletedRows = namedJdbcTemplate.update(SQL_DELETE_GROUP, params);
-        if (deletedRows == 0) {
-            log.error("Group has not been deleted");
-            return -1L;
-        } else {
-            log.info("Group with id " + id + " was successfully deleted");
-            return deletedRows;
-        }
+        return null;
     }
 
     @Override
     public Long delete(Group group) {
-        Long groupId = group.getId();
-        if (groupId == null) {
-            return -1L;
-        } else {
-            return delete(groupId);
+        if (group != null) {
+            return delete(group.getId());
         }
+        return null;
     }
 
     @Override
@@ -113,10 +106,8 @@ public class GroupDaoImpl implements GroupDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, id);
         Group group = null;
-        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID, params, new GroupExtractor(discountDao));
-        if (groups.size() != 1) {
-            //TODO throw SomeException
-        } else {
+        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID, params, groupExtractor);
+        if (groups.size() != 0) {
             group = groups.get(0);
         }
         log.debug("End finding group by id");
@@ -128,13 +119,13 @@ public class GroupDaoImpl implements GroupDao {
         log.debug("Start finding groups by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, "%" + name + "%");
-        List<Group> list = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupExtractor(discountDao));
+        List<Group> list = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, groupExtractor);
         log.debug("End finding groups by name");
         return list;
     }
 
     @Override
-    public long getCount() {
+    public Long getCount() {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_GROUP_COUNT, Long.class);
     }
 
@@ -144,15 +135,19 @@ public class GroupDaoImpl implements GroupDao {
                 .withTableName(PARAM_GROUP_TABLE)
                 .usingGeneratedKeyColumns(PARAM_GROUP_ID);
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        groupExtractor = new GroupExtractor(discountDao);
     }
 
     private Long getDiscountId(Discount discount) {
-        Long discountId = discount.getId();
-        if (discountId != null) {
-            return discountId;
-        } else {
-            return discountDao.create(discount);
+        if (discount != null) {
+            Long discountId = discount.getId();
+            if (discountId != null) {
+                return discountId;
+            } else {
+                return discountDao.create(discount);
+            }
         }
+        return null;
     }
 
     static final class GroupExtractor implements ResultSetExtractor<List<Group>> {

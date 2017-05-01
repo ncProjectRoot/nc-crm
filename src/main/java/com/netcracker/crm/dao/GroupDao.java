@@ -13,5 +13,5 @@ import java.util.List;
 public interface GroupDao extends CrudDao<Group>{
     List<Group> findByName(String name);
 
-    long getCount();
+    Long getCount();
 }

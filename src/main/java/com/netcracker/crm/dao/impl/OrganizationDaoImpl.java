@@ -28,6 +28,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     private SimpleJdbcInsert orgInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private OrganizationWithDetailExtractor organizationWithDetailExtractor;
 
     @Override
     public Long create(Organization org) {
@@ -83,7 +84,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_ID, id);
 
-        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, new OrganizationWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, organizationWithDetailExtractor);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_NAME, name);
 
-        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, new OrganizationWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, organizationWithDetailExtractor);
     }
 
     @Autowired
@@ -100,6 +101,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         this.orgInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_ORG_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ORG_ID);
+        organizationWithDetailExtractor = new OrganizationWithDetailExtractor();
     }
 
     private static final class OrganizationWithDetailExtractor implements ResultSetExtractor<Organization> {
