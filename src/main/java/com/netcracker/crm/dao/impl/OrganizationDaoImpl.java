@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -48,6 +47,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
     @Override
     public Long update(Organization org) {
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORG_ID, org.getId())
                 .addValue(PARAM_ORG_NAME, org.getName());
 
         int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
@@ -62,12 +62,20 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Long delete(Long id) {
-        throw new NotImplementedException();
+        if (id != null && id > 0) {
+            SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORG_ID, id);
+
+            return (long) namedJdbcTemplate.update(SQL_DELETE_ORGANIZATION, params);
+        }
+        return -1L;
     }
 
     @Override
-    public Long delete(Organization object) {
-        throw new NotImplementedException();
+    public Long delete(Organization org) {
+        if (org != null) {
+            return delete(org.getId());
+        }
+        return -1L;
     }
 
     @Override
@@ -98,7 +106,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         @Override
         public Organization extractData(ResultSet rs) throws SQLException, DataAccessException {
             Organization organization = null;
-            while (rs.next()) {
+            if (rs.next()) {
                 organization = new Organization();
                 organization.setId(rs.getLong(PARAM_ORG_ID));
                 organization.setName(rs.getString(PARAM_ORG_NAME));

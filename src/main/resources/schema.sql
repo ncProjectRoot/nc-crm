@@ -599,17 +599,17 @@ INSERT INTO user_roles (id, name) VALUES (4, 'ROLE_PMG');
 
 
 -- password - 123123
-INSERT INTO "users"(
-  password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
-  contact_person, address_id, user_role_id, org_id)
-VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
-    '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
-
-INSERT INTO "users"(
-  password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
-  contact_person, address_id, user_role_id, org_id)
-VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John32', 'Doe26', 'Doevich1',
-    '0000000000', 'admin2@gmail.com', true, true, false, null, 1,null);
+-- INSERT INTO "users"(
+--   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
+--   contact_person, address_id, user_role_id, org_id)
+-- VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
+--     '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
+--
+-- INSERT INTO "users"(
+--   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
+--   contact_person, address_id, user_role_id, org_id)
+-- VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John32', 'Doe26', 'Doevich1',
+--     '0000000000', 'admin2@gmail.com', true, true, false, null, 1,null);
 
 
 INSERT INTO public.statuses(id, name) VALUES (1, 'OPEN');
@@ -626,33 +626,33 @@ INSERT INTO public.statuses(id, name) VALUES (11, 'ACTUAL');
 INSERT INTO public.statuses(id, name) VALUES (12, 'OUTDATED');
 
 
-INSERT INTO public.groups(id, name) VALUES (1, 'group1');
-INSERT INTO public.groups(id, name) VALUES (2, 'group2');
-
-INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 10, ' some desc for test product', 1);
-INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 10, ' some desc for test product2', 1);
-
-INSERT INTO orders(date_finish, status_id, customer_id, product_id, csr_id) 
-VALUES ('1994-10-10', 5, 2, 2, 2);
-
-INSERT INTO history (old_status_id, date_change_status, desc_change_status, order_id) 
-VALUES ( 5, '10-10-1994', 'For test', 1);
-
-INSERT INTO public.complaint(id, title, message, status_id, date, customer_id, pmg_id, order_id)
-VALUES (1, 'test_complaint', 'lalalal', 3, '1994-10-10', 1, 2, 1);
-
-commit;
-
-
-INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id, complaint_id) 
-VALUES ( 5, '10-10-1994', 'For test3232', 1, 1);
-
-INSERT INTO history (old_status_id, date_change_status, desc_change_status) 
-VALUES (5, '10-10-1994', 'For test76');
-
-INSERT INTO history (old_status_id, date_change_status, desc_change_status) 
-VALUES (5, '10-10-1994', 'For test76');
-
+-- INSERT INTO public.groups(id, name) VALUES (1, 'group1');
+-- INSERT INTO public.groups(id, name) VALUES (2, 'group2');
+--
+-- INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (1, 'test product', 10, ' some desc for test product', 1);
+-- INSERT INTO public.product(id, title, status_id, description, group_id) VALUES (2, 'test product2', 10, ' some desc for test product2', 1);
+--
+-- INSERT INTO orders(date_finish, status_id, customer_id, product_id, csr_id)
+-- VALUES ('1994-10-10', 5, 2, 2, 2);
+--
+-- INSERT INTO history (old_status_id, date_change_status, desc_change_status, order_id)
+-- VALUES ( 5, '10-10-1994', 'For test', 1);
+--
+-- INSERT INTO public.complaint(id, title, message, status_id, date, customer_id, pmg_id, order_id)
+-- VALUES (1, 'test_complaint', 'lalalal', 3, '1994-10-10', 1, 2, 1);
+--
+-- commit;
+--
+--
+-- INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id, complaint_id)
+-- VALUES ( 5, '10-10-1994', 'For test3232', 1, 1);
+--
+-- INSERT INTO history (old_status_id, date_change_status, desc_change_status)
+-- VALUES (5, '10-10-1994', 'For test76');
+--
+-- INSERT INTO history (old_status_id, date_change_status, desc_change_status)
+-- VALUES (5, '10-10-1994', 'For test76');
+--
 
 
 commit;

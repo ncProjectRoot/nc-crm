@@ -18,4 +18,7 @@ public final class OrganizationSqlQuery {
             "SET name=:name " +
             "WHERE id=:id;";
 
+    public static final String SQL_DELETE_ORGANIZATION = "DELETE FROM organization " +
+            "WHERE id=:id;";
+
 }
