@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.netcracker.crm.dao.impl.sql;
 
 /**
@@ -18,12 +13,6 @@ public final class HistorySqlQuery {
     public static final String PARAM_HISTORY_ORDER_ID = "order_id";    
     public static final String PARAM_HISTORY_COMPLAINT_ID = "complaint_id";    
     public static final String PARAM_HISTORY_PRODUCT_ID = "product_id";
-
-    
-    public static final String SQL_CREATE_HISTORY = "INSERT INTO history (old_status_id, "
-            + "date_change_status, desc_change_status, order_id, complaint_id, product_id) "
-            + "VALUES (:old_status_id, :date_change_status, :desc_change_status, :order_id, "
-            + ":complaint_id, :product_id);";
     
     public static final String SQL_UPDATE_HISTORY = "UPDATE history "
             + "SET old_status_id = :old_status_id, date_change_status = :date_change_status, "

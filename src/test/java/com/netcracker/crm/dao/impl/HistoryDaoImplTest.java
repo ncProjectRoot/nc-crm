@@ -1,41 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.HistoryDao;
-import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.History;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import java.util.Date;
-import java.util.List;
-import javax.sql.DataSource;
+import com.netcracker.crm.dao.*;
+import com.netcracker.crm.domain.model.*;
+
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- *
- * @author YARUS
+ * @author Karpunets
+ * @since 01.05.2017
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -43,159 +27,90 @@ public class HistoryDaoImplTest {
     
     @Autowired
     private HistoryDao historyDao;
-    
-    public HistoryDaoImplTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
+    @Autowired
+    private ComplaintDao complaintDao;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private ProductDao productDao;
+
+    private History historyCreated;
+    private Complaint complaintCreated;
+    private User userCreated;
+    private Order orderCreated;
+    private Product productCreated;
+
     @Before
-    public void setUp() {
+    public void create() throws Exception {
+        userCreated = new User();
+        userCreated.setPassword("test password");
+        userCreated.setFirstName("test first name");
+        userCreated.setMiddleName("test middle name");
+        userCreated.setEmail("test email");
+        userCreated.setEnable(false);
+        userCreated.setAccountNonLocked(false);
+        userCreated.setContactPerson(false);
+        userCreated.setUserRole(UserRole.ROLE_CUSTOMER);
+
+        productCreated = new Product();
+        productCreated.setTitle("test product title");
+        productCreated.setStatus(ProductStatus.OUTDATED);
+
+        orderCreated = new Order();
+        orderCreated.setStatus(OrderStatus.NEW);
+        orderCreated.setCustomer(userCreated);
+        orderCreated.setProduct(productCreated);
+
+        complaintCreated = new Complaint();
+        complaintCreated.setTitle("test title complaint");
+        complaintCreated.setMessage("test message complaint");
+        complaintCreated.setStatus(ComplaintStatus.OPEN);
+        complaintCreated.setDate(LocalDate.now());
+        complaintCreated.setCustomer(userCreated);
+        complaintCreated.setOrder(orderCreated);
+
+        historyCreated = new History();
+        historyCreated.setOldStatus(OrderStatus.PAUSED);
+        historyCreated.setDateChangeStatus(LocalDate.now());
+        historyCreated.setDescChangeStatus("test desc change status");
+        historyCreated.setOrder(orderCreated);
+        historyCreated.setComplaint(complaintCreated);
+        historyCreated.setProduct(productCreated);
+
+        assertNotNull(historyDao.create(historyCreated));
     }
-    
+
+    @Test
+    public void findAndUpdate() throws Exception {
+        History historyFoundById = historyDao.findById(historyCreated.getId());
+        assertEquals(historyCreated.getOldStatus(), historyFoundById.getOldStatus());
+
+        List<History> historyFoundByProductId = historyDao.findAllByProductId(productCreated.getId());
+        assertEquals(orderCreated.getId(), historyFoundByProductId.get(0).getId());
+
+        List<History> historyFoundByComplaintId = historyDao.findAllByComplaintId(complaintCreated.getId());
+        assertEquals(orderCreated.getId(), historyFoundByComplaintId.get(0).getId());
+
+        List<History> historyFoundByOrderId = historyDao.findAllByOrderId(orderCreated.getId());
+        assertEquals(orderCreated.getId(), historyFoundByOrderId.get(0).getId());
+
+        List<History> historyFoundByDate = historyDao.findAllByDate(historyCreated.getDateChangeStatus());
+        assertEquals(orderCreated.getId(), historyFoundByDate.get(0).getId());
+
+        historyCreated.setOldStatus(OrderStatus.ACTIVE);
+        assertEquals(historyDao.update(historyCreated), historyCreated.getId());
+    }
+
     @After
-    public void tearDown() {
-    }
-
-   
-    /**
-     * Test of create method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testCreate() {
-        System.out.println("create");
-        History history = new History();        
-        history.setOldStatus(OrderStatus.NEW);
-        Order ord = new Order();
-        ord.setId(1L);
-        history.setOrder(ord);
-        history.setProduct(null);
-        history.setComplaint(null);
-        history.setDateChangeStatus(LocalDate.MAX);
-        history.setDescChangeStatus("Бо треба протестить");
-                
-        long expResult = 0L;
-        long result = historyDao.create(history);
-        assertNotEquals(result, -3);
-        assertNotEquals(expResult, result);
-    }
-
-    /**
-     * Test of update method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testUpdate() {
-        System.out.println("update");
-        History history = new History();      
-        history.setId(1L);
-        history.setOldStatus(OrderStatus.ACTIVE); 
-        Order ord = new Order();
-        ord.setId(1L);
-        history.setOrder(ord);
-        Product product = new Product();
-        product.setId(1L);
-        history.setProduct(product);
-        Complaint complaint = new Complaint();
-        complaint.setId(1L);
-        history.setComplaint(complaint);
-        history.setDateChangeStatus(LocalDate.MIN);
-        history.setDescChangeStatus("Бо треба протестить22");
-        
-        long result = historyDao.update(history);
-        assertNotEquals(result, -1);
-        if(result <= 0)
-            fail("result <= 0");
-        
-    }
-
-    /**
-     * Test of delete method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testDelete() {
-        System.out.println("delete");
-        //////////////////////Create test history////////////////////////
-        History history = new History();        
-        history.setOldStatus(OrderStatus.NEW);
-        Order ord = new Order();
-        ord.setId(1L);
-        history.setOrder(ord);
-        history.setProduct(null);
-        history.setComplaint(null);
-        history.setDateChangeStatus(LocalDate.MAX);
-        history.setDescChangeStatus("Бо треба протестить");
-        long id = historyDao.create(history);
-        ////////////////////////////////////////////////////    
-        long result = historyDao.delete(id);
-        assertNotEquals(result, -1);
-        if(result <= 0)
-            fail("result <= 0");
-    }
-
-    /**
-     * Test of findById method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testFindById() {
-        System.out.println("findById");
-        
-        History result = historyDao.findById(1L);
-        assertNotNull(result);
-        assertEquals(result.getDescChangeStatus(), "For test");
-        assertEquals(result.getDateChangeStatus(), LocalDate.of(1994, 10, 10));                
-    }
-
-    /**
-     * Test of findAllByDate method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testFindAllByDate() {
-        System.out.println("findAllByDate");
-        LocalDate ldate = LocalDate.of(1994, 10, 10);
-        
-        List<History> result = historyDao.findAllByDate(ldate);
-        assertNotNull(result);
-        assertNotEquals(result.size(), 0);        
-    }
-
-    /**
-     * Test of findAllByOrderId method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testFindAllByOrderId() {
-        System.out.println("findAllByOrderId");
-        Long l = null;
-        List<History> result = historyDao.findAllByOrderId(1L);
-        assertNotNull(result);
-        assertNotEquals(result.size(), 0);;
-    }
-
-    /**
-     * Test of findAllByComplaintId method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testFindAllByComplaintId() {
-        System.out.println("findAllByComplaintId");
-        List<History> result = historyDao.findAllByComplaintId(1L);
-        assertNotNull(result);
-        assertNotEquals(result.size(), 0);
-    }
-
-    /**
-     * Test of findAllByProductId method, of class HistoryDaoImpl.
-     */
-    @Test
-    public void testFindAllByProductId() {
-        System.out.println("findAllByProductId");
-        List<History> result = historyDao.findAllByProductId(1L);
-        assertNotNull(result);
-        assertNotEquals(result.size(), 0);
+    public void delete() throws Exception {
+        long affectedRows = historyDao.delete(historyCreated);
+        assertEquals(affectedRows, 1L);
+        complaintDao.delete(complaintCreated);
+        orderDao.delete(orderCreated);
+        productDao.delete(productCreated);
+        userDao.delete(userCreated);
     }
     
 }
