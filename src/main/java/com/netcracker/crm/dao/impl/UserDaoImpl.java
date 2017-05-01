@@ -13,9 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -37,11 +35,12 @@ public class UserDaoImpl implements UserDao {
 
     private SimpleJdbcInsert userInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private UserWithDetailExtractor userWithDetailExtractor;
 
     @Override
     public Long create(User user) {
         if (user.getId() != null) {
-            return -1L;
+            return null;
         }
 
         Long addressId = getAddressId(user.getAddress());
@@ -63,6 +62,7 @@ public class UserDaoImpl implements UserDao {
 
         long newId = userInsert.executeAndReturnKey(params)
                 .longValue();
+        user.setId(newId);
 
         log.info("User with id: " + newId + " is successfully created.");
         return newId;
@@ -70,12 +70,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Long update(User user) {
-        if(user == null)
+        Long userId = user.getId();
+        if (userId == null) {
             return null;
+        }
         Long addressId = getAddressId(user.getAddress());
         Long orgId = getOrgId(user.getOrganization());
 
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_ID, userId)
                 .addValue(PARAM_USER_EMAIL, user.getEmail())
                 .addValue(PARAM_USER_PASSWORD, user.getPassword())
                 .addValue(PARAM_USER_FIRST_NAME, user.getFirstName())
@@ -92,22 +95,37 @@ public class UserDaoImpl implements UserDao {
         int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_USER, params);
 
         if (affectedRows > 0) {
-            log.info("User with id: " + user.getId() + " is successfully updated.");
+            log.info("User with id: " + userId + " is successfully updated.");
             return user.getId();
         } else {
             log.error("User was not updated.");
-            return -1L;
+            return null;
         }
     }
 
     @Override
     public Long delete(Long id) {
-        throw new NotImplementedException();
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_USER_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_USER, params);
+            if (deletedRows == 0) {
+                log.error("User has not been deleted");
+                return null;
+            } else {
+                log.info("User with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
+        }
+        return null;
     }
 
     @Override
-    public Long delete(User object) {
-        throw new NotImplementedException();
+    public Long delete(User user) {
+        if (user != null) {
+            return delete(user.getId());
+        }
+        return null;
     }
 
     @Override
@@ -115,17 +133,18 @@ public class UserDaoImpl implements UserDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_ID, id);
 
-        return namedJdbcTemplate.query(SQL_FIND_USER_BY_ID, params, new UserWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_USER_BY_ID, params, userWithDetailExtractor);
     }
 
     @Override
     public User findByEmail(String email) {
-        if(email == null)
+        if(email == null) {
             return null;
+        }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_EMAIL, email);
 
-        return namedJdbcTemplate.query(SQL_FIND_USER_BY_EMAIL, params, new UserWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_USER_BY_EMAIL, params, userWithDetailExtractor);
     }
 
 
@@ -159,9 +178,19 @@ public class UserDaoImpl implements UserDao {
                 .withTableName(PARAM_USER_TABLE)
                 .usingGeneratedKeyColumns(PARAM_USER_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.userWithDetailExtractor = new UserWithDetailExtractor(organizationDao, addressDao);
     }
 
     private static final class UserWithDetailExtractor implements ResultSetExtractor<User> {
+
+        private OrganizationDao organizationDao;
+        private AddressDao addressDao;
+
+        UserWithDetailExtractor(OrganizationDao organizationDao, AddressDao addressDao) {
+            this.organizationDao = organizationDao;
+            this.addressDao = addressDao;
+        }
+
         @Override
         public User extractData(ResultSet rs) throws SQLException, DataAccessException {
             User user = null;
@@ -181,30 +210,12 @@ public class UserDaoImpl implements UserDao {
 
                 Long orgId = rs.getLong(PARAM_USER_ORG_ID);
                 if (orgId > 0) {
-                    Organization org = new Organization();
-                    org.setId(rs.getLong(PARAM_USER_ORG_ID));
-                    org.setName(rs.getString(PARAM_USER_ORG_NAME));
-
-                    user.setOrganization(org);
+                    user.setOrganization(organizationDao.findById(orgId));
                 }
 
                 Long addressId = rs.getLong(PARAM_USER_ADDRESS_ID);
                 if (addressId > 0) {
-                    Address address = new Address();
-                    address.setId(rs.getLong(PARAM_USER_ADDRESS_ID));
-                    address.setLatitude(rs.getDouble(PARAM_USER_ADDRESS_LATITUDE));
-                    address.setLongitude(rs.getDouble(PARAM_USER_ADDRESS_LONGITUDE));
-                    address.setDetails(rs.getString(PARAM_USER_ADDRESS_DETAILS));
-
-                    long regionId = rs.getLong(PARAM_USER_ADDRESS_REGION_ID);
-                    if (regionId > 0) {
-                        Region region = new Region();
-                        region.setId(regionId);
-                        region.setName(PARAM_USER_ADDRESS_REGION_NAME);
-
-                        address.setRegion(region);
-                    }
-                    user.setAddress(address);
+                    user.setAddress(addressDao.findById(addressId));
                 }
             }
             return user;
