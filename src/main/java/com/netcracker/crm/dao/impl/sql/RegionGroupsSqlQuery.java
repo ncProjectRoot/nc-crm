@@ -27,21 +27,15 @@ public final class RegionGroupsSqlQuery {
     public static final String SQL_DELETE_RG = "DELETE FROM region_groups " +
             "WHERE region_id=:region_id AND group_id=:group_id";
 
-    public static final String SQL_FIND_REGIONS_BY_GROUP = "SELECT rg.id, region_id, r.name r_name, r.discount_id r_disc_id, " +
-            "d.title d_title, d.percentage d_perc, d.description d_desc, d.active d_active " +
+    public static final String SQL_FIND_REGIONS_BY_GROUP = "SELECT r.id id, r.name, r.discount_id " +
             "FROM region_groups rg " +
             "INNER JOIN region r " +
             "ON rg.region_id = r.id " +
-            "LEFT JOIN discount d " +
-            "ON r.discount_id = d.id " +
             "WHERE group_id=:group_id;";
 
-    public static final String SQL_FIND_GROUPS_BY_REGION = "SELECT rg.id, group_id, g.name g_name, g.discount_id g_disc_id, " +
-            "d.title d_title, d.percentage d_perc, d.description d_desc, d.active d_active " +
+    public static final String SQL_FIND_GROUPS_BY_REGION = "SELECT g.id id, g.name, g.discount_id " +
             "FROM region_groups rg " +
             "INNER JOIN groups g " +
             "ON rg.group_id = g.id " +
-            "LEFT JOIN discount d " +
-            "ON g.discount_id = d.id " +
             "WHERE region_id=:region_id;";
 }

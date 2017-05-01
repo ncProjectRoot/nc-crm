@@ -36,7 +36,6 @@ public class RegionGroupsDaoImplTest {
 
     private Region regionCreated;
     private Group groupCreated;
-    private Long idRegionGroups;
 
     @Before
     public void create() throws Exception {
@@ -45,7 +44,7 @@ public class RegionGroupsDaoImplTest {
         groupCreated = new Group();
         groupCreated.setName("test group name");
 
-        idRegionGroups = regionGroupsDao.create(regionCreated, groupCreated);
+        Long idRegionGroups = regionGroupsDao.create(regionCreated, groupCreated);
         assertNotNull(idRegionGroups);
         assertNotEquals(idRegionGroups, new Long(-1));
     }

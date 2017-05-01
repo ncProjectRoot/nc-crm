@@ -1,16 +1,14 @@
 package com.netcracker.crm.dao.impl;
 
+import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.dao.RegionGroupsDao;
-import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,9 +16,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.RegionGroupsSqlQuery.*;
@@ -37,12 +32,15 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
 
     @Autowired
     private RegionDao regionDao;
-
     @Autowired
     private GroupDao groupDao;
+    @Autowired
+    private DiscountDao discountDao;
 
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private GroupDaoImpl.GroupExtractor groupExtractor;
+    private RegionDaoImpl.RegionExtractor regionExtractor;
 
     @Override
     public Long create(Region region, Group group) {
@@ -93,7 +91,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         log.debug("Start finding groups by region");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_RG_REGION_ID, region.getId());
-        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUPS_BY_REGION, params, new GroupExtractor());
+        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUPS_BY_REGION, params, groupExtractor);
         log.debug("End finding groups by region");
         return groups;
     }
@@ -103,7 +101,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         log.debug("Start finding regions by group");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_RG_GROUP_ID, group.getId());
-        List<Region> regions = namedJdbcTemplate.query(SQL_FIND_REGIONS_BY_GROUP, params, new RegionExtractor());
+        List<Region> regions = namedJdbcTemplate.query(SQL_FIND_REGIONS_BY_GROUP, params, regionExtractor);
         log.debug("End finding regions by group");
         return regions;
     }
@@ -138,58 +136,8 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_RG_TABLE)
                 .usingGeneratedKeyColumns(PARAM_RG_ID);
-    }
-
-    private static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
-        @Override
-        public List<Region> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            log.debug("Start extracting data");
-            List<Region> regions = new ArrayList<>();
-            while (rs.next()) {
-                Region region = new Region();
-                region.setId(rs.getLong(PARAM_RG_REGION_ID));
-                region.setName(rs.getString(PARAM_RG_REGION_NAME));
-                Long discountId = rs.getLong(PARAM_RG_REGION_DISC_ID);
-                if (discountId > 0) {
-                    Discount discount = new Discount();
-                    discount.setId(discountId);
-                    discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
-                    discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
-                    discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
-                    discount.setActive(rs.getBoolean(PARAM_RG_DISC_ACTIVE));
-                    region.setDiscount(discount);
-                }
-                regions.add(region);
-            }
-            log.debug("End extracting data");
-            return regions;
-        }
-    }
-
-    private static final class GroupExtractor implements ResultSetExtractor<List<Group>> {
-        @Override
-        public List<Group> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            log.debug("Start extracting data");
-            List<Group> groups = new ArrayList<>();
-            while (rs.next()) {
-                Group group = new Group();
-                group.setId(rs.getLong(PARAM_RG_GROUP_ID));
-                group.setName(rs.getString(PARAM_RG_GROUP_NAME));
-                Long discountId = rs.getLong(PARAM_RG_GROUP_DISC_ID);
-                if (discountId > 0) {
-                    Discount discount = new Discount();
-                    discount.setId(discountId);
-                    discount.setDescription(rs.getString(PARAM_RG_DISC_DESC));
-                    discount.setTitle(rs.getString(PARAM_RG_DISC_TITLE));
-                    discount.setPercentage(rs.getDouble(PARAM_RG_DISC_PERC));
-                    discount.setActive(rs.getBoolean(PARAM_RG_DISC_ACTIVE));
-                    group.setDiscount(discount);
-                }
-                groups.add(group);
-            }
-            log.debug("End extracting data");
-            return groups;
-        }
+        groupExtractor = new GroupDaoImpl.GroupExtractor(discountDao);
+        regionExtractor = new RegionDaoImpl.RegionExtractor(discountDao);
     }
 
 }

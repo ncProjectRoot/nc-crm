@@ -49,7 +49,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, group.getName())
-                .addValue(PARAM_GROUP_DISCOUNT, discountId);
+                .addValue(PARAM_GROUP_DISCOUNT_ID, discountId);
         long id = insert.executeAndReturnKey(params).longValue();
         group.setId(id);
         log.info("Group with id: " + id + " is successfully created.");
@@ -69,7 +69,7 @@ public class GroupDaoImpl implements GroupDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, groupId)
                 .addValue(PARAM_GROUP_NAME, group.getName())
-                .addValue(PARAM_GROUP_DISCOUNT, discountId);
+                .addValue(PARAM_GROUP_DISCOUNT_ID, discountId);
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_GROUP, params);
         if (affectedRows == 0) {
             log.error("Group has not been updated");
@@ -113,7 +113,7 @@ public class GroupDaoImpl implements GroupDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_ID, id);
         Group group = null;
-        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID, params, new GroupExtractor());
+        List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID, params, new GroupExtractor(discountDao));
         if (groups.size() != 1) {
             //TODO throw SomeException
         } else {
@@ -128,7 +128,7 @@ public class GroupDaoImpl implements GroupDao {
         log.debug("Start finding groups by name");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, "%" + name + "%");
-        List<Group> list = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupExtractor());
+        List<Group> list = namedJdbcTemplate.query(SQL_FIND_GROUP_BY_NAME, params, new GroupExtractor(discountDao));
         log.debug("End finding groups by name");
         return list;
     }
@@ -155,7 +155,14 @@ public class GroupDaoImpl implements GroupDao {
         }
     }
 
-    private static final class GroupExtractor implements ResultSetExtractor<List<Group>> {
+    static final class GroupExtractor implements ResultSetExtractor<List<Group>> {
+
+        private DiscountDao discountDao;
+
+        GroupExtractor(DiscountDao discountDao) {
+            this.discountDao = discountDao;
+        }
+
         @Override
         public List<Group> extractData(ResultSet rs) throws SQLException, DataAccessException {
             log.debug("Start extracting data");
@@ -164,15 +171,9 @@ public class GroupDaoImpl implements GroupDao {
                 Group group = new Group();
                 group.setId(rs.getLong(PARAM_GROUP_ID));
                 group.setName(rs.getString(PARAM_GROUP_NAME));
-                Long discountId = rs.getLong(PARAM_GROUP_DISC_ID);
+                Long discountId = rs.getLong(PARAM_GROUP_DISCOUNT_ID);
                 if (discountId > 0) {
-                    Discount discount = new Discount();
-                    discount.setId(discountId);
-                    discount.setPercentage(rs.getDouble(PARAM_GROUP_DISC_PERC));
-                    discount.setTitle(rs.getString(PARAM_GROUP_DISC_TITLE));
-                    discount.setDescription(rs.getString(PARAM_GROUP_DISC_DESC));
-                    discount.setActive(rs.getBoolean(PARAM_GROUP_DISC_ACTIVE));
-                    group.setDiscount(discount);
+                    group.setDiscount(discountDao.findById(discountId));
                 }
                 groups.add(group);
             }

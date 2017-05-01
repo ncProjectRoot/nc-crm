@@ -8,7 +8,7 @@ package com.netcracker.crm.dao.impl.sql;
 public final class GroupSqlQuery {
     public static final String PARAM_GROUP_TABLE = "groups";
     public static final String PARAM_GROUP_ID = "id";
-    public static final String PARAM_GROUP_DISCOUNT = "discount_id";
+    public static final String PARAM_GROUP_DISCOUNT_ID = "discount_id";
     public static final String PARAM_GROUP_NAME = "name";
     public static final String PARAM_GROUP_DISC_ID = "d_id";
     public static final String PARAM_GROUP_DISC_TITLE = "d_title";
