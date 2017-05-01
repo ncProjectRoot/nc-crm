@@ -51,6 +51,7 @@ public class RegionDaoImpl implements RegionDao {
                 .addValue(PARAM_REGION_NAME, region.getName())
                 .addValue(PARAM_REGION_DISCOUNT, discountId);
         Long id = regionInsert.executeAndReturnKey(params).longValue();
+        region.setId(id);
         log.info("Region with id: " + id + " is successfully created.");
         return id;
     }

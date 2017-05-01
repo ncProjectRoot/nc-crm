@@ -51,7 +51,7 @@ public class GroupDaoImpl implements GroupDao {
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT, discountId);
         long id = insert.executeAndReturnKey(params).longValue();
-
+        group.setId(id);
         log.info("Group with id: " + id + " is successfully created.");
         return id;
     }

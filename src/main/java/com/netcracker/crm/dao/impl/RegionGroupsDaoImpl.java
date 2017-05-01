@@ -1,5 +1,7 @@
 package com.netcracker.crm.dao.impl;
 
+import com.netcracker.crm.dao.GroupDao;
+import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.dao.RegionGroupsDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
@@ -33,14 +35,19 @@ import static com.netcracker.crm.dao.impl.sql.RegionGroupsSqlQuery.*;
 public class RegionGroupsDaoImpl implements RegionGroupsDao {
     private static final Logger log = LoggerFactory.getLogger(RegionGroupsDao.class);
 
+    @Autowired
+    private RegionDao regionDao;
+
+    @Autowired
+    private GroupDao groupDao;
 
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
     public long create(Region region, Group group) {
-        Long regionId = region.getId();
-        Long groupId = group.getId();
+        Long regionId = getRegionId(region);
+        Long groupId = getGroupId(group);
         if (regionId == null || groupId == null) {
             return -1L;
         }
@@ -68,9 +75,10 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         if (regionId < 1 || groupId < 1) {
             return -1L;
         }
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(PARAM_RG_REGION_ID, regionId).addValue(PARAM_RG_GROUP_ID, groupId);
-        int deletedRows = namedJdbcTemplate.update(SQL_DELETE_RG, params);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_RG_REGION_ID, regionId)
+                .addValue(PARAM_RG_GROUP_ID, groupId);
+        long deletedRows = namedJdbcTemplate.update(SQL_DELETE_RG, params);
         if (deletedRows == 0) {
             log.error("Row has not been deleted");
             return -1L;
@@ -100,8 +108,32 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         return regions;
     }
 
+    private Long getRegionId(Region region) {
+        if (region != null) {
+            Long regionId = region.getId();
+            if (regionId != null) {
+                return regionId;
+            }
+            regionId = regionDao.create(region);
+            return regionId;
+        }
+        return null;
+    }
+
+    private Long getGroupId(Group group) {
+        if (group != null) {
+            Long groupId = group.getId();
+            if (groupId != null) {
+                return groupId;
+            }
+            groupId = groupDao.create(group);
+            return groupId;
+        }
+        return null;
+    }
+
     @Autowired
-    public void getDataSours(DataSource dataSource) {
+    public void setDataSours(DataSource dataSource) {
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_RG_TABLE)
