@@ -33,11 +33,12 @@ public class DiscountDaoImpl implements DiscountDao {
 
     private SimpleJdbcInsert discountInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private DiscountExtractor discountExtractor;
 
     @Override
     public Long create(Discount discount) {
         if (discount.getId() != null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_TITLE, discount.getTitle())
@@ -54,7 +55,7 @@ public class DiscountDaoImpl implements DiscountDao {
     public Long update(Discount discount) {
         Long discountId = discount.getId();
         if (discountId == null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_ID, discountId)
@@ -65,7 +66,7 @@ public class DiscountDaoImpl implements DiscountDao {
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_DISCOUNT, params);
         if (affectedRows == 0) {
             log.error("Discount has not been updated");
-            return -1L;
+            return null;
         } else {
             log.info("Discount with id " + discountId + " was successfully updated");
             return affectedRows;
@@ -74,39 +75,35 @@ public class DiscountDaoImpl implements DiscountDao {
 
     @Override
     public Long delete(Long id) {
-        if (id < 1) {
-            return -1L;
+        if (id != null) {
+            long deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_DISCOUNT, id);
+            if (deletedRows == 0) {
+                log.error("Discount has not been deleted");
+                return -1L;
+            } else {
+                log.info("Discount with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
         }
-        long deletedRows = namedJdbcTemplate.getJdbcOperations().update(SQL_DELETE_DISCOUNT, id);
-        if (deletedRows == 0) {
-            log.error("Discount has not been deleted");
-            return -1L;
-        } else {
-            log.info("Discount with id " + id + " was successfully deleted");
-            return deletedRows;
-        }
+        return null;
     }
 
     @Override
     public Long delete(Discount discount) {
-        Long discountId = discount.getId();
-        if (discountId == null) {
-            return -1L;
-        } else {
-            return delete(discountId);
+        if (discount != null) {
+            return delete(discount.getId());
         }
+        return null;
     }
 
     @Override
     public Discount findById(Long id) {
         log.debug("Start finding discount by id");
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(PARAM_DISCOUNT_ID, id);
-        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_ID, params, new DiscountExtractor());
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_DISCOUNT_ID, id);
+        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_ID, params, discountExtractor);
         Discount discount = null;
-        if (discounts.size() != 1) {
-            //TODO throw SomeException
-        } else {
+        if (discounts.size() != 0) {
             discount = discounts.get(0);
         }
         log.debug("End finding discount by id");
@@ -118,13 +115,13 @@ public class DiscountDaoImpl implements DiscountDao {
         log.debug("Start finding discounts by title");
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_TITLE, "%" + title + "%");
-        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, new DiscountExtractor());
+        List<Discount> discounts = namedJdbcTemplate.query(SQL_FIND_DISC_BY_TITLE, params, discountExtractor);
         log.debug("End finding discounts by title");
         return discounts;
     }
 
     @Override
-    public long getCount() {
+    public Long getCount() {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_DISC_COUNT, Long.class);
     }
 
@@ -134,6 +131,7 @@ public class DiscountDaoImpl implements DiscountDao {
         this.discountInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_DISCOUNT_TABLE)
                 .usingGeneratedKeyColumns(PARAM_DISCOUNT_ID);
+        this.discountExtractor = new DiscountExtractor();
     }
 
     private static final class DiscountExtractor implements ResultSetExtractor<List<Discount>> {

@@ -1,7 +1,6 @@
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.GroupDao;
-import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import org.junit.After;
 import org.junit.Before;

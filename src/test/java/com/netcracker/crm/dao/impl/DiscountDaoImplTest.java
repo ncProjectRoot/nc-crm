@@ -2,6 +2,8 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Melnyk_Dmytro
@@ -23,55 +27,36 @@ public class DiscountDaoImplTest {
     @Autowired
     private DiscountDao discountDao;
 
-    @Test
+    private Discount discountCreated;
+
+    @Before
     public void create() throws Exception {
-        Discount discount = new Discount();
-        discount.setTitle("Discount for internet");
-        discount.setDescription("descr");
-        discount.setPercentage(0.5);
-        discount.setActive(true);
-        long id = discountDao.create(discount);
-        System.out.println("Discount with id " + id + " created");
+        discountCreated = new Discount();
+        discountCreated.setTitle("test discount title");
+        discountCreated.setDescription("test discount description");
+        discountCreated.setPercentage(0.5);
+        discountCreated.setActive(true);
+        assertNotNull(discountDao.create(discountCreated));
     }
 
     @Test
-    public void update() throws Exception {
-        Discount discount = new Discount();
-        discount.setTitle("Internet discount");
-        discount.setId(1L);
-        discount.setDescription("changed description");
-        discount.setPercentage(0.5);
-        discount.setActive(true);
+    public void findAndUpdateAndCount() throws Exception {
+        Discount discountFoundById = discountDao.findById(discountCreated.getId());
+        assertEquals(discountCreated.getTitle(), discountFoundById.getTitle());
 
-        long id = discountDao.update(discount);
-        System.out.println("Rows updated: " + id);
+        List<Discount> discountsFoundByName = discountDao.findByTitle(discountCreated.getTitle());
+        assertEquals(discountCreated.getId(), discountsFoundByName.get(0).getId());
+
+        discountCreated.setTitle("test update discount title");
+        assertEquals(discountDao.update(discountCreated), discountCreated.getId());
+
+        assertEquals(discountDao.getCount(), new Long(1));
     }
 
-    @Test
+    @After
     public void delete() throws Exception {
-        Discount discount = new Discount();
-        discount.setId(1L);
-        discountDao.delete(discount);
+        long affectedRows = discountDao.delete(discountCreated);
+        assertEquals(affectedRows, 1L);
     }
-
-    @Test
-    public void findById() throws Exception {
-        Discount discount = discountDao.findById(1L);
-        System.out.println(discount);
-    }
-
-    @Test
-    public void findByName() throws Exception {
-        List<Discount> list = discountDao.findByTitle("DiSc");
-        for (Discount discount : list) {
-            System.out.println(discount);
-        }
-    }
-
-    @Test
-    public void getCount() throws Exception {
-        System.out.println(discountDao.getCount());
-    }
-
 
 }

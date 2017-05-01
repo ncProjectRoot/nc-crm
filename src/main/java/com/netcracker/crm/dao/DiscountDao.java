@@ -12,6 +12,6 @@ import java.util.List;
 public interface DiscountDao extends CrudDao<Discount> {
     List<Discount> findByTitle(String title);
 
-    long getCount();
+    Long getCount();
 
 }
