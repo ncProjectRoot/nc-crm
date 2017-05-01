@@ -1,4 +1,4 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email;
 
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
@@ -25,15 +25,16 @@ public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    private static final String TEMPL_PACKAGE = "email";
+    private static final String TEMPLATE_PACKAGE = "email/?????";
 
     public abstract void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException;
     protected abstract void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException;
 
     public String getTemplate(String template) {
-        log.debug("Getting email template " + TEMPL_PACKAGE + "/" + template);
+        String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
+        log.debug("Getting email template " + concreteTemplate);
         StringBuilder stringBuilder = new StringBuilder();
-        File file = new File(getClass().getClassLoader().getResource(TEMPL_PACKAGE + "/" + template).getFile());
+        File file = new File(getClass().getClassLoader().getResource(concreteTemplate).getFile());
         if (file.exists()) {
             try {
                 List<String> lines = Files.readAllLines(Paths.get(file.getCanonicalPath()));
@@ -44,7 +45,7 @@ public abstract class AbstractEmailSender {
                 e.printStackTrace();
             }
         } else {
-            log.error("File " + TEMPL_PACKAGE + "/" + template + " not found");
+            log.error("File " + concreteTemplate + " not found");
         }
         return stringBuilder.toString();
     }

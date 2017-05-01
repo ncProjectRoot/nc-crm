@@ -2,9 +2,10 @@ package com.netcracker.crm.service;
 
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.email.senders.EmailMap;
-import com.netcracker.crm.email.senders.EmailType;
-import com.netcracker.crm.email.senders.RecoveryPasswordSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.senders.RecoveryPasswordSender;
 import com.netcracker.crm.exception.NoSuchEmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,8 +69,8 @@ public class ForgotPasswordService {
 
     private EmailMap fillMap(User user, String password) {
         EmailMap emailMap = new EmailMap(EmailType.RECOVERY_PASSWORD);
-        emailMap.put("user", user);
-        emailMap.put("password", password);
+        emailMap.put(EmailMapKeys.USER, user);
+        emailMap.put(EmailMapKeys.USER_PASSWORD, password);
         return emailMap;
     }
 }

@@ -1,9 +1,14 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -17,14 +22,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class EmailSendersTest {
 
+    @Qualifier("orderSender")
     @Autowired
-    private OrderStatusEmailSender orderStatusEmailSender;
+    private AbstractEmailSender orderStatusEmailSender;
+    @Qualifier("complaintSender")
     @Autowired
-    private ComplaintMailSender complaintMailSender;
+    private AbstractEmailSender complaintMailSender;
+    @Qualifier("massiveSender")
     @Autowired
-    private MassiveEmailSender massiveEmailSender;
+    private AbstractEmailSender massiveEmailSender;
+    @Qualifier("registrationSender")
     @Autowired
-    private RegSuccessEmailSender regSuccessEmailSender;
+    private AbstractEmailSender regSuccessEmailSender;
 
     @Test
     public void orderStatusTest() throws Exception {
@@ -40,7 +49,7 @@ public class EmailSendersTest {
         order.setCustomer(user);
         order.setStatus(OrderStatus.DISABLED);
         EmailMap emailMap = new EmailMap(EmailType.ORDER_STATUS);
-        emailMap.put("order", order);
+        emailMap.put(EmailMapKeys.ORDER, order);
         orderStatusEmailSender.send(emailMap);
 
     }
@@ -57,7 +66,7 @@ public class EmailSendersTest {
         complaint.setStatus(ComplaintStatus.CLOSED);
         complaint.setTitle("AnyTitle");
         EmailMap emailMap = new EmailMap(EmailType.COMPLAINT);
-        emailMap.put("complaint", complaint);
+        emailMap.put(EmailMapKeys.COMPLAINT, complaint);
 
         complaintMailSender.send(emailMap);
     }
@@ -69,9 +78,9 @@ public class EmailSendersTest {
         String information = "Some information";
         String subject = "Interesting subject";
         EmailMap emailMap = new EmailMap(EmailType.MASSIVE);
-        emailMap.put("receivers", addresses);
-        emailMap.put("subject", subject);
-        emailMap.put("body", information);
+        emailMap.put(EmailMapKeys.RECEIVERS, addresses);
+        emailMap.put(EmailMapKeys.SUBJECT, subject);
+        emailMap.put(EmailMapKeys.BODY, information);
         massiveEmailSender.send(emailMap);
     }
 
@@ -83,7 +92,7 @@ public class EmailSendersTest {
         user.setFirstName("John");
         user.setLastName("Snow");
         EmailMap emailMap = new EmailMap(EmailType.REGISTRATION);
-        emailMap.put("user", user);
+        emailMap.put(EmailMapKeys.USER, user);
         regSuccessEmailSender.send(emailMap);
     }
 

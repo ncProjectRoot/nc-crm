@@ -1,7 +1,11 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +24,7 @@ import java.util.Properties;
  */
 
 
-@Service
+@Service("registrationSender")
 public class RegSuccessEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(RegSuccessEmailSender.class);
@@ -73,7 +77,7 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     }
 
     private User getUser(EmailMap emailMap) {
-        Object o = emailMap.get("user");
+        Object o = emailMap.get(EmailMapKeys.USER);
         if (o instanceof User){
             return (User) o;
         }else {

@@ -1,4 +1,4 @@
-package com.netcracker.crm.email.builder;
+package com.netcracker.crm.service.email.builder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +22,8 @@ public class EmailBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBuilder.class);
 
-    private String username = "mail.username";
-    private String password = "mail.password";
+    private static final String PROPERTY_EMAIL_USERNAME = "mail.username" ;
+    private static final String PROPERTY_EMAIL_PASSWORD = "mail.password";
 
     private String subject = "";
     private List<InternetAddress> addresses;
@@ -38,7 +38,7 @@ public class EmailBuilder {
     public MimeMessage generateMessage() throws MessagingException {
         log.debug("Generating message");
         MimeMessage message = new MimeMessage(getSession());
-        message.setFrom(new InternetAddress(properties.getProperty(username)));
+        message.setFrom(new InternetAddress(properties.getProperty(PROPERTY_EMAIL_USERNAME)));
         message.addRecipients(Message.RecipientType.TO, addresses.toArray(new InternetAddress[addresses.size()]));
         message.setSubject(subject);
         message.setContent(multipart);
@@ -75,7 +75,8 @@ public class EmailBuilder {
     private Session getSession() {
         return Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(properties.getProperty(username), properties.getProperty(password));
+                return new PasswordAuthentication(properties.getProperty(PROPERTY_EMAIL_USERNAME),
+                        properties.getProperty(PROPERTY_EMAIL_PASSWORD));
             }
         });
     }

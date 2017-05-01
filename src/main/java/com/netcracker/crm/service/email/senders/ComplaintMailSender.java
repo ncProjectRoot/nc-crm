@@ -1,9 +1,13 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
-import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,7 @@ import java.util.Properties;
 /**
  * Created by Pasha on 15.04.2017.
  */
-@Service
+@Service("complaintSender")
 public class ComplaintMailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(ComplaintMailSender.class);
@@ -57,7 +61,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
     }
 
     private Complaint getComplaint(EmailMap emailMap) {
-        Object o = emailMap.get("complaint");
+        Object o = emailMap.get(EmailMapKeys.COMPLAINT);
         if (o instanceof Complaint){
             return (Complaint) o;
         }else {

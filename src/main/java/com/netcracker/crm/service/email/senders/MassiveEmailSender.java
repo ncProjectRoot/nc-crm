@@ -1,6 +1,10 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
-import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +20,7 @@ import java.util.Properties;
 /**
  * Created by Pasha on 14.04.2017.
  */
-@Service
+@Service("massiveSender")
 public class MassiveEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(MassiveEmailSender.class);
@@ -39,7 +43,7 @@ public class MassiveEmailSender extends AbstractEmailSender {
     }
 
     private String[] getReceivers(EmailMap emailMap){
-        String[] receivers = (String[]) emailMap.get("receivers");
+        String[] receivers = (String[]) emailMap.get(EmailMapKeys.RECEIVERS);
         if (receivers == null || receivers.length == 0){
             log.error("Receivers can't be null or have zero length");
             throw new IllegalStateException("receivers is null or no recipient");
@@ -48,7 +52,7 @@ public class MassiveEmailSender extends AbstractEmailSender {
     }
 
     private String getSubject(EmailMap emailMap){
-        String subject = (String) emailMap.get("subject");
+        String subject = (String) emailMap.get(EmailMapKeys.SUBJECT);
         if (subject == null){
             log.error("Subject can't be null");
             throw new IllegalStateException("subject is null");
@@ -57,7 +61,7 @@ public class MassiveEmailSender extends AbstractEmailSender {
     }
 
     private String getBody(EmailMap emailMap){
-        String body = (String) emailMap.get("subject");
+        String body = (String) emailMap.get(EmailMapKeys.BODY);
         if (body == null){
             log.error("Body can't be null");
             throw new IllegalStateException("body is null");

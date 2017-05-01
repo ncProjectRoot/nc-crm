@@ -1,8 +1,12 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 
 import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.email.builder.EmailBuilder;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +24,7 @@ import java.util.Properties;
  * @since 14.04.2017
  */
 
-@Service
+@Service("orderSender")
 public class OrderStatusEmailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(OrderStatusEmailSender.class);
@@ -62,7 +66,6 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
 
         String template = replace(getTemplate(orderStatusTempl), order);
         EmailBuilder emailBuilder = new EmailBuilder();
-        System.out.println(properties);
         emailBuilder.setProperties(properties);
         log.debug("Start building  email letter");
         emailBuilder.setSubject(orderStatusSubj);
@@ -73,7 +76,7 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
     }
 
     private Order getOrder(EmailMap emailMap) {
-        Object o = emailMap.get("order");
+        Object o = emailMap.get(EmailMapKeys.ORDER);
         if (o instanceof Order){
             return (Order) o;
         }else {

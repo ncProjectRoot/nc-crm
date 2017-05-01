@@ -1,15 +1,15 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email;
 
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by Pasha on 26.04.2017.
  */
 public class EmailMap {
-    private Map<String, Object> emailMap;
+    private Map<EmailMapKeys, Object> emailMap;
     private EmailType emailType;
 
 
@@ -18,28 +18,28 @@ public class EmailMap {
             throw new IncorrectEmailElementException("Email type == null");
         }
         this.emailType = emailType;
-        emailMap = new LinkedHashMap<>();
+        emailMap = new HashMap<>();
     }
 
 
-    public void put(String valueName, Object value){
-        emailMap.put(valueName, value);
+    public void put(EmailMapKeys key, Object value){
+        emailMap.put(key, value);
     }
 
 
-    public void remove(String valueName){
-        emailMap.remove(valueName);
+    public void remove(EmailMapKeys key){
+        emailMap.remove(key);
     }
 
-    public Object get(String valueName){
-        return emailMap.get(valueName);
+    public Object get(EmailMapKeys key){
+        return emailMap.get(key);
     }
 
     public EmailType getEmailType() {
         return emailType;
     }
 
-    public Map<String, Object> getEmailMap() {
+    public Map<EmailMapKeys, Object> getEmailMap() {
         return emailMap;
     }
 }

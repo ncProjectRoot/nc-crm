@@ -1,8 +1,12 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailMap;
+import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,7 @@ import java.util.Properties;
 /**
  * Created by Pasha on 26.04.2017.
  */
-@Service
+@Service("recoverySender")
 public class RecoveryPasswordSender extends AbstractEmailSender {
     private static final Logger log = LoggerFactory.getLogger(RecoveryPasswordSender.class);
     @Qualifier("emailProps")
@@ -61,9 +65,9 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
                 .replaceAll("%password%", password);
     }
 
-    private String getPassword(EmailMap emailMap){
-        String password = (String) emailMap.get("password");
-        if (password == null){
+    private String getPassword(EmailMap emailMap) {
+        String password = (String) emailMap.get(EmailMapKeys.USER_PASSWORD);
+        if (password == null) {
             log.error("Password can't be null");
             throw new IllegalStateException("password is null");
         }
@@ -71,10 +75,10 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
     }
 
     private User getUser(EmailMap emailMap) {
-        Object o = emailMap.get("user");
-        if (o instanceof User){
+        Object o = emailMap.get(EmailMapKeys.USER);
+        if (o instanceof User) {
             return (User) o;
-        }else {
+        } else {
             log.error("Expected by key 'user' in map will be user");
             throw new IncorrectEmailElementException("Expected by key 'user' in map will be user");
         }
@@ -82,7 +86,7 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
 
     @Override
     protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.RECOVERY_PASSWORD != emailMap.getEmailType()){
+        if (EmailType.RECOVERY_PASSWORD != emailMap.getEmailType()) {
             throw new IncorrectEmailElementException("Expected email type RECOVERY_PASSWORD but type " + emailMap.getEmailType());
         }
     }
