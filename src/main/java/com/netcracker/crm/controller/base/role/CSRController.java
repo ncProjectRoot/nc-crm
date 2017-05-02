@@ -25,4 +25,15 @@ public class CSRController {
         return "dashboardCSR";
     }
 
+    @GetMapping("/create")
+    public String create(Map<String, Object> model) {
+        return "create";
+    }
+
+    @GetMapping("/products")
+    public String products(Map<String, Object> model) {
+        return "products";
+    }
+
+
 }
