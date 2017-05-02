@@ -1,6 +1,7 @@
 package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.UserAttemptsDao;
+import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.dao.impl.sql.UserSqlQuery;
 import com.netcracker.crm.domain.UserAttempts;
 import org.slf4j.Logger;
@@ -18,9 +19,11 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.*;
+import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.PARAM_USER_ID;
 
 
 /**
@@ -32,7 +35,8 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
     private static final Logger log = LoggerFactory.getLogger(UserAttemptsDaoImpl.class);
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert insert;
-
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -44,6 +48,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
 
     @Override
     public void updateFailAttempts(String userMail) {
+
         UserAttempts user = getUserAttempts(userMail);
         if (user == null) {
             if (isUserExists(userMail)) {
@@ -58,6 +63,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
                 throw new LockedException("User Account is locked!");
             }
         }
+
     }
 
     @Override
@@ -113,7 +119,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
 
     private long create(String userMail) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_EMAIL, userMail)
+                .addValue(PARAM_USER_ID, userDao.findByEmail(userMail).getId())
                 .addValue(PARAM_ATTEMPTS, 1)
                 .addValue(PARAM_LAST_MODIFIED, new Date());
         long id = insert.executeAndReturnKey(params).longValue();
@@ -137,6 +143,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
 
 
     private static final class UserAttemptsWithDetailExtractor implements ResultSetExtractor<UserAttempts> {
+
         @Override
         public UserAttempts extractData(ResultSet rs) throws SQLException, DataAccessException {
             UserAttempts userAttempts = null;

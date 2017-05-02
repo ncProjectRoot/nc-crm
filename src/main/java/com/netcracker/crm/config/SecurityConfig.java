@@ -1,6 +1,5 @@
 package com.netcracker.crm.config;
 
-import com.netcracker.crm.dao.impl.PersistentTokenDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
