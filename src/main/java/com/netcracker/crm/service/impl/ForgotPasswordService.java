@@ -1,4 +1,4 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.impl;
 
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.User;
@@ -6,6 +6,7 @@ import com.netcracker.crm.email.senders.EmailMap;
 import com.netcracker.crm.email.senders.EmailType;
 import com.netcracker.crm.email.senders.RecoveryPasswordSender;
 import com.netcracker.crm.exception.NoSuchEmailException;
+import com.netcracker.crm.service.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
