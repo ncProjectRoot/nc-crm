@@ -12,8 +12,7 @@ public class Discount {
     private String title;
     private Double percentage;
     private String description;
-    private LocalDate dateStart;
-    private LocalDate dateFinish;
+    private Boolean active;
 
     public Discount() {
     }
@@ -50,19 +49,11 @@ public class Discount {
         this.description = description;
     }
 
-    public LocalDate getDateStart() {
-        return dateStart;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setDateStart(LocalDate dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public LocalDate getDateFinish() {
-        return dateFinish;
-    }
-
-    public void setDateFinish(LocalDate dateFinish) {
-        this.dateFinish = dateFinish;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

@@ -28,11 +28,12 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     private SimpleJdbcInsert orgInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private OrganizationWithDetailExtractor organizationWithDetailExtractor;
 
     @Override
     public Long create(Organization org) {
         if (org.getId() != null) {
-            return -1L;
+            return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_NAME, org.getName());
@@ -46,12 +47,48 @@ public class OrganizationDaoImpl implements OrganizationDao {
 
     @Override
     public Long update(Organization org) {
-        return 0L;
+        Long orgId = org.getId();
+        if (orgId == null) {
+            return null;
+        }
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORG_ID, orgId)
+                .addValue(PARAM_ORG_NAME, org.getName());
+
+        int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
+        if (updatedRows > 0) {
+            log.info("Organization with id: " + orgId + " is successfully updated.");
+            return orgId;
+        } else {
+            log.error("Organization was not updated.");
+            return null;
+        }
     }
 
     @Override
     public Long delete(Long id) {
-        return 0L;
+        if (id != null && id > 0) {
+            SqlParameterSource params = new MapSqlParameterSource().addValue(PARAM_ORG_ID, id);
+
+            return (long) namedJdbcTemplate.update(SQL_DELETE_ORGANIZATION, params);
+        }
+        return null;
+    }
+
+    @Override
+    public Long delete(Organization org) {
+        if (org != null) {
+            return delete(org.getId());
+        }
+        return null;
+    }
+
+    @Override
+    public Organization findById(Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORG_ID, id);
+
+        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, organizationWithDetailExtractor);
     }
 
     @Override
@@ -59,7 +96,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_NAME, name);
 
-        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, new OrganizationWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, organizationWithDetailExtractor);
     }
 
     @Autowired
@@ -68,13 +105,14 @@ public class OrganizationDaoImpl implements OrganizationDao {
         this.orgInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_ORG_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ORG_ID);
+        organizationWithDetailExtractor = new OrganizationWithDetailExtractor();
     }
 
     private static final class OrganizationWithDetailExtractor implements ResultSetExtractor<Organization> {
         @Override
         public Organization extractData(ResultSet rs) throws SQLException, DataAccessException {
             Organization organization = null;
-            while (rs.next()) {
+            if (rs.next()) {
                 organization = new Organization();
                 organization.setId(rs.getLong(PARAM_ORG_ID));
                 organization.setName(rs.getString(PARAM_ORG_NAME));

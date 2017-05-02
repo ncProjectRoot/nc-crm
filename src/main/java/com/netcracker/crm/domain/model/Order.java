@@ -1,6 +1,6 @@
 package com.netcracker.crm.domain.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author Melnyk_Dmytro
@@ -9,7 +9,8 @@ import java.time.LocalDate;
  */
 public class Order {
     private Long id;
-    private LocalDate date;
+    private LocalDateTime date;
+    private LocalDateTime preferedDate;
     private OrderStatus status;
     private User customer;
     private Product product;
@@ -24,14 +25,6 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public OrderStatus getStatus() {
@@ -64,5 +57,21 @@ public class Order {
 
     public void setCsr(User csr) {
         this.csr = csr;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public LocalDateTime getPreferedDate() {
+        return preferedDate;
+    }
+
+    public void setPreferedDate(LocalDateTime preferedDate) {
+        this.preferedDate = preferedDate;
     }
 }
