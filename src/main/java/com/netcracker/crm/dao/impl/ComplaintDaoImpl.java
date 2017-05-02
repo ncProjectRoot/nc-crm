@@ -209,7 +209,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
                     complaint.setStatus((ComplaintStatus) status);
                 }
 
-                complaint.setDate(rs.getDate(PARAM_COMPLAINT_DATE).toLocalDate());
+                complaint.setDate(rs.getTimestamp(PARAM_COMPLAINT_DATE).toLocalDateTime());
 
                 Long customerId = rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID);
                 if (customerId > 0) {
@@ -218,7 +218,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
 
                 Long pmgId = rs.getLong(PARAM_COMPLAINT_PMG_ID);
                 if (pmgId > 0) {
-                    complaint.setCustomer(userDao.findById(pmgId));
+                    complaint.setPmg(userDao.findById(pmgId));
                 }
 
                 Long orderId = rs.getLong(PARAM_COMPLAINT_ORDER_ID);

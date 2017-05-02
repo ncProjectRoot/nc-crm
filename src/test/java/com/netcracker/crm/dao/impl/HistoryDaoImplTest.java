@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import com.netcracker.crm.domain.model.OrderStatus;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.runner.RunWith;
@@ -67,13 +67,13 @@ public class HistoryDaoImplTest {
         complaintCreated.setTitle("test title complaint");
         complaintCreated.setMessage("test message complaint");
         complaintCreated.setStatus(ComplaintStatus.OPEN);
-        complaintCreated.setDate(LocalDate.now());
+        complaintCreated.setDate(LocalDateTime.now());
         complaintCreated.setCustomer(userCreated);
         complaintCreated.setOrder(orderCreated);
 
         historyCreated = new History();
         historyCreated.setOldStatus(OrderStatus.PAUSED);
-        historyCreated.setDateChangeStatus(LocalDate.now());
+        historyCreated.setDateChangeStatus(LocalDateTime.now());
         historyCreated.setDescChangeStatus("test History desc change status");
         historyCreated.setOrder(orderCreated);
         historyCreated.setComplaint(complaintCreated);
@@ -96,7 +96,7 @@ public class HistoryDaoImplTest {
         List<History> historyFoundByOrderId = historyDao.findAllByOrderId(orderCreated.getId());
         assertEquals(historyCreated.getId(), historyFoundByOrderId.get(0).getId());
 
-        List<History> historyFoundByDate = historyDao.findAllByDate(historyCreated.getDateChangeStatus());
+        List<History> historyFoundByDate = historyDao.findAllByDate(historyCreated.getDateChangeStatus().toLocalDate());
         assertEquals(historyCreated.getId(), historyFoundByDate.get(0).getId());
 
         historyCreated.setOldStatus(OrderStatus.ACTIVE);

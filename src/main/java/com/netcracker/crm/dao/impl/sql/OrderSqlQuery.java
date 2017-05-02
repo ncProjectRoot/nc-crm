@@ -28,11 +28,11 @@ public final class OrderSqlQuery {
     
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
-            + "csr_id FROM orders WHERE date_finish = :date_finish;";
+            + "csr_id FROM orders WHERE date_trunc('day', date_finish) = :date_finish;";
     
     public static final String SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
-            + "csr_id FROM orders WHERE preferred_date = :preferred_date;";
+            + "csr_id FROM orders WHERE date_trunc('day', preferred_date) = :preferred_date;";
     
     public static final String SQL_FIND_ALL_ORDER_BY_PRODUCT_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "

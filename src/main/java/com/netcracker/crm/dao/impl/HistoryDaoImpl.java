@@ -16,11 +16,11 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
-import java.time.LocalDate;
 
 /**
  *
@@ -224,7 +224,7 @@ public class HistoryDaoImpl implements HistoryDao {
             while (rs.next()) {
                 History history = new History();
                 history.setId(rs.getLong(PARAM_HISTORY_ID));
-                history.setDateChangeStatus(rs.getDate(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDate());
+                history.setDateChangeStatus(rs.getTimestamp(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDateTime());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
 
                 long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);

@@ -27,7 +27,7 @@ public final class ComplaintSqlQuery {
 
     public static final String SQL_FIND_ALL_COMPLAINT_BY_DATE = "" +
             "SELECT * FROM complaint " +
-            "WHERE date = :date;";
+            "WHERE date_trunc('day', date) = :date;";
 
     public static final String SQL_UPDATE_COMPLAINT = "UPDATE complaint " +
             "SET title=:title, message=:message, status_id=:status_id, date=:date, " +

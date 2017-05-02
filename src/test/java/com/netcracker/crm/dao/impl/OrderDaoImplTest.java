@@ -5,7 +5,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.After;
@@ -50,8 +50,8 @@ public class OrderDaoImplTest {
 
         orderCreated = new Order();
         orderCreated.setStatus(OrderStatus.NEW);
-        orderCreated.setDate(LocalDate.now());
-        orderCreated.setPreferedDate(LocalDate.now());
+        orderCreated.setDate(LocalDateTime.now());
+        orderCreated.setPreferedDate(LocalDateTime.now());
         orderCreated.setCustomer(userCreated);
         orderCreated.setCsr(userCreated);
 
@@ -77,10 +77,10 @@ public class OrderDaoImplTest {
         List<Order> ordersFoundByCustomerId = orderDao.findAllByCustomerId(userCreated.getId());
         assertEquals(orderCreated.getId(), ordersFoundByCustomerId.get(0).getId());
 
-        List<Order> ordersFoundByDateFinish = orderDao.findAllByDateFinish(orderCreated.getDate());
+        List<Order> ordersFoundByDateFinish = orderDao.findAllByDateFinish(orderCreated.getDate().toLocalDate());
         assertEquals(orderCreated.getId(), ordersFoundByDateFinish.get(0).getId());
 
-        List<Order> ordersFoundByPreferredDate = orderDao.findAllByPreferredDate(orderCreated.getPreferedDate());
+        List<Order> ordersFoundByPreferredDate = orderDao.findAllByPreferredDate(orderCreated.getPreferedDate().toLocalDate());
         assertEquals(orderCreated.getId(), ordersFoundByPreferredDate.get(0).getId());
 
         orderCreated.setStatus(OrderStatus.DISABLED);

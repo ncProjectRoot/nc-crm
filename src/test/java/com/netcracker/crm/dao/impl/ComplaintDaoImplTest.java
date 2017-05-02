@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -47,7 +47,7 @@ public class ComplaintDaoImplTest {
         complaintCreated.setTitle("test title complaint");
         complaintCreated.setMessage("test message complaint");
         complaintCreated.setStatus(ComplaintStatus.OPEN);
-        complaintCreated.setDate(LocalDate.now());
+        complaintCreated.setDate(LocalDateTime.now());
 
         userCreated = new User();
         userCreated.setPassword("test password");
@@ -82,7 +82,7 @@ public class ComplaintDaoImplTest {
         List<Complaint> complaintsFoundByTitle = complaintDao.findByTitle(complaintCreated.getTitle());
         assertEquals(complaintCreated.getId(), complaintsFoundByTitle.get(0).getId());
 
-        List<Complaint> complaintsFoundByDate = complaintDao.findAllByDate(complaintCreated.getDate());
+        List<Complaint> complaintsFoundByDate = complaintDao.findAllByDate(complaintCreated.getDate().toLocalDate());
         assertEquals(complaintCreated.getId(), complaintsFoundByDate.get(0).getId());
 
         complaintCreated.setMessage("update test message complaint");
