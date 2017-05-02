@@ -1,12 +1,12 @@
 package com.netcracker.crm.service.email.senders;
 
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import com.netcracker.crm.service.email.AbstractEmailSender;
-import com.netcracker.crm.service.email.EmailMap;
-import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.email.builder.EmailBuilder;
-import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +61,13 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
     }
 
 
-    public void send(EmailMap emailMap) throws MessagingException {
-        checkEmailMap(emailMap);
-        User user = getUser(emailMap);
+    public void send(EmailParam emailParam) throws MessagingException {
+        checkEmailMap(emailParam);
+        User user = getUser(emailParam);
+        String reference = getReference(emailParam);
+        String password = getPassword(emailParam);
 
-        String template = replace(user, getTemplate(regSuccessTempl));
+        String template = replace(user,reference, password, getTemplate(regSuccessTempl));
         EmailBuilder emailBuilder = new EmailBuilder();
         emailBuilder.setProperties(properties);
         log.debug("Start building email letter");
@@ -76,28 +78,48 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
         sender.send(emailBuilder.generateMessage());
     }
 
-    private User getUser(EmailMap emailMap) {
-        Object o = emailMap.get(EmailMapKeys.USER);
+    private User getUser(EmailParam emailParam) {
+        Object o = emailParam.get(EmailParamKeys.USER);
         if (o instanceof User){
             return (User) o;
         }else {
-            throw new IncorrectEmailElementException("Expected by key 'user' in map will be user");
+            throw new IncorrectEmailElementException("Email param type : " + o.getClass() + ", need type : " + EmailParamKeys.USER);
         }
     }
 
+    private String getPassword(EmailParam emailParam) {
+        String password = (String) emailParam.get(EmailParamKeys.USER_PASSWORD);
+        if (password == null) {
+            log.error("Password can't be null");
+            throw new IllegalStateException("password is null");
+        }
+        return password;
+    }
+
+    private String getReference(EmailParam emailParam) {
+        String reference = (String) emailParam.get(EmailParamKeys.USER_REFERENCE);
+        if (reference == null) {
+            log.error("Reference can't be null");
+            throw new IllegalStateException("Reference is null");
+        }
+        return reference;
+    }
 
 
-    private String replace(User user, String templ) {
+
+    private String replace(User user, String reference, String password, String templ) {
         log.debug("Start replacing values in email template file");
         return templ.replaceAll("%email%", user.getEmail())
                 .replaceAll("%name%", user.getFirstName())
-                .replaceAll("%surname%", user.getLastName());
+                .replaceAll("%surname%", user.getLastName())
+                .replaceAll("%password%", password)
+                .replaceAll("%reference%", reference);
     }
 
     @Override
-    protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.REGISTRATION != emailMap.getEmailType()){
-            throw new IncorrectEmailElementException("Expected email type REGISTRATION but type " + emailMap.getEmailType());
+    protected void checkEmailMap(EmailParam emailParam) {
+        if (EmailType.REGISTRATION != emailParam.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type REGISTRATION but type " + emailParam.getEmailType());
         }
     }
 }

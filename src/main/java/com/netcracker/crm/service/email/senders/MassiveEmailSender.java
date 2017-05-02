@@ -1,11 +1,11 @@
 package com.netcracker.crm.service.email.senders;
 
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import com.netcracker.crm.service.email.AbstractEmailSender;
-import com.netcracker.crm.service.email.EmailMap;
-import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.email.builder.EmailBuilder;
-import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +33,17 @@ public class MassiveEmailSender extends AbstractEmailSender {
     @Autowired
     private Properties properties;
 
-    public void send(EmailMap emailMap) throws MessagingException {
-        checkEmailMap(emailMap);
-        String[] receivers = getReceivers(emailMap);
-        String subject = getSubject(emailMap);
-        String body = getBody(emailMap);
+    public void send(EmailParam emailParam) throws MessagingException {
+        checkEmailMap(emailParam);
+        String[] receivers = getReceivers(emailParam);
+        String subject = getSubject(emailParam);
+        String body = getBody(emailParam);
         String bodyText = replace(getTemplate(informationAll), body);
         sendMails(createMessage(receivers, subject, bodyText));
     }
 
-    private String[] getReceivers(EmailMap emailMap){
-        String[] receivers = (String[]) emailMap.get(EmailMapKeys.RECEIVERS);
+    private String[] getReceivers(EmailParam emailParam){
+        String[] receivers = (String[]) emailParam.get(EmailParamKeys.RECEIVERS);
         if (receivers == null || receivers.length == 0){
             log.error("Receivers can't be null or have zero length");
             throw new IllegalStateException("receivers is null or no recipient");
@@ -51,8 +51,8 @@ public class MassiveEmailSender extends AbstractEmailSender {
         return receivers;
     }
 
-    private String getSubject(EmailMap emailMap){
-        String subject = (String) emailMap.get(EmailMapKeys.SUBJECT);
+    private String getSubject(EmailParam emailParam){
+        String subject = (String) emailParam.get(EmailParamKeys.SUBJECT);
         if (subject == null){
             log.error("Subject can't be null");
             throw new IllegalStateException("subject is null");
@@ -60,8 +60,8 @@ public class MassiveEmailSender extends AbstractEmailSender {
         return subject;
     }
 
-    private String getBody(EmailMap emailMap){
-        String body = (String) emailMap.get(EmailMapKeys.BODY);
+    private String getBody(EmailParam emailParam){
+        String body = (String) emailParam.get(EmailParamKeys.BODY);
         if (body == null){
             log.error("Body can't be null");
             throw new IllegalStateException("body is null");
@@ -99,9 +99,9 @@ public class MassiveEmailSender extends AbstractEmailSender {
     }
 
     @Override
-    protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.MASSIVE != emailMap.getEmailType()){
-            throw new IncorrectEmailElementException("Expected email type MASSIVE but type " + emailMap.getEmailType());
+    protected void checkEmailMap(EmailParam emailParam) {
+        if (EmailType.MASSIVE != emailParam.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type MASSIVE but type " + emailParam.getEmailType());
         }
     }
 }

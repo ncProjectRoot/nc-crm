@@ -123,23 +123,29 @@ public class UserDaoImpl implements UserDao {
 
 
     private Long getAddressId(Address address) {
-        Long addressId = address.getId();
-        if (addressId != null) {
+        if (address != null) {
+            Long addressId = address.getId();
+            if (addressId != null) {
+                return addressId;
+            }
+            addressId = addressDao.create(address);
+
             return addressId;
         }
-        addressId = addressDao.create(address);
-
-        return addressId;
+        return null;
     }
 
     private Long getOrgId(Organization org) {
-        Long orgId = org.getId();
-        if (orgId != null) {
+        if (org != null) {
+            Long orgId = org.getId();
+            if (orgId != null) {
+                return orgId;
+            }
+            orgId = organizationDao.create(org);
+
             return orgId;
         }
-        orgId = organizationDao.create(org);
-
-        return orgId;
+        return null;
     }
 
     @Autowired

@@ -27,8 +27,8 @@ public abstract class AbstractEmailSender {
 
     private static final String TEMPLATE_PACKAGE = "email/?????";
 
-    public abstract void send(EmailMap emailMap) throws MessagingException, IncorrectEmailElementException;
-    protected abstract void checkEmailMap(EmailMap emailMap) throws IncorrectEmailElementException;
+    public abstract void send(EmailParam emailParam) throws MessagingException, IncorrectEmailElementException;
+    protected abstract void checkEmailMap(EmailParam emailParam) throws IncorrectEmailElementException;
 
     public String getTemplate(String template) {
         String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);

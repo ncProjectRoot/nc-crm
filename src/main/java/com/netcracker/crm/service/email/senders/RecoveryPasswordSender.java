@@ -3,8 +3,8 @@ package com.netcracker.crm.service.email.senders;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
 import com.netcracker.crm.service.email.AbstractEmailSender;
-import com.netcracker.crm.service.email.EmailMap;
-import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.email.builder.EmailBuilder;
 import org.slf4j.Logger;
@@ -35,10 +35,10 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
     private String recoverySubject;
 
     @Override
-    public void send(EmailMap emailMap) throws MessagingException {
-        checkEmailMap(emailMap);
-        User user = getUser(emailMap);
-        String password = getPassword(emailMap);
+    public void send(EmailParam emailParam) throws MessagingException {
+        checkEmailMap(emailParam);
+        User user = getUser(emailParam);
+        String password = getPassword(emailParam);
         prepareAndSendMail(user, password);
     }
 
@@ -65,8 +65,8 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
                 .replaceAll("%password%", password);
     }
 
-    private String getPassword(EmailMap emailMap) {
-        String password = (String) emailMap.get(EmailMapKeys.USER_PASSWORD);
+    private String getPassword(EmailParam emailParam) {
+        String password = (String) emailParam.get(EmailParamKeys.USER_PASSWORD);
         if (password == null) {
             log.error("Password can't be null");
             throw new IllegalStateException("password is null");
@@ -74,8 +74,8 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
         return password;
     }
 
-    private User getUser(EmailMap emailMap) {
-        Object o = emailMap.get(EmailMapKeys.USER);
+    private User getUser(EmailParam emailParam) {
+        Object o = emailParam.get(EmailParamKeys.USER);
         if (o instanceof User) {
             return (User) o;
         } else {
@@ -85,9 +85,9 @@ public class RecoveryPasswordSender extends AbstractEmailSender {
     }
 
     @Override
-    protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.RECOVERY_PASSWORD != emailMap.getEmailType()) {
-            throw new IncorrectEmailElementException("Expected email type RECOVERY_PASSWORD but type " + emailMap.getEmailType());
+    protected void checkEmailMap(EmailParam emailParam) {
+        if (EmailType.RECOVERY_PASSWORD != emailParam.getEmailType()) {
+            throw new IncorrectEmailElementException("Expected email type RECOVERY_PASSWORD but type " + emailParam.getEmailType());
         }
     }
 

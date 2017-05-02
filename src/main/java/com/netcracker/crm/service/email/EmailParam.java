@@ -8,12 +8,12 @@ import java.util.Map;
 /**
  * Created by Pasha on 26.04.2017.
  */
-public class EmailMap {
-    private Map<EmailMapKeys, Object> emailMap;
+public class EmailParam {
+    private Map<EmailParamKeys, Object> emailMap;
     private EmailType emailType;
 
 
-    public EmailMap(EmailType emailType) {
+    public EmailParam(EmailType emailType) {
         if (emailType == null){
             throw new IncorrectEmailElementException("Email type == null");
         }
@@ -22,16 +22,16 @@ public class EmailMap {
     }
 
 
-    public void put(EmailMapKeys key, Object value){
+    public void put(EmailParamKeys key, Object value){
         emailMap.put(key, value);
     }
 
 
-    public void remove(EmailMapKeys key){
+    public void remove(EmailParamKeys key){
         emailMap.remove(key);
     }
 
-    public Object get(EmailMapKeys key){
+    public Object get(EmailParamKeys key){
         return emailMap.get(key);
     }
 
@@ -39,7 +39,7 @@ public class EmailMap {
         return emailType;
     }
 
-    public Map<EmailMapKeys, Object> getEmailMap() {
+    public Map<EmailParamKeys, Object> getEmailMap() {
         return emailMap;
     }
 }

@@ -2,12 +2,12 @@ package com.netcracker.crm.service.email.senders;
 
 
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.exception.IncorrectEmailElementException;
 import com.netcracker.crm.service.email.AbstractEmailSender;
-import com.netcracker.crm.service.email.EmailMap;
-import com.netcracker.crm.service.email.EmailMapKeys;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.email.builder.EmailBuilder;
-import com.netcracker.crm.exception.IncorrectEmailElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +60,9 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
     public OrderStatusEmailSender() {
     }
 
-    public void send(EmailMap emailMap) throws MessagingException {
-        checkEmailMap(emailMap);
-        Order order = getOrder(emailMap);
+    public void send(EmailParam emailParam) throws MessagingException {
+        checkEmailMap(emailParam);
+        Order order = getOrder(emailParam);
 
         String template = replace(getTemplate(orderStatusTempl), order);
         EmailBuilder emailBuilder = new EmailBuilder();
@@ -75,8 +75,8 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
         sender.send(emailBuilder.generateMessage());
     }
 
-    private Order getOrder(EmailMap emailMap) {
-        Object o = emailMap.get(EmailMapKeys.ORDER);
+    private Order getOrder(EmailParam emailParam) {
+        Object o = emailParam.get(EmailParamKeys.ORDER);
         if (o instanceof Order){
             return (Order) o;
         }else {
@@ -93,9 +93,9 @@ public class OrderStatusEmailSender extends AbstractEmailSender {
     }
 
     @Override
-    protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.ORDER_STATUS != emailMap.getEmailType()){
-            throw new IncorrectEmailElementException("Expected email type ORDER_STATUS but type " + emailMap.getEmailType());
+    protected void checkEmailMap(EmailParam emailParam) {
+        if (EmailType.ORDER_STATUS != emailParam.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type ORDER_STATUS but type " + emailParam.getEmailType());
         }
     }
 }
