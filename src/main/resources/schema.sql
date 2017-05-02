@@ -172,8 +172,8 @@ CREATE INDEX product__IDX ON product
 ALTER TABLE product
     ADD CONSTRAINT product_PK PRIMARY KEY ( id ) ;
 
--- ALTER TABLE product
---     ADD CONSTRAINT product__UN UNIQUE ( discount_id ) ;
+ALTER TABLE product
+    ADD CONSTRAINT product__UN UNIQUE ( discount_id ) ;
 
 
 CREATE TABLE region
@@ -225,7 +225,7 @@ ALTER TABLE statuses
 
 CREATE TABLE user_attempts
     (
-     id INTEGER  NOT NULL ,
+     id BIGSERIAL  NOT NULL ,
      attempts INTEGER  NOT NULL ,
      last_modified timestamp with time zone  NOT NULL ,
      user_id INTEGER  NOT NULL
@@ -278,32 +278,6 @@ CREATE INDEX users__IDX ON users
      middle_name ASC ,
      last_name ASC
     )
-;
-
-
-CREATE TABLE user_register_token
-(
-  id BIGSERIAL  NOT NULL ,
-  user_id INTEGER  NOT NULL ,
-  token VARCHAR (60)  NOT NULL ,
-  date_send TIMESTAMP(0)  NOT NULL ,
-  used BOOLEAN  NOT NULL
-)
-;
-
-ALTER TABLE user_register_token
-  ADD CONSTRAINT user_register_token_PK PRIMARY KEY ( id ) ;
-
-ALTER TABLE user_register_token
-  ADD CONSTRAINT user_register_token_users_FK FOREIGN KEY
-  (
-    user_id
-  )
-REFERENCES users
-  (
-    id
-  )
-ON DELETE CASCADE
 ;
 
 ALTER TABLE users
@@ -611,6 +585,31 @@ ALTER TABLE users
     )
 ;
 
+CREATE TABLE user_register_token
+    (
+     id BIGSERIAL  NOT NULL ,
+     user_id INTEGER  NOT NULL ,
+     token VARCHAR (60)  NOT NULL ,
+     date_send TIMESTAMP(0)  NOT NULL ,
+     used BOOLEAN  NOT NULL
+    )
+;
+
+ALTER TABLE user_register_token
+    ADD CONSTRAINT user_register_token_PK PRIMARY KEY ( id ) ;
+
+ALTER TABLE user_register_token
+    ADD CONSTRAINT user_register_token_users_FK FOREIGN KEY
+    (
+     user_id
+    )
+    REFERENCES users
+    (
+     id
+    )
+    ON DELETE CASCADE
+;
+
 
 INSERT INTO user_roles (id, name) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO user_roles (id, name) VALUES (2, 'ROLE_CUSTOMER');
@@ -625,12 +624,12 @@ INSERT INTO user_roles (id, name) VALUES (4, 'ROLE_PMG');
 
 
 -- password - 123123
--- INSERT INTO "users"(
---   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
---   contact_person, address_id, user_role_id, org_id)
--- VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
---     '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
-
+INSERT INTO "users"(
+  password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
+  contact_person, address_id, user_role_id, org_id)
+VALUES ('$2a$10$mJfq5rmvQR66o1xBN2xMzeptwYaxogOToWzvbVUeEHol.pe/jABia', 'John', 'Doe', 'Doevich',
+    '0000000000', 'admin@gmail.com', true, true, false, null, 1,null);
+--
 -- INSERT INTO "users"(
 --   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
 --   contact_person, address_id, user_role_id, org_id)
@@ -678,7 +677,7 @@ INSERT INTO public.statuses(id, name) VALUES (12, 'OUTDATED');
 --
 -- INSERT INTO history (old_status_id, date_change_status, desc_change_status)
 -- VALUES (5, '10-10-1994', 'For test76');
-
+--
 
 
 commit;
