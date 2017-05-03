@@ -149,6 +149,13 @@ public class ComplaintDaoImpl implements ComplaintDao {
         return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_DATE, params, complaintWithDetailExtractor);
     }
 
+    @Override
+    public List<Complaint> findAllByCustomerId(Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_CUSTOMER_ID, params, complaintWithDetailExtractor);
+    }
+
     private Long getUserId(User user) {
         if (user != null) {
             Long userId = user.getId();

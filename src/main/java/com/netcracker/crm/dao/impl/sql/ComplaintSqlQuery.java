@@ -34,6 +34,12 @@ public final class ComplaintSqlQuery {
             "customer_id=:customer_id, pmg_id=:pmg_id, order_id=:order_id " +
             "WHERE id=:id;";
 
+    public static final String SQL_FIND_ALL_COMPLAINT_BY_CUSTOMER_ID = "" +
+            "SELECT id, title, message, status_id, date, " +
+            "customer_id, pmg_id, order_id FROM complaint " +
+            "WHERE customer_id = :customer_id " +
+            "ORDER BY date desc;";
+
     public static final String SQL_DELETE_COMPLAINT = "DELETE FROM complaint WHERE id = :id;";
 
 }
