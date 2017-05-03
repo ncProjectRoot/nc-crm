@@ -1,6 +1,5 @@
 package com.netcracker.crm.config;
 
-import com.netcracker.crm.dao.impl.PersistentTokenDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationProvider authenticationProvider;
     @Autowired
     private Environment env;
+    @Autowired
+    private PersistentTokenRepository tokenRepository;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
@@ -70,15 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                 .and()
-                .rememberMe().tokenRepository(persistentTokenRepository())
+                .rememberMe().tokenRepository(tokenRepository)
                 .tokenValiditySeconds(1209600)
         ;
-    }
-
-
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        return new PersistentTokenDaoImpl();
     }
 
     @Bean

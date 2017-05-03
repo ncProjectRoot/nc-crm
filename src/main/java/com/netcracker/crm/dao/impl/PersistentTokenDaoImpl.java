@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -25,6 +26,7 @@ import static com.netcracker.crm.dao.impl.sql.PersistentTokenSqlQuery.*;
 /**
  * Created by Pasha on 23.04.2017.
  */
+@Repository
 public class PersistentTokenDaoImpl implements PersistentTokenRepository {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert insert;
