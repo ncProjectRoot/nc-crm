@@ -21,11 +21,12 @@ $(document).ready(function () {
         $(".content").toggleClass("full-content");
     });
 
-    $("a.a-dummy").on('click', function (e) {
+    $(document).on('click', "a.a-dummy", function (e) {
+        console.log("a-dummy");
         e.preventDefault();
     });
 
-    $("a.a-logout").on("click", function (e) {
+    $(document).on("click", "a.a-logout", function (e) {
         $(this).find("form").submit();
     })
 

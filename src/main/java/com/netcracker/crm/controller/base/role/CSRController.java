@@ -35,5 +35,9 @@ public class CSRController {
         return "products";
     }
 
+    @GetMapping("/orders")
+    public String orders(Map<String, Object> model) {
+        return "orders";
+    }
 
 }
