@@ -44,7 +44,11 @@ public class GroupServiceImpl implements GroupService{
 
     private Group convertToEntity(GroupDto groupDto) {
         ModelMapper mapper = configureMapper();
-        Discount discount = mapper.map(groupDto.getDiscount(), Discount.class);
+        Discount discount = new Discount();
+        if (groupDto.getDiscountId() > 0) {
+            discount.setId(groupDto.getDiscountId());
+        }
+
         Group group = mapper.map(groupDto, Group.class);
 
         group.setDiscount(discount);
@@ -55,7 +59,6 @@ public class GroupServiceImpl implements GroupService{
 
     private ModelMapper configureMapper(){
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new DiscountMapper());
         modelMapper.addMappings(new GroupMapper());
 
         return modelMapper;

@@ -1,8 +1,5 @@
 package com.netcracker.crm.controller.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductStatusDto;
@@ -25,12 +22,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     @RequestMapping(value = "/csr/addProduct", method = RequestMethod.POST)
-    public String addProduct(ProductDto productDto, String disc, String grp) throws IOException {
-        productDto.setDiscount(disc.length() > 2 ? mapper.readValue(disc, Discount.class) : null);
-        productDto.setGroup(grp.length() > 2 ? mapper.readValue(grp, Group.class) : null);
+    public String addProduct(ProductDto productDto) throws IOException {
         Product product = productService.persist(productDto);
         return "Product with title : " + product.getTitle() + " successful added";
     }

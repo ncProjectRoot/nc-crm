@@ -1,8 +1,5 @@
 package com.netcracker.crm.dto;
 
-import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.domain.model.Group;
-
 /**
  * Created by Pasha on 29.04.2017.
  */
@@ -12,8 +9,8 @@ public class ProductDto {
     private Double defaultPrice;
     private String statusName;
     private String description;
-    private Discount discount;
-    private Group group;
+    private Long discountId;
+    private Long groupId;
 
     public Long getId() {
         return id;
@@ -55,21 +52,22 @@ public class ProductDto {
         this.description = description;
     }
 
-    public Discount getDiscount() {
-        return discount;
+    public Long getDiscountId() {
+        return discountId;
     }
 
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
+    public void setDiscountId(Long discountId) {
+        this.discountId = discountId;
     }
 
-    public Group getGroup() {
-        return group;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
+
 
     @Override
     public String toString() {
@@ -79,8 +77,8 @@ public class ProductDto {
                 ", defaultPrice=" + defaultPrice +
                 ", statusName='" + statusName + '\'' +
                 ", description='" + description + '\'' +
-                ", discount=" + discount +
-                ", group=" + group +
+                ", discountId=" + discountId +
+                ", groupId=" + groupId +
                 '}';
     }
 }

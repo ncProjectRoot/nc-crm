@@ -1,5 +1,7 @@
 package com.netcracker.crm.service.impl;
 
+import com.netcracker.crm.dao.DiscountDao;
+import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
@@ -7,8 +9,6 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductStatusDto;
-import com.netcracker.crm.dto.mapper.DiscountMapper;
-import com.netcracker.crm.dto.mapper.GroupMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
 import com.netcracker.crm.service.ProductService;
 import org.modelmapper.ModelMapper;
@@ -28,6 +28,11 @@ public class ProductServiceImpl implements ProductService {
     private static final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private final ProductDao productDao;
+
+    @Autowired
+    private GroupDao groupDao;
+    @Autowired
+    private DiscountDao discountDao;
 
 
     @Autowired
@@ -53,20 +58,11 @@ public class ProductServiceImpl implements ProductService {
 
     private Product convertToEntity(ProductDto productDto) {
         ModelMapper mapper = configureMapper();
-        Discount discGroup = null;
-        Group group = null;
-        Discount discount = null;
 
-        if (productDto.getGroup() != null) {
-            if (productDto.getGroup().getDiscount() != null) {
-                discGroup = mapper.map(productDto.getGroup().getDiscount(), Discount.class);
-            }
-            group = mapper.map(productDto.getGroup(), Group.class);
-            group.setDiscount(discGroup);
-        }
-        if (productDto.getDiscount() != null) {
-            discount = mapper.map(productDto.getDiscount(), Discount.class);
-        }
+        System.out.println(productDto);
+        Group group = productDto.getGroupId() > 0 ? groupDao.findById(productDto.getGroupId()) : null;
+        Discount discount = productDto.getDiscountId() > 0 ? discountDao.findById(productDto.getDiscountId()) : null;
+
         Product product = mapper.map(productDto, Product.class);
 
         product.setDiscount(discount);
@@ -80,8 +76,6 @@ public class ProductServiceImpl implements ProductService {
         ModelMapper modelMapper = new ModelMapper();
 
         modelMapper.addMappings(new ProductMapper());
-        modelMapper.addMappings(new GroupMapper());
-        modelMapper.addMappings(new DiscountMapper());
 
         return modelMapper;
     }

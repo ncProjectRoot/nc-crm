@@ -1,14 +1,12 @@
 package com.netcracker.crm.dto;
 
-import com.netcracker.crm.domain.model.Discount;
-
 /**
  * Created by Pasha on 02.05.2017.
  */
 public class GroupDto {
     private Long id;
     private String name;
-    private Discount discount;
+    private Long discountId;
 
 
     public Long getId() {
@@ -28,11 +26,12 @@ public class GroupDto {
         this.name = name;
     }
 
-    public Discount getDiscount() {
-        return discount;
+
+    public Long getDiscountId() {
+        return discountId;
     }
 
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
+    public void setDiscountId(Long discountId) {
+        this.discountId = discountId;
     }
 }

@@ -254,8 +254,8 @@
                         </div>
                         <div class="input-field col s3">
                             <i class="material-icons prefix">add_shopping_cart</i>
-                            <select name="disc" id="select_disc">
-                                <option value="">Default</option>
+                            <select name="discountId" id="select_disc">
+                                <option value="0">Default</option>
                             </select>
                             <label for="select_disc">Choose discount</label>
                         </div>
@@ -273,8 +273,8 @@
                         </div>
                         <div class="input-field col s3">
                             <i class="material-icons prefix">add</i>
-                            <select name="grp" id="select_group">
-                                <option value="">Default</option>
+                            <select name="groupId" id="select_group">
+                                <option value="0">Default</option>
                             </select>
                             <label for="select_group">Choose group</label>
                         </div>
@@ -410,11 +410,11 @@
         if (title.length > 1) {
             $('#select_disc').children().remove();
             $.get("/csr/discountByTitle/" + title).success(function (data) {
-                $('#select_disc').append($('<option value="">Default</option>'));
+                $('#select_disc').append($('<option value="0">Default</option>'));
                 $.each(data, function (i, item) {
                     console.log(item);
                     $('#select_disc').append($('<option/>', {
-                        value: JSON.stringify(item),
+                        value: item.id,
                         text: item.title + ' - ' + item.percentage + '%'
                     }));
                 });
@@ -429,11 +429,11 @@
         if (title.length > 1) {
             $('#select_group').children().remove();
             $.get("/csr/groupByName/" + title).success(function (data) {
-                $('#select_group').append($('<option value="">Default</option>'));
+                $('#select_group').append($('<option value="0">Default</option>'));
                 $.each(data, function (i, item) {
                     console.log(item);
                     $('#select_group').append($('<option/>', {
-                        value: JSON.stringify(item),
+                        value: item.id,
                         text: item.name
                     }));
                 });
