@@ -8,12 +8,19 @@ import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.dto.mapper.ComplaintMapper;
+import com.netcracker.crm.email.senders.AbstractEmailSender;
 import com.netcracker.crm.email.senders.ComplaintMailSender;
 import com.netcracker.crm.email.senders.EmailMap;
 import com.netcracker.crm.email.senders.EmailType;
 import com.netcracker.crm.service.ComplaintService;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.time.LocalDate;
@@ -27,17 +34,22 @@ import java.util.List;
  */
 
 @Service
-public class ComplaintServiceImpl implements ComplaintService{
+public class ComplaintServiceImpl implements ComplaintService {
+    private static final Logger log = LoggerFactory.getLogger(ComplaintServiceImpl.class);
 
-    @Autowired
     private ComplaintDao complaintDao;
-    @Autowired
     private OrderDao orderDao;
-    @Autowired
     private UserDao userDao;
-    @Autowired
-    private ComplaintMailSender mailSender;
+    private AbstractEmailSender emailSender;
 
+    @Autowired
+    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
+                                @Qualifier("complaintSender") AbstractEmailSender emailSender) {
+        this.complaintDao = complaintDao;
+        this.orderDao = orderDao;
+        this.userDao = userDao;
+        this.emailSender = emailSender;
+    }
 
     public Complaint persist(ComplaintDto dto) {
         Complaint complaint = convertToModel(dto);
@@ -58,38 +70,13 @@ public class ComplaintServiceImpl implements ComplaintService{
     }
 
     private Complaint convertToModel(ComplaintDto dto) {
-        Complaint complaint = new Complaint();
-        complaint.setTitle(dto.getTitle());
-        complaint.setMessage(dto.getMessage());
-        User customer = userDao.findById(dto.getCustomerId());
-        complaint.setCustomer(customer);
+        ModelMapper mapper = configureMapper();
+        dto.setMessage(dto.getMessage().trim());
+        Complaint complaint = mapper.map(dto, Complaint.class);
         Order order = orderDao.findById(dto.getOrderId());
         complaint.setOrder(order);
-        Long complaintId = dto.getId();
-        if (complaintId != null) {
-            complaint.setId(complaintId);
-        }
-        String status = dto.getStatus();
-        if (status != null) {
-            ComplaintStatus complaintStatus = null;
-            if (status.equals(ComplaintStatus.OPEN.getName())) {
-                complaintStatus = ComplaintStatus.OPEN;
-            } else if (status.equals(ComplaintStatus.SOLVING.getName())) {
-                complaintStatus = ComplaintStatus.SOLVING;
-            } else if (status.equals(ComplaintStatus.CLOSED.getName())) {
-                complaintStatus = ComplaintStatus.CLOSED;
-            }
-            complaint.setStatus(complaintStatus);
-        }
-        Long pmgId = dto.getPmgId();
-        if (pmgId != null) {
-            User pmg = userDao.findById(pmgId);
-            complaint.setPmg(pmg);
-        }
-        String date = dto.getDate();
-        if (date != null) {
-            //TODO DATE CONVERT
-        }
+        User customer = userDao.findById(dto.getCustomerId());
+        complaint.setCustomer(customer);
         return complaint;
     }
 
@@ -102,27 +89,33 @@ public class ComplaintServiceImpl implements ComplaintService{
         dto.setCustomerId(complaint.getCustomer().getId());
         dto.setOrderId(complaint.getOrder().getId());
         dto.setDate(complaint.getDate().toString());
-        if(complaint.getPmg()!=null){
+        if (complaint.getPmg() != null) {
             dto.setPmgId(complaint.getPmg().getId());
         }
         return complaint;
     }
 
-    public List<Complaint> findByCustomerId(Long id){
+    public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
 
-    public Complaint findById(Long id){
+    public Complaint findById(Long id) {
         return complaintDao.findById(id);
     }
 
-    private void sendEmail(Complaint complaint){
+    private void sendEmail(Complaint complaint) {
         EmailMap emailMap = new EmailMap(EmailType.COMPLAINT);
         emailMap.put("complaint", complaint);
         try {
-            mailSender.send(emailMap);
+            emailSender.send(emailMap);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    private ModelMapper configureMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new ComplaintMapper());
+        return modelMapper;
     }
 }

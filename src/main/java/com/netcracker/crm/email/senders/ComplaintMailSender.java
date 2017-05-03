@@ -18,7 +18,7 @@ import java.util.Properties;
 /**
  * Created by Pasha on 15.04.2017.
  */
-@Service
+@Service("complaintSender")
 public class ComplaintMailSender extends AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(ComplaintMailSender.class);

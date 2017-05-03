@@ -45,12 +45,12 @@
                     <td>${i.date.toLocalDate()} ${i.date.toLocalTime().getHour()}:${i.date.toLocalTime().getMinute()} </td>
                     <td>${i.status}</td>
                     <td>
-                        <%--<a class="waves-effect waves-light btn" href="#modal${i.id}">Show</a>--%>
+                            <%--<a class="waves-effect waves-light btn" href="#modal${i.id}">Show</a>--%>
                         <button data-target="modal${i.id}" class="btn">show</button>
                         <div id="modal${i.id}" class="modal">
                             <div class="modal-content">
                                 <h4>${i.title}</h4>
-                                <p>${i.message.trim().replaceAll("\\n", "<br>")}</p>
+                                <p>${i.message.replaceAll("\\n", "<br>")}</p>
                             </div>
                         </div>
                     </td>
@@ -72,7 +72,7 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <i class="material-icons prefix">view_carousel</i>
-                        <select id="orderSelect" name="orderId">
+                        <select id="orderSelect" name="orderId" size="5">
                             <option value="" disabled selected>Choose order</option>
                             <c:forEach items="${orders}" var="i">
                                 <option value="${i.id}">${i.id} ${i.product.title} </option>
@@ -84,7 +84,7 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <i class="material-icons prefix">mode_edit</i>
-                        <textarea name="message" id="message" class="materialize-textarea" minlength="10"
+                        <textarea name="message" id="message" class="materialize-textarea"
                                   maxlength="400"></textarea>
                         <label for="message">Description</label>
                     </div>
@@ -116,8 +116,8 @@
                 var selectVal = $("#orderSelect").val();
                 if (titleLenth < 5 || titleLenth > 50) {
                     Materialize.toast("Title length must be 5-50", 5000, 'rounded');
-                } else if (messageLenth < 10 || messageLenth > 400) {
-                    Materialize.toast("Description length must be 10-400", 5000, 'rounded');
+                } else if (messageLenth < 5 || messageLenth > 400) {
+                    Materialize.toast("Description length must be 5-400", 5000, 'rounded');
                 } else if (!selectVal > 0) {
                     Materialize.toast("Order can't be empty", 5000, 'rounded');
                 } else {
@@ -147,14 +147,14 @@
                             '<div id="modal' + data.id + '" class="modal"> ' +
                             '<div class="modal-content"> ' +
                             '<h4>' + data.title + '</h4> ' +
-                            '<p>' + data.message + '</p> ' +
+                            '<p>' + data.message.replace(/\n/g, '<br>') + '</p> ' +
                             ' </div> ' +
                             '  </div> ');
                         row.append(td);
 
                         $(".content-body tbody").prepend(row);
 
-                            $('.modal').modal();
+                        $('.modal').modal();
 
                         $(".progress").removeClass("progress-active");
                         Materialize.toast("Complaint with id " + data.id + " successfuly created", 5000, 'rounded');
