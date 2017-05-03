@@ -17,4 +17,6 @@ public interface UserDao {
     User findByEmail(String email);
 
     long updatePassword(User user, String password);
+
+    void setUserEnable(Long id, boolean enable);
 }

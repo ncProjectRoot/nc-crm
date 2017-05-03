@@ -7,6 +7,8 @@ import com.netcracker.crm.domain.UserToken;
  */
 public interface UserTokenDao {
     Long create(UserToken userToken);
-    Long update(UserToken userToken);
-    UserToken finByUserEmail(String email);
+
+    boolean updateToken(String token, boolean used);
+
+    UserToken getUserToken(String token);
 }

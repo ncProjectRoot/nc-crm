@@ -25,41 +25,42 @@
     </ul>
     <div id="swipe-admin-form" class="col s12">
         <div class="row">
-            <form class="col s12">
+            <form id="form-admin-create" class="col s12">
                 <div class="row">
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="admin_first_name" type="text" class="validate">
+                            <input id="admin_first_name" name="firstName" type="text" class="validate">
                             <label for="admin_first_name">First Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="admin_middle_name" type="text" class="validate">
+                            <input id="admin_middle_name" name="middleName" type="text" class="validate">
                             <label for="admin_middle_name">Middle Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="admin_last_name" type="text" class="validate">
+                            <input id="admin_last_name" name="lastName" type="text" class="validate">
                             <label for="admin_last_name">Last Name</label>
                         </div>
                     </div>
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input id="admin_email" type="email" class="validate">
+                            <input id="admin_email" name="email" type="email" class="validate">
                             <label for="admin_email">E-mail</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">phone</i>
-                            <input id="admin_phone" type="tel" class="validate">
+                            <input id="admin_phone" name="phone" type="tel" class="validate">
                             <label for="admin_phone">Phone</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Create Admin
+                        <input type="hidden" name="userRole" value = "ROLE_ADMIN"/>
+                        <button id="submit-admin-create" class="btn waves-effect waves-light" type="submit" name="action">Create Admin
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -69,7 +70,7 @@
     </div>
     <div id="swipe-customer-form" class="col s12">
         <div class="row">
-            <form class="col s12">
+            <form id="form-customer-create" class="col s12">
                 <div class="row">
                     <div class="col s6">
                         <div class="input-field">
@@ -121,7 +122,8 @@
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Create Customer
+                        <input type="hidden" name="userRole" value = "ROLE_CUSTOMER"/>
+                        <button id="submit-customer-create" class="btn waves-effect waves-light" type="submit" name="action">Create Customer
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -131,41 +133,42 @@
     </div>
     <div id="swipe-csr-form" class="col s12">
         <div class="row">
-            <form class="col s12">
+            <form id="form-csr-create" class="col s12">
                 <div class="row">
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="csr_first_name" type="text" class="validate">
+                            <input id="csr_first_name" name="firstName" type="text" class="validate">
                             <label for="csr_first_name">First Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="csr_middle_name" type="text" class="validate">
+                            <input id="csr_middle_name" name="middleName" type="text" class="validate">
                             <label for="csr_middle_name">Middle Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="csr_last_name" type="text" class="validate">
+                            <input id="csr_last_name" name="lastName" type="text" class="validate">
                             <label for="csr_last_name">Last Name</label>
                         </div>
                     </div>
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input id="csr_email" type="email" class="validate">
+                            <input id="csr_email" name="email" type="email" class="validate">
                             <label for="csr_email">E-mail</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">phone</i>
-                            <input id="csr_phone" type="tel" class="validate">
+                            <input id="csr_phone" name="phone" type="tel" class="validate">
                             <label for="csr_phone">Phone</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Create CSR
+                        <input type="hidden" name="userRole" value = "ROLE_CSR"/>
+                        <button id="submit-сsr-create" class="btn waves-effect waves-light" type="submit" name="action">Create CSR
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -175,41 +178,42 @@
     </div>
     <div id="swipe-pmg-form" class="col s12">
         <div class="row">
-            <form class="col s12">
+            <form id="form-pmg-create" class="col s12">
                 <div class="row">
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="pmg_first_name" type="text" class="validate">
+                            <input id="pmg_first_name" name="firstName" type="text" class="validate">
                             <label for="pmg_first_name">First Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="pmg_middle_name" type="text" class="validate">
+                            <input id="pmg_middle_name" name="middleName" type="text" class="validate">
                             <label for="pmg_middle_name">Middle Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="pmg_last_name" type="text" class="validate">
+                            <input id="pmg_last_name" name="lastName" type="text" class="validate">
                             <label for="pmg_last_name">Last Name</label>
                         </div>
                     </div>
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input id="pmg_email" type="email" class="validate">
+                            <input id="pmg_email" name="email" type="email" class="validate">
                             <label for="pmg_email">E-mail</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">phone</i>
-                            <input id="pmg_phone" type="tel" class="validate">
+                            <input id="pmg_phone" name="phone" type="tel" class="validate">
                             <label for="pmg_phone">Phone</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Create PMG
+                        <input type="hidden" name="userRole" value = "ROLE_PMG"/>
+                        <button id="submit-pmg-create" class="btn waves-effect waves-light" type="submit" name="action">Create PMG
                             <i class="material-icons right">send</i>
                         </button>
                     </div>

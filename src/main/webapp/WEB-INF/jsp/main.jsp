@@ -6,7 +6,8 @@
 <head>
     <spring:url value="/css/main.css" var="springCss"/>
     <spring:url value="/img/ico.png" var="springIcon"/>
-    <spring:url value="/js/main.js" var="springScript"/>
+    <spring:url value="/js/main.js" var="springMainScript"/>
+    <spring:url value="/js/user.js" var="springUserScript"/>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
@@ -18,6 +19,10 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
+
     <title>NC-CRM</title>
 </head>
 
@@ -114,7 +119,8 @@
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
-    <script src="${springScript}"></script>
+    <script src="${springMainScript}"></script>
+    <script src="${springUserScript}"></script>
 </div>
 </body>
 </html>

@@ -112,7 +112,7 @@ public class RegSuccessEmailSender extends AbstractEmailSender {
         return templ.replaceAll("%email%", user.getEmail())
                 .replaceAll("%name%", user.getFirstName())
                 .replaceAll("%surname%", user.getLastName())
-                .replaceAll("%password%", password)
+                .replace("%password%", password)
                 .replaceAll("%reference%", reference);
     }
 

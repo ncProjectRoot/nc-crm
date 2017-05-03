@@ -1,5 +1,7 @@
 package com.netcracker.crm.domain;
 
+import com.netcracker.crm.domain.model.User;
+
 import java.time.LocalDateTime;
 
 /**
@@ -9,10 +11,9 @@ public class UserToken {
 
     private Long id;
     private String token;
-    private String userMail;
     private LocalDateTime sendDate;
-    private Boolean used;
-
+    private boolean used;
+    private User user;
 
     public Long getId() {
         return id;
@@ -38,19 +39,19 @@ public class UserToken {
         this.sendDate = sendDate;
     }
 
-    public Boolean getUsed() {
+    public boolean isUsed() {
         return used;
     }
 
-    public void setUsed(Boolean used) {
+    public void setUsed(boolean used) {
         this.used = used;
     }
 
-    public String getUserMail() {
-        return userMail;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserMail(String userMail) {
-        this.userMail = userMail;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

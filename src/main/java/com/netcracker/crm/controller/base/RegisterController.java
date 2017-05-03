@@ -1,7 +1,6 @@
 package com.netcracker.crm.controller.base;
 
-import com.netcracker.crm.domain.UserToken;
-import com.netcracker.crm.service.UserTokenService;
+import com.netcracker.crm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,12 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class RegisterController {
 
     @Autowired
-    private UserTokenService userTokenService;
+    private UserService userService;
 
-    @RequestMapping(value = "/user/confirm/registration", method = RequestMethod.GET)
-    public String confirmRegistration(Long userId, String token, Model model){
-        UserToken userToken = userTokenService.getExistUserToken(userId, token);
-        if (userTokenService.useToken(userToken)){
+    @RequestMapping(value = "/user/registration/confirm", method = RequestMethod.GET)
+    public String confirmRegistration(String token, Model model) {
+        if (userService.activateUser(token)) {
             model.addAttribute("msg", "You are successful activate you account!");
             return "login";
         }

@@ -1,8 +1,8 @@
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
+import com.netcracker.crm.domain.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +26,15 @@ import static com.netcracker.crm.dao.impl.sql.UserTokenSqlQuery.*;
 @Repository
 public class UserTokenDaoImpl implements UserTokenDao {
     private static final Logger log = LoggerFactory.getLogger(UserTokenDaoImpl.class);
+
     private SimpleJdbcInsert userTokenInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.userTokenInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_TOKEN_TABLE)
-                .usingGeneratedKeyColumns(PARAM_ID);
+                .withTableName(PARAM_USER_TOKEN_TABLE)
+                .usingGeneratedKeyColumns(PARAM_USER_TOKEN_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -44,10 +42,11 @@ public class UserTokenDaoImpl implements UserTokenDao {
     @Override
     public Long create(UserToken userToken) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_USER_ID, userDao.findByEmail(userToken.getUserMail()).getId())
-                .addValue(PARAM_USED, false)
-                .addValue(PARAM_TOKEN, userToken.getToken())
-                .addValue(PARAM_DATE_SEND, userToken.getSendDate());
+                .addValue(PARAM_USER_TOKEN_ID, userToken.getId())
+                .addValue(PARAM_USER_TOKEN_USED, userToken.isUsed())
+                .addValue(PARAM_USER_TOKEN_USER_ID, userToken.getUser().getId())
+                .addValue(PARAM_USER_TOKEN_TOKEN, userToken.getToken())
+                .addValue(PARAM_USER_TOKEN_DATE_SEND, userToken.getSendDate());
 
         long id = userTokenInsert.executeAndReturnKey(params).longValue();
         log.info("UserToken with id: " + id + " is successfully created.");
@@ -56,29 +55,25 @@ public class UserTokenDaoImpl implements UserTokenDao {
     }
 
     @Override
-    public Long update(UserToken userToken) {
+    public boolean updateToken(String token, boolean used) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_USER_ID, userDao.findByEmail(userToken.getUserMail()).getId());
-        int affectedRows = namedJdbcTemplate.update(SQL_USER_REGISTER_TOKEN_UPDATE, params);
-        if (affectedRows == 1) {
-            return 1L;
-        } else if (affectedRows > 1) {
-            log.error("UserToken with id: " + userToken.getId() + " is incorrect updated.");
-            return -1L;
-        } else {
-            log.info("UserToken with id: " + userToken.getId() + " not updated.");
-            return 0L;
+                .addValue(PARAM_USER_TOKEN_USED, used)
+                .addValue(PARAM_USER_TOKEN_TOKEN, token);
+        int updatedRows = namedJdbcTemplate.update(SQL_USER_REGISTER_TOKEN_UPDATE, params);
+        if (updatedRows == 1) {
+            log.info("User registered token was set to 'true' value.");
+            return true;
         }
-
+        return false;
     }
 
     @Override
-    public UserToken finByUserEmail(String email) {
+    public UserToken getUserToken(String token) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_EMAIL, email);
-        return namedJdbcTemplate.query(SQL_USER_REGISTER_TOKEN_GET, params, new UserTokenWithDetailExtractor());
-    }
+                .addValue(PARAM_USER_TOKEN_TOKEN, token);
 
+        return namedJdbcTemplate.query(SQL_FIND_USER_TOKEN_BY_TOKEN, params, new UserTokenWithDetailExtractor());
+    }
 
     private static final class UserTokenWithDetailExtractor implements ResultSetExtractor<UserToken> {
 
@@ -87,11 +82,14 @@ public class UserTokenDaoImpl implements UserTokenDao {
             UserToken userToken = null;
             while (rs.next()) {
                 userToken = new UserToken();
-                userToken.setId(rs.getLong(PARAM_ID));
-                userToken.setUserMail(rs.getString(PARAM_EMAIL));
-                userToken.setSendDate(rs.getTimestamp(PARAM_DATE_SEND).toLocalDateTime());
-                userToken.setToken(rs.getString(PARAM_TOKEN));
-                userToken.setUsed(rs.getBoolean(PARAM_USED));
+                userToken.setId(rs.getLong(PARAM_USER_TOKEN_ID));
+                userToken.setSendDate(rs.getTimestamp(PARAM_USER_TOKEN_DATE_SEND).toLocalDateTime());
+                userToken.setToken(rs.getString(PARAM_USER_TOKEN_TOKEN));
+                userToken.setUsed(rs.getBoolean(PARAM_USER_TOKEN_USED));
+
+                User user = new User();
+                user.setId(rs.getLong(PARAM_USER_TOKEN_USER_ID));
+                userToken.setUser(user);
             }
             return userToken;
         }

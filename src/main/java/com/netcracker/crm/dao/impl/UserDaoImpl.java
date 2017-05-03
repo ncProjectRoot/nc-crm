@@ -43,8 +43,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public long create(User user) {
-        Long addressId = getAddressId(user.getAddress());
-        Long orgId = getOrgId(user.getOrganization());
+        Long addressId = null;
+        Long orgId = null;
+        if (user.getAddress() != null && user.getOrganization() != null) {
+            addressId = getAddressId(user.getAddress());
+            orgId = getOrgId(user.getOrganization());
+        }
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_EMAIL, user.getEmail())
@@ -71,7 +75,6 @@ public class UserDaoImpl implements UserDao {
             log.info("User with id: " + newId + " is successfully created.");
             return newId;
         } else {
-
             log.error("User doesn't created.");
             return newId;
         }
@@ -93,6 +96,15 @@ public class UserDaoImpl implements UserDao {
             log.info("Update 0 rows");
             return count;
         }
+    }
+
+    @Override
+    public void setUserEnable(Long id, boolean enable) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_ID, id)
+                .addValue(PARAM_USER_IS_ENABLE, enable);
+
+        namedJdbcTemplate.update(SQL_USERS_UPDATE_ENABLE, params);
     }
 
     @Override
