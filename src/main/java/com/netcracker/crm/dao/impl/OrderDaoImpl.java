@@ -252,7 +252,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_CUSTOMER_ID, customer_id)
                 .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
                 .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_CUSTOMER_ID_BETWEEN_DATES, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_CUSTOMER_ID_BETWEEN_DATES, params, orderWithDetailExtractor);
     }
 
     @Override
@@ -262,7 +262,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_CUSTOMER_ID_LIST, customer_id_list)
                 .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
                 .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID, params, orderWithDetailExtractor);
     }
 
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {
