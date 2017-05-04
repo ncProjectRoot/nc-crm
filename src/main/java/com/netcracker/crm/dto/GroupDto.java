@@ -7,6 +7,7 @@ public class GroupDto {
     private Long id;
     private String name;
     private Long discountId;
+    private Long[] products;
 
 
     public Long getId() {
@@ -33,5 +34,13 @@ public class GroupDto {
 
     public void setDiscountId(Long discountId) {
         this.discountId = discountId;
+    }
+
+    public Long[] getProducts() {
+        return products;
+    }
+
+    public void setProducts(Long[] products) {
+        this.products = products;
     }
 }

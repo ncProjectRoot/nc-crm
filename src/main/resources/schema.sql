@@ -79,8 +79,8 @@ CREATE TABLE groups
 ALTER TABLE groups
     ADD CONSTRAINT groups_PK PRIMARY KEY ( id ) ;
 
-ALTER TABLE groups
-    ADD CONSTRAINT groups__UN UNIQUE ( discount_id ) ;
+-- ALTER TABLE groups
+--     ADD CONSTRAINT groups__UN UNIQUE ( discount_id ) ;
 
 
 CREATE TABLE history
@@ -172,8 +172,8 @@ CREATE INDEX product__IDX ON product
 ALTER TABLE product
     ADD CONSTRAINT product_PK PRIMARY KEY ( id ) ;
 
-ALTER TABLE product
-    ADD CONSTRAINT product__UN UNIQUE ( discount_id ) ;
+-- ALTER TABLE product
+--     ADD CONSTRAINT product__UN UNIQUE ( discount_id ) ;
 
 
 CREATE TABLE region

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 /**
  * Created by Pasha on 30.04.2017.
  */
-@Component
 public class ProductMapper extends PropertyMap<ProductDto, Product>{
     @Override
     protected void configure() {

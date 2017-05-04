@@ -1,12 +1,10 @@
-package com.netcracker.crm.controller.base;
+package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.dto.GroupDto;
 import com.netcracker.crm.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +20,11 @@ public class GroupController {
     @RequestMapping(value = "/csr/groupByName/{name}", method = RequestMethod.GET)
     public List<Group> discountByTitle(@PathVariable String name){
         return groupService.groupsByName(name);
+    }
+
+    @PostMapping("/csr/addGroup")
+    public String addGroup(GroupDto groupDto){
+        Group group = groupService.persist(groupDto);
+        return "Group with " + group.getName() + " id successful added";
     }
 }

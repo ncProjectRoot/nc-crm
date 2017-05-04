@@ -25,6 +25,7 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
 
     @Autowired
     private UserAttemptsDao userAttemptsDao;
+
     @Autowired
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         super.setUserDetailsService(userDetailsService);
@@ -39,17 +40,15 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserAttempts userAttempts = userAttemptsDao.getUserAttempts(authentication.getName());
         try {
-            try {
-                if (userAttempts != null && checkTimeout(userAttempts)) {
-                    userAttemptsDao.lockUserAccount(authentication.getName(), false);
-                }
-                Authentication auth = super.authenticate(authentication);
-                userAttemptsDao.resetFailAttempts(authentication.getName());
-                return auth;
-            } catch (BadCredentialsException e) {
-                userAttemptsDao.updateFailAttempts(authentication.getName());
-                throw e;
+            if (userAttempts != null && checkTimeout(userAttempts)) {
+                userAttemptsDao.lockUserAccount(authentication.getName(), false);
             }
+            Authentication auth = super.authenticate(authentication);
+            userAttemptsDao.resetFailAttempts(authentication.getName());
+            return auth;
+        } catch (BadCredentialsException e) {
+            userAttemptsDao.updateFailAttempts(authentication.getName());
+            throw e;
         } catch (LockedException e) {
             String error;
             if (userAttempts != null) {
@@ -73,7 +72,7 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
         long seconds = getSeconds(timeWait);
         String result = "User account is locked!<br> Username : "
                 + userMail + "<br>Please wait : ";
-        if (minutes > 0){
+        if (minutes > 0) {
             result += minutes + " minutes ";
         }
         result += seconds + " seconds";

@@ -35,6 +35,11 @@ public final class ProductSqlQuery {
             + "status_id, description, discount_id, group_id "
             + "FROM product "
             + "WHERE group_id = :group_id;";
+    public static final String SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP = ""
+            + "SELECT id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
+            + "FROM product "
+            + "WHERE group_id IS null;";
 
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 

@@ -1,4 +1,4 @@
-package com.netcracker.crm.controller.base;
+package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.dto.DiscountDto;

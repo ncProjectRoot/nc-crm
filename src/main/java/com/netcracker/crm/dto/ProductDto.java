@@ -67,18 +67,4 @@ public class ProductDto {
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
-
-
-    @Override
-    public String toString() {
-        return "ProductDto{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", defaultPrice=" + defaultPrice +
-                ", statusName='" + statusName + '\'' +
-                ", description='" + description + '\'' +
-                ", discountId=" + discountId +
-                ", groupId=" + groupId +
-                '}';
-    }
 }

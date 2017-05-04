@@ -1,5 +1,6 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
     .content-body-wrapper {
@@ -37,6 +38,9 @@
         </sec:authorize>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <li class="tab col s3"><a href="#swipe-discount-form">Discount</a></li>
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+            <li class="tab col s3"><a href="#swipe-group-form">Group</a></li>
         </sec:authorize>
     </ul>
     <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
@@ -249,8 +253,8 @@
                     <div class="row">
                         <div class='input-field col s6'>
                             <i class="material-icons prefix">title</i>
-                            <input class='validate' type='text' name='title' id='title'/>
                             <label for="title">Title</label>
+                            <input class="validate" id="title" type="text" name="title">
                         </div>
                         <div class="input-field col s3">
                             <i class="material-icons prefix">add_shopping_cart</i>
@@ -325,7 +329,7 @@
                             <i class="material-icons prefix">touch_app</i>
                             <label>
                                 Off
-                                <input name="active" type="checkbox" id="disc_active">
+                                <input name="active" type="checkbox" checked="checked" id="disc_active">
                                 <span class="lever"></span>
                                 On
                             </label>
@@ -349,6 +353,50 @@
                     <div class="row">
                         <div class="col s6">
                             <button class="btn waves-effect waves-light" type="submit" name="action">Create Discount
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </sec:authorize>
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <div id="swipe-group-form" class="col s12">
+            <div class="row">
+                <form class="col s12" id="addGroup">
+                    <div class="row">
+                        <div class='input-field col s6'>
+                            <i class="material-icons prefix">short_text</i>
+                            <input class='validate' type='text' name='name' id='group_name'/>
+                            <label for="group_name">Name</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <i class="material-icons prefix">add_shopping_cart</i>
+                            <select name="discountId" id="select_group_disc">
+                                <option value="0">Default</option>
+                            </select>
+                            <label for="select_group_disc">Choose discount</label>
+                        </div>
+                        <div class="input-field col s3">
+                            <i class="material-icons prefix">search</i>
+                            <input class='validate' type='text' onkeyup="fetchGroupDiscounts()" id='search_for_group_title'/>
+                            <label for="search_for_group_title">Search discount <span id="group_discount_numbers"></span></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class='input-field col s6'>
+                            <i class="material-icons prefix">done_all</i>
+                            <select multiple="multiple" id="products_without_group" name="products">
+                                <option value="" disabled selected>Choose products</option>
+                            </select>
+                            <label>Products without group</label>
+                        </div>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <div class="row">
+                        <div class="col s6">
+                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Group
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -404,6 +452,7 @@
     }
 </script>
 
+
 <script>
     function fetchDiscounts() {
         var title = $('#search_title').val();
@@ -412,7 +461,6 @@
             $.get("/csr/discountByTitle/" + title).success(function (data) {
                 $('#select_disc').append($('<option value="0">Default</option>'));
                 $.each(data, function (i, item) {
-                    console.log(item);
                     $('#select_disc').append($('<option/>', {
                         value: item.id,
                         text: item.title + ' - ' + item.percentage + '%'
@@ -420,6 +468,24 @@
                 });
                 $('#select_disc').material_select('updating');
                 $('#discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+    function fetchGroupDiscounts() {
+        var title = $('#search_for_group_title').val();
+        if (title.length > 1) {
+            $('#select_group_disc').children().remove();
+            $.get("/csr/discountByTitle/" + title).success(function (data) {
+                $('#select_group_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_group_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_group_disc').material_select('updating');
+                $('#group_discount_numbers').html(", results " + data.length);
             });
         }
     }
@@ -447,6 +513,7 @@
     $(document).ready(function () {
         $('select').material_select();
 
+//      load product status
         $.get("/csr/load/productStatus/").success(function (data) {
             $.each(data, function (i, item) {
                 $('#select_product_status').append($('<option>', {
@@ -457,21 +524,75 @@
             $('#select_product_status').material_select('updating');
         });
 
+
+//      load products without group
+        loadProductsWithoutGroup();
+        function loadProductsWithoutGroup() {
+            $.get("/csr/load/productWithoutGroup").success(function (data) {
+                $('#products_without_group').children().remove();
+                $('#products_without_group').append('<option value="" disabled selected>Choose products</option>')
+                $.each(data, function (i, item) {
+                    $('#products_without_group').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.statusName
+                    }));
+                });
+                $('#products_without_group').material_select('updating');
+            });
+        }
+
+//        create product
+
         $("#addProduct").on("submit", function (e) {
             e.preventDefault();
-            $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
-                document.getElementById("addProduct").reset();
-                Materialize.toast(data, 10000, 'rounded');
-            });
+            var title = $('#title').val();
+            var price = $('#price').val();
+            if (title.length < 5) {
+                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+            } else if (price < 1) {
+                Materialize.toast("Please enter price more 0", 10000, 'rounded');
+            } else {
+                $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
+                    $("#addProduct")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                });
+                loadProductsWithoutGroup();
+            }
         });
 
-
+//      create discount
         $("#addDiscount").on("submit", function (e) {
+                e.preventDefault();
+                var title = $('#disc_title').val();
+                var percentage = $('#disc_percentage').val();
+                if (title.length < 5) {
+                    Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+                } else if (percentage < 0 || percentage > 100) {
+                    Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
+                } else {
+                    $.post("/csr/addDiscount", $("#addDiscount").serialize(), function (data) {
+                        $("#addDiscount")[0].reset();
+                        Materialize.toast(data, 10000, 'rounded');
+                    });
+                }
+            }
+        );
+
+
+//        create group
+        $("#addGroup").on("submit", function (e) {
             e.preventDefault();
-            $.post("/csr/addDiscount", $("#addDiscount").serialize(), function (data) {
-                document.getElementById("addDiscount").reset();
-                Materialize.toast(data, 10000, 'rounded');
-            });
+            var grpName = $('#group_name').val();
+
+            if (grpName.length < 5) {
+                Materialize.toast("Please enter group name at least 5 characters", 10000, 'rounded');
+            } else {
+                $.post("/csr/addGroup", $("#addGroup").serialize(), function (data) {
+                    $("#addGroup")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                    loadProductsWithoutGroup();
+                });
+            }
         });
     });
 </script>

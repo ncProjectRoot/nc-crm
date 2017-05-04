@@ -1,14 +1,12 @@
-package com.netcracker.crm.controller.base;
+package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.dto.ProductDto;
+import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.dto.ProductStatusDto;
 import com.netcracker.crm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +31,14 @@ public class ProductController {
     public List<ProductStatusDto> productStatus() {
         return productService.getStatuses();
     }
+
+    @GetMapping("/csr/load/productWithoutGroup")
+    public List<ProductGroupDto> productsWithoutGroup() {
+        return productService.getProductsWithoutGroup();
+    }
+
+
+
 
 
 

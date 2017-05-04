@@ -46,6 +46,9 @@ public class DiscountServiceImpl implements DiscountService {
     private Discount convertToEntity(DiscountDto discountDto) {
         ModelMapper mapper = configureMapper();
         Discount discount = mapper.map(discountDto, Discount.class);
+        if (discountDto.getActive() == null){
+            discount.setActive(false);
+        }
         return discount;
     }
 
