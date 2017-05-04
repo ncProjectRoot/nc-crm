@@ -8,16 +8,18 @@ import com.netcracker.crm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * @author Karpunets
- * @since 03.05.2017
+ * @author Melnyk_Dmytro
+ * @version 1.0
+ * @since 02.05.2017
  */
+
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -28,6 +30,9 @@ public class OrderServiceImpl implements OrderService {
         this.orderDao = orderDao;
     }
 
+    public List<Order> findByCustomerId(Long id) {
+        return orderDao.findAllByCustomerId(id);
+    }
     @Override
     public Map<String, Object> getOrderRow(OrderRowRequest orderRowRequest) throws IOException {
         Map<String, Object> response = new HashMap<>();

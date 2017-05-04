@@ -10,5 +10,6 @@ public interface ComplaintDao extends CrudDao<Complaint>{
     List<Complaint> findByTitle(String title);
     
     List<Complaint> findAllByDate(LocalDate date);
-    
+
+    List<Complaint> findAllByCustomerId(Long id);
 }

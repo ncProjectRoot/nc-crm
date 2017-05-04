@@ -123,10 +123,10 @@
 			<version>1.5.5</version>
 		</dependency>
 
-		<!-- Model mapper -->
+		<!--Model Mapper-->
 		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
+			<groupId>org.modelmapper.extensions</groupId>
+			<artifactId>modelmapper-spring</artifactId>
 			<version>0.7.5</version>
 		</dependency>
 

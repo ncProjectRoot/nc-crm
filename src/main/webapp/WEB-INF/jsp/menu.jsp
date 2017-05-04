@@ -56,20 +56,6 @@
         </a>
     </li>
 </sec:authorize>
-<sec:authorize access="hasRole('ROLE_CUSTOMER')">
-    <li>
-        <a href="#payment" class="valign-wrapper menu-element">
-            <i class="black-text material-icons">payment</i>
-            <h2>Payment</h2>
-        </a>
-    </li>
-    <li>
-        <a href="#complaint" class="valign-wrapper menu-element">
-            <i class="black-text material-icons">thumb_down</i>
-            <h2>Complaint</h2>
-        </a>
-    </li>
-</sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_CUSTOMER')">
     <li>
         <a href="#complaint" class="valign-wrapper menu-element">
