@@ -5,6 +5,7 @@
  */
 package com.netcracker.crm.dao;
 
+import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
 import java.time.LocalDate;
@@ -30,4 +31,7 @@ public interface OrderDao extends CrudDao<Order>{
 
     List<Order> findAllByCsrIdAndArrayOfCustomerId(Long csr_id, List<Long> customer_id_list, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
+    List<Order> findOrderRows(OrderRowRequest orderRowRequest);
+
+    Long getOrderRowsCount(OrderRowRequest orderRowRequest);
 }

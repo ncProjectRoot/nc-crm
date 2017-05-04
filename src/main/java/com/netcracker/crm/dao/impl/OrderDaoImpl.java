@@ -3,6 +3,7 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
 import java.sql.Timestamp;
@@ -46,7 +47,7 @@ public class OrderDaoImpl implements OrderDao {
     
     private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-    private HistoryWithDetailExtractor historyWithDetailExtractor;
+    private OrderWithDetailExtractor orderWithDetailExtractor;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -54,7 +55,7 @@ public class OrderDaoImpl implements OrderDao {
                 .withTableName(PARAM_ORDER_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ORDER_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.historyWithDetailExtractor = new HistoryWithDetailExtractor(userDao, productDao);
+        this.orderWithDetailExtractor = new OrderWithDetailExtractor(userDao, productDao);
     }
 
     @Override
@@ -167,7 +168,7 @@ public class OrderDaoImpl implements OrderDao {
     public Order findById(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ID, id);
-        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, historyWithDetailExtractor);
+        List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, orderWithDetailExtractor);
         Order order = null;
         if (allOrder.size() != 0) {
             order = allOrder.get(0);
@@ -179,35 +180,69 @@ public class OrderDaoImpl implements OrderDao {
     public List<Order> findAllByDateFinish(LocalDate date) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_DATE_FINISH, date);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_DATE_FINISH, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_DATE_FINISH, params, orderWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByPreferredDate(LocalDate date) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_PREFERRED_DATE, date);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE, params, orderWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByProductId(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ID, id);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PRODUCT_ID, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_PRODUCT_ID, params, orderWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByCustomerId(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_CUSTOMER_ID, id);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID, params, orderWithDetailExtractor);
     }
 
     @Override
     public List<Order> findAllByCsrId(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_CSR_ID, id);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID, params, historyWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findOrderRows(OrderRowRequest orderRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
+                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
+                .addValue(PARAM_ORDER_ROW_ROW_LIMIT, orderRowRequest.getRowLimit())
+                .addValue(PARAM_ORDER_ROW_ROW_OFFSET, orderRowRequest.getRowOffset());
+
+        if (!orderRowRequest.getKeywords().isEmpty()) {
+            int i = 0;
+            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
+                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.query(orderRowRequest.getSql(), params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public Long getOrderRowsCount(OrderRowRequest orderRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
+                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId());
+
+        if (!orderRowRequest.getKeywords().isEmpty()) {
+            int i = 0;
+            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
+                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.queryForObject(orderRowRequest.getSqlCount(), params, Long.class);
     }
 
     @Override
@@ -230,12 +265,12 @@ public class OrderDaoImpl implements OrderDao {
         return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID, params, historyWithDetailExtractor);
     }
 
-    private static final class HistoryWithDetailExtractor implements ResultSetExtractor<List<Order>> {
+    private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {
 
         private UserDao userDao;
         private ProductDao productDao;
 
-        HistoryWithDetailExtractor(UserDao userDao, ProductDao productDao) {
+        OrderWithDetailExtractor(UserDao userDao, ProductDao productDao) {
             this.userDao = userDao;
             this.productDao = productDao;
         }
