@@ -17,8 +17,12 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    public OrderServiceImpl(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
 
     public List<Order> findByCustomerId(Long id) {
         return orderDao.findAllByCustomerId(id);

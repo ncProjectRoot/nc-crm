@@ -10,7 +10,6 @@ import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.email.senders.AbstractEmailSender;
-import com.netcracker.crm.email.senders.ComplaintMailSender;
 import com.netcracker.crm.email.senders.EmailMap;
 import com.netcracker.crm.email.senders.EmailType;
 import com.netcracker.crm.service.ComplaintService;
@@ -51,6 +50,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         this.emailSender = emailSender;
     }
 
+    @Transactional
     public Complaint persist(ComplaintDto dto) {
         Complaint complaint = convertToModel(dto);
         complaint.setDate(LocalDateTime.now());
@@ -77,21 +77,6 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setOrder(order);
         User customer = userDao.findById(dto.getCustomerId());
         complaint.setCustomer(customer);
-        return complaint;
-    }
-
-    private Complaint convertToDto(Complaint complaint) {
-        ComplaintDto dto = new ComplaintDto();
-        dto.setId(complaint.getId());
-        dto.setTitle(complaint.getTitle());
-        dto.setMessage(complaint.getMessage());
-        dto.setStatus(complaint.getStatus().getName());
-        dto.setCustomerId(complaint.getCustomer().getId());
-        dto.setOrderId(complaint.getOrder().getId());
-        dto.setDate(complaint.getDate().toString());
-        if (complaint.getPmg() != null) {
-            dto.setPmgId(complaint.getPmg().getId());
-        }
         return complaint;
     }
 
