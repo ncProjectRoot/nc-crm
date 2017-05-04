@@ -1,6 +1,5 @@
 package com.netcracker.crm.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
@@ -35,23 +34,29 @@ public class OrderServiceImpl implements OrderService {
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
         List<Order> orders = orderDao.findOrderRows(orderRowRequest);
+
         List<OrderRowDto> ordersDto = new ArrayList<>();
         for (Order order : orders) {
-            OrderRowDto orderRowDto = new OrderRowDto();
-            orderRowDto.setId(order.getId());
-            orderRowDto.setStatus(order.getStatus().getName());
-            orderRowDto.setProductId(order.getProduct().getId());
-            orderRowDto.setProductTitle(order.getProduct().getTitle());
-            orderRowDto.setProductStatus(order.getProduct().getStatus().getName());
-            orderRowDto.setCustomer(order.getCustomer().getId());
-            if (order.getCsr() != null) {
-                orderRowDto.setCsr(order.getCsr().getId());
-            }
-            orderRowDto.setDateFinish(order.getDate().toString());
-            orderRowDto.setPreferredDate(order.getPreferedDate().toString());
-            ordersDto.add(orderRowDto);
+            ordersDto.add(convertToEntity(order));
         }
         response.put("orders", ordersDto);
         return response;
     }
+
+    private OrderRowDto convertToEntity(Order order) {
+        OrderRowDto orderRowDto = new OrderRowDto();
+        orderRowDto.setId(order.getId());
+        orderRowDto.setStatus(order.getStatus().getName());
+        orderRowDto.setProductId(order.getProduct().getId());
+        orderRowDto.setProductTitle(order.getProduct().getTitle());
+        orderRowDto.setProductStatus(order.getProduct().getStatus().getName());
+        orderRowDto.setCustomer(order.getCustomer().getId());
+        if (order.getCsr() != null) {
+            orderRowDto.setCsr(order.getCsr().getId());
+        }
+        orderRowDto.setDateFinish(order.getDate().toString());
+        orderRowDto.setPreferredDate(order.getPreferedDate().toString());
+        return orderRowDto;
+    }
+
 }

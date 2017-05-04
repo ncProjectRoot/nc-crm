@@ -291,7 +291,9 @@
         if (lastPageNearCurrent < countTablePages - 1) {
             addTablePageEllipsis();
         }
-        addTablePage(countTablePages);
+        if (countTablePages != 1) {
+            addTablePage(countTablePages);
+        }
 
         checkVisibleChevronsAndActivePage();
     }
@@ -345,12 +347,12 @@
     $(document).on("click", ".pagination li.page-left:not(.disabled)", function (e) {
         currentPage--;
         downloadTable();
-    })
+    });
 
     $(document).on("click", ".pagination li.page-right:not(.disabled)", function (e) {
         currentPage++;
         downloadTable();
-    })
+    });
 
     $("#dropdown-status li").on("click", function () {
         var status = $(this).find("a");

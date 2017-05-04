@@ -7,7 +7,6 @@ import com.netcracker.crm.domain.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +36,7 @@ public class OrderDaoImplTest {
     private Order orderCreated;
     private Product productCreated;
 
-//    @Before
+    @Before
     public void create() throws Exception {
         userCreated = new User();
         userCreated.setPassword("test password");
@@ -65,38 +64,6 @@ public class OrderDaoImplTest {
     }
 
     @Test
-    public void random() throws Exception {
-        OrderStatus[] orderStatuses = OrderStatus.values();
-        Random random = new Random();
-
-        for (int i = 0; i < 50000; i++) {
-            orderCreated = new Order();
-            orderCreated.setStatus(orderStatuses[random.nextInt(orderStatuses.length)]);
-            orderCreated.setDate(LocalDateTime.of(2010 + random.nextInt(7), 1 + random.nextInt(12),1 + random.nextInt(25), random.nextInt(24), random.nextInt(60)));
-            orderCreated.setPreferedDate(LocalDateTime.of(2010 + random.nextInt(7), 1 + random.nextInt(12),1 + random.nextInt(25), random.nextInt(24), random.nextInt(60)));
-
-            userCreated = new User();
-            userCreated.setPassword("test password" + i);
-            userCreated.setFirstName("test first name" + i);
-            userCreated.setMiddleName("test middle name" + i);
-            userCreated.setEmail("test email" + i);
-            userCreated.setEnable(false);
-            userCreated.setAccountNonLocked(false);
-            userCreated.setContactPerson(false);
-            userCreated.setUserRole(UserRole.ROLE_CUSTOMER);
-
-            orderCreated.setCustomer(userCreated);
-            if (random.nextBoolean()) {
-                orderCreated.setCsr(userCreated);
-            }
-            Product newProduct = new Product();
-            newProduct.setId((long) random.nextInt(1000));
-            orderCreated.setProduct(newProduct);
-            assertNotNull(orderDao.create(orderCreated));
-        }
-    }
-
-    @Test
     public void findAndUpdate() throws Exception {
         Order orderFoundById = orderDao.findById(orderCreated.getId());
         assertEquals(orderCreated.getStatus(), orderFoundById.getStatus());
@@ -120,7 +87,7 @@ public class OrderDaoImplTest {
         assertEquals(orderDao.update(orderCreated), orderCreated.getId());
     }
 
-//    @After
+    @After
     public void delete() throws Exception {
         long affectedRows = orderDao.delete(orderCreated);
         assertEquals(affectedRows, 1L);
