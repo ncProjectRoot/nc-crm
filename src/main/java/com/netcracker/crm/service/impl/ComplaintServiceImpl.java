@@ -69,17 +69,6 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaintDao.findAllByDate(date);
     }
 
-    private Complaint convertToModel(ComplaintDto dto) {
-        ModelMapper mapper = configureMapper();
-        dto.setMessage(dto.getMessage().trim());
-        Complaint complaint = mapper.map(dto, Complaint.class);
-        Order order = orderDao.findById(dto.getOrderId());
-        complaint.setOrder(order);
-        User customer = userDao.findById(dto.getCustomerId());
-        complaint.setCustomer(customer);
-        return complaint;
-    }
-
     public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
@@ -96,6 +85,17 @@ public class ComplaintServiceImpl implements ComplaintService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    private Complaint convertToModel(ComplaintDto dto) {
+        ModelMapper mapper = configureMapper();
+        dto.setMessage(dto.getMessage().trim());
+        Complaint complaint = mapper.map(dto, Complaint.class);
+        Order order = orderDao.findById(dto.getOrderId());
+        complaint.setOrder(order);
+        User customer = userDao.findById(dto.getCustomerId());
+        complaint.setCustomer(customer);
+        return complaint;
     }
 
     private ModelMapper configureMapper() {
