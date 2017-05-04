@@ -10,8 +10,9 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css"
-    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css">
 
     <link href="${springCss}" rel="stylesheet"/>
     <link href="${springIcon}" rel="icon"/>
@@ -70,7 +71,7 @@
                                     <i class="small material-icons">settings_power</i>
                                     Log Out
                                     <form action="/logout" method="post">
-                                          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                     </form>
                                 </a>
                             </li>
@@ -101,20 +102,21 @@
 
 <div class="content">
     <%--<div class="content-header z-depth-1 valign-wrapper">--%>
-        <%--<i class="black-text material-icons"></i>--%>
-        <%--<span></span>--%>
+    <%--<i class="black-text material-icons"></i>--%>
+    <%--<span></span>--%>
     <%--</div>--%>
     <div class="progress">
         <div class="indeterminate"></div>
     </div>
     <div class="content-body">
     </div>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
-    <script src="${springScript}"></script>
 </div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
+<script src="${springScript}"></script>
+
 </body>
 </html>

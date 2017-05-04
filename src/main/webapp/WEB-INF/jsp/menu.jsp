@@ -20,9 +20,9 @@
 </li>
 <sec:authorize access="hasAnyRole('ROLE_CUSTOMER', 'ROLE_CSR')">
     <li>
-        <a href="#order" class="valign-wrapper menu-element">
+        <a href="#orders" class="valign-wrapper menu-element">
             <i class="black-text material-icons">receipt</i>
-            <h2>Order</h2>
+            <h2>Orders</h2>
         </a>
     </li>
     <li>
