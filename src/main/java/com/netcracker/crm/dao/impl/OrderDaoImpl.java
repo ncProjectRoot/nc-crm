@@ -6,6 +6,7 @@ import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.Order;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -207,6 +208,26 @@ public class OrderDaoImpl implements OrderDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_CSR_ID, id);
         return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID, params, historyWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrIdAndCustomerId(Long csr_id, Long customer_id , LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_CSR_ID, csr_id)
+                .addValue(PARAM_CUSTOMER_ID, customer_id)
+                .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
+                .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_CUSTOMER_ID_BETWEEN_DATES, params, historyWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrIdAndArrayOfCustomerId(Long csr_id, List<Long> customer_id_list, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_CSR_ID, csr_id)
+                .addValue(PARAM_CUSTOMER_ID_LIST, customer_id_list)
+                .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
+                .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID, params, historyWithDetailExtractor);
     }
 
     private static final class HistoryWithDetailExtractor implements ResultSetExtractor<List<Order>> {
