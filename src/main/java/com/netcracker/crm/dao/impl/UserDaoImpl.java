@@ -113,15 +113,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void setUserEnable(Long id, boolean enable) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_USER_ID, id)
-                .addValue(PARAM_USER_IS_ENABLE, enable);
-
-        namedJdbcTemplate.update(SQL_USERS_UPDATE_ENABLE, params);
-    }
-
-    @Override
     public Long delete(Long id) {
         if (id != null) {
             MapSqlParameterSource params = new MapSqlParameterSource()

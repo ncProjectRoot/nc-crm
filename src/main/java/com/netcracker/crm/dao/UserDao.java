@@ -10,6 +10,4 @@ public interface UserDao extends CrudDao<User> {
     User findByEmail(String email);
 
     long updatePassword(User user, String password);
-
-    void setUserEnable(Long id, boolean enable);
 }

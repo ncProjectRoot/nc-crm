@@ -58,8 +58,4 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_UPDATE_PASSWORD = "UPDATE users " +
             "SET password = :password " +
             "WHERE email = :email;";
-
-    public static final String SQL_USERS_UPDATE_ENABLE = "UPDATE users " +
-            "SET enable = :enable " +
-            "WHERE id = :id;";
 }

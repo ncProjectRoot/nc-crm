@@ -1,13 +1,12 @@
 package com.netcracker.crm.service.entity;
 
+import com.netcracker.crm.dao.OrganizationDao;
+import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.dto.UserDto;
-import com.netcracker.crm.dto.mapper.AddressMap;
-import com.netcracker.crm.dto.mapper.OrganizationMap;
-import com.netcracker.crm.dto.mapper.RegionMap;
 import com.netcracker.crm.dto.mapper.UserMap;
 import com.netcracker.crm.exception.RegistrationException;
 import com.netcracker.crm.service.UserService;
@@ -42,14 +41,19 @@ public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final UserTokenDao tokenDao;
+    private final RegionDao regionDao;
+    private final OrganizationDao organizationDao;
     private final AbstractEmailSender emailSender;
     private final PasswordEncoder encoder;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, PasswordEncoder encoder,
+    public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, RegionDao regionDao,
+                           OrganizationDao organizationDao, PasswordEncoder encoder,
                            @Qualifier("registrationSender") AbstractEmailSender emailSender) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
+        this.regionDao = regionDao;
+        this.organizationDao = organizationDao;
         this.emailSender = emailSender;
         this.encoder = encoder;
     }
@@ -123,25 +127,31 @@ public class UserServiceImpl implements UserService {
         User user = mapper.map(userDto, User.class);
 
         if (user.getUserRole().equals(UserRole.ROLE_CUSTOMER)) {
-            Region region = mapper.map(userDto.getAddress().getRegion(), Region.class);
-            Address address = mapper.map(userDto.getAddress(), Address.class);
-            Organization organization = mapper.map(userDto.getOrganization(), Organization.class);
-
+            Address address = new Address();
+            address.setLatitude(userDto.getAddressLatitude());
+            address.setLongitude(userDto.getAddressLongitude());
+            address.setDetails(userDto.getAddressDetails());
+            Region region = regionDao.findByName(userDto.getAddressRegionName());
+            if (region == null) {
+                region = new Region();
+                region.setName(userDto.getAddressRegionName());
+            }
             address.setRegion(region);
-            user.setOrganization(organization);
             user.setAddress(address);
+
+            Organization organization = organizationDao.findByName(userDto.getOrganizationName());
+            if (organization == null) {
+                organization = new Organization();
+                organization.setName(userDto.getOrganizationName());
+            }
+            user.setOrganization(organization);
         }
         return user;
     }
 
     private ModelMapper configureMapper() {
         ModelMapper mapper = new ModelMapper();
-
         mapper.addMappings(new UserMap());
-        mapper.addMappings(new AddressMap());
-        mapper.addMappings(new OrganizationMap());
-        mapper.addMappings(new RegionMap());
-
         return mapper;
     }
 

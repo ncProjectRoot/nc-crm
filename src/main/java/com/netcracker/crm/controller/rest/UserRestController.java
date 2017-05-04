@@ -39,10 +39,4 @@ public class UserRestController {
         log.error("User with was not created.");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-//    @RequestMapping(value = "/registration/confirm/{token}", method = RequestMethod.GET)
-//    public String confirmRegistration(String token) {
-//        System.out.println("confirmRegistration");
-//        return "login";
-//    }
 }

@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
     .content-body-wrapper {
@@ -59,8 +60,9 @@
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <input type="hidden" name="userRole" value = "ROLE_ADMIN"/>
-                        <button id="submit-admin-create" class="btn waves-effect waves-light" type="submit" name="action">Create Admin
+                        <input type="hidden" name="userRole" value="ROLE_ADMIN"/>
+                        <button id="submit-admin-create" class="btn waves-effect waves-light" type="submit"
+                                name="action">Create Admin
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -75,55 +77,68 @@
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="customer_first_name" type="text" class="validate">
+                            <input id="customer_first_name" name="firstName" type="text" class="validate">
                             <label for="customer_first_name">First Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="customer_middle_name" type="text" class="validate">
+                            <input id="customer_middle_name" name="middleName" type="text" class="validate">
                             <label for="customer_middle_name">Middle Name</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input id="customer_last_name" type="text" class="validate">
+                            <input id="customer_last_name" name="lastName" type="text" class="validate">
                             <label for="customer_last_name">Last Name</label>
+                        </div>
+                        <div class="input-field">
+                            <i class="material-icons prefix">location_on</i>
+                            <input type="text" id="customer_address"/>
+                            <label for="customer_address">Address</label>
                         </div>
                         <div class="input-field ">
                             <i class="material-icons prefix">open_with</i>
-                            <input id="customer_address_details" type="text" class="validate">
+                            <input id="customer_address_details" name="addressDetails" type="text" class="validate">
                             <label for="customer_address_details">Address Details</label>
                         </div>
                         <div>
-                            <span>Choose Address</span>
-                            <div id="map"></div>
-                        </div>
-                        <div class="input-field">
-                            <input type="checkbox" class="filled-in" id="customer_contact_person" checked="checked"/>
-                            <label for="customer_contact_person">Contact Person</label>
+                            <div id="map" style="width: auto; height: 270px;"></div>
                         </div>
                     </div>
                     <div class="col s6">
                         <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input id="customer_email" type="email" class="validate">
+                            <input id="customer_email" name="email" type="email" class="validate">
                             <label for="customer_email">E-mail</label>
                         </div>
-                        <div class="input-field">
-                            <i class="material-icons prefix">phone</i>
-                            <input id="customer_phone" type="tel" class="validate">
-                            <label for="customer_phone">Phone</label>
+                        <div class="row">
+                            <div class="input-field col s9" style="margin-left: -10px;">
+                                <i class="material-icons prefix">phone</i>
+                                <input id="customer_phone" name="phone" type="tel" class="validate">
+                                <label for="customer_phone">Phone</label>
+                            </div>
+                            <div class="col s3">
+                                <p>
+                                    <input type="checkbox" class="filled-in" id="customer_contact_person" name="contactPerson"
+                                           checked="checked"/>
+                                    <label for="customer_contact_person">Contact Person</label>
+                                </p>
+                            </div>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">business</i>
-                            <input type="text" id="customer_organization" class="autocomplete">
-                            <label for="customer_organization">Organization</label>
+                            <input type="text" id="customer_organization_name" name="organizationName" class="autocomplete">
+                            <label for="customer_organization_name">Organization</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <input type="hidden" name="userRole" value = "ROLE_CUSTOMER"/>
-                        <button id="submit-customer-create" class="btn waves-effect waves-light" type="submit" name="action">Create Customer
+                        <input type="hidden" name="userRole" value="ROLE_CUSTOMER"/>
+                        <input type="hidden" name="addressRegionName" id="customer_region_name">
+                        <input type="hidden" name="addressLatitude" id="customer_address_lat">
+                        <input type="hidden" name="addressLongitude" id="customer_address_long">
+                        <button id="submit-customer-create" class="btn waves-effect waves-light" type="submit"
+                                name="action">Create Customer
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -167,8 +182,9 @@
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <input type="hidden" name="userRole" value = "ROLE_CSR"/>
-                        <button id="submit-сsr-create" class="btn waves-effect waves-light" type="submit" name="action">Create CSR
+                        <input type="hidden" name="userRole" value="ROLE_CSR"/>
+                        <button id="submit-сsr-create" class="btn waves-effect waves-light" type="submit" name="action">
+                            Create CSR
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -212,8 +228,9 @@
                 </div>
                 <div class="row">
                     <div class="col s6">
-                        <input type="hidden" name="userRole" value = "ROLE_PMG"/>
-                        <button id="submit-pmg-create" class="btn waves-effect waves-light" type="submit" name="action">Create PMG
+                        <input type="hidden" name="userRole" value="ROLE_PMG"/>
+                        <button id="submit-pmg-create" class="btn waves-effect waves-light" type="submit" name="action">
+                            Create PMG
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
@@ -226,7 +243,7 @@
     $(document).ready(function () {
         $('ul.tabs').tabs();
 
-        $('#customer_organization').autocomplete({
+        $('#customer_organization_name').autocomplete({
             data: {
                 "Acer": null,
                 "Microsoft": null,
@@ -237,36 +254,33 @@
             },
             limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
             onAutocomplete: function (val) {
-                // Callback function when value is autcompleted.
+                $('#customer_organization_name').val(val);
             },
-            minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
+            minLength: 1 // The minimum length of the input for the autocomplete to start. Default: 1.
         });
     });
 
     console.log("createUser");
 </script>
 <script>
-    function initMap() {
-        var lat = 50.431622;
-        var lng = 30.516645;
-        var map_center = new google.maps.LatLng(lat, lng);
-        var mapOptions = {
-            center: map_center,
-            zoom: 16,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var mapCanvas = document.getElementById("map");
-        var map = new google.maps.Map(mapCanvas, mapOptions);
-        new google.maps.Marker({
-            map: map,
-            draggable: false,
-            position: new google.maps.LatLng(lat, lng)
-        });
-        google.maps.event.addDomListener(window, 'resize', function () {
-            map.setCenter(map_center);
-        });
-    }
+    $('#map').locationpicker({
+        location: {
+            latitude: 40.7324319,
+            longitude: -73.82480777777776
+        },
+        radius: 1,
+        inputBinding: {
+            locationNameInput: $('#customer_address')
+        },
+        enableAutocomplete: true,
+        enableReverseGeocode: true,
+        draggable: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            var mapContext = $(this).locationpicker('map');
+            $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
+            $('#customer_address_lat').val(mapContext.location.latitude);
+            $('#customer_address_long').val(mapContext.location.longitude);
+        },
+        addressFormat: 'street_number'
+    });
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4&callback=initMap"
-        async defer></script>
-<%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 --%>

@@ -11,12 +11,13 @@ public class UserDto {
     private String lastName;
     private String phone;
     private String email;
-    private boolean enable;
-    private boolean accountNonLocked;
     private boolean contactPerson;
     private String userRole;
-    private OrganizationDto organization;
-    private AddressDto address;
+    private String organizationName;
+    private Double addressLatitude;
+    private Double addressLongitude;
+    private String addressDetails;
+    private String addressRegionName;
 
     public UserDto() {
     }
@@ -77,22 +78,6 @@ public class UserDto {
         this.email = email;
     }
 
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
-
     public boolean isContactPerson() {
         return contactPerson;
     }
@@ -109,19 +94,44 @@ public class UserDto {
         this.userRole = userRole;
     }
 
-    public OrganizationDto getOrganization() {
-        return organization;
+    public String getOrganizationName() {
+        return organizationName;
     }
 
-    public void setOrganization(OrganizationDto organization) {
-        this.organization = organization;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
-    public AddressDto getAddress() {
-        return address;
+    public Double getAddressLatitude() {
+        return addressLatitude;
     }
 
-    public void setAddress(AddressDto address) {
-        this.address = address;
+    public void setAddressLatitude(Double addressLatitude) {
+        this.addressLatitude = addressLatitude;
+    }
+
+    public Double getAddressLongitude() {
+        return addressLongitude;
+    }
+
+    public void setAddressLongitude(Double addressLongitude) {
+        this.addressLongitude = addressLongitude;
+    }
+
+
+    public String getAddressRegionName() {
+        return addressRegionName;
+    }
+
+    public void setAddressRegionName(String addressRegionName) {
+        this.addressRegionName = addressRegionName;
+    }
+
+    public String getAddressDetails() {
+        return addressDetails;
+    }
+
+    public void setAddressDetails(String addressDetails) {
+        this.addressDetails = addressDetails;
     }
 }

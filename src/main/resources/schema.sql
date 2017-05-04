@@ -585,6 +585,31 @@ ALTER TABLE users
     )
 ;
 
+CREATE TABLE user_register_token
+    (
+     id BIGSERIAL  NOT NULL ,
+     user_id INTEGER  NOT NULL ,
+     token VARCHAR (60)  NOT NULL ,
+     date_send TIMESTAMP(0)  NOT NULL ,
+     used BOOLEAN  NOT NULL
+    )
+;
+
+ALTER TABLE user_register_token
+    ADD CONSTRAINT user_register_token_PK PRIMARY KEY ( id ) ;
+
+ALTER TABLE user_register_token
+    ADD CONSTRAINT user_register_token_users_FK FOREIGN KEY
+    (
+     user_id
+    )
+    REFERENCES users
+    (
+     id
+    )
+    ON DELETE CASCADE
+;
+
 
 INSERT INTO user_roles (id, name) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO user_roles (id, name) VALUES (2, 'ROLE_CUSTOMER');
