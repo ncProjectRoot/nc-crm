@@ -1,9 +1,6 @@
-package com.netcracker.crm.controller.base;
+package com.netcracker.crm.controller.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.crm.domain.OrderRowRequest;
-import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
@@ -11,7 +8,10 @@ import com.netcracker.crm.dto.ProductStatusDto;
 import com.netcracker.crm.service.OrderService;
 import com.netcracker.crm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,14 +22,10 @@ import java.util.Map;
  */
 @RestController
 public class ProductController {
-
     @Autowired
     private ProductService productService;
-
     @Autowired
     private OrderService orderService;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping(value = "/csr/addProduct", method = RequestMethod.POST)
     public String addProduct(ProductDto productDto) throws IOException {
@@ -47,9 +43,6 @@ public class ProductController {
     public List<ProductGroupDto> productsWithoutGroup() {
         return productService.getProductsWithoutGroup();
     }
-
-
-
 
     @GetMapping("/csr/load/productNames")
     public List<String> productNames(String likeTitle) {

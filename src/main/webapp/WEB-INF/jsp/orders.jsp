@@ -226,11 +226,9 @@
     downloadTable();
     function downloadTable() {
         ajaxParametersForTable.rowOffset = (currentPage - 1) * countTr;
-        console.log(ajaxParametersForTable)
         $(".content-body tbody").empty();
         $(".preloader-wrapper").addClass("active");
         $.get("csr/load/orders", ajaxParametersForTable, function (data) {
-            console.log(data)
             $(".preloader-wrapper").removeClass("active");
             $(".content-body tbody").empty();
             fillTable(data);
