@@ -51,6 +51,11 @@ public class ProductServiceImpl implements ProductService {
         return list;
     }
 
+    @Override
+    public List<String> getNames(String likeTitle) {
+        return productDao.findProductsTitleLikeTitle(likeTitle);
+    }
+
     private Product convertToEntity(ProductDto productDto) {
         ModelMapper mapper = configureMapper();
         Discount discGroup = null;

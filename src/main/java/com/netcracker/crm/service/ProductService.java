@@ -13,4 +13,6 @@ public interface ProductService {
     Product persist(ProductDto productDto);
 
     List<ProductStatusDto> getStatuses();
+
+    List<String> getNames(String likeTitle);
 }

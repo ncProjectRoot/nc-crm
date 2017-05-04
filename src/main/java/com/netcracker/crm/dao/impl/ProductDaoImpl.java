@@ -154,6 +154,13 @@ public class ProductDaoImpl implements ProductDao {
         return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
     }
 
+    @Override
+    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%");
+        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_LIKE_TITLE, params, String.class);
+    }
+
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
             Long discountId = discount.getId();

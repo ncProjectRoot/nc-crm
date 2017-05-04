@@ -93,25 +93,24 @@
             <table class="striped responsive-table centered ">
                 <thead>
                 <tr>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="id">#<span>&#9660;</span></a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="1">#<span>&#9660;</span></a></th>
                     <th>
 
                         <a class='dropdown-button dropdown-status-button a-dummy' href='#!'
                            data-activates='dropdown-status'><span class="value">Status</span></a>
                         <span class="status-deleter"><a href="#!" class="a-dummy">&#215;</a></span>
                         <ul id='dropdown-status' class='dropdown-content'>
-                            <li><a href="#!" class="a-dummy">New</a></li>
-                            <li><a href="#!" class="a-dummy">In queue</a></li>
-                            <li><a href="#!" class="a-dummy">Processing</a></li>
-                            <li><a href="#!" class="a-dummy">Active</a></li>
-                            <li><a href="#!" class="a-dummy">Disabled</a></li>
-                            <li><a href="#!" class="a-dummy">Disabled</a></li>
-                            <li><a href="#!" class="a-dummy">Paused</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="4">New</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="5">In queue</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="6">Processing</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="7">Active</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="8">Disabled</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="9">Paused</a></li>
                         </ul>
 
                     </th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="product-id">Product Id</a></th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="product-title">Product Title</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="2">Product Id</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="3">Product Title</a></th>
                     <th>
 
                         <a class='dropdown-button dropdown-product-status-button a-dummy' href='#!'
@@ -119,16 +118,16 @@
                         </a>
                         <span class="product-status-deleter"><a href="#!" class="a-dummy">&#215;</a></span>
                         <ul id='dropdown-product-status' class='dropdown-content'>
-                            <li><a href="#!" class="a-dummy">Planned</a></li>
-                            <li><a href="#!" class="a-dummy">Actual</a></li>
-                            <li><a href="#!" class="a-dummy">Outdated</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="10">Planned</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="11">Actual</a></li>
+                            <li><a href="#!" class="a-dummy" data-status-id="12">Outdated</a></li>
                         </ul>
 
                     </th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="customer">Customer</a></th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="csr">CSR</a></th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="date-finish">Date Finish</a></th>
-                    <th><a href="#!" class="sorted-element a-dummy" data-field="preferred-date">Preferred Date</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="4">Customer</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="5">CSR</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="6">Date Finish</a></th>
+                    <th><a href="#!" class="sorted-element a-dummy" data-field="7">Preferred Date</a></th>
 
                 </tr>
                 </thead>
@@ -162,45 +161,23 @@
 </div>
 
 <script>
-    var data = {
-        length: 7 * 11,
-        array: []
-    }
-    var jsonAjaxElement = {
-        id: 123,
-        status: "Processing",
-        productId: 2312,
-        productTitle: "Telecom Life",
-        productStatus: "Outdated",
-        customer: 213,
-        csr: 23,
-        dateFinish: "21.05.2017",
-        preferredDate: "21.05.2017"
-    }
-    for (var i = 0; i < 7; i++) {
-        data.array.push(jsonAjaxElement);
-    }
-
-    //////////
-
 
     var countTr = 7;
     var countPagesVisibleNearCurrent = 2;
     var currentPage = 1;
     var countTablePages;
-    var dataAutocomplete = {
-        'Apple': null,
-        'Microsoft': null,
-        'Google': null
-    }
+    var dataAutocomplete = {'': null};
+    var typedKeywords = [];
     var ajaxParametersForTable = {
-        orderBy: "id",
-        orderByOption: "DESC",
-        searchArray: [],
-        status: "",
-        productStatus: "",
-        firstRowNum: 1,
-        lastRowNum: countTr
+        orderBy: 1,
+        desc: false,
+        keywords: function () {
+            return typedKeywords.join("\n");
+        },
+        statusId: 0,
+        productStatusId: 0,
+        rowLimit: countTr,
+        rowOffset: 0
     };
 
     $('#chips-search').material_chip({
@@ -220,52 +197,44 @@
     });
 
     $('#chips-search').on('chip.add', function (e, chip) {
-        ajaxParametersForTable.searchArray.push(chip.tag)
+        typedKeywords.push(chip.tag);
+        currentPage = 1;
         downloadTable();
     });
 
     $('#chips-search').on('chip.delete', function (e, chip) {
-        var idx = ajaxParametersForTable.searchArray.indexOf(chip.tag)
-        ajaxParametersForTable.searchArray.splice(idx, 1)
+        var idx = typedKeywords.indexOf(chip.tag)
+        typedKeywords.splice(idx, 1);
+        currentPage = 1;
         downloadTable();
     });
 
-    var needAjaxSearchChips = true;
-    $("#chips-search input").on("keyup", function (event) {
+    $("#chips-search input").on("input", function (event) {
         var typedText = $("#chips-search input").val();
-        // console.log(typedText + " " + typedText.length)
-        if (needAjaxSearchChips && typedText.length >= 1) {
-            //ajax
-            setTimeout(function () {
-                var newData = ["qwer", "asdf", "zxcv", "poiu"];
+        if (typedText.length > 1) {
+            $.get("csr/load/productNames", {likeTitle: typedText}, function (productNames) {
                 for (key in dataAutocomplete) {
-                    // console.log("--- delete " + key)
                     delete dataAutocomplete[key];
                 }
-                newData.forEach(function (element) {
+                productNames.forEach(function (element) {
                     dataAutocomplete[element] = null;
-                })
-                needAjaxSearchChips = false;
-                $("#chips-search input").trigger("keypress");
-                needAjaxSearchChips = true;
-            }, 100);
+                });
+            });
         }
     })
 
     downloadTable();
     function downloadTable() {
-        ajaxParametersForTable.lastRowNum = currentPage * countTr;
-        ajaxParametersForTable.firstRowNum = ajaxParametersForTable.lastRowNum - countTr + 1;
-
+        ajaxParametersForTable.rowOffset = (currentPage - 1) * countTr;
+        console.log(ajaxParametersForTable)
         $(".content-body tbody").empty();
         $(".preloader-wrapper").addClass("active");
-        //ajax
-        console.log(ajaxParametersForTable)
-        setTimeout(function () {
+        $.get("csr/load/orders", ajaxParametersForTable, function (data) {
+            console.log(data)
             $(".preloader-wrapper").removeClass("active");
             $(".content-body tbody").empty();
             fillTable(data);
-        }, 500);
+        });
 
     }
 
@@ -279,7 +248,7 @@
 
             countTablePages = Math.ceil(data.length / countTr);
 
-            data.array.forEach(function (element) {
+            data.orders.forEach(function (element) {
                 var tr = $("<tr>");
                 tr.append($("<td>", {text: element.id}));
                 tr.append($("<td>", {text: element.status}));
@@ -384,32 +353,36 @@
     })
 
     $("#dropdown-status li").on("click", function () {
-        var status = $(this).find("a").text();
-        $(".dropdown-status-button .value").text(status);
+        var status = $(this).find("a");
+        $(".dropdown-status-button .value").text(status.text());
         $(".status-deleter").show();
-        ajaxParametersForTable.status = status;
+        ajaxParametersForTable.statusId = status.data("status-id");
+        currentPage = 1;
         downloadTable();
     })
 
     $(".status-deleter").on("click", function () {
         $(".dropdown-status-button .value").text("Status");
-        ajaxParametersForTable.status = "";
+        ajaxParametersForTable.statusId = 0;
         $(".status-deleter").hide();
+        currentPage = 1;
         downloadTable();
     });
 
     $("#dropdown-product-status li").on("click", function () {
-        var productStatus = $(this).find("a").text();
-        $(".dropdown-product-status-button .value").text(productStatus);
+        var productStatus = $(this).find("a");
+        $(".dropdown-product-status-button .value").text(productStatus.text());
         $(".product-status-deleter").show();
-        ajaxParametersForTable.productStatus = productStatus;
+        ajaxParametersForTable.productStatusId = productStatus.data("status-id");
+        currentPage = 1;
         downloadTable();
     })
 
     $(".product-status-deleter").on("click", function () {
         $(".dropdown-product-status-button .value").text("Product Status");
-        ajaxParametersForTable.productStatus = "";
+        ajaxParametersForTable.productStatusId = 0;
         $(".product-status-deleter").hide();
+        currentPage = 1;
         downloadTable();
     });
 
@@ -418,20 +391,21 @@
         var newSortedElement = $(this);
         if (newSortedElement.is(oldSortedElement)) {
 
-            if (ajaxParametersForTable.orderByOption == "DESC") {
+            if (ajaxParametersForTable.desc == true) {
                 newSortedElement.find("span").html("&#9650;");
-                ajaxParametersForTable.orderByOption = "ASC";
+                ajaxParametersForTable.desc = false;
             } else {
                 newSortedElement.find("span").html("&#9660;");
-                ajaxParametersForTable.orderByOption = "DESC";
+                ajaxParametersForTable.desc = true;
             }
         } else {
             oldSortedElement.find("span").remove();
             newSortedElement.append($("<span>", {html: "&#9660;"}));
-            ajaxParametersForTable.orderByOption = "DESC";
-            ajaxParametersForTable.orderBy = newSortedElement.data("field");
+            ajaxParametersForTable.desc = true;
+            ajaxParametersForTable.orderBy = parseInt(newSortedElement.data("field"));
             oldSortedElement = newSortedElement;
         }
+        currentPage = 1;
         downloadTable();
     });
 </script>
