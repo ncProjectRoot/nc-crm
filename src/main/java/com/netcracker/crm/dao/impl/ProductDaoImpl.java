@@ -156,6 +156,13 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%");
+        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
     public List<Product> findAllWithoutGroup() {
         return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
     }

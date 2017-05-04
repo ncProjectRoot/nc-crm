@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.netcracker.crm.dao;
 
+import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
 import java.time.LocalDate;
@@ -24,4 +20,8 @@ public interface OrderDao extends CrudDao<Order>{
     List<Order> findAllByCustomerId(Long id);
     
     List<Order> findAllByCsrId(Long id);
+
+    List<Order> findOrderRows(OrderRowRequest orderRowRequest);
+
+    Long getOrderRowsCount(OrderRowRequest orderRowRequest);
 }

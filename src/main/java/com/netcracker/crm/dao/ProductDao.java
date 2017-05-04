@@ -12,4 +12,6 @@ public interface ProductDao extends CrudDao<Product>{
 
     List<Product> findAllByGroupId(Long id);
     List<Product> findAllWithoutGroup();
+
+    List<String> findProductsTitleLikeTitle(String likeTitle);
 }

@@ -41,6 +41,13 @@ public final class ProductSqlQuery {
             + "FROM product "
             + "WHERE group_id IS null;";
 
+    public static final String SQL_FIND_PRODUCT_TITLES_LIKE_TITLE = ""
+            + "SELECT title "
+            + "FROM product "
+            + "WHERE title LIKE :title "
+//            + "ORDER BY random() DESC "
+            + "LIMIT 10;";
+
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 
 }

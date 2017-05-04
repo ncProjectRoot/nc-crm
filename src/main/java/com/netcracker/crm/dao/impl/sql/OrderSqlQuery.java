@@ -15,6 +15,12 @@ public final class OrderSqlQuery {
     public static final String PARAM_PRODUCT_ID = "product_id";
     public static final String PARAM_CSR_ID = "csr_id";
 
+    public static final String PARAM_ORDER_ROW_KEYWORD = "keyword";
+    public static final String PARAM_ORDER_ROW_STATUS = "status_id";
+    public static final String PARAM_ORDER_ROW_PRODUCT_STATUS = "product_status_id";
+    public static final String PARAM_ORDER_ROW_ROW_LIMIT = "row_limit";
+    public static final String PARAM_ORDER_ROW_ROW_OFFSET = "row_offset";
+
     public static final String SQL_UPDATE_ORDER = "UPDATE orders "
             + "SET date_finish = :date_finish, preferred_date = :preferred_date, "
             + "status_id = :status_id, customer_id = :customer_id, product_id = :product_id, "

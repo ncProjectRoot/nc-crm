@@ -16,4 +16,6 @@ public interface ProductService {
     List<ProductStatusDto> getStatuses();
 
     List<ProductGroupDto> getProductsWithoutGroup();
+
+    List<String> getNames(String likeTitle);
 }
