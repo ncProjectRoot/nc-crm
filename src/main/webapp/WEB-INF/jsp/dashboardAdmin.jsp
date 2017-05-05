@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
 
-    .content-body-wrapper {
+    .content-body {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
+        background-color: rgba(0, 0, 0, 0);
     }
 
     .content-element {
@@ -59,16 +60,12 @@
         color: #000;
     }
 
-    .content-body-wrapper .footer {
+    .content-body .footer {
         height: 50px;
         width: 100%
     }
 </style>
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">dashboard</i>
-    <span>Dashboard</span>
-</div>
-<div class="content-body-wrapper">
+<div class="content-body" data-page-name="Dashboard">
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
             <span class="card-title activator">Region Errors<i class="material-icons right">more_vert</i></span>

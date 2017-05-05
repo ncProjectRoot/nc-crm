@@ -1,11 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-    .content-body-wrapper {
-        width: calc(100% - 20px * 2);
-        margin: 20px;
-        background-color: #fff;
-    }
 
     table {
         width: calc(100% - 20px * 2);
@@ -13,11 +8,7 @@
     }
 
 </style>
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">note_add</i>
-    <span>Complaint</span>
-</div>
-<div class="content-body-wrapper z-depth-1">
+<div class="content-body z-depth-1" data-page-name="Complaint">
     <div class="col s12">
         <ul class="tabs" id="tabs">
             <li class="tab col s3"><a href="#swipe-create-complaint-form">Create</a></li>

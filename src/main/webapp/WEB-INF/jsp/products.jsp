@@ -1,19 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
-    #content-body-wrapper {
-        width: calc(100% - 20px * 2);
-        margin: 0 auto;
-        margin-top: 15px;
-        background-color: #fff;
-    }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">view_list</i>
-    <span>Products</span>
-</div>
-<div id="content-body-wrapper">
+<div class="content-body" data-page-name="Products">
     <div id="content-body" class="row">
 
         <div class="col s12">

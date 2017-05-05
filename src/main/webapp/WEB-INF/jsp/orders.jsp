@@ -1,18 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-    #content-body-wrapper {
-        width: calc(100% - 20px * 2);
-        margin: 0 auto;
-        margin-top: 15px;
-        background-color: #fff;
-    }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">receipt</i>
-    <span>Orders</span>
-</div>
-<div id="content-body-wrapper">
+<div class="content-body" data-page-name="Orders">
     <div id="table-all-orders" class="table-container row">
         <div class="table-wrapper col s11 center-align">
             <table class="striped responsive-table centered ">

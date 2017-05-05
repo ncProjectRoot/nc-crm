@@ -3,23 +3,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-    .content-body-wrapper {
-        height: 800px;
-        width: calc(100% - 20px * 2);
-        margin: 20px;
-        background-color: #fff;
-    }
-
     /* Always set the map height explicitly to define the size of the div * element that contains the map. */
     #map {
         height: 270px;
     }
 </style>
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">note_add</i>
-    <span>Create</span>
-</div>
-<div class="content-body-wrapper z-depth-1">
+<div class="content-body z-depth-1" data-page-name="Create">
     <ul id="tabs-swipe-demo" class="tabs">
         <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
             <li class="tab col s3"><a href="#swipe-admin-form">Admin</a></li>
