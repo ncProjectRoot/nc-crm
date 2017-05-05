@@ -472,3 +472,151 @@
         });
     });
 </script>
+
+
+<script>
+    function fetchDiscounts() {
+        var title = $('#search_title').val();
+        if (title.length > 1) {
+            $('#select_disc').children().remove();
+            $.get("/csr/discountByTitle/" + title).success(function (data) {
+                $('#select_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_disc').material_select('updating');
+                $('#discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+    function fetchGroupDiscounts() {
+        var title = $('#search_for_group_title').val();
+        if (title.length > 1) {
+            $('#select_group_disc').children().remove();
+            $.get("/csr/discountByTitle/" + title).success(function (data) {
+                $('#select_group_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_group_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_group_disc').material_select('updating');
+                $('#group_discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+    function fetchGroups() {
+        var title = $('#search_group').val();
+        if (title.length > 1) {
+            $('#select_group').children().remove();
+            $.get("/csr/groupByName/" + title).success(function (data) {
+                $('#select_group').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    console.log(item);
+                    $('#select_group').append($('<option/>', {
+                        value: item.id,
+                        text: item.name
+                    }));
+                });
+                $('#select_group').material_select('updating');
+                $('#group_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('select').material_select();
+
+//      load product status
+        $.get("/csr/load/productStatus/").success(function (data) {
+            $.each(data, function (i, item) {
+                $('#select_product_status').append($('<option>', {
+                    value: item.name,
+                    text: item.name
+                }));
+            });
+            $('#select_product_status').material_select('updating');
+        });
+
+
+//      load products without group
+        loadProductsWithoutGroup();
+        function loadProductsWithoutGroup() {
+            $.get("/csr/load/productWithoutGroup").success(function (data) {
+                $('#products_without_group').children().remove();
+                $('#products_without_group').append('<option value="" disabled selected>Choose products</option>')
+                $.each(data, function (i, item) {
+                    $('#products_without_group').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.statusName
+                    }));
+                });
+                $('#products_without_group').material_select('updating');
+            });
+        }
+
+//        create product
+
+        $("#addProduct").on("submit", function (e) {
+            e.preventDefault();
+            var title = $('#title').val();
+            var price = $('#price').val();
+            if (title.length < 5) {
+                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+            } else if (price < 1) {
+                Materialize.toast("Please enter price more 0", 10000, 'rounded');
+            } else {
+                $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
+                    $("#addProduct")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                });
+                loadProductsWithoutGroup();
+            }
+        });
+
+//      create discount
+        $("#addDiscount").on("submit", function (e) {
+                e.preventDefault();
+                var title = $('#disc_title').val();
+                var percentage = $('#disc_percentage').val();
+                if (title.length < 5) {
+                    Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+                } else if (percentage < 0 || percentage > 100) {
+                    Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
+                } else {
+                    $.post("/csr/addDiscount", $("#addDiscount").serialize(), function (data) {
+                        $("#addDiscount")[0].reset();
+                        Materialize.toast(data, 10000, 'rounded');
+                    });
+                }
+            }
+        );
+
+
+//        create group
+        $("#addGroup").on("submit", function (e) {
+            e.preventDefault();
+            var grpName = $('#group_name').val();
+
+            if (grpName.length < 5) {
+                Materialize.toast("Please enter group name at least 5 characters", 10000, 'rounded');
+            } else {
+                $.post("/csr/addGroup", $("#addGroup").serialize(), function (data) {
+                    $("#addGroup")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                    loadProductsWithoutGroup();
+                });
+            }
+        });
+    });
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4&callback=initMap"
+        async defer></script>
+<%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 --%>
