@@ -1,6 +1,8 @@
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.*;
+import com.netcracker.crm.dao.DiscountDao;
+import com.netcracker.crm.dao.GroupDao;
+import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -19,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
-
-import org.springframework.stereotype.Repository;
 
 /**
  * @author Karpunets
@@ -152,6 +153,18 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
 
         return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
+    }
+
+    @Override
+    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%");
+        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<Product> findAllWithoutGroup() {
+        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
     }
 
     private Long getDiscountId(Discount discount) {

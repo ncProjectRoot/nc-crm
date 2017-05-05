@@ -2,7 +2,7 @@ package com.netcracker.crm.controller.base;
 
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.exception.NoSuchEmailException;
-import com.netcracker.crm.service.security.ForgotPasswordService;
+import com.netcracker.crm.service.impl.ForgotPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,16 +22,11 @@ public class ForgotPasswordController {
 
 
     @RequestMapping(value = "/forgot", method = RequestMethod.POST)
-    public String checkEmailAndPhone(String email, String phone, Model model){
-        try{
-            User user = forgotPasswordService.checkEmailAndPhone(email, phone);
-            forgotPasswordService.changePassword(user);
-            model.addAttribute("msg", "You are successful recovery password");
-        }catch (NoSuchEmailException e){
-            model.addAttribute("error", e.getMessage());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+    public String checkEmailAndPhone(String email, String phone, Model model) throws NoSuchEmailException, MessagingException {
+        User user = forgotPasswordService.checkEmailAndPhone(email, phone);
+        forgotPasswordService.changePassword(user);
+        model.addAttribute("msg", "You are successful recovery password");
+
         return "login";
     }
 }
