@@ -1,31 +1,22 @@
 $(document).ready(function () {
 
-    $(document).on("click", "#submit-admin-create", function () {
-        event.preventDefault();
-        console.log("submit-admin-create");
-        var adminForm = "#form-admin-create";
-        registerUser(adminForm);
+    $(document).on("change", "#user_role", function () {
+
+        if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
+            $('.customer-field').css("display", "block");
+        } else {
+            $('.customer-field').css("display", "none");
+        }
+        $('#customer_contact_person').prop('checked', false);
+        $('#submit-user-create').css("display", "block");
+        $('#submit-user-create').html('Create ' + $('#user_role option:selected').text());
     });
 
-    $(document).on("click", "#submit-customer-create", function () {
+    $(document).on("click", "#submit-user-create", function () {
         event.preventDefault();
-        console.log("submit-customer-create");
-        var customerForm = "#form-customer-create";
+        console.log("submit-user-create");
+        var customerForm = "#form-user-create";
         registerUser(customerForm);
-    });
-
-    $(document).on("click", "#submit-сsr-create", function () {
-        event.preventDefault();
-        console.log("#submit-сsr-create");
-        var csrForm = "#form-csr-create";
-        registerUser(csrForm);
-    });
-
-    $(document).on("click", "#submit-pmg-create", function () {
-        event.preventDefault();
-        console.log("#submit-pmg-create");
-        var pmgForm = "#form-pmg-create";
-        registerUser(pmgForm);
     });
 
     function registerUser(form) {

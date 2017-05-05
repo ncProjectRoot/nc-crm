@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         userDao.create(user);
         String registrationToken = createUserRegistrationToken(user);
-//        sendRegistrationEmail(user, password, registrationToken);
+        sendRegistrationEmail(user, password, registrationToken);
 
         return user.getId();
     }
@@ -146,6 +146,9 @@ public class UserServiceImpl implements UserService {
                 organization.setName(userDto.getOrganizationName());
             }
             user.setOrganization(organization);
+        } else {
+            user.setAddress(null);
+            user.setOrganization(null);
         }
         return user;
     }
