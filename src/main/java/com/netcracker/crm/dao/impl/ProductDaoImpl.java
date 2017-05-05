@@ -4,6 +4,8 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.ProductRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +162,44 @@ public class ProductDaoImpl implements ProductDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%");
         return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public Long getProductRowsCount(ProductRowRequest orderRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
+                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive());
+
+        String sql = orderRowRequest.getSqlCount();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    @Override
+    public List<Product> findProductRows(ProductRowRequest orderRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
+                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset());
+
+        String sql = orderRowRequest.getSql();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.query(sql, params, productWithDetailExtractor);
     }
 
     @Override

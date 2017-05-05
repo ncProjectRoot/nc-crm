@@ -1,11 +1,10 @@
 package com.netcracker.crm.controller.rest;
 
-import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.dto.ProductStatusDto;
-import com.netcracker.crm.service.OrderService;
 import com.netcracker.crm.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +23,6 @@ import java.util.Map;
 public class ProductController {
     @Autowired
     private ProductService productService;
-    @Autowired
-    private OrderService orderService;
 
     @RequestMapping(value = "/csr/addProduct", method = RequestMethod.POST)
     public String addProduct(ProductDto productDto) throws IOException {
@@ -49,9 +46,9 @@ public class ProductController {
         return productService.getNames(likeTitle);
     }
 
-    @GetMapping("/csr/load/orders")
-    public Map<String, Object> orders(OrderRowRequest orderRowRequest) throws IOException {
-        return orderService.getOrderRow(orderRowRequest);
+    @GetMapping("/csr/load/products")
+    public Map<String, Object> orders(ProductRowRequest orderRowRequest) throws IOException {
+        return productService.getProductsRow(orderRowRequest);
     }
 
 

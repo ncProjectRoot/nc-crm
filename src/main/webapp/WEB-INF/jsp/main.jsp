@@ -95,7 +95,7 @@
         <li class="li-divider">
             <div class="divider"></div>
         </li>
-        <%@ include file="/WEB-INF/jsp/menu.jsp" %>
+        <%@ include file="/WEB-INF/jsp/component/menu.jsp" %>
     </ul>
 </div>
 

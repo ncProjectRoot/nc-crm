@@ -3,12 +3,14 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.OrderRowRequest;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
 import java.sql.Timestamp;
 import java.util.List;
 import javax.sql.DataSource;
+
+import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,17 +217,19 @@ public class OrderDaoImpl implements OrderDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
                 .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
-                .addValue(PARAM_ORDER_ROW_ROW_LIMIT, orderRowRequest.getRowLimit())
-                .addValue(PARAM_ORDER_ROW_ROW_OFFSET, orderRowRequest.getRowOffset());
+                .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset());
 
-        if (!orderRowRequest.getKeywords().isEmpty()) {
+        String sql = orderRowRequest.getSql();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
             int i = 0;
-            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
-                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
             }
         }
 
-        return namedJdbcTemplate.query(orderRowRequest.getSql(), params, orderWithDetailExtractor);
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
     }
 
     @Override
@@ -234,14 +238,16 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
                 .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId());
 
-        if (!orderRowRequest.getKeywords().isEmpty()) {
+        String sql = orderRowRequest.getSqlCount();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
             int i = 0;
-            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
-                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
             }
         }
 
-        return namedJdbcTemplate.queryForObject(orderRowRequest.getSqlCount(), params, Long.class);
+        return namedJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {

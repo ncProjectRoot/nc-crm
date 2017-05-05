@@ -7,8 +7,10 @@ import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
+import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.row.ProductRowDto;
 import com.netcracker.crm.dto.ProductStatusDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Pasha on 30.04.2017.
@@ -70,6 +74,38 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<String> getNames(String likeTitle) {
         return productDao.findProductsTitleLikeTitle(likeTitle);
+    }
+
+    @Override
+    public Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest) {
+        Map<String, Object> response = new HashMap<>();
+        Long length = productDao.getProductRowsCount(orderRowRequest);
+        response.put("length", length);
+        List<Product> products = productDao.findProductRows(orderRowRequest);
+
+        List<ProductRowDto> productsRowDto = new ArrayList<>();
+        for (Product product : products) {
+            productsRowDto.add(convertToRowDto(product));
+        }
+        response.put("rows", productsRowDto);
+        return response;
+    }
+
+    private ProductRowDto convertToRowDto(Product product) {
+        ProductRowDto productRowDto = new ProductRowDto();
+        productRowDto.setId(product.getId());
+        productRowDto.setTitle(product.getTitle());
+        productRowDto.setPrice(product.getDefaultPrice());
+        productRowDto.setStatus(product.getStatus().getName());
+        if (product.getDiscount() != null) {
+            productRowDto.setDiscount(product.getDiscount().getId());
+            productRowDto.setPrice(product.getDiscount().getPercentage());
+            productRowDto.setDiscountActive(product.getDiscount().getActive());
+        }
+        if (product.getGroup() != null) {
+            productRowDto.setGroup(product.getGroup().getId());
+        }
+        return productRowDto;
     }
 
     private Product convertToEntity(ProductDto productDto) {

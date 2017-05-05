@@ -57,5 +57,10 @@ public class CustomerController {
         return "complaintCustomer";
     }
 
+    @GetMapping("/products")
+    public String products(Map<String, Object> model) {
+        return "products";
+    }
+
 
 }

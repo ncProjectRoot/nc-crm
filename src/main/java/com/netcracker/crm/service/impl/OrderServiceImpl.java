@@ -1,9 +1,9 @@
 package com.netcracker.crm.service.impl;
 
 import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.domain.OrderRowRequest;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.dto.OrderRowDto;
+import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findAllByCustomerId(id);
     }
     @Override
-    public Map<String, Object> getOrderRow(OrderRowRequest orderRowRequest) throws IOException {
+    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) throws IOException {
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
@@ -42,13 +42,13 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderRowDto> ordersDto = new ArrayList<>();
         for (Order order : orders) {
-            ordersDto.add(convertToEntity(order));
+            ordersDto.add(convertToRowDto(order));
         }
-        response.put("orders", ordersDto);
+        response.put("rows", ordersDto);
         return response;
     }
 
-    private OrderRowDto convertToEntity(Order order) {
+    private OrderRowDto convertToRowDto(Order order) {
         OrderRowDto orderRowDto = new OrderRowDto();
         orderRowDto.setId(order.getId());
         orderRowDto.setStatus(order.getStatus().getName());

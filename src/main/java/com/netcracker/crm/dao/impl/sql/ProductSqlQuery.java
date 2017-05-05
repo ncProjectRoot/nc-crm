@@ -12,6 +12,9 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_DESCRIPTION = "description";
     public static final String PARAM_PRODUCT_DISCOUNT_ID = "discount_id";
     public static final String PARAM_PRODUCT_GROUP_ID = "group_id";
+
+    public static final String PARAM_PRODUCT_ROW_STATUS = "status_id";
+    public static final String PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE = "active";
     
     public static final String SQL_UPDATE_PRODUCT = "UPDATE product "
             + "SET title = :title, default_price = :default_price, "
@@ -46,7 +49,7 @@ public final class ProductSqlQuery {
             + "FROM product "
             + "WHERE title LIKE :title "
 //            + "ORDER BY random() DESC "
-            + "LIMIT 10;";
+            + "LIMIT 5;";
 
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 

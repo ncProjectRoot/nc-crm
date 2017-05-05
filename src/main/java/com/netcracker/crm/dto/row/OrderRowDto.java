@@ -1,4 +1,4 @@
-package com.netcracker.crm.dto;
+package com.netcracker.crm.dto.row;
 
 /**
  * @author Karpunets
