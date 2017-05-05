@@ -1,7 +1,5 @@
 package com.netcracker.crm.domain.model;
 
-import java.time.LocalDate;
-
 /**
  * @author Melnyk_Dmytro
  * @version 1.0

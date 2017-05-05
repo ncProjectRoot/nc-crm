@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface RegionDao extends CrudDao<Region> {
 
-    List<Region> findByName(String name);
+    Region findByName(String name);
 
     Long getCount();
 

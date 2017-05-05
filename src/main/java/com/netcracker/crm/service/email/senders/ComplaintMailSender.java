@@ -1,10 +1,14 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email.senders;
 
 
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
-import com.netcracker.crm.email.builder.EmailBuilder;
 import com.netcracker.crm.exception.IncorrectEmailElementException;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
+import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.builder.EmailBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +42,9 @@ public class ComplaintMailSender extends AbstractEmailSender {
     @Autowired
     private JavaMailSenderImpl mailSender;
 
-    public void send(EmailMap emailMap) throws MessagingException {
-        checkEmailMap(emailMap);
-        Complaint complaint = getComplaint(emailMap);
+    public void send(EmailParam emailParam) throws MessagingException {
+        checkEmailMap(emailParam);
+        Complaint complaint = getComplaint(emailParam);
         if (complaint == null) {
             log.error("Complaint can't be null");
             throw new IllegalStateException("complaint is null");
@@ -50,14 +54,14 @@ public class ComplaintMailSender extends AbstractEmailSender {
     }
 
     @Override
-    protected void checkEmailMap(EmailMap emailMap) {
-        if (EmailType.COMPLAINT != emailMap.getEmailType()){
-            throw new IncorrectEmailElementException("Expected email type COMPLAINT but type " + emailMap.getEmailType());
+    protected void checkEmailMap(EmailParam emailParam) {
+        if (EmailType.COMPLAINT != emailParam.getEmailType()){
+            throw new IncorrectEmailElementException("Expected email type COMPLAINT but type " + emailParam.getEmailType());
         }
     }
 
-    private Complaint getComplaint(EmailMap emailMap) {
-        Object o = emailMap.get("complaint");
+    private Complaint getComplaint(EmailParam emailParam) {
+        Object o = emailParam.get(EmailParamKeys.COMPLAINT);
         if (o instanceof Complaint){
             return (Complaint) o;
         }else {

@@ -1,4 +1,4 @@
-package com.netcracker.crm.email.senders;
+package com.netcracker.crm.service.email;
 
 /**
  * Created by Pasha on 26.04.2017.

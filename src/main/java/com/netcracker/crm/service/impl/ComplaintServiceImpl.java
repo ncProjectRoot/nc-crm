@@ -9,10 +9,11 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
-import com.netcracker.crm.email.senders.AbstractEmailSender;
-import com.netcracker.crm.email.senders.EmailMap;
-import com.netcracker.crm.email.senders.EmailType;
 import com.netcracker.crm.service.ComplaintService;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
+import com.netcracker.crm.service.email.EmailType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +79,8 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     private void sendEmail(Complaint complaint) {
-        EmailMap emailMap = new EmailMap(EmailType.COMPLAINT);
-        emailMap.put("complaint", complaint);
+        EmailParam emailMap = new EmailParam(EmailType.COMPLAINT);
+        emailMap.put(EmailParamKeys.COMPLAINT, complaint);
         try {
             emailSender.send(emailMap);
         } catch (MessagingException e) {
