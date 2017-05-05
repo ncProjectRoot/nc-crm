@@ -118,7 +118,8 @@
                             </div>
                             <div class="col s3">
                                 <p>
-                                    <input type="checkbox" class="filled-in" id="customer_contact_person" name="contactPerson"
+                                    <input type="checkbox" class="filled-in" id="customer_contact_person"
+                                           name="contactPerson"
                                            checked="checked"/>
                                     <label for="customer_contact_person">Contact Person</label>
                                 </p>
@@ -126,7 +127,8 @@
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">business</i>
-                            <input type="text" id="customer_organization_name" name="organizationName" class="autocomplete">
+                            <input type="text" id="customer_organization_name" name="organizationName"
+                                   class="autocomplete">
                             <label for="customer_organization_name">Organization</label>
                         </div>
                     </div>
@@ -243,21 +245,22 @@
     $(document).ready(function () {
         $('ul.tabs').tabs();
 
-        $('#customer_organization_name').autocomplete({
-            data: {
-                "Acer": null,
-                "Microsoft": null,
-                "Apple": null,
-                "Nokia": null,
-                "AKG": null,
-                "Google": null
-            },
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-            onAutocomplete: function (val) {
-                $('#customer_organization_name').val(val);
-            },
-            minLength: 1 // The minimum length of the input for the autocomplete to start. Default: 1.
+        var organizationData = {};
+        $.get("/organization/all", function (data) {
+            data.forEach(function (item) {
+                organizationData[item.name] = null;
+            });
+
+            $('#customer_organization_name').autocomplete({
+                data: organizationData,
+                limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+                onAutocomplete: function (val) {
+                    $('#customer_organization_name').val(val);
+                }
+            });
         });
+
+
     });
 
     console.log("createUser");
@@ -268,6 +271,7 @@
             latitude: 40.7324319,
             longitude: -73.82480777777776
         },
+        locationName: "",
         radius: 1,
         inputBinding: {
             locationNameInput: $('#customer_address')

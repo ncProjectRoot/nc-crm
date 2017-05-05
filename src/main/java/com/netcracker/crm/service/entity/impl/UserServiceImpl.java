@@ -1,4 +1,4 @@
-package com.netcracker.crm.service.entity;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.OrganizationDao;
 import com.netcracker.crm.dao.RegionDao;
@@ -9,7 +9,7 @@ import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.dto.mapper.UserMap;
 import com.netcracker.crm.exception.RegistrationException;
-import com.netcracker.crm.service.UserService;
+import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     private static final int PASSWORD_LENGTH = 10;
     private static final String TOKEN_WILD_CARD = "%token%";
+    //TODO: activation link for production
     private static final String ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
 
     private final UserDao userDao;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         userDao.create(user);
         String registrationToken = createUserRegistrationToken(user);
-        sendRegistrationEmail(user, password, registrationToken);
+//        sendRegistrationEmail(user, password, registrationToken);
 
         return user.getId();
     }

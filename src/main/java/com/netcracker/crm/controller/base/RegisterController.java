@@ -1,6 +1,6 @@
 package com.netcracker.crm.controller.base;
 
-import com.netcracker.crm.service.UserService;
+import com.netcracker.crm.service.entity.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

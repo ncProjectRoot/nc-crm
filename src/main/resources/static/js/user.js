@@ -39,14 +39,15 @@ $(document).ready(function () {
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (data) {
-                console.log(data);
-            },
             statusCode: {
-                //TODO: handle specific error codes
+                201: function (data) {
+                    console.log(data);
+                    Materialize.toast("success", 10000);
+                },
+                500: function (data) {
+                    console.log(data);
+                    Materialize.toast("error", 10000);
+                }
             }
         })
     }
