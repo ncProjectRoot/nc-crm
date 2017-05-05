@@ -4,7 +4,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
     .content-body-wrapper {
-        height: 800px;
         width: calc(100% - 20px * 2);
         margin: 20px;
         background-color: #fff;
@@ -21,17 +20,8 @@
 </div>
 <div class="content-body-wrapper z-depth-1">
     <ul id="tabs-swipe-demo" class="tabs">
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-            <li class="tab col s3"><a href="#swipe-admin-form">Admin</a></li>
-        </sec:authorize>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-            <li class="tab col s3"><a href="#swipe-customer-form">Customer</a></li>
-        </sec:authorize>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-            <li class="tab col s3"><a href="#swipe-csr-form" class="active">CSR</a></li>
-        </sec:authorize>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-            <li class="tab col s3"><a href="#swipe-pmg-form">PMG</a></li>
+            <li class="tab col s3"><a href="#swipe-user-form">User</a></li>
         </sec:authorize>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <li class="tab col s3"><a href="#swipe-product-form">Product</a></li>
@@ -43,201 +33,85 @@
             <li class="tab col s3"><a href="#swipe-group-form">Group</a></li>
         </sec:authorize>
     </ul>
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-        <div id="swipe-admin-form" class="col s12">
-            <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="admin_first_name" type="text" class="validate">
-                                <label for="admin_first_name">First Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="admin_middle_name" type="text" class="validate">
-                                <label for="admin_middle_name">Middle Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="admin_last_name" type="text" class="validate">
-                                <label for="admin_last_name">Last Name</label>
-                            </div>
-                        </div>
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">email</i>
-                                <input id="admin_email" type="email" class="validate">
-                                <label for="admin_email">E-mail</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="admin_phone" type="tel" class="validate">
-                                <label for="admin_phone">Phone</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Admin
-                                <i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-        <div id="swipe-customer-form" class="col s12">
+        <div id="swipe-user-form" class="col s12">
             <div class="row">
-                <form class="col s12">
+                <form id="form-user-create" class="col s12">
                     <div class="row">
                         <div class="col s6">
                             <div class="input-field">
                                 <i class="material-icons prefix">account_circle</i>
-                                <input id="customer_first_name" type="text" class="validate">
-                                <label for="customer_first_name">First Name</label>
+                                <input id="user_first_name" name="firstName" type="text" class="validate">
+                                <label for="user_first_name">First Name</label>
                             </div>
                             <div class="input-field">
                                 <i class="material-icons prefix">account_circle</i>
-                                <input id="customer_middle_name" type="text" class="validate">
-                                <label for="customer_middle_name">Middle Name</label>
+                                <input id="user_middle_name" name="middleName" type="text" class="validate">
+                                <label for="user_middle_name">Middle Name</label>
                             </div>
                             <div class="input-field">
                                 <i class="material-icons prefix">account_circle</i>
-                                <input id="customer_last_name" type="text" class="validate">
-                                <label for="customer_last_name">Last Name</label>
+                                <input id="user_last_name" name="lastName" type="text" class="validate">
+                                <label for="user_last_name">Last Name</label>
                             </div>
-                            <div class="input-field ">
+                            <div class="input-field customer-field">
+                                <i class="material-icons prefix">location_on</i>
+                                <input type="text" id="customer_address"/>
+                                <label for="customer_address">Address</label>
+                            </div>
+                            <div class="input-field customer-field">
                                 <i class="material-icons prefix">open_with</i>
-                                <input id="customer_address_details" type="text" class="validate">
+                                <input id="customer_address_details" name="addressDetails" type="text" class="validate">
                                 <label for="customer_address_details">Address Details</label>
                             </div>
                             <div>
-                                <span>Choose Address</span>
-                                <div id="map"></div>
+                                <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                            </div>
+                        </div>
+                        <div class="col s6">
+                            <div class="input-field">
+                                <i class="material-icons prefix">work</i>
+                                <select name="userRole" id="user_role">
+                                    <option value="ROLE_CUSTOMER">Customer</option>
+                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        <option value="ROLE_ADMIN">Administrator</option>
+                                        <option value="ROLE_CSR">CSR</option>
+                                        <option value="ROLE_PMG">PMG</option>
+                                    </sec:authorize>
+                                </select>
+                                <label for="user_role">User Role</label>
+                            </div>
+                            <div class="input-field" style="margin-top: 34px;">
+                                <i class="material-icons prefix">email</i>
+                                <input id="user_email" name="email" type="email" class="validate">
+                                <label for="user_email">E-mail</label>
                             </div>
                             <div class="input-field">
+                                <i class="material-icons prefix">phone</i>
+                                <input id="user_phone" name="phone" type="tel" class="validate">
+                                <label for="user_phone">Phone</label>
+                            </div>
+                            <p class="customer-field" style="margin-top: 15px;">
                                 <input type="checkbox" class="filled-in" id="customer_contact_person"
-                                       checked="checked"/>
+                                       name="contactPerson"
+                                       checked="unchecked"/>
                                 <label for="customer_contact_person">Contact Person</label>
-                            </div>
-                        </div>
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">email</i>
-                                <input id="customer_email" type="email" class="validate">
-                                <label for="customer_email">E-mail</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="customer_phone" type="tel" class="validate">
-                                <label for="customer_phone">Phone</label>
-                            </div>
-                            <div class="input-field">
+                            </p>
+                            <div class="input-field customer-field" style="margin-top: 52px;">
                                 <i class="material-icons prefix">business</i>
-                                <input type="text" id="customer_organization" class="autocomplete">
-                                <label for="customer_organization">Organization</label>
+                                <input type="text" id="customer_organization_name" name="organizationName"
+                                       class="autocomplete">
+                                <label for="customer_organization_name">Organization</label>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Customer
-                                <i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </sec:authorize>
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-        <div id="swipe-csr-form" class="col s12">
-            <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="csr_first_name" type="text" class="validate">
-                                <label for="csr_first_name">First Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="csr_middle_name" type="text" class="validate">
-                                <label for="csr_middle_name">Middle Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="csr_last_name" type="text" class="validate">
-                                <label for="csr_last_name">Last Name</label>
-                            </div>
-                        </div>
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">email</i>
-                                <input id="csr_email" type="email" class="validate">
-                                <label for="csr_email">E-mail</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="csr_phone" type="tel" class="validate">
-                                <label for="csr_phone">Phone</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create CSR
-                                <i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </sec:authorize>
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-        <div id="swipe-pmg-form" class="col s12">
-            <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="pmg_first_name" type="text" class="validate">
-                                <label for="pmg_first_name">First Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="pmg_middle_name" type="text" class="validate">
-                                <label for="pmg_middle_name">Middle Name</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">account_circle</i>
-                                <input id="pmg_last_name" type="text" class="validate">
-                                <label for="pmg_last_name">Last Name</label>
-                            </div>
-                        </div>
-                        <div class="col s6">
-                            <div class="input-field">
-                                <i class="material-icons prefix">email</i>
-                                <input id="pmg_email" type="email" class="validate">
-                                <label for="pmg_email">E-mail</label>
-                            </div>
-                            <div class="input-field">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="pmg_phone" type="tel" class="validate">
-                                <label for="pmg_phone">Phone</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create PMG
+                            <input type="hidden" name="addressRegionName" id="customer_region_name">
+                            <input type="hidden" name="addressLatitude" id="customer_address_lat">
+                            <input type="hidden" name="addressLongitude" id="customer_address_long">
+                            <button id="submit-user-create" class="btn waves-effect waves-light" type="submit"
+                                    name="action">Create Customer
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -380,8 +254,10 @@
                         </div>
                         <div class="input-field col s3">
                             <i class="material-icons prefix">search</i>
-                            <input class='validate' type='text' onkeyup="fetchGroupDiscounts()" id='search_for_group_title'/>
-                            <label for="search_for_group_title">Search discount <span id="group_discount_numbers"></span></label>
+                            <input class='validate' type='text' onkeyup="fetchGroupDiscounts()"
+                                   id='search_for_group_title'/>
+                            <label for="search_for_group_title">Search discount <span
+                                    id="group_discount_numbers"></span></label>
                         </div>
                     </div>
                     <div class="row">
@@ -409,47 +285,47 @@
 <script>
     $(document).ready(function () {
         $('ul.tabs').tabs();
+        $('select').material_select();
+        $('#user_role option[value="ROLE_CUSTOMER"]').attr("selected", true);
 
-        $('#customer_organization').autocomplete({
-            data: {
-                "Acer": null,
-                "Microsoft": null,
-                "Apple": null,
-                "Nokia": null,
-                "AKG": null,
-                "Google": null
-            },
-            limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
-            onAutocomplete: function (val) {
-                // Callback function when value is autcompleted.
-            },
-            minLength: 1 // The minimum length of the input for the autocomplete to start. Default: 1.
+        var organizationData = {};
+        $.get("/organization/all", function (data) {
+            data.forEach(function (item) {
+                organizationData[item.name] = null;
+            });
+
+            $('#customer_organization_name').autocomplete({
+                data: organizationData,
+                limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
+                onAutocomplete: function (val) {
+                    $('#customer_organization_name').val(val);
+                }
+            });
         });
     });
-
-    console.log("createUser");
 </script>
 <script>
-    function initMap() {
-        var lat = 50.431622;
-        var lng = 30.516645;
-        var map_center = new google.maps.LatLng(lat, lng);
-        var mapOptions = {
-            center: map_center,
-            zoom: 16,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var mapCanvas = document.getElementById("map");
-        var map = new google.maps.Map(mapCanvas, mapOptions);
-        new google.maps.Marker({
-            map: map,
-            draggable: false,
-            position: new google.maps.LatLng(lat, lng)
-        });
-        google.maps.event.addDomListener(window, 'resize', function () {
-            map.setCenter(map_center);
-        });
-    }
+    $('#map').locationpicker({
+        location: {
+            latitude: 40.7324319,
+            longitude: -73.82480777777776
+        },
+        locationName: "",
+        radius: 1,
+        inputBinding: {
+            locationNameInput: $('#customer_address')
+        },
+        enableAutocomplete: true,
+        enableReverseGeocode: true,
+        draggable: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            var mapContext = $(this).locationpicker('map');
+            $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
+            $('#customer_address_lat').val(mapContext.location.latitude);
+            $('#customer_address_long').val(mapContext.location.longitude);
+        },
+        addressFormat: 'street_number'
+    });
 </script>
 
 
@@ -596,6 +472,148 @@
         });
     });
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4&callback=initMap"
-        async defer></script>
-<%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 --%>
+
+
+<script>
+    function fetchDiscounts() {
+        var title = $('#search_title').val();
+        if (title.length > 1) {
+            $('#select_disc').children().remove();
+            $.get("/csr/discountByTitle/" + title).success(function (data) {
+                $('#select_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_disc').material_select('updating');
+                $('#discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+    function fetchGroupDiscounts() {
+        var title = $('#search_for_group_title').val();
+        if (title.length > 1) {
+            $('#select_group_disc').children().remove();
+            $.get("/csr/discountByTitle/" + title).success(function (data) {
+                $('#select_group_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_group_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_group_disc').material_select('updating');
+                $('#group_discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+    function fetchGroups() {
+        var title = $('#search_group').val();
+        if (title.length > 1) {
+            $('#select_group').children().remove();
+            $.get("/csr/groupByName/" + title).success(function (data) {
+                $('#select_group').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    console.log(item);
+                    $('#select_group').append($('<option/>', {
+                        value: item.id,
+                        text: item.name
+                    }));
+                });
+                $('#select_group').material_select('updating');
+                $('#group_numbers').html(", results " + data.length);
+            });
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('select').material_select();
+
+//      load product status
+        $.get("/csr/load/productStatus/").success(function (data) {
+            $.each(data, function (i, item) {
+                $('#select_product_status').append($('<option>', {
+                    value: item.name,
+                    text: item.name
+                }));
+            });
+            $('#select_product_status').material_select('updating');
+        });
+
+
+//      load products without group
+        loadProductsWithoutGroup();
+        function loadProductsWithoutGroup() {
+            $.get("/csr/load/productWithoutGroup").success(function (data) {
+                $('#products_without_group').children().remove();
+                $('#products_without_group').append('<option value="" disabled selected>Choose products</option>')
+                $.each(data, function (i, item) {
+                    $('#products_without_group').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.statusName
+                    }));
+                });
+                $('#products_without_group').material_select('updating');
+            });
+        }
+
+//        create product
+
+        $("#addProduct").on("submit", function (e) {
+            e.preventDefault();
+            var title = $('#title').val();
+            var price = $('#price').val();
+            if (title.length < 5) {
+                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+            } else if (price < 1) {
+                Materialize.toast("Please enter price more 0", 10000, 'rounded');
+            } else {
+                $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
+                    $("#addProduct")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                });
+                loadProductsWithoutGroup();
+            }
+        });
+
+//      create discount
+        $("#addDiscount").on("submit", function (e) {
+                e.preventDefault();
+                var title = $('#disc_title').val();
+                var percentage = $('#disc_percentage').val();
+                if (title.length < 5) {
+                    Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+                } else if (percentage < 0 || percentage > 100) {
+                    Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
+                } else {
+                    $.post("/csr/addDiscount", $("#addDiscount").serialize(), function (data) {
+                        $("#addDiscount")[0].reset();
+                        Materialize.toast(data, 10000, 'rounded');
+                    });
+                }
+            }
+        );
+
+
+//        create group
+        $("#addGroup").on("submit", function (e) {
+            e.preventDefault();
+            var grpName = $('#group_name').val();
+
+            if (grpName.length < 5) {
+                Materialize.toast("Please enter group name at least 5 characters", 10000, 'rounded');
+            } else {
+                $.post("/csr/addGroup", $("#addGroup").serialize(), function (data) {
+                    $("#addGroup")[0].reset();
+                    Materialize.toast(data, 10000, 'rounded');
+                    loadProductsWithoutGroup();
+                });
+            }
+        });
+    });
+</script>

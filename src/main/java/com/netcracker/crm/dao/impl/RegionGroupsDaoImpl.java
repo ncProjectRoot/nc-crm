@@ -131,7 +131,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     }
 
     @Autowired
-    public void setDataSours(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) {
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         simpleInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_RG_TABLE)

@@ -48,8 +48,12 @@ public class UserDaoImpl implements UserDao {
             return null;
         }
 
-        Long addressId = getAddressId(user.getAddress());
-        Long orgId = getOrgId(user.getOrganization());
+        Long addressId = null;
+        Long orgId = null;
+        if (user.getAddress() != null && user.getOrganization() != null) {
+            addressId = getAddressId(user.getAddress());
+            orgId = getOrgId(user.getOrganization());
+        }
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_EMAIL, user.getEmail())

@@ -1,6 +1,6 @@
 package com.netcracker.crm.datagenerator;
 
-import com.netcracker.crm.service.RandomString;
+import com.netcracker.crm.service.security.RandomString;
 
 import java.util.List;
 import java.util.Random;
