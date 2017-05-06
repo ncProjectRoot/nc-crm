@@ -17,6 +17,10 @@ public final class ComplaintSqlQuery {
     public static final String PARAM_COMPLAINT_PMG_ID = "pmg_id";
     public static final String PARAM_COMPLAINT_ORDER_ID = "order_id";
 
+    public static final String PARAM_COMPLAINT_ROW_STATUS = "status_id";
+    public static final String PARAM_COMPLAINT_ROW_PRODUCT_STATUS = "product_status_id";
+    public static final String PARAM_COMPLAINT_ROW_ORDER_STATUS = "order_status_id";
+
     public static final String SQL_FIND_COMPLAINT_BY_ID = "" +
             "SELECT * FROM complaint " +
             "WHERE id = :id;";
@@ -39,6 +43,21 @@ public final class ComplaintSqlQuery {
             "customer_id, pmg_id, order_id FROM complaint " +
             "WHERE customer_id = :customer_id " +
             "ORDER BY date desc;";
+
+
+    public static final String SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE = "" +
+            "SELECT title " +
+            "FROM complaint " +
+            "WHERE title like :title " +
+            "ORDER BY title " +
+            "LIMIT 5;";
+
+    public static final String SQL_FIND_COMPLAINTS_TITLES_BY_PMG_ID = "" +
+            "SELECT title " +
+            "FROM complaint " +
+            "WHERE title like :title AND pmg_id = :pmg_id " +
+            "ORDER BY title " +
+            "LIMIT 5;";
 
     public static final String SQL_DELETE_COMPLAINT = "DELETE FROM complaint WHERE id = :id;";
 

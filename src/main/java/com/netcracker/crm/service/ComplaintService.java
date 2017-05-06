@@ -1,10 +1,13 @@
 package com.netcracker.crm.service;
 
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Melnyk_Dmytro
@@ -23,5 +26,10 @@ public interface ComplaintService {
 
     public Complaint findById(Long id);
 
+    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException;
 
+    public List<String> getNames(String likeTitle);
+
+    public List<String> getNamesByPmgId(String likeTitle, Long pmgId);
 }
+

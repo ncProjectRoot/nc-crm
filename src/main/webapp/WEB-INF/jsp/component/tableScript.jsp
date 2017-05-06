@@ -249,7 +249,7 @@
             downloadTable();
         });
 
-        var oldSortedElement = $(".sorted-element").first();
+        var oldSortedElement = tableContainer.find(".sorted-element").first();
         oldSortedElement.append($("<span>", {html: "&#9660;", class: "sorter"}));
         tableContainer.find(".sorted-element").on("click", function () {
             var newSortedElement = $(this);

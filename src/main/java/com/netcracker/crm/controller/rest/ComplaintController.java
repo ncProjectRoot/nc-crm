@@ -1,0 +1,86 @@
+package com.netcracker.crm.controller.rest;
+
+import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.security.UserDetailsImpl;
+import com.netcracker.crm.service.ComplaintService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Melnyk_Dmytro
+ * @version 1.0
+ * @since 06.05.2017
+ */
+
+@RestController
+public class ComplaintController {
+
+    @Autowired
+    private ComplaintService complaintService;
+
+    @GetMapping("/pmg/load/complaints")
+    public Map<String, Object> complaints(ComplaintRowRequest complaintRowRequest) throws IOException {
+        return complaintService.getComplaintRow(complaintRowRequest);
+    }
+
+    @GetMapping("/pmg/load/complaintsNames")
+    public List<String> complaintsNames(String likeTitle) {
+        return complaintService.getNames(likeTitle);
+    }
+
+    @GetMapping("/pmg/load/ownComplaints")
+    public Map<String, Object> ownComplaints(ComplaintRowRequest complaintRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User pmg = null;
+        if (principal instanceof UserDetailsImpl) {
+            pmg = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            pmg = new User();
+            pmg.setId(5002L);
+        }
+        complaintRowRequest.setPmgId(pmg.getId());
+        return complaintService.getComplaintRow(complaintRowRequest);
+    }
+
+    @GetMapping("/pmg/load/ownComplaintsNames")
+    public List<String> ownComplaintsNames(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User pmg = null;
+        if (principal instanceof UserDetailsImpl) {
+            pmg = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            pmg = new User();
+            pmg.setId(5002L);
+        }
+        return complaintService.getNamesByPmgId(likeTitle, pmg.getId());
+    }
+
+    @RequestMapping(value = "/customer/createComplaint", method = RequestMethod.POST)
+    public Complaint createComplaint(ComplaintDto complaintDto, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+            complaintDto.setCustomerId(user.getId());
+        } else {
+            //!production
+            complaintDto.setCustomerId(1L);
+        }
+        Complaint complaint = complaintService.persist(complaintDto);
+        return complaint;
+    }
+
+}

@@ -77,6 +77,7 @@ public abstract class RowRequest {
         StringBuilder sql = new StringBuilder();
         sql.append(beginSql());
         appendWhereKeywords(sql);
+        appendWhereParam(sql);
         appendWhereStatus(sql);
         sql.append(" ORDER BY ").append(orderBy);
         if (desc) {
@@ -93,6 +94,7 @@ public abstract class RowRequest {
         StringBuilder sql = new StringBuilder();
         sql.append(beginSqlCount());
         appendWhereKeywords(sql);
+        appendWhereParam(sql);
         appendWhereStatus(sql);
         appendedWhere = false;
         return sql.toString();
@@ -101,6 +103,10 @@ public abstract class RowRequest {
     protected abstract String beginSql();
 
     protected abstract String beginSqlCount();
+
+    protected StringBuilder appendWhereParam(StringBuilder sql) {
+        return sql;
+    }
 
     protected StringBuilder appendWhereStatus(StringBuilder sql) {
         return sql;
