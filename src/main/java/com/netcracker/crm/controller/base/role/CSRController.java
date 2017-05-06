@@ -29,6 +29,11 @@ public class CSRController {
     public String create(Map<String, Object> model) {
         return "create";
     }
+    
+    @GetMapping("/profile")
+    public String profile(Map<String, Object> model) {
+        return "profile";
+    }
 
     @GetMapping("/products")
     public String products(Map<String, Object> model) {

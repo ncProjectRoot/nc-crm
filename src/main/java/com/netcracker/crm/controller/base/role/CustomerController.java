@@ -38,6 +38,11 @@ public class CustomerController {
     public String dashboard(Map<String, Object> model) {
         return "dashboardCustomer";
     }
+    
+    @GetMapping("/profile")
+    public String profile(Map<String, Object> model) {
+        return "profile";
+    }
 
     @GetMapping("/complaint")
     public String complaint(Map<String, Object> model, Authentication authentication) {
