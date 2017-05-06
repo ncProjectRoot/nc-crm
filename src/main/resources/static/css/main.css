@@ -12,7 +12,7 @@ header {
 }
 
 nav {
-    min-height: 64px;
+    height: 64px;
 }
 
 nav .button-collapse i {
@@ -188,7 +188,7 @@ nav .button-collapse i {
     width: calc(100% - 60px);
 }
 
-.content .progress {
+.progress {
     margin: 0;
     background-color: rgba(172, 236, 230, 0.5);
     visibility: hidden;
@@ -196,7 +196,7 @@ nav .button-collapse i {
     transition: visibility 0s, opacity 0.5s linear;
 }
 
-.content .progress.progress-active {
+.progress.progress-active {
     visibility: visible;
     opacity: 1;
 }

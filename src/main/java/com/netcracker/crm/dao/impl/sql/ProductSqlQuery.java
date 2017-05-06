@@ -47,7 +47,7 @@ public final class ProductSqlQuery {
     public static final String SQL_FIND_PRODUCT_TITLES_LIKE_TITLE = ""
             + "SELECT title "
             + "FROM product "
-            + "WHERE title LIKE :title "
+            + "WHERE title ILIKE :title "
 //            + "ORDER BY random() DESC "
             + "LIMIT 5;";
 

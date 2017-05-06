@@ -77,6 +77,9 @@
             </ul>
         </div>
     </nav>
+    <div class="progress">
+        <div class="indeterminate"></div>
+    </div>
 </header>
 
 <div class=side-nav-wrapper>
@@ -95,9 +98,6 @@
 </div>
 
 <div class="content">
-    <div class="progress">
-        <div class="indeterminate"></div>
-    </div>
     <div class="content-body-wrapper"></div>
 </div>
 

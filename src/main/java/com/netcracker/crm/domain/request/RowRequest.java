@@ -85,6 +85,7 @@ public abstract class RowRequest {
             sql.append(" ASC");
         }
         sql.append(END_SQL);
+        appendedWhere = false;
         return sql.toString();
     }
 
@@ -93,6 +94,7 @@ public abstract class RowRequest {
         sql.append(beginSqlCount());
         appendWhereKeywords(sql);
         appendWhereStatus(sql);
+        appendedWhere = false;
         return sql.toString();
     }
 
@@ -126,7 +128,7 @@ public abstract class RowRequest {
                     int numColumns = Integer.parseInt(m.group(1)) - 1;
                     keywordsArray[numKeywords] = m.group(2);
                     sql.append("cast(").append(columns[numColumns])
-                            .append(" as text) LIKE :").append(PARAM_KEYWORD).append(numKeywords);
+                            .append(" as text) ILIKE :").append(PARAM_KEYWORD).append(numKeywords);
                 } else {
                     for (int i = 0; i < columns.length; i++) {
                         if (i == 0) {
@@ -135,7 +137,7 @@ public abstract class RowRequest {
                             sql.append(" OR ");
                         }
                         sql.append("cast(").append(columns[i])
-                                .append(" as text) LIKE :").append(PARAM_KEYWORD).append(numKeywords);
+                                .append(" as text) ILIKE :").append(PARAM_KEYWORD).append(numKeywords);
                     }
                     sql.append(")");
                     keywordsArray[numKeywords] = keywords[numKeywords];

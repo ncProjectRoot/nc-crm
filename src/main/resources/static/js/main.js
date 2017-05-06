@@ -67,6 +67,7 @@ function downloadContent() {
         }).error(function (e) {
         window.setTimeout(function () {
             $contentBody.html(e.status);
+            $("#current-page").text(e.status);
             $(".progress").removeClass("progress-active");
             $contentBody.addClass("content-body-visible");
         }, 1000);
