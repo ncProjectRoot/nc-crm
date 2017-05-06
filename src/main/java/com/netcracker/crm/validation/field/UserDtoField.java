@@ -9,7 +9,11 @@ public enum UserDtoField implements DtoField {
     LAST_NAME("lastName", "Last Name"),
     EMAIL("email", "Email"),
     PHONE("phone", "Phone"),
-    USER_ROLE("userRole", "User Role");
+    USER_ROLE("userRole", "User Role"),
+    ORGANIZATION_NAME("organizationName", "Organization"),
+    ADDRESS_LATITUDE("addressLatitude", "Address"),
+    ADDRESS_LONGITUDE("addressLongitude", "Address"),
+    ADDRESS_DETAILS("addressDetails", "Address details");
 
 
     UserDtoField(String dtoName, String errorName) {
