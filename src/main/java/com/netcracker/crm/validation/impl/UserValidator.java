@@ -19,9 +19,9 @@ import static com.netcracker.crm.validation.field.UserDtoField.*;
 @PropertySource(value = "classpath:message.properties")
 public class UserValidator extends AbstractValidator {
     //match: 123456790
-    private static final String REGEX_PATTREN_PHONE = "\\(?([0-9]{3})\\)?([ .-]?)([0-9]{3})\\2([0-9]{4})";
+    private static final String REGEX_PATTERN_PHONE = "\\(?([0-9]{3})\\)?([ .-]?)([0-9]{3})\\2([0-9]{4})";
     ///match: admin@gmail.com
-    private static final String REGEX_PATTREN_EMAIL = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])";
+    private static final String REGEX_PATTERN_EMAIL = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])";
 
     private final UserDao userDao;
 
@@ -38,6 +38,11 @@ public class UserValidator extends AbstractValidator {
     @Override
     public void validate(Object obj, Errors errors) {
         UserDto userDto = (UserDto) obj;
+
+        if (userDto.getUserRole().equals(UserRole.ROLE_CUSTOMER.getName())) {
+            checkAddress(errors);
+        }
+
         checkPhone(errors, userDto);
         checkEmail(errors, userDto);
 
@@ -48,10 +53,17 @@ public class UserValidator extends AbstractValidator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, USER_ROLE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(USER_ROLE, ERROR_CODE_REQUIRED));
     }
 
+    private void checkAddress(Errors errors) {
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, ORGANIZATION_NAME.getName(), ERROR_CODE_REQUIRED, getErrorMessage(ORGANIZATION_NAME, ERROR_CODE_REQUIRED));
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, ADDRESS_DETAILS.getName(), ERROR_CODE_REQUIRED, getErrorMessage(ADDRESS_DETAILS, ERROR_CODE_REQUIRED));
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, ADDRESS_LATITUDE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(ADDRESS_LATITUDE, ERROR_CODE_REQUIRED));
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, ADDRESS_LONGITUDE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(ADDRESS_LONGITUDE, ERROR_CODE_REQUIRED));
+    }
+
     private void checkEmail(Errors errors, UserDto userDto) {
         String email = userDto.getEmail();
         if (email != null) {
-            if (!email.matches(REGEX_PATTREN_EMAIL)) {
+            if (!email.matches(REGEX_PATTERN_EMAIL)) {
                 errors.rejectValue(EMAIL.getName(), ERROR_CODE_WRONG_FORMAT,
                         getErrorMessage(EMAIL, ERROR_CODE_WRONG_FORMAT));
             } else if (userDao.findByEmail(email) != null) {
@@ -64,7 +76,7 @@ public class UserValidator extends AbstractValidator {
     private void checkPhone(Errors errors, UserDto userDto) {
         String phone = userDto.getPhone();
         if (phone != null) {
-            if (!phone.matches(REGEX_PATTREN_PHONE)) {
+            if (!phone.matches(REGEX_PATTERN_PHONE)) {
                 errors.rejectValue(PHONE.getName(), ERROR_CODE_WRONG_FORMAT,
                         getErrorMessage(PHONE, ERROR_CODE_WRONG_FORMAT));
             }
