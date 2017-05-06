@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('select').material_select();
 
     $(document).on("change", "#user_role", function () {
         if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
@@ -14,14 +15,15 @@ $(document).ready(function () {
     $(document).on("click", "#submit-user-create", function () {
         event.preventDefault();
         var userForm = "#form-user-create";
-        registerUser(userForm);
+        var url = "/user/registration";
+        sendPost(userForm, url);
     });
 
-    function registerUser(form) {
+    function sendPost(form, url) {
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
         var xhr = $.ajax({
-            url: "/user/registration",
+            url: url,
             type: "POST",
             data: $(form).serialize(),
             beforeSend: function (xhr) {
@@ -40,4 +42,51 @@ $(document).ready(function () {
             }
         })
     }
+
+
+//      load products without group
+    loadProductsWithoutGroup();
+    function loadProductsWithoutGroup() {
+        $.get("/csr/load/productWithoutGroup").success(function (data) {
+            var prods = $('#products_without_group');
+            prods.children().remove();
+            prods.append('<option value="" disabled selected>Choose products</option>')
+            $.each(data, function (i, item) {
+                prods.append($('<option/>', {
+                    value: item.id,
+                    text: item.title + ' - ' + item.statusName
+                }));
+            });
+            prods.material_select('updating');
+        });
+    }
+
+//        create product
+    $(document).on("click", "#submit-product", function () {
+        event.preventDefault();
+        var url = "/csr/addProduct";
+        var form = "#addProduct";
+        sendPost(form, url);
+        $(form)[0].reset();
+        loadProductsWithoutGroup();
+    });
+
+//      create discount
+    $(document).on("click", "#submit-discount", function (e) {
+        event.preventDefault();
+        var url = "/csr/addDiscount";
+        var form = "#addDiscount";
+        sendPost(form, url);
+        $(form)[0].reset();
+    });
+
+
+//        create group
+    $(document).on("click","#submit-group", function (e) {
+        event.preventDefault();
+        var url = "/csr/addGroup";
+        var form = "#addGroup";
+        sendPost(form, url);
+        $(form)[0].reset();
+    });
 });

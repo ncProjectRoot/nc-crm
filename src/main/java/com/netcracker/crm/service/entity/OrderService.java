@@ -1,9 +1,10 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Order;
 
 import java.util.List;
 import com.netcracker.crm.domain.OrderRowRequest;
+import com.netcracker.crm.dto.OrderDto;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 public interface OrderService {
 
+    Order persist(OrderDto orderDto);
     public List<Order> findByCustomerId(Long id);
 
     Map<String, Object> getOrderRow(OrderRowRequest orderRowRequest) throws IOException;
