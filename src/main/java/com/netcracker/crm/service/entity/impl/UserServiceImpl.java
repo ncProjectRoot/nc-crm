@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         userDao.create(user);
         String registrationToken = createUserRegistrationToken(user);
-        sendRegistrationEmail(user, password, registrationToken);
+//        sendRegistrationEmail(user, password, registrationToken);
 
         return user.getId();
     }

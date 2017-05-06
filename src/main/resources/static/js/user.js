@@ -1,7 +1,6 @@
 $(document).ready(function () {
 
     $(document).on("change", "#user_role", function () {
-
         if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
             $('.customer-field').css("display", "block");
         } else {
@@ -14,16 +13,14 @@ $(document).ready(function () {
 
     $(document).on("click", "#submit-user-create", function () {
         event.preventDefault();
-        console.log("submit-user-create");
-        var customerForm = "#form-user-create";
-        registerUser(customerForm);
+        var userForm = "#form-user-create";
+        registerUser(userForm);
     });
 
     function registerUser(form) {
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
-
-        $.ajax({
+        var xhr = $.ajax({
             url: "/user/registration",
             type: "POST",
             data: $(form).serialize(),
@@ -32,12 +29,13 @@ $(document).ready(function () {
             },
             statusCode: {
                 201: function (data) {
-                    console.log(data);
-                    Materialize.toast("success", 10000);
+                    Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
+                },
+                417: function (data) {
+                    Materialize.toast(xhr.getResponseHeader("validationMessage"), 10000);
                 },
                 500: function (data) {
-                    console.log(data);
-                    Materialize.toast("error", 10000);
+                    Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
                 }
             }
         })
