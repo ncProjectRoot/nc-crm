@@ -8,6 +8,7 @@ public class ProductRowRequest extends RowRequest {
 
     private Integer statusId;
     private Boolean discountActive;
+    private Long customerId;
 
     private static final String BEGIN_SQL = ""
             + "SELECT p.id, p.title, default_price, p.discount_id,"
@@ -48,6 +49,13 @@ public class ProductRowRequest extends RowRequest {
         this.discountActive = discountActive;
     }
 
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
 
     @Override
     protected String beginSql() {
@@ -71,4 +79,6 @@ public class ProductRowRequest extends RowRequest {
         }
         return sql;
     }
+
+
 }

@@ -20,4 +20,6 @@ public interface ProductDao extends CrudDao<Product>{
     Long getProductRowsCount(ProductRowRequest orderRowRequest);
 
     List<Product> findProductRows(ProductRowRequest orderRowRequest);
+
+    List<String> findProductsTitleByCustomerId(String likeTitle, Long customerId);
 }

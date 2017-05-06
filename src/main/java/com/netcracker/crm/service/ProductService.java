@@ -22,4 +22,6 @@ public interface ProductService {
     List<String> getNames(String likeTitle);
 
     Map<String,Object> getProductsRow(ProductRowRequest orderRowRequest);
+
+    List<String> getNamesByCustomerId(String likeTitle, Long customerId);
 }

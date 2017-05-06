@@ -13,6 +13,8 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_DISCOUNT_ID = "discount_id";
     public static final String PARAM_PRODUCT_GROUP_ID = "group_id";
 
+    public static final String PARAM_PRODUCT_CUSTOMER_ID = "customer_id";
+
     public static final String PARAM_PRODUCT_ROW_STATUS = "status_id";
     public static final String PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE = "active";
     
@@ -48,6 +50,14 @@ public final class ProductSqlQuery {
             + "SELECT title "
             + "FROM product "
             + "WHERE title ILIKE :title "
+//            + "ORDER BY random() DESC "
+            + "LIMIT 5;";
+
+    public static final String SQL_FIND_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
+            + "SELECT title "
+            + "FROM product p "
+            + "INNER JOIN orders o ON p.id = o.product_id "
+            + "WHERE title ILIKE :title AND customer_id = :customer_id "
 //            + "ORDER BY random() DESC "
             + "LIMIT 5;";
 

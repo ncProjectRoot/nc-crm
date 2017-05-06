@@ -91,6 +91,11 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    @Override
+    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
+        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
     private ProductRowDto convertToRowDto(Product product) {
         ProductRowDto productRowDto = new ProductRowDto();
         productRowDto.setId(product.getId());
