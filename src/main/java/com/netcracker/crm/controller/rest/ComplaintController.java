@@ -39,8 +39,8 @@ public class ComplaintController {
         return complaintService.getNames(likeTitle);
     }
 
-    @GetMapping("/pmg/load/ownComplaints")
-    public Map<String, Object> ownComplaints(ComplaintRowRequest complaintRowRequest, Authentication authentication) throws IOException {
+    @GetMapping("/pmg/load/pmgComplaints")
+    public Map<String, Object> pmgComplaints(ComplaintRowRequest complaintRowRequest, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
         User pmg = null;
         if (principal instanceof UserDetailsImpl) {
@@ -54,8 +54,8 @@ public class ComplaintController {
         return complaintService.getComplaintRow(complaintRowRequest);
     }
 
-    @GetMapping("/pmg/load/ownComplaintsNames")
-    public List<String> ownComplaintsNames(String likeTitle, Authentication authentication) {
+    @GetMapping("/pmg/load/pmgComplaintsNames")
+    public List<String> pmgComplaintsNames(String likeTitle, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User pmg = null;
         if (principal instanceof UserDetailsImpl) {
@@ -81,6 +81,35 @@ public class ComplaintController {
         }
         Complaint complaint = complaintService.persist(complaintDto);
         return complaint;
+    }
+
+    @GetMapping("/customer/load/complaints")
+    public Map<String, Object> customerComplaints(ComplaintRowRequest complaintRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer = null;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            customer = new User();
+            customer.setId(3L);
+        }
+        complaintRowRequest.setCustId(customer.getId());
+        return complaintService.getComplaintRow(complaintRowRequest);
+    }
+
+    @GetMapping("/customer/load/complaintsNames")
+    public List<String> customerComplaintsNames(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer = null;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            customer = new User();
+            customer.setId(3L);
+        }
+        return complaintService.getNamesByCustId(likeTitle, customer.getId());
     }
 
 }

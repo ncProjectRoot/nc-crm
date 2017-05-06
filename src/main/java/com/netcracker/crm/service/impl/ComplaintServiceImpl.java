@@ -112,6 +112,12 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaintDao.findProductsTitleByPmgId(likeTitle, pmgId);
     }
 
+    @Transactional
+    @Override
+    public List<String> getNamesByCustId(String likeTitle, Long custId) {
+        return complaintDao.findProductsTitleByCustId(likeTitle, custId);
+    }
+
     private ComplaintRowDto convertToRowDto(Complaint complaint) {
         ComplaintRowDto complaintRowDto = new ComplaintRowDto();
         complaintRowDto.setId(complaint.getId());

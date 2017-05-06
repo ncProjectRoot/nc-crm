@@ -21,4 +21,6 @@ public interface ComplaintDao extends CrudDao<Complaint> {
     List<String> findProductsTitleLikeTitle(String likeTitle);
 
     List<String> findProductsTitleByPmgId(String likeTitle, Long pmgId);
+
+    List<String> findProductsTitleByCustId(String likeTitle, Long custId);
 }

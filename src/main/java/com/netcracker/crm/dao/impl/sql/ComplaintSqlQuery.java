@@ -48,14 +48,21 @@ public final class ComplaintSqlQuery {
     public static final String SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE = "" +
             "SELECT title " +
             "FROM complaint " +
-            "WHERE title like :title " +
+            "WHERE title ILIKE :title " +
             "ORDER BY title " +
             "LIMIT 5;";
 
     public static final String SQL_FIND_COMPLAINTS_TITLES_BY_PMG_ID = "" +
             "SELECT title " +
             "FROM complaint " +
-            "WHERE title like :title AND pmg_id = :pmg_id " +
+            "WHERE title ILIKE :title AND pmg_id = :pmg_id " +
+            "ORDER BY title " +
+            "LIMIT 5;";
+
+    public static final String SQL_FIND_COMPLAINTS_TITLES_BY_CUSTOMER_ID = "" +
+            "SELECT title " +
+            "FROM complaint " +
+            "WHERE title ILIKE :title AND customer_id = :customer_id " +
             "ORDER BY title " +
             "LIMIT 5;";
 

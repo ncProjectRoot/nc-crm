@@ -74,12 +74,9 @@ public class CustomerController {
             //!production
             customerId = 1L;
         }
-        List<Complaint> complaints = complaintService.findByCustomerId(customerId);
         List<Order> orders = orderService.findByCustomerId(customerId);
-        model.put("complaints", complaints);
         model.put("orders", orders);
         return "complaints";
     }
-
 
 }

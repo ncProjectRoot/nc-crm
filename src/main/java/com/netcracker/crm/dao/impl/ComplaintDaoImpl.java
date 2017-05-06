@@ -200,6 +200,9 @@ public class ComplaintDaoImpl implements ComplaintDao {
         if (complaintRowRequest.getPmgId() != null) {
             params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
         }
+        if (complaintRowRequest.getCustId() != null) {
+            params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, complaintRowRequest.getCustId());
+        }
 
         if (complaintRowRequest.getKeywordsArray() != null) {
             int i = 0;
@@ -221,6 +224,9 @@ public class ComplaintDaoImpl implements ComplaintDao {
 
         if (complaintRowRequest.getPmgId() != null) {
             params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
+        }
+        if (complaintRowRequest.getCustId() != null) {
+            params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, complaintRowRequest.getCustId());
         }
 
         if (complaintRowRequest.getKeywordsArray() != null) {
@@ -245,6 +251,14 @@ public class ComplaintDaoImpl implements ComplaintDao {
         params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
         params.addValue(PARAM_COMPLAINT_PMG_ID, pmgId);
         return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_PMG_ID, params, String.class);
+    }
+
+    @Override
+    public List<String> findProductsTitleByCustId(String likeTitle, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_CUSTOMER_ID, params, String.class);
     }
 
     @Autowired

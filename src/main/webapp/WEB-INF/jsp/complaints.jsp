@@ -9,7 +9,7 @@
         <ul class="tabs" id="tabs">
             <sec:authorize access="hasAnyRole('ROLE_PMG')">
                 <li class="tab col s3"><a href="#swipe-all-complaints">All complaints</a></li>
-                <li class="tab col s3"><a href="#swipe-own-complaints">Your complaints</a></li>
+                <li class="tab col s3"><a href="#swipe-pmg-complaints">Your complaints</a></li>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
                 <li class="tab col s3"><a href="#swipe-create-complaint-form">Create</a></li>
@@ -93,7 +93,7 @@
         </div>
     </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_PMG')">
-        <div id="swipe-own-complaints" class="col s12">
+        <div id="swipe-pmg-complaints" class="col s12">
             <div id="table-your-complaints" class="table-container row">
                 <div class="table-wrapper col s11 center-align">
                     <table class="striped responsive-table centered ">
@@ -166,39 +166,59 @@
     </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
         <div id="swipe-all-customer-complaints" class="col s12">
-            <table class="striped" id="historyTable" style="width: calc(100% - 20px * 2); margin: 20px;">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Title</th>
-                    <th>Order</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Message</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="i" items="${complaints}">
-                    <tr>
-                        <td>${i.id}</td>
-                        <td>${i.title}</td>
-                        <td>${i.order.id} ${i.order.product.title} </td>
-                        <td>${i.date.toLocalDate()} ${i.date.toLocalTime().getHour()}:${i.date.toLocalTime().getMinute()} </td>
-                        <td>${i.status}</td>
-                        <td>
-                                <%--<a class="waves-effect waves-light btn" href="#modal${i.id}">Show</a>--%>
-                            <button data-target="modal${i.id}" class="btn">show</button>
-                            <div id="modal${i.id}" class="modal">
-                                <div class="modal-content">
-                                    <h4>${i.title}</h4>
-                                    <p>${i.message.replaceAll("\\n", "<br>")}</p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+            <div id="table-customer-complaints" class="table-container row">
+                <div class="table-wrapper col s11 center-align">
+                    <table class="striped responsive-table centered ">
+                        <thead>
+                        <tr>
+                            <th data-field="1">
+                                <a href="#!" class="sorted-element a-dummy">#</a>
+                            </th>
+                            <th data-field="2">
+                                <a href="#!" class="sorted-element a-dummy">Title</a>
+                            </th>
+                            <th class="th-dropdown" data-field="statusId">
+                                <a class='dropdown-button dropdown-status-button a-dummy' href='#'
+                                   data-activates='dropdown-status-customer' data-default-name="Status">
+                                    Status
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                <ul id="dropdown-status-customer" class='dropdown-content'>
+                                    <li><a href="#" class="a-dummy" data-value="1">OPEN</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="2">SOLVING</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="3">CLOSED</a></li>
+                                </ul>
+                            </th>
+                            <th data-field="3">
+                                <a href="#!" class="sorted-element a-dummy">Order</a>
+                            </th>
+                            <th class="th-dropdown" data-field="orderStatusId">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-order-status-customer' data-default-name="Order Status">
+                                    Order Status
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                <ul id="dropdown-order-status-customer" class='dropdown-content'>
+                                    <li><a href="#" class="a-dummy" data-value="4">New</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                </ul>
+                            </th>
+                            <th data-field="4">
+                                <a href="#!" class="sorted-element a-dummy">Product</a>
+                            </th>
+                            <th data-field="5">
+                                <a href="#!" class="sorted-element a-dummy">Date</a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
@@ -215,10 +235,10 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">view_carousel</i>
-                            <select id="orderSelect" name="orderId" size="5">
+                            <select id="orderSelect" size="2" name="orderId">
                                 <option value="" disabled selected>Choose order</option>
                                 <c:forEach items="${orders}" var="i">
-                                    <option value="${i.id}">${i.id} ${i.product.title} </option>
+                                    <option value="${i.id}"># ${i.id} ${i.product.title} </option>
                                 </c:forEach>
                             </select>
                             <label>Order Select</label>
@@ -229,7 +249,7 @@
                             <i class="material-icons prefix">mode_edit</i>
                             <textarea name="message" id="message" class="materialize-textarea"
                                       maxlength="400"></textarea>
-                            <label for="message">Description</label>
+                            <label for="message">Message</label>
                         </div>
                     </div>
                     <div class="row">
@@ -269,37 +289,6 @@
                     $(".progress").addClass("progress-active");
                     $.post("/customer/createComplaint", $("#createComplaintForm").serialize(), function (data) {
                         $("#createComplaintForm")[0].reset();
-                        var monthValue = checkLength(data.date.monthValue);
-                        var dayOfMonth = checkLength(data.date.dayOfMonth);
-                        var hour = data.date.hour;
-                        var minute = data.date.minute;
-
-                        var row = $("<tr>");
-                        row.append($("<td>", {text: data.id}));
-                        row.append($("<td>", {text: data.title}));
-                        row.append($("<td>", {text: data.order.id + " " + data.order.product.title}));
-                        row.append($("<td>", {
-                            text: data.date.year + "-" +
-                            monthValue + "-" +
-                            dayOfMonth + " " +
-                            hour + ":" +
-                            minute
-                        }))
-                        row.append($("<td>", {text: data.status}));
-                        var td = $("<td>");
-                        td.html(' <button data-target="modal' + data.id + '" class="btn">show</button>' +
-                            '<div id="modal' + data.id + '" class="modal"> ' +
-                            '<div class="modal-content"> ' +
-                            '<h4>' + data.title + '</h4> ' +
-                            '<p>' + data.message.replace(/\n/g, '<br>') + '</p> ' +
-                            ' </div> ' +
-                            '  </div> ');
-                        row.append(td);
-
-                        $(".content-body tbody").prepend(row);
-
-                        $('.modal').modal();
-
                         $(".progress").removeClass("progress-active");
                         Materialize.toast("Complaint with id " + data.id + " successfuly created", 5000, 'rounded');
                     });
@@ -307,7 +296,7 @@
             }
         );
     })
-
+    <sec:authorize access="hasAnyRole('ROLE_PMG')">
     $("#table-all-complaints").karpo_table({
         urlSearch: "/pmg/load/complaintsNames",
         urlTable: "/pmg/load/complaints",
@@ -328,8 +317,8 @@
     });
 
     $("#table-your-complaints").karpo_table({
-        urlSearch: "/pmg/load/ownComplaintsNames",
-        urlTable: "/pmg/load/ownComplaints",
+        urlSearch: "/pmg/load/pmgComplaintsNames",
+        urlTable: "/pmg/load/pmgComplaints",
         mapper: function (object) {
             var tr = $("<tr>");
             tr.append($("<td>", {text: object.id}));
@@ -344,12 +333,22 @@
             return tr;
         }
     });
-
-    function checkLength(string) {
-        if (string.toString().length < 2) {
-            string = "0" + string;
+    </sec:authorize>
+    <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
+    $("#table-customer-complaints").karpo_table({
+        urlSearch: "/customer/load/complaintsNames",
+        urlTable: "/customer/load/complaints",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>", {text: object.title}));
+            tr.append($("<td>", {text: object.status}));
+            tr.append($("<td>", {text: object.order}));
+            tr.append($("<td>", {text: object.orderStatus}));
+            tr.append($("<td>", {text: object.productTitle}));
+            tr.append($("<td>", {text: object.date}));
+            return tr;
         }
-        return string;
-    }
-
+    });
+    </sec:authorize>
 </script>
