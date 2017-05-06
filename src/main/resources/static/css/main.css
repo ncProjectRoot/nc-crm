@@ -202,7 +202,7 @@ nav .button-collapse i {
 }
 
 .content-body-wrapper {
-    transition: margin-top 1s, opacity 1s linear;
+    transition: margin-top 0.5s, opacity 0.5s linear;
     margin-top: 50px;
     opacity: 0;
 }
@@ -237,7 +237,7 @@ nav .button-collapse i {
         margin-left: 0;
     }
 
-    .content {
+    .content.full-content {
         width: 100%;
     }
 }

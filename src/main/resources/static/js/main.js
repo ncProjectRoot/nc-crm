@@ -63,13 +63,13 @@ function downloadContent() {
                 var pageName = $contentBody.find(".content-body").data("page-name");
                 $("#current-page").text(pageName);
                 document.title = pageName;
-            }, 1000);
+            }, 500);
         }).error(function (e) {
         window.setTimeout(function () {
             $contentBody.html(e.status);
             $("#current-page").text(e.status);
             $(".progress").removeClass("progress-active");
             $contentBody.addClass("content-body-visible");
-        }, 1000);
+        }, 500);
     });
 }

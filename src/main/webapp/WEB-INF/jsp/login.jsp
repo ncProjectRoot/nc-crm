@@ -19,7 +19,7 @@
 </head>
 
 <body>
-<h1 class="teal-text darken-3">NC-CRM</h1>
+<h1 class="teal-text darken-3-text">NC-CRM</h1>
 <h5 class="teal-text lighten-5">Please, login into your account</h5>
 <div class="form-wrapper z-depth-1 grey lighten-4">
     <form action="/login" class="row" method="post" id="auth-form">
@@ -36,7 +36,7 @@
             <label for='remember'>Remember Me</label>
         </div>
         <div class='col s12'>
-            <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>Log in</button>
+            <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal darken-3'>Log in</button>
         </div>
         <div class="col s12">
             <label class="label-forgot center-align">

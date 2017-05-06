@@ -1,11 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%--<li>--%>
-    <%--<a href="#" class="valign-wrapper menu-element">--%>
-        <%--<i class="white-text material-icons">home</i>--%>
-        <%--<h2>Home</h2>--%>
-    <%--</a>--%>
-<%--</li>--%>
 <li>
     <a href="#dashboard" class="valign-wrapper menu-element">
         <i class="white-text material-icons">dashboard</i>
@@ -18,10 +12,10 @@
         <h2>My Profile</h2>
     </a>
 </li>
-<sec:authorize access="hasAnyRole('ROLE_CUSTOMER', 'ROLE_CSR')">
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER', 'ROLE_CSR')">
     <li>
         <a href="#orders" class="valign-wrapper menu-element">
-            <i class="white-text material-icons">receipt</i>
+            <i class="white-text material-icons">add_shopping_cart</i>
             <h2>Orders</h2>
         </a>
     </li>
@@ -31,36 +25,34 @@
             <h2>Products</h2>
         </a>
     </li>
+    <c:if test="${user.isContactPerson()}">
+        <li>
+            <a href="#users" class="valign-wrapper menu-element">
+                <i class="white-text material-icons">face</i>
+                <h2>Users</h2>
+            </a>
+        </li>
+    </c:if>
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     <li>
-        <a href="#create" class="valign-wrapper menu-element">
-            <i class="white-text material-icons">note_add</i>
-            <h2>Create</h2>
+        <a href="#discounts" class="valign-wrapper menu-element">
+            <i class="white-text material-icons">loyalty</i>
+            <h2>Discounts</h2>
         </a>
     </li>
-</sec:authorize>
-<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     <li>
-        <a href="#search" class="valign-wrapper menu-element">
-            <i class="white-text material-icons">search</i>
-            <h2>Search</h2>
-        </a>
-    </li>
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_ADMIN')">
-    <li>
-        <a href="#profit" class="valign-wrapper menu-element">
-            <i class="white-text material-icons">business</i>
-            <h2>Profit</h2>
+        <a href="#groups" class="valign-wrapper menu-element">
+            <i class="white-text material-icons">bubble_chart</i>
+            <h2>Groups</h2>
         </a>
     </li>
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_CUSTOMER')">
     <li>
-        <a href="#complaint" class="valign-wrapper menu-element">
+        <a href="#complaints" class="valign-wrapper menu-element">
             <i class="white-text material-icons">thumb_down</i>
-            <h2>Complaint</h2>
+            <h2>Complaints</h2>
         </a>
     </li>
 </sec:authorize>
