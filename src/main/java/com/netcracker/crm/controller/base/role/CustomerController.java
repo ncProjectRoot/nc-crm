@@ -78,10 +78,8 @@ public class CustomerController {
         List<Order> orders = orderService.findByCustomerId(customerId);
         model.put("complaints", complaints);
         model.put("orders", orders);
-        return "complaintCustomer";
+        return "complaints";
     }
-
-
 
 
 }
