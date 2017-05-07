@@ -3,19 +3,20 @@ package com.netcracker.crm.service.entity.impl;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,18 +43,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order persist(OrderDto orderDto) {
         Order order = convertFromDtoToEntity(orderDto);
         orderDao.create(order);
         return order;
     }
 
+    @Override
     public List<Order> findByCustomerId(Long id) {
         return orderDao.findAllByCustomerId(id);
     }
 
     @Override
-    public Map<String, Object> getOrderRow(OrderRowRequest orderRowRequest) throws IOException {
+    @Transactional(readOnly = true)
+    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest){
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
@@ -61,12 +65,16 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderRowDto> ordersDto = new ArrayList<>();
         for (Order order : orders) {
-            ordersDto.add(convertToEntity(order));
+            ordersDto.add(convertToRowDto(order));
         }
-        response.put("orders", ordersDto);
+        response.put("rows", ordersDto);
         return response;
     }
 
+    @Override
+    public Order getOrderById(Long id) {
+        return orderDao.findById(id);
+    }
 
     private Order convertFromDtoToEntity(OrderDto orderDto){
         Order order = new Order();
@@ -80,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    private OrderRowDto convertToEntity(Order order) {
+    private OrderRowDto convertToRowDto(Order order) {
         OrderRowDto orderRowDto = new OrderRowDto();
         orderRowDto.setId(order.getId());
         orderRowDto.setStatus(order.getStatus().getName());
@@ -91,8 +99,8 @@ public class OrderServiceImpl implements OrderService {
         if (order.getCsr() != null) {
             orderRowDto.setCsr(order.getCsr().getId());
         }
-        orderRowDto.setDateFinish(order.getDate().toString());
-        orderRowDto.setPreferredDate(order.getPreferedDate().toString());
+        orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return orderRowDto;
     }
 
