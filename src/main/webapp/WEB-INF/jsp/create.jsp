@@ -182,7 +182,7 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Product
+                            <button class="btn waves-effect waves-light" id="submit-product" type="submit" name="action">Create Product
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -228,7 +228,7 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Discount
+                            <button class="btn waves-effect waves-light" type="submit" id="submit-discount" name="action">Create Discount
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -265,7 +265,7 @@
                     <div class="row">
                         <div class='input-field col s6'>
                             <i class="material-icons prefix">done_all</i>
-                            <select multiple="multiple" id="products_without_group" name="products">
+                            <select multiple id="products_without_group" name="products">
                                 <option value="" disabled selected>Choose products</option>
                             </select>
                             <label>Products without group</label>
@@ -274,7 +274,7 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Group
+                            <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">Create Group
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -386,79 +386,4 @@
             });
         }
     }
-
-
-    $(document).ready(function () {
-        $('select').material_select();
-
-//      load products without group
-        loadProductsWithoutGroup();
-        function loadProductsWithoutGroup() {
-            $.get("/csr/load/productWithoutGroup").success(function (data) {
-                $('#products_without_group').children().remove();
-                $('#products_without_group').append('<option value="" disabled selected>Choose products</option>')
-                $.each(data, function (i, item) {
-                    $('#products_without_group').append($('<option/>', {
-                        value: item.id,
-                        text: item.title + ' - ' + item.statusName
-                    }));
-                });
-                $('#products_without_group').material_select('updating');
-            });
-        }
-
-//        create product
-
-        $("#addProduct").on("submit", function (e) {
-            e.preventDefault();
-            var title = $('#title').val();
-            var price = $('#price').val();
-            if (title.length < 5) {
-                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
-            } else if (price < 1) {
-                Materialize.toast("Please enter price more 0", 10000, 'rounded');
-            } else {
-                $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
-                    $("#addProduct")[0].reset();
-                    Materialize.toast(data, 10000, 'rounded');
-                });
-                loadProductsWithoutGroup();
-            }
-        });
-
-//      create discount
-        $("#addDiscount").on("submit", function (e) {
-                e.preventDefault();
-                var title = $('#disc_title').val();
-                var percentage = $('#disc_percentage').val();
-                if (title.length < 5) {
-                    Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
-                } else if (percentage < 0 || percentage > 100) {
-                    Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
-                } else {
-                    $.post("/csr/addDiscount", $("#addDiscount").serialize(), function (data) {
-                        $("#addDiscount")[0].reset();
-                        Materialize.toast(data, 10000, 'rounded');
-                    });
-                }
-            }
-        );
-
-
-//        create group
-        $("#addGroup").on("submit", function (e) {
-            e.preventDefault();
-            var grpName = $('#group_name').val();
-
-            if (grpName.length < 5) {
-                Materialize.toast("Please enter group name at least 5 characters", 10000, 'rounded');
-            } else {
-                $.post("/csr/addGroup", $("#addGroup").serialize(), function (data) {
-                    $("#addGroup")[0].reset();
-                    Materialize.toast(data, 10000, 'rounded');
-                    loadProductsWithoutGroup();
-                });
-            }
-        });
-    });
 </script>

@@ -1,4 +1,4 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.OrderDao;
@@ -9,7 +9,7 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
-import com.netcracker.crm.service.ComplaintService;
+import com.netcracker.crm.service.entity.ComplaintService;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;

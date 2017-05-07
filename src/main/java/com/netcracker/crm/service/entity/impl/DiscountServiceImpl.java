@@ -1,10 +1,10 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.dto.mapper.DiscountMapper;
-import com.netcracker.crm.service.DiscountService;
+import com.netcracker.crm.service.entity.DiscountService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

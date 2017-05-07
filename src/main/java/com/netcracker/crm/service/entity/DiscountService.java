@@ -1,4 +1,4 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.dto.DiscountDto;
