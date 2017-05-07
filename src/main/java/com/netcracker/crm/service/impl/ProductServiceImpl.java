@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getNames(String likeTitle) {
+    public List<String> getTitlesLikeTitle(String likeTitle) {
         return productDao.findProductsTitleLikeTitle(likeTitle);
     }
 
@@ -103,6 +103,11 @@ public class ProductServiceImpl implements ProductService {
         return productDao.findProductsTitleByRegionId(likeTitle, customerId, null);
     }
 
+    @Override
+    public Product getProductsById(Long id) {
+        return productDao.findById(id);
+    }
+
     private ProductRowDto convertToRowDto(Product product) {
         ProductRowDto productRowDto = new ProductRowDto();
         productRowDto.setId(product.getId());
@@ -111,11 +116,13 @@ public class ProductServiceImpl implements ProductService {
         productRowDto.setStatus(product.getStatus().getName());
         if (product.getDiscount() != null) {
             productRowDto.setDiscount(product.getDiscount().getId());
+            productRowDto.setDiscountTitle(product.getDiscount().getTitle());
             productRowDto.setPercentage(product.getDiscount().getPercentage());
             productRowDto.setDiscountActive(product.getDiscount().getActive());
         }
         if (product.getGroup() != null) {
             productRowDto.setGroup(product.getGroup().getId());
+            productRowDto.setGroupName(product.getGroup().getName());
         }
         return productRowDto;
     }

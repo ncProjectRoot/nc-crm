@@ -88,4 +88,8 @@
         opacity: 1;
     }
 
+    .input-field .prefix ~ .autocomplete-content {
+        max-height: 250px;
+    }
+
 </style>

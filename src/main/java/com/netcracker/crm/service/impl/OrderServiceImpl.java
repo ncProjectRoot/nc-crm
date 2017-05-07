@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public Order getOrderById(Long id) {
+        return orderDao.findById(id);
+    }
+
     private OrderRowDto convertToRowDto(Order order) {
         OrderRowDto orderRowDto = new OrderRowDto();
         orderRowDto.setId(order.getId());
@@ -63,8 +69,8 @@ public class OrderServiceImpl implements OrderService {
         if (order.getCsr() != null) {
             orderRowDto.setCsr(order.getCsr().getId());
         }
-        orderRowDto.setDateFinish(order.getDate().toString());
-        orderRowDto.setPreferredDate(order.getPreferedDate().toString());
+        orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return orderRowDto;
     }
 

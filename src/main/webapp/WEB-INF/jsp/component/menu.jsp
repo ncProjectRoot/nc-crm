@@ -25,6 +25,8 @@
             <h2>Products</h2>
         </a>
     </li>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_CUSTOMER')">
     <c:if test="${user.isContactPerson()}">
         <li>
             <a href="#users" class="valign-wrapper menu-element">
@@ -35,6 +37,12 @@
     </c:if>
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+    <li>
+        <a href="#users" class="valign-wrapper menu-element">
+            <i class="white-text material-icons">face</i>
+            <h2>Users</h2>
+        </a>
+    </li>
     <li>
         <a href="#discounts" class="valign-wrapper menu-element">
             <i class="white-text material-icons">loyalty</i>

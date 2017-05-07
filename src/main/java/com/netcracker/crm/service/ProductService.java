@@ -20,11 +20,13 @@ public interface ProductService {
 
     List<ProductGroupDto> getProductsWithoutGroup();
 
-    List<String> getNames(String likeTitle);
+    List<String> getTitlesLikeTitle(String likeTitle);
 
     Map<String,Object> getProductsRow(ProductRowRequest orderRowRequest);
 
     List<String> getNamesByCustomerId(String likeTitle, Long customerId);
 
     List<String> getNamesByRegionId(String likeTitle, Long customerId, Address address);
+
+    Product getProductsById(Long id);
 }

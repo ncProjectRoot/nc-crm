@@ -233,9 +233,15 @@ td.discount .percentage.show{
         urlTable: "/csr/load/orders",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#order?id=" + object.id
+            })));
             tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.productId}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.productId,
+                href: "#product?id=" + object.productId
+            })));
             tr.append($("<td>", {text: object.productTitle}));
             tr.append($("<td>", {text: object.productStatus}));
             tr.append($("<td>", {text: object.customer}));
@@ -253,9 +259,15 @@ td.discount .percentage.show{
         urlTable: "/customer/load/orders",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#order?id=" + object.id
+            })));
             tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.productId}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.productId,
+                href: "#product?id=" + object.productId
+            })));
             tr.append($("<td>", {text: object.productTitle}));
             tr.append($("<td>", {text: object.productStatus}));
             tr.append($("<td>", {text: object.csr}));
@@ -284,7 +296,7 @@ td.discount .percentage.show{
                 price.addClass("old-price");
                 priceTd.addClass("discount");
                 var newPrice = $("<span>", {
-                    text: object.price * object.percentage / 100,
+                    text: Math.round((object.price - object.price * object.percentage / 100) * 100) / 100,
                     class: "red-text text-darken-2 new-price"
                 });
                 priceTd.append(newPrice);
@@ -295,9 +307,6 @@ td.discount .percentage.show{
                 priceTd.append(percentage);
             }
             tr.append(priceTd);
-//            tr.append($("<td>", {text: object.discount}));
-//            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-//            tr.append($("<td>", {text: object.discountActive}));
             tr.append($("<td>", {text: object.group}));
             tr.append($("<td>").append($("<a>", {
                 href: "#product?id=" + object.id,

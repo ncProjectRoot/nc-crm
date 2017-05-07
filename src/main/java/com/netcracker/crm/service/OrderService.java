@@ -18,4 +18,5 @@ public interface OrderService {
 
     Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) throws IOException;
 
+    Order getOrderById(Long id);
 }

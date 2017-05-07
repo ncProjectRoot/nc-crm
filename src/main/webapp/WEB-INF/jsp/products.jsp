@@ -87,9 +87,6 @@
                                 <th data-field="2">
                                     <a href="#!" class="sorted-element a-dummy">Title</a>
                                 </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Price</a>
-                                </th>
                                 <th class="th-dropdown" data-field="statusId">
                                     <a class='dropdown-button a-dummy' href='#'
                                        data-activates='dropdown-all-product-status' data-default-name="Product Status">
@@ -101,6 +98,9 @@
                                         <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
                                         <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
                                     </ul>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Price</a>
                                 </th>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Discount</a>
@@ -128,9 +128,8 @@
                         </table>
                     </div>
                 </div>
-
-
             </div>
+
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form class="col s12" id="addProduct">
@@ -292,14 +291,17 @@
         urlTable: "/csr/load/products",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#product?id=" + object.id
+            })));
             tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.discount}));
+            tr.append($("<td>", {text: object.price}));
+            tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
             tr.append($("<td>", {text: object.discountActive}));
-            tr.append($("<td>", {text: object.group}));
+            tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
     });
@@ -312,14 +314,17 @@
         urlTable: "/customer/load/products",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#product?id=" + object.id
+            })));
             tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.discount}));
+            tr.append($("<td>", {text: object.price}));
+            tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
             tr.append($("<td>", {text: object.discountActive}));
-            tr.append($("<td>", {text: object.group}));
+            tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
     });

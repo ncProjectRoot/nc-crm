@@ -13,25 +13,28 @@ public class ProductRowRequest extends RowRequest {
     private Long customerId;
     private Address address;
 
-    private static final String BEGIN_SQL = ""
-            + "SELECT p.id, p.title, default_price, p.discount_id,"
-            + "d.percentage, p.group_id, p.status_id, d.active, p.description "
-            + "FROM product p "
-            + "LEFT JOIN discount d ON p.discount_id = d.id "
-            + "LEFT JOIN groups g ON p.group_id = g.id ";
-    private static final String BEGIN_SQL_COUNT = "SELECT count(*) "
-            + "FROM product p "
-            + "LEFT JOIN discount d ON p.discount_id = d.id "
-            + "LEFT JOIN groups g ON p.group_id = g.id ";
+    private static final String BEGIN_SQL = "" +
+            "SELECT p.id, p.title, p.default_price, d.title, d.percentage," +
+            "g.name, d.active, p.status_id, p.description, p.discount_id, p.group_id " +
+            "FROM product p " +
+            "INNER JOIN statuses s ON p.status_id = s.id " +
+            "LEFT JOIN groups g ON p.group_id = g.id " +
+            "LEFT JOIN discount d ON p.discount_id = d.id";
+    private static final String BEGIN_SQL_COUNT = "" +
+            "SELECT count(*) " +
+            "FROM product p " +
+            "INNER JOIN statuses s ON p.status_id = s.id " +
+            "LEFT JOIN groups g ON p.group_id = g.id " +
+            "LEFT JOIN discount d ON p.discount_id = d.id";
 
     public ProductRowRequest() {
         super(new String[]{
                 "p.id",
                 "p.title",
-                "default_price",
-                "p.discount_id",
+                "p.default_price",
+                "d.title",
                 "d.percentage",
-                "p.group_id"
+                "g.name"
         });
     }
 
@@ -95,16 +98,16 @@ public class ProductRowRequest extends RowRequest {
     protected StringBuilder appendWhereParam(StringBuilder sql) {
         if (address != null) {
             appendWhere(sql);
-            sql.append("g.id IN ( " +
-                    "SELECT g.id " +
-                    "FROM groups g " +
-                    "INNER JOIN region_groups rg ON g.id = rg.group_id " +
-                    "WHERE rg.region_id = :region_id ) ");
+            sql.append(" group_id IN ( " +
+                    "  SELECT group_id " +
+                    "  FROM region_groups " +
+                    "  WHERE region_id = :region_id " +
+                    ")");
             appendWhere(sql);
             sql.append("p.id NOT IN ( " +
                     "SELECT o.product_id " +
                     "FROM orders o " +
-                    "WHERE o.customer_id = :customer_id ) ");
+                    "WHERE o.customer_id <> :customer_id ) ");
         } else {
             if (customerId != null) {
                 appendWhere(sql);

@@ -46,50 +46,54 @@ public class ProductController {
     }
 
     @GetMapping("/csr/load/productNames")
-    public List<String> productNamesCsr(String likeTitle) {
-        return productService.getNames(likeTitle);
+    public List<String> productNamesForCsr(String likeTitle) {
+        return productService.getTitlesLikeTitle(likeTitle);
     }
 
-    @GetMapping("/csr/load/products")
-    public Map<String, Object> ordersCsr(ProductRowRequest orderRowRequest) throws IOException {
-        return productService.getProductsRow(orderRowRequest);
-    }
+
 
     @GetMapping("/customer/load/productNames")
-    public List<String> productNamesCustomer(String likeTitle, Authentication authentication) {
+    public List<String> productNamesForCustomer(String likeTitle, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
             customer = (UserDetailsImpl) principal;
             return productService.getNamesByCustomerId(likeTitle, customer.getId());
         }
-        return productService.getNames(likeTitle);
+        return productService.getTitlesLikeTitle(likeTitle);
     }
 
-    @GetMapping("/customer/load/otherProductNames")
-    public List<String> otherProductNamesCustomer(String likeTitle, Authentication authentication) {
+    @GetMapping("/customer/load/possibleProductNames")
+    public List<String> possibleProductNamesForCustomer(String likeTitle, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
             customer = (UserDetailsImpl) principal;
             return productService.getNamesByRegionId(likeTitle, customer.getId(), customer.getAddress());
         }
-        return productService.getNames(likeTitle);
+        return productService.getTitlesLikeTitle(likeTitle);
+    }
+
+
+    @GetMapping("/csr/load/products")
+    public Map<String, Object> allProductsForCsr(ProductRowRequest orderRowRequest) throws IOException {
+        return productService.getProductsRow(orderRowRequest);
     }
 
     @GetMapping("/customer/load/products")
-    public Map<String, Object> ordersCustomer(ProductRowRequest orderRowRequest, Authentication authentication) throws IOException {
+    public Map<String, Object> customerProducts(ProductRowRequest orderRowRequest, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
             customer = (UserDetailsImpl) principal;
             orderRowRequest.setCustomerId(customer.getId());
         }
+        orderRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
         return productService.getProductsRow(orderRowRequest);
     }
 
-    @GetMapping("/customer/load/otherProducts")
-    public Map<String, Object> otherOrdersCustomer(ProductRowRequest productRowRequest, Authentication authentication) throws IOException {
+    @GetMapping("/customer/load/possibleProducts")
+    public Map<String, Object> possibleProductForCustomer(ProductRowRequest productRowRequest, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
