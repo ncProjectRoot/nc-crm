@@ -1,12 +1,11 @@
 package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Order;
-
-import java.util.List;
-import com.netcracker.crm.domain.OrderRowRequest;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.OrderDto;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**

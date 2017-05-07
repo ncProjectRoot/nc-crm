@@ -22,12 +22,17 @@ public class CSRController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboardCSR";
+        return "dashboard/csr";
     }
 
-    @GetMapping("/create")
-    public String create(Map<String, Object> model) {
-        return "create";
+    @GetMapping("/profile")
+    public String profile(Map<String, Object> model) {
+        return "profile";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Map<String, Object> model) {
+        return "orders";
     }
 
     @GetMapping("/products")
@@ -35,9 +40,19 @@ public class CSRController {
         return "products";
     }
 
-    @GetMapping("/orders")
-    public String orders(Map<String, Object> model) {
-        return "orders";
+    @GetMapping("/users")
+    public String users(Map<String, Object> model) {
+        return "users";
+    }
+
+    @GetMapping("/discounts")
+    public String discounts(Map<String, Object> model) {
+        return "discounts";
+    }
+
+    @GetMapping("/groups")
+    public String groups(Map<String, Object> model) {
+        return "groups";
     }
 
 }

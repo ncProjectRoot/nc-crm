@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderService;
@@ -13,10 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import java.io.IOException;
+import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
@@ -56,4 +61,22 @@ public class OrderRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @GetMapping("/csr/load/orders")
+    public Map<String, Object> ordersCsr(OrderRowRequest orderRowRequest) throws IOException {
+        return orderService.getOrdersRow(orderRowRequest);
+    }
+
+    @GetMapping("/customer/load/orders")
+    public Map<String, Object> ordersCustomer(OrderRowRequest orderRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            orderRowRequest.setCustomerId(customer.getId());
+        }
+        return orderService.getOrdersRow(orderRowRequest);
+    }
+
+
 }

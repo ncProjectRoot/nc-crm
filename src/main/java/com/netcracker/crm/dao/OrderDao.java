@@ -1,6 +1,6 @@
 package com.netcracker.crm.dao;
 
-import com.netcracker.crm.domain.OrderRowRequest;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
 import java.time.LocalDate;

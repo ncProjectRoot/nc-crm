@@ -7,8 +7,10 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
+import com.netcracker.crm.dto.row.ComplaintRowDto;
 import com.netcracker.crm.service.entity.ComplaintService;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
@@ -23,9 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Melnyk_Dmytro
@@ -76,6 +83,51 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     public Complaint findById(Long id) {
         return complaintDao.findById(id);
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException {
+        Map<String, Object> response = new HashMap<>();
+        Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
+        response.put("length", length);
+        List<Complaint> complaints = complaintDao.findComplaintRows(complaintRowRequest);
+        List<ComplaintRowDto> dtos = new ArrayList<>();
+        for (Complaint complaint : complaints) {
+            dtos.add(convertToRowDto(complaint));
+        }
+        response.put("rows", dtos);
+        return response;
+    }
+
+    @Transactional
+    @Override
+    public List<String> getNames(String likeTitle) {
+        return complaintDao.findProductsTitleLikeTitle(likeTitle);
+    }
+
+    @Transactional
+    @Override
+    public List<String> getNamesByPmgId(String likeTitle, Long pmgId) {
+        return complaintDao.findProductsTitleByPmgId(likeTitle, pmgId);
+    }
+
+    private ComplaintRowDto convertToRowDto(Complaint complaint) {
+        ComplaintRowDto complaintRowDto = new ComplaintRowDto();
+        complaintRowDto.setId(complaint.getId());
+        complaintRowDto.setTitle(complaint.getTitle());
+        complaintRowDto.setMessage(complaint.getMessage());
+        complaintRowDto.setStatus(complaint.getStatus().getName());
+        complaintRowDto.setCustomer(complaint.getCustomer().getId());
+        complaintRowDto.setOrder(complaint.getOrder().getId());
+        complaintRowDto.setOrderStatus(complaint.getOrder().getStatus().getName());
+        complaintRowDto.setProductTitle(complaint.getOrder().getProduct().getTitle());
+        complaintRowDto.setProductStatus(complaint.getOrder().getProduct().getStatus().getName());
+        complaintRowDto.setDate(complaint.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh-mm")));
+        if (complaint.getPmg() != null) {
+            complaintRowDto.setPmg(complaint.getPmg().getId());
+        }
+        return complaintRowDto;
     }
 
     private void sendEmail(Complaint complaint) {

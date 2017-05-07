@@ -22,17 +22,39 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboardAdmin";
-    }
-
-    @GetMapping("/create")
-    public String createUser(Map<String, Object> model) {
-        return "create";
+        return "dashboard/admin";
     }
 
     @GetMapping("/profile")
     public String profile(Map<String, Object> model) {
         return "profile";
     }
+
+    @GetMapping("/orders")
+    public String orders(Map<String, Object> model) {
+        return "orders";
+    }
+
+    @GetMapping("/products")
+    public String products(Map<String, Object> model) {
+        return "products";
+    }
+
+    @GetMapping("/users")
+    public String users(Map<String, Object> model) {
+        return "users";
+    }
+
+    @GetMapping("/discounts")
+    public String discounts(Map<String, Object> model) {
+        return "discounts";
+    }
+
+    @GetMapping("/groups")
+    public String groups(Map<String, Object> model) {
+        return "groups";
+    }
+
+
 
 }

@@ -1,18 +1,20 @@
 package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.controller.message.ResponseGenerator;
-import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.ProductStatus;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
-import com.netcracker.crm.dto.ProductStatusDto;
-import com.netcracker.crm.service.entity.OrderService;
+import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ProductService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,17 +37,15 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_PROD
 @RestController
 public class ProductRestController {
     private final ProductService productService;
-    private final OrderService orderService;
     private final BindingResultHandler bindingResultHandler;
     private final ProductValidator productValidator;
     private final ResponseGenerator<Product> generator;
 
     @Autowired
-    public ProductRestController(ProductService productService, OrderService orderService,
+    public ProductRestController(ProductService productService,
                              BindingResultHandler bindingResultHandler, ProductValidator productValidator,
                              ResponseGenerator<Product> generator) {
         this.productService = productService;
-        this.orderService = orderService;
         this.bindingResultHandler = bindingResultHandler;
         this.productValidator = productValidator;
         this.generator = generator;
@@ -65,26 +65,80 @@ public class ProductRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
-    @GetMapping("/csr/load/productStatus")
-    public List<ProductStatusDto> productStatus() {
-        return productService.getStatuses();
-    }
-
     @GetMapping("/csr/load/productWithoutGroup")
     public List<ProductGroupDto> productsWithoutGroup() {
         return productService.getProductsWithoutGroup();
     }
 
     @GetMapping("/csr/load/productNames")
-    public List<String> productNames(String likeTitle) {
-        return productService.getNames(likeTitle);
+    public List<String> productNamesForCsr(String likeTitle) {
+        return productService.getTitlesLikeTitle(likeTitle);
     }
 
-    @GetMapping("/csr/load/orders")
-    public Map<String, Object> orders(OrderRowRequest orderRowRequest) throws IOException {
-        return orderService.getOrderRow(orderRowRequest);
+    @GetMapping("/customer/load/productNames")
+    public List<String> productNamesForCustomer(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            return productService.getNamesByCustomerId(likeTitle, customer.getId());
+        }
+        return productService.getTitlesLikeTitle(likeTitle);
     }
+
+    @GetMapping("/customer/load/actualProductNames")
+    public List<String> actualProductNamesForCustomer(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            return productService.getActualNamesByCustomerId(likeTitle, customer.getId());
+        }
+        return productService.getTitlesLikeTitle(likeTitle);
+    }
+
+    @GetMapping("/customer/load/possibleProductNames")
+    public List<String> possibleProductNamesForCustomer(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            return productService.getActualNamesByCustomerId(likeTitle, customer.getId(), customer.getAddress());
+        }
+        return productService.getTitlesLikeTitle(likeTitle);
+    }
+
+
+    @GetMapping("/csr/load/products")
+    public Map<String, Object> allProductsForCsr(ProductRowRequest orderRowRequest) throws IOException {
+        return productService.getProductsRow(orderRowRequest);
+    }
+
+    @GetMapping("/customer/load/products")
+    public Map<String, Object> customerProducts(ProductRowRequest orderRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            orderRowRequest.setCustomerId(customer.getId());
+        }
+        orderRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
+        return productService.getProductsRow(orderRowRequest);
+    }
+
+    @GetMapping("/customer/load/possibleProducts")
+    public Map<String, Object> possibleProductForCustomer(ProductRowRequest productRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            productRowRequest.setCustomerId(customer.getId());
+            productRowRequest.setAddress(customer.getAddress());
+        }
+        productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
+        return productService.getProductsRow(productRowRequest);
+    }
+
 
 
 }

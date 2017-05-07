@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.base.role;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ComplaintService;
 import com.netcracker.crm.service.entity.OrderService;
@@ -36,12 +37,35 @@ public class CustomerController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboardCustomer";
+        return "dashboard/customer";
     }
 
-    @GetMapping("/complaint")
-    public String complaint(Map<String, Object> model, Authentication authentication) {
-        Long customerId = null;
+    @GetMapping("/users")
+    public String users(Map<String, Object> model, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+            if (user.getUserRole() == UserRole.ROLE_CUSTOMER && user.isContactPerson()) {
+                return "users";
+            }
+        }
+        return "error";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Map<String, Object> model) {
+        return "orders";
+    }
+
+    @GetMapping("/products")
+    public String products(Map<String, Object> model) {
+        return "products";
+    }
+
+    @GetMapping("/complaints")
+    public String complaints(Map<String, Object> model, Authentication authentication) {
+        Long customerId;
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetailsImpl) {
             User customer = (UserDetailsImpl) principal;
@@ -54,7 +78,7 @@ public class CustomerController {
         List<Order> orders = orderService.findByCustomerId(customerId);
         model.put("complaints", complaints);
         model.put("orders", orders);
-        return "complaintCustomer";
+        return "complaints";
     }
 
 

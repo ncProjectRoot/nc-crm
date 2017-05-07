@@ -25,6 +25,11 @@ public class PmgSetter extends AbstractUserSetter {
     }
 
     @Override
+    protected void setAddress(User user) {
+
+    }
+
+    @Override
     protected void setContactPerson(User user, int counter) {
 //        TODO nothing
     }

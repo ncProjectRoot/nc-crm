@@ -17,10 +17,9 @@
         font-size: 2.8rem;
     }
 </style>
-<div class="content-body z-depth-1" data-page-name="Home">
-    <h1 class="welcome-h1">Welcome, <span class="user-name">!</span></h1>
-    <h2 class="welcome-h2">Use toolbar for navigation. Good luck!</h2>
+<div class="content-body z-depth-1" data-page-name="Product #${product.id}">
+    <h1 class="welcome-h1">${product.id}</h1>
+    <h2 class="welcome-h2">${product.title}</h2>
 </div>
 <script>
-    $(".welcome-h1 .user-name").html($("#user-name").html())
 </script>
