@@ -8,73 +8,129 @@
 
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <li class="tab col s3"><a class="active" href="#all-product-wrapper">All Products</a></li>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                    <li class="tab col s3"><a  href="#create-wrapper">Create</a></li>
-                </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-product-wrapper">My Products</a></li>
                 </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    <li class="tab col s3"><a class="active" href="#all-product-wrapper">All Products</a></li>
+                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                </sec:authorize>
             </ul>
         </div>
-        <div id="all-product-wrapper" class="col s12">
-
-            <div id="table-all-products" class="table-container row">
-                <div class="table-wrapper col s11 center-align">
-                    <table class="striped responsive-table centered ">
-                        <thead>
-                        <tr>
-                            <th data-field="1">
-                                <a href="#!" class="sorted-element a-dummy">#</a>
-                            </th>
-                            <th data-field="2">
-                                <a href="#!" class="sorted-element a-dummy">Title</a>
-                            </th>
-                            <th data-field="3">
-                                <a href="#!" class="sorted-element a-dummy">Price</a>
-                            </th>
-                            <th class="th-dropdown" data-field="statusId">
-                                <a class='dropdown-button a-dummy' href='#'
-                                   data-activates='dropdown-product-status' data-default-name="Product Status">
-                                    Product Status
-                                </a>
-                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                <ul id="dropdown-product-status" class='dropdown-content'>
-                                    <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
-                                </ul>
-                            </th>
-                            <th data-field="4">
-                                <a href="#!" class="sorted-element a-dummy">Discount</a>
-                            </th>
-                            <th data-field="5">
-                                <a href="#!" class="sorted-element a-dummy">Percentage</a>
-                            </th>
-                            <th class="th-dropdown" data-field="discountActive">
-                                <a class='dropdown-button a-dummy' href='#'
-                                   data-activates='dropdown-discount-status' data-default-name="Discount Active">
-                                    Discount Active
-                                </a>
-                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                <ul id="dropdown-discount-status" class='dropdown-content'>
-                                    <li><a href="#" class="a-dummy" data-value="true">true</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="false">false</a></li>
-                                </ul>
-                            </th>
-                            <th data-field="6">
-                                <a href="#!" class="sorted-element a-dummy">Group</a>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+        <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+            <div id="my-product-wrapper" class="col s12">
+                <div id="table-my-products" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">Title</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Price</a>
+                                </th>
+                                <th class="th-dropdown" data-field="statusId">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-my-product-status' data-default-name="Product Status">
+                                        Product Status
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-my-product-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Discount</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
+                                </th>
+                                <th class="th-dropdown" data-field="discountActive">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-my-discount-status' data-default-name="Discount Active">
+                                        Discount Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-my-discount-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Group</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-
-        </div>
+        </sec:authorize>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+            <div id="all-product-wrapper" class="col s12">
+
+                <div id="table-all-products" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">Title</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Price</a>
+                                </th>
+                                <th class="th-dropdown" data-field="statusId">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-product-status' data-default-name="Product Status">
+                                        Product Status
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-product-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Discount</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
+                                </th>
+                                <th class="th-dropdown" data-field="discountActive">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-discount-status' data-default-name="Discount Active">
+                                        Discount Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-discount-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Group</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form class="col s12" id="addProduct">
@@ -143,11 +199,6 @@
                 </div>
             </div>
         </sec:authorize>
-        <sec:authorize access="hasRole('ROLE_CUSTOMER')">
-            <div id="my-product-wrapper" class="col s12">
-
-            </div>
-        </sec:authorize>
 
 
     </div>
@@ -159,6 +210,8 @@
         onShow: function (tab) {
         }
     });
+
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     //////// create ////////
 
@@ -231,10 +284,7 @@
     });
 
 
-
-
     //////// all ////////
-
 
 
     $("#table-all-products").karpo_table({
@@ -247,11 +297,32 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.discount}));
-            tr.append($("<td>", {text: object.percentage}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
             tr.append($("<td>", {text: object.discountActive}));
             tr.append($("<td>", {text: object.group}));
             return tr;
         }
     });
+
+    </sec:authorize>
+
+    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+    $("#table-my-products").karpo_table({
+        urlSearch: "/customer/load/productNames",
+        urlTable: "/customer/load/products",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>", {text: object.title}));
+            tr.append($("<td>", {text: object.price}));
+            tr.append($("<td>", {text: object.status}));
+            tr.append($("<td>", {text: object.discount}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
+            tr.append($("<td>", {text: object.discountActive}));
+            tr.append($("<td>", {text: object.group}));
+            return tr;
+        }
+    });
+    </sec:authorize>
 
 </script>

@@ -1,5 +1,6 @@
 package com.netcracker.crm.service;
 
+import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
@@ -24,4 +25,6 @@ public interface ProductService {
     Map<String,Object> getProductsRow(ProductRowRequest orderRowRequest);
 
     List<String> getNamesByCustomerId(String likeTitle, Long customerId);
+
+    List<String> getNamesByRegionId(String likeTitle, Long customerId, Address address);
 }

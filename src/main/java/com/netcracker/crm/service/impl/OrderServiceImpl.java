@@ -7,6 +7,7 @@ import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.io.IOException;
@@ -30,10 +31,13 @@ public class OrderServiceImpl implements OrderService {
         this.orderDao = orderDao;
     }
 
+    @Override
     public List<Order> findByCustomerId(Long id) {
         return orderDao.findAllByCustomerId(id);
     }
+
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) throws IOException {
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);

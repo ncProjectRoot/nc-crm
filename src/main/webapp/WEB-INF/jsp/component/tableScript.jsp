@@ -1,29 +1,12 @@
 <script>
 
-
-    //    $("#table-all-products").karpo_table({
-    //        urlSearch: "csr/load/productNames",
-    //        urlTable: "csr/load/orders",
-    //        mapper: function (object) {
-    //            var tr = $("<tr>");
-    //            tr.append($("<td>", {text: object.id}));
-    //            tr.append($("<td>", {text: object.status}));
-    //            tr.append($("<td>", {text: object.productId}));
-    //            tr.append($("<td>", {text: object.productTitle}));
-    //            tr.append($("<td>", {text: object.productStatus}));
-    //            tr.append($("<td>", {text: object.customer}));
-    //            tr.append($("<td>", {text: object.csr}));
-    //            tr.append($("<td>", {text: object.dateFinish}));
-    //            tr.append($("<td>", {text: object.preferredDate}));
-    //            return tr;
-    //        }
-    //    });
-
-
     jQuery.fn.karpo_table = function (params) {
 
         var tableContainer = $(this[0]);
         var countTr = 7;
+        if (params.countTr) {
+            countTr = params.countTr;
+        }
         var countPagesVisibleNearCurrent = 2;
         var currentPage = 1;
         var countTablePages;
@@ -119,6 +102,9 @@
                 tableContainer.find(".preloader-wrapper").removeClass("active");
                 tableContainer.find("tbody").empty();
                 fillTable(data);
+                if (params.complete) {
+                    params.complete();
+                };
             });
         }
 

@@ -1,6 +1,7 @@
 package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
@@ -65,6 +66,17 @@ public class ProductController {
         return productService.getNames(likeTitle);
     }
 
+    @GetMapping("/customer/load/otherProductNames")
+    public List<String> otherProductNamesCustomer(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            return productService.getNamesByRegionId(likeTitle, customer.getId(), customer.getAddress());
+        }
+        return productService.getNames(likeTitle);
+    }
+
     @GetMapping("/customer/load/products")
     public Map<String, Object> ordersCustomer(ProductRowRequest orderRowRequest, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
@@ -74,6 +86,19 @@ public class ProductController {
             orderRowRequest.setCustomerId(customer.getId());
         }
         return productService.getProductsRow(orderRowRequest);
+    }
+
+    @GetMapping("/customer/load/otherProducts")
+    public Map<String, Object> otherOrdersCustomer(ProductRowRequest productRowRequest, Authentication authentication) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            productRowRequest.setCustomerId(customer.getId());
+            productRowRequest.setAddress(customer.getAddress());
+        }
+        productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
+        return productService.getProductsRow(productRowRequest);
     }
 
 }

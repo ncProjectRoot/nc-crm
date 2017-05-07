@@ -1,25 +1,28 @@
 package com.netcracker.crm.domain.request;
 
+import com.netcracker.crm.domain.model.Address;
+
 /**
  * @author Karpunets
  * @since 05.05.2017
  */
 public class ProductRowRequest extends RowRequest {
 
-    private Integer statusId;
+    private Long statusId;
     private Boolean discountActive;
     private Long customerId;
+    private Address address;
 
     private static final String BEGIN_SQL = ""
             + "SELECT p.id, p.title, default_price, p.discount_id,"
-            + "d.percentage, group_id, status_id, d.active, p.description "
+            + "d.percentage, p.group_id, p.status_id, d.active, p.description "
             + "FROM product p "
             + "LEFT JOIN discount d ON p.discount_id = d.id "
-            + "LEFT JOIN groups g ON p.group_id = g.id";
+            + "LEFT JOIN groups g ON p.group_id = g.id ";
     private static final String BEGIN_SQL_COUNT = "SELECT count(*) "
             + "FROM product p "
             + "LEFT JOIN discount d ON p.discount_id = d.id "
-            + "LEFT JOIN groups g ON p.group_id = g.id";
+            + "LEFT JOIN groups g ON p.group_id = g.id ";
 
     public ProductRowRequest() {
         super(new String[]{
@@ -28,16 +31,16 @@ public class ProductRowRequest extends RowRequest {
                 "default_price",
                 "p.discount_id",
                 "d.percentage",
-                "group_id"
+                "p.group_id"
         });
     }
 
 
-    public Integer getStatusId() {
+    public Long getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(Integer statusId) {
+    public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
 
@@ -57,6 +60,14 @@ public class ProductRowRequest extends RowRequest {
         return customerId;
     }
 
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
     @Override
     protected String beginSql() {
         return BEGIN_SQL;
@@ -71,7 +82,7 @@ public class ProductRowRequest extends RowRequest {
     protected StringBuilder appendWhereStatus(StringBuilder sql) {
         if (statusId != null) {
             appendWhere(sql);
-            sql.append("status_id = :status_id ");
+            sql.append("p.status_id = :status_id ");
         }
         if (discountActive != null) {
             appendWhere(sql);
@@ -80,5 +91,29 @@ public class ProductRowRequest extends RowRequest {
         return sql;
     }
 
-
+    @Override
+    protected StringBuilder appendWhereParam(StringBuilder sql) {
+        if (address != null) {
+            appendWhere(sql);
+            sql.append("g.id IN ( " +
+                    "SELECT g.id " +
+                    "FROM groups g " +
+                    "INNER JOIN region_groups rg ON g.id = rg.group_id " +
+                    "WHERE rg.region_id = :region_id ) ");
+            appendWhere(sql);
+            sql.append("p.id NOT IN ( " +
+                    "SELECT o.product_id " +
+                    "FROM orders o " +
+                    "WHERE o.customer_id = :customer_id ) ");
+        } else {
+            if (customerId != null) {
+                appendWhere(sql);
+                sql.append("p.id IN ( " +
+                        "SELECT o.product_id " +
+                        "FROM orders o " +
+                        "WHERE o.customer_id = :customer_id ) ");
+            }
+        }
+        return sql;
+    }
 }

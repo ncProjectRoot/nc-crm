@@ -3,10 +3,7 @@ package com.netcracker.crm.service.impl;
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.domain.model.Group;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.ProductStatus;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
@@ -69,14 +66,14 @@ public class ProductServiceImpl implements ProductService {
         return convertToDto(products);
     }
 
-
-
     @Override
+    @Transactional(readOnly = true)
     public List<String> getNames(String likeTitle) {
         return productDao.findProductsTitleLikeTitle(likeTitle);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = productDao.getProductRowsCount(orderRowRequest);
@@ -92,8 +89,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
         return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getNamesByRegionId(String likeTitle, Long customerId, Address address) {
+        if (address.getRegion() != null) {
+            return productDao.findProductsTitleByRegionId(likeTitle, customerId, address.getRegion().getId());
+        }
+        return productDao.findProductsTitleByRegionId(likeTitle, customerId, null);
     }
 
     private ProductRowDto convertToRowDto(Product product) {

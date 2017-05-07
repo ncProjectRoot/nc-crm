@@ -217,6 +217,7 @@ public class OrderDaoImpl implements OrderDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
                 .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
+                .addValue(PARAM_CUSTOMER_ID, orderRowRequest.getCustomerId())
                 .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
                 .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset());
 
@@ -236,7 +237,8 @@ public class OrderDaoImpl implements OrderDao {
     public Long getOrderRowsCount(OrderRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId());
+                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
+                .addValue(PARAM_CUSTOMER_ID, orderRowRequest.getCustomerId());
 
         String sql = orderRowRequest.getSqlCount();
 
