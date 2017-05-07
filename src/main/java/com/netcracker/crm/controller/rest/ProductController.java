@@ -63,13 +63,24 @@ public class ProductController {
         return productService.getTitlesLikeTitle(likeTitle);
     }
 
+    @GetMapping("/customer/load/actualProductNames")
+    public List<String> actualProductNamesForCustomer(String likeTitle, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User customer;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            return productService.getActualNamesByCustomerId(likeTitle, customer.getId());
+        }
+        return productService.getTitlesLikeTitle(likeTitle);
+    }
+
     @GetMapping("/customer/load/possibleProductNames")
     public List<String> possibleProductNamesForCustomer(String likeTitle, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
             customer = (UserDetailsImpl) principal;
-            return productService.getNamesByRegionId(likeTitle, customer.getId(), customer.getAddress());
+            return productService.getActualNamesByCustomerId(likeTitle, customer.getId(), customer.getAddress());
         }
         return productService.getTitlesLikeTitle(likeTitle);
     }

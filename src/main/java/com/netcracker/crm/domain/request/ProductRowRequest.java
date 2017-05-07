@@ -107,7 +107,7 @@ public class ProductRowRequest extends RowRequest {
             sql.append("p.id NOT IN ( " +
                     "SELECT o.product_id " +
                     "FROM orders o " +
-                    "WHERE o.customer_id <> :customer_id ) ");
+                    "WHERE o.customer_id = :customer_id ) ");
         } else {
             if (customerId != null) {
                 appendWhere(sql);

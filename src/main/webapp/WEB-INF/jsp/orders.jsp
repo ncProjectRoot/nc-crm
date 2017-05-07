@@ -278,8 +278,8 @@ td.discount .percentage.show{
     });
 
     $("#table-create-orders").karpo_table({
-        urlSearch: "/customer/load/otherProductNames",
-        urlTable: "/customer/load/otherProducts",
+        urlSearch: "/customer/load/possibleProductNames",
+        urlTable: "/customer/load/possibleProducts",
         countTr: 5,
         mapper: function (object) {
             var tr = $("<tr>");
@@ -289,12 +289,14 @@ td.discount .percentage.show{
             })
             tr.append($("<td>").append(aId));
             tr.append($("<td>", {text: object.title}));
-            var priceTd =  $("<td>");
+            var priceTd =  $("<td>", {
+                "data-tooltip": object.discountTitle
+            });
             var price = $("<span>", {text: object.price});
             priceTd.append(price);
             if (object.discountActive) {
                 price.addClass("old-price");
-                priceTd.addClass("discount");
+                priceTd.addClass("tooltipped discount");
                 var newPrice = $("<span>", {
                     text: Math.round((object.price - object.price * object.percentage / 100) * 100) / 100,
                     class: "red-text text-darken-2 new-price"
@@ -307,7 +309,7 @@ td.discount .percentage.show{
                 priceTd.append(percentage);
             }
             tr.append(priceTd);
-            tr.append($("<td>", {text: object.group}));
+            tr.append($("<td>", {text: object.groupName}));
             tr.append($("<td>").append($("<a>", {
                 href: "#product?id=" + object.id,
                 class: "waves-effect waves-light btn",
@@ -317,6 +319,9 @@ td.discount .percentage.show{
         },
         complete: function () {
             $(".percentage").addClass("show");
+            $(".tooltipped").tooltip({
+                delay: 50
+            });
         }
     });
 

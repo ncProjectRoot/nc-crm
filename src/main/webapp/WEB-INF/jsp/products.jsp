@@ -310,7 +310,7 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-products").karpo_table({
-        urlSearch: "/customer/load/productNames",
+        urlSearch: "/customer/load/actualProductNames",
         urlTable: "/customer/load/products",
         mapper: function (object) {
             var tr = $("<tr>");

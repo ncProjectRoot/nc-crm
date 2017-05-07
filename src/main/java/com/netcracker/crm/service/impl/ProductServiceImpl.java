@@ -44,6 +44,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Product getProductsById(Long id) {
+        return productDao.findById(id);
+    }
+
+    @Override
     @Transactional
     public Product persist(ProductDto productDto){
         Product product = convertToEntity(productDto);
@@ -74,6 +80,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
+        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId) {
+        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address) {
+        if (address.getRegion() != null) {
+            return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, address.getRegion().getId());
+        }
+        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = productDao.getProductRowsCount(orderRowRequest);
@@ -86,26 +113,6 @@ public class ProductServiceImpl implements ProductService {
         }
         response.put("rows", productsRowDto);
         return response;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
-        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getNamesByRegionId(String likeTitle, Long customerId, Address address) {
-        if (address.getRegion() != null) {
-            return productDao.findProductsTitleByRegionId(likeTitle, customerId, address.getRegion().getId());
-        }
-        return productDao.findProductsTitleByRegionId(likeTitle, customerId, null);
-    }
-
-    @Override
-    public Product getProductsById(Long id) {
-        return productDao.findById(id);
     }
 
     private ProductRowDto convertToRowDto(Product product) {

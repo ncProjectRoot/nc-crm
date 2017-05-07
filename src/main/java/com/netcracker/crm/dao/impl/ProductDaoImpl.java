@@ -221,12 +221,20 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<String> findProductsTitleByRegionId(String likeTitle, Long customerId, Long regionId) {
+    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId, Long regionId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId)
                 .addValue(PARAM_PRODUCT_REGION_ID, regionId);
-        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_BY_GROUP_ID_LIKE_TITLE, params, String.class);
+        return namedJdbcTemplate.queryForList(SQL_FIND_POSSIBLE_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_ACTUAL_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
     }
 
     @Override

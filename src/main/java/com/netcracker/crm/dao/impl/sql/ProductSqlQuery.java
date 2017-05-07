@@ -61,15 +61,32 @@ public final class ProductSqlQuery {
             + " WHERE customer_id = :customer_id "
             + ") AND title ILIKE :title;";
 
-    public static final String SQL_FIND_PRODUCT_TITLES_BY_GROUP_ID_LIKE_TITLE = ""
+    public static final String SQL_FIND_ACTUAL_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
             + "SELECT title "
             + "FROM product p "
-            + "INNER JOIN orders o ON p.id = o.product_id "
+            + "INNER JOIN statuses s ON p.status_id = s.id "
+            + "WHERE p.id IN ( "
+            + " SELECT product_id "
+            + " FROM orders"
+            + " WHERE customer_id = :customer_id "
+            + ") AND title ILIKE :title "
+            + "AND s.name = 'ACTUAL';";
+
+    public static final String SQL_FIND_POSSIBLE_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
+            + "SELECT p.title "
+            + "FROM product p "
+            + "INNER JOIN statuses s ON p.status_id = s.id "
             + "LEFT JOIN groups g ON p.group_id = g.id "
-            + "INNER JOIN region_groups rg ON g.id = rg.group_id "
-            + "WHERE title ILIKE :title "
-            + "AND customer_id <> :customer_id "
-            + "AND rg.region_id = :region_id;";
+            + "WHERE group_id IN ( "
+            + " SELECT group_id "
+            + " FROM region_groups "
+            + " WHERE region_id = :region_id "
+            + ") AND s.name = 'ACTUAL' "
+            + "AND p.id NOT IN ( "
+            + " SELECT product_id "
+            + " FROM orders "
+            + " WHERE customer_id = :customer_id"
+            + ");";
 
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 

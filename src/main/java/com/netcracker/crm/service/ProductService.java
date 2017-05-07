@@ -26,7 +26,9 @@ public interface ProductService {
 
     List<String> getNamesByCustomerId(String likeTitle, Long customerId);
 
-    List<String> getNamesByRegionId(String likeTitle, Long customerId, Address address);
+    List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address);
 
     Product getProductsById(Long id);
+
+    List<String> getActualNamesByCustomerId(String likeTitle, Long customerId);
 }

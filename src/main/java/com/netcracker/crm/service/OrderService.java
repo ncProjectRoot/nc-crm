@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface OrderService {
 
-    public List<Order> findByCustomerId(Long id);
+    List<Order> findByCustomerId(Long id);
 
     Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) throws IOException;
 
