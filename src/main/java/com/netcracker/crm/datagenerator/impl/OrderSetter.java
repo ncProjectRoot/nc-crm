@@ -2,16 +2,14 @@ package com.netcracker.crm.datagenerator.impl;
 
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Pasha on 05.05.2017.
@@ -20,10 +18,14 @@ import java.util.List;
 public class OrderSetter extends AbstractSetter<Order> {
     private List<User> customers;
     private List<User> csrs;
-    private List<Product> products;
+    private Map<String, List<Product>> products;
+
+     private final OrderDao orderDao;
 
     @Autowired
-    private OrderDao orderDao;
+    public OrderSetter(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
 
     @Override
     public List<Order> generate(int numbers) {
@@ -42,8 +44,7 @@ public class OrderSetter extends AbstractSetter<Order> {
         Order order = new Order();
         order.setDate(getOrderDate());
         order.setPreferedDate(getPreferDate());
-        order.setProduct(getProduct());
-        order.setCustomer(getCustomer());
+        setProductCustomer(order);
         OrderStatus orderStatus = getStatus();
         order.setStatus(orderStatus);
         if (orderStatus != OrderStatus.NEW) {
@@ -64,9 +65,6 @@ public class OrderSetter extends AbstractSetter<Order> {
         return customers.get(random.nextInt(customers.size()));
     }
 
-    private Product getProduct(){
-        return products.get(random.nextInt(products.size()));
-    }
 
 
     private LocalDateTime getOrderDate(){
@@ -78,6 +76,27 @@ public class OrderSetter extends AbstractSetter<Order> {
     }
 
 
+    public void setProductCustomer(Order order){
+        User customer = getCustomer();
+        List<Product> productList = new ArrayList<>();
+        Region customerRegion = customer.getAddress().getRegion();
+        productList.addAll(products.get(customerRegion.getName()));
+        Product product;
+        while (true) {
+            product = productList.remove(random.nextInt(productList.size()));
+            if (product.getStatus() != ProductStatus.PLANNED){
+                break;
+            }
+            if (productList.size() == 0){
+                customer = getCustomer();
+                customerRegion = customer.getAddress().getRegion();
+                productList.addAll(products.get(customerRegion.getName()));
+            }
+        }
+        order.setCustomer(customer);
+        order.setProduct(product);
+    }
+
     public void setCustomers(List<User> customers) {
         this.customers = customers;
     }
@@ -86,7 +105,7 @@ public class OrderSetter extends AbstractSetter<Order> {
         this.csrs = csrs;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(Map<String, List<Product>> products) {
         this.products = products;
     }
 }
