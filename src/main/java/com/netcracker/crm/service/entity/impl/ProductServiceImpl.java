@@ -1,4 +1,4 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
@@ -8,10 +8,9 @@ import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.dto.row.ProductRowDto;
-import com.netcracker.crm.dto.ProductStatusDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
-import com.netcracker.crm.service.ProductService;
+import com.netcracker.crm.service.entity.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Product getProductsById(Long id) {
         return productDao.findById(id);
     }
@@ -55,15 +53,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = convertToEntity(productDto);
         productDao.create(product);
         return product;
-    }
-
-    @Override
-    public List<ProductStatusDto> getStatuses() {
-        List<ProductStatusDto> list = new ArrayList<>();
-        for (ProductStatus status : ProductStatus.values()){
-            list.add(new ProductStatusDto(status.getId(), status.getName()));
-        }
-        return list;
     }
 
     @Override

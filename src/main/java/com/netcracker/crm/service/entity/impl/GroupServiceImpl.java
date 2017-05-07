@@ -1,4 +1,4 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
@@ -8,7 +8,7 @@ import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.dto.GroupDto;
 import com.netcracker.crm.dto.mapper.GroupMapper;
-import com.netcracker.crm.service.GroupService;
+import com.netcracker.crm.service.entity.GroupService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

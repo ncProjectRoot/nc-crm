@@ -1,15 +1,12 @@
 package com.netcracker.crm.controller.base;
 
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
-import com.netcracker.crm.service.OrderService;
-import com.netcracker.crm.service.ProductService;
+import com.netcracker.crm.service.entity.OrderService;
+import com.netcracker.crm.service.entity.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;

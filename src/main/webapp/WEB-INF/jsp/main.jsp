@@ -7,7 +7,6 @@
     <spring:url value="/css/main.css" var="springCss"/>
     <spring:url value="/img/ico.png" var="springIcon"/>
     <spring:url value="/js/main.js" var="springMainScript"/>
-    <spring:url value="/js/user.js" var="springUserScript"/>
     <spring:url value="/js/googlemap/locationpicker.jquery.js" var="springLocationPickerScript"/>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -108,7 +107,6 @@
 <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4&libraries=places'></script>
 <%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 sensor=false&--%>
 <script src="${springMainScript}"></script>
-<script src="${springUserScript}"></script>
 <script src="${springLocationPickerScript}"></script>
 </div>
 </body>

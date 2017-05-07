@@ -1,4 +1,4 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Product;
@@ -15,8 +15,6 @@ import java.util.Map;
  */
 public interface ProductService {
     Product persist(ProductDto productDto);
-
-    List<ProductStatusDto> getStatuses();
 
     List<ProductGroupDto> getProductsWithoutGroup();
 

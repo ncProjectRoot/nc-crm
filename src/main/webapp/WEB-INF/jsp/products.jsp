@@ -175,6 +175,8 @@
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">cached</i>
                                 <select name="statusName" id="select_product_status">
+                                    <option value="ACTUAL">ACTUAL</option>
+                                    <option value="PLANNED">PLANNED</option>
                                 </select>
                                 <label for="select_disc">Choose product status</label>
                             </div>
@@ -189,7 +191,7 @@
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <div class="row">
                             <div class="col s6">
-                                <button class="btn waves-effect waves-light" type="submit" name="action">Create Product
+                                <button class="btn waves-effect waves-light" id="submit-product" type="submit" name="action">Create Product
                                     <i class="material-icons right">send</i>
                                 </button>
                             </div>
@@ -253,17 +255,6 @@
         }
     }
 
-    //      load product status
-    $.get("/csr/load/productStatus/").success(function (data) {
-        $.each(data, function (i, item) {
-            $('#select_product_status').append($('<option>', {
-                value: item.name,
-                text: item.name
-            }));
-        });
-        $('#select_product_status').material_select('updating');
-    });
-
     //        create product
     $("#addProduct").on("submit", function (e) {
         e.preventDefault();
@@ -280,6 +271,15 @@
             });
             loadProductsWithoutGroup();
         }
+    });
+
+    $(document).on("click", "#submit-product", function () {
+        event.preventDefault();
+        var url = "/csr/addProduct";
+        var form = "#addProduct";
+        sendPost(form, url);
+        $(form)[0].reset();
+        loadProductsWithoutGroup();
     });
 
 

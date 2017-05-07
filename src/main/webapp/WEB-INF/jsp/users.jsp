@@ -171,6 +171,24 @@
         addressFormat: 'street_number'
     });
 
+    $(document).on("change", "#user_role", function () {
+        if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
+            $('.customer-field').css("display", "block");
+        } else {
+            $('.customer-field').css("display", "none");
+        }
+        $('#customer_contact_person').prop('checked', false);
+        $('#submit-user-create').css("display", "block");
+        $('#submit-user-create').html('Create ' + $('#user_role option:selected').text());
+    });
+
+    $(document).on("click", "#submit-user-create", function () {
+        event.preventDefault();
+        var userForm = "#form-user-create";
+        var url = "/user/registration";
+        sendPost(userForm, url);
+    });
+
 
     //////// all ////////
 

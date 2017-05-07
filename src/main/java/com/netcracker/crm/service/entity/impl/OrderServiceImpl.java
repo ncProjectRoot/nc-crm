@@ -1,15 +1,25 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dao.ProductDao;
+import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.dto.row.OrderRowDto;
-import com.netcracker.crm.service.OrderService;
+import com.netcracker.crm.service.entity.OrderService;
+import com.netcracker.crm.domain.model.OrderStatus;
+import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.dto.row.OrderRowDto;
+import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,10 +36,22 @@ import java.util.Map;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDao orderDao;
+    private final UserDao userDao;
+    private final ProductDao productDao;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao) {
         this.orderDao = orderDao;
+        this.userDao = userDao;
+        this.productDao = productDao;
+    }
+
+    @Override
+    @Transactional
+    public Order persist(OrderDto orderDto) {
+        Order order = convertFromDtoToEntity(orderDto);
+        orderDao.create(order);
+        return order;
     }
 
     @Override
@@ -56,6 +78,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getOrderById(Long id) {
         return orderDao.findById(id);
+    }
+
+    private Order convertFromDtoToEntity(OrderDto orderDto){
+        Order order = new Order();
+        Product product = productDao.findById(orderDto.getProductId());
+        User customer = userDao.findById(orderDto.getCustomerId());
+
+        order.setProduct(product);
+        order.setCustomer(customer);
+        order.setStatus(OrderStatus.NEW);
+        order.setDate(LocalDateTime.now());
+        return order;
     }
 
     private OrderRowDto convertToRowDto(Order order) {
