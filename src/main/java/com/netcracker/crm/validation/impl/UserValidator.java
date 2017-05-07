@@ -1,6 +1,7 @@
 package com.netcracker.crm.validation.impl;
 
 import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.validation.AbstractValidator;
 import org.springframework.beans.factory.annotation.Autowired;
