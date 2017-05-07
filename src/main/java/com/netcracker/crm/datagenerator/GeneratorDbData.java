@@ -88,7 +88,7 @@ public class GeneratorDbData {
 
         orderSetter.setCsrs(csrs);
         orderSetter.setCustomers(customers);
-        orderSetter.setProducts(products);
+        orderSetter.setProducts(regionGroupsSetter.getProductInRegion());
 
         List<Order> orders = orderSetter.generate(number * INDEX_ORDER);
 
