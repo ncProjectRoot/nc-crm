@@ -248,7 +248,7 @@
                         <div class="input-field col s6">
                             <i class="material-icons prefix">mode_edit</i>
                             <textarea name="message" id="message" class="materialize-textarea"
-                                      maxlength="400" data-length="400"></textarea>
+                                      maxlength="375" data-length="375"></textarea>
                             <label for="message">Message</label>
                         </div>
                     </div>
@@ -282,17 +282,17 @@
             var selectVal = $("#orderSelect").val();
             if (titleLenth < 5 || titleLenth > 50) {
                 Materialize.toast("Title length must be 5-50", 5000, 'rounded');
-            } else if (messageLenth < 5 || messageLenth > 400) {
-                Materialize.toast("Description length must be 5-400", 5000, 'rounded');
+            } else if (messageLenth < 5 || messageLenth > 375) {
+                Materialize.toast("Description length must be 5-375", 5000, 'rounded');
             } else if (!selectVal > 0) {
                 Materialize.toast("Order can't be empty", 5000, 'rounded');
             } else {
-                $('ul.tabs').tabs('select_tab', 'swipe-all-customer-complaints');
                 $(".progress").addClass("progress-active");
                 $.post("/customer/createComplaint", $("#createComplaintForm").serialize(), function (data) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
-                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 5000, 'rounded');
+                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
+                    setTimeout(function() {window.location.href = "/#/complaint/"+data.id;}, 2000);
                 });
             }
         }
