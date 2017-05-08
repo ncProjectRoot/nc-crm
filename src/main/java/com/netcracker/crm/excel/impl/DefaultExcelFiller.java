@@ -2,10 +2,7 @@ package com.netcracker.crm.excel.impl;
 
 import com.netcracker.crm.excel.ExcelFiller;
 import com.netcracker.crm.excel.additional.Coordinates;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -105,11 +102,13 @@ public class DefaultExcelFiller implements ExcelFiller{
         }
         Row row = sheet.getRow(rowStart);
         row.createCell(cellStart).setCellValue("№");
+        setTitleCellStyle(row.getCell(cellStart));
         String title;
         for(int i = 0; i < titles.size(); i++){
             title = titles.get(i);
             row.createCell(i+1+cellStart).setCellType(Cell.CELL_TYPE_STRING);
             row.getCell(i+1+cellStart).setCellValue(title);
+            setTitleCellStyle(row.getCell(i+1+cellStart));
         }
     }
 
@@ -125,10 +124,12 @@ public class DefaultExcelFiller implements ExcelFiller{
             }
             row = sheet.getRow(i+1+rowStart);
             row.createCell(cellStart).setCellValue(i+1);
+            setTitleCellStyle(row.getCell(cellStart));
             for (int j = 0; j < numOfColumns; j++){
                 currentTitle = titles.get(j);
                 currentValue = table.get(currentTitle).get(i);
                 setValueFromTable(cellStart, currentValue, j, row);
+                setValueCellStyle(row.getCell(j+1+cellStart));
             }
         }
     }
@@ -154,6 +155,9 @@ public class DefaultExcelFiller implements ExcelFiller{
             row.createCell(titleIndex+1+cellStart).setCellType(Cell.CELL_TYPE_STRING);
             row.getCell(titleIndex+1+cellStart).setCellValue(currentValue.toString());
         }
+        else if(currentValue == null){
+            row.createCell(titleIndex+1+cellStart).setCellType(Cell.CELL_TYPE_STRING);
+        }
     }
 
     private void calculateCoordinates
@@ -177,6 +181,28 @@ public class DefaultExcelFiller implements ExcelFiller{
         for(int i = cellStart; i < titles.size() + cellStart + 1; i++){
             sheet.autoSizeColumn(i);
         }
+    }
+
+    private void setTitleCellStyle(Cell cell){
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
+        cellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
+        cellStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
+        cellStyle.setBorderTop(CellStyle.BORDER_MEDIUM);
+        cellStyle.setFillForegroundColor(IndexedColors.SKY_BLUE.getIndex());
+        cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        cell.setCellStyle(cellStyle);
+    }
+
+    private void setValueCellStyle(Cell cell){
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+        cellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+        cellStyle.setBorderRight(CellStyle.BORDER_THIN);
+        cellStyle.setBorderTop(CellStyle.BORDER_THIN);
+        cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        cell.setCellStyle(cellStyle);
     }
 
     public Map<String, Coordinates> getCoordinatesOfTableColumns() {
