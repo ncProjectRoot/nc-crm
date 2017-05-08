@@ -38,10 +38,6 @@
         text-align: justify;
     }
 
-    .collapsible-body {
-
-    }
-
     .status {
         text-transform: capitalize
     }
