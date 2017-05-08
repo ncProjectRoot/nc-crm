@@ -2,6 +2,7 @@ package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
 import com.netcracker.crm.service.entity.UserService;
@@ -13,11 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
@@ -28,7 +32,7 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_USER
  * Created by bpogo on 4/30/2017.
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserRestController {
     private static final Logger log = LoggerFactory.getLogger(UserRestController.class);
 
@@ -65,5 +69,14 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest) {
+        return new ResponseEntity<>(userService.getUsers(userRowRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/lastNames")
+    public List<String> getLastNames(String pattern) {
+        return userService.getUserLastNamesByPattern(pattern);
+    }
 
 }

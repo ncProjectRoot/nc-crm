@@ -7,6 +7,8 @@ import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Organization;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.request.RowRequest;
+import com.netcracker.crm.domain.request.UserRowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +18,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.UserSqlQuery.*;
 
@@ -142,23 +144,30 @@ public class UserDaoImpl implements UserDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_ID, id);
 
-        return namedJdbcTemplate.query(SQL_FIND_USER_BY_ID, params, userWithDetailExtractor);
+        List<User> users = namedJdbcTemplate.query(SQL_FIND_USER_BY_ID, params, userWithDetailExtractor);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
     }
 
     @Override
     public User findByEmail(String email) {
-        if(email == null) {
+        if (email == null) {
             return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_EMAIL, email);
-
-        return namedJdbcTemplate.query(SQL_FIND_USER_BY_EMAIL, params, userWithDetailExtractor);
+        List<User> users = namedJdbcTemplate.query(SQL_FIND_USER_BY_EMAIL, params, userWithDetailExtractor);
+        if (!users.isEmpty()) {
+            return users.get(0);
+        }
+        return null;
     }
 
 
     private Long getAddressId(Address address) {
-        if(address == null)
+        if (address == null)
             return null;
         Long addressId = address.getId();
         if (addressId != null) {
@@ -170,7 +179,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private Long getOrgId(Organization org) {
-        if(org == null)
+        if (org == null)
             return null;
         Long orgId = org.getId();
         if (orgId != null) {
@@ -199,6 +208,48 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public Long getUserRowsCount(UserRowRequest rowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset());
+
+        String sql = rowRequest.getSqlCount();
+
+        if (rowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : rowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    @Override
+    public List<User> findUserRows(UserRowRequest rowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset());
+        String sql = rowRequest.getSql();
+
+        if (rowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : rowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.query(sql, params, userWithDetailExtractor);
+    }
+
+    @Override
+    public List<String> findUsersByLastNamePattern(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%");
+
+        return namedJdbcTemplate.queryForList(SQL_FIND_USER_LAST_NAMES_BY_PATTERN, params, String.class);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.userInsert = new SimpleJdbcInsert(dataSource)
@@ -208,7 +259,7 @@ public class UserDaoImpl implements UserDao {
         this.userWithDetailExtractor = new UserWithDetailExtractor(organizationDao, addressDao);
     }
 
-    private static final class UserWithDetailExtractor implements ResultSetExtractor<User> {
+    private static final class UserWithDetailExtractor implements ResultSetExtractor<List<User>> {
 
         private OrganizationDao organizationDao;
         private AddressDao addressDao;
@@ -219,10 +270,10 @@ public class UserDaoImpl implements UserDao {
         }
 
         @Override
-        public User extractData(ResultSet rs) throws SQLException, DataAccessException {
-            User user = null;
+        public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<User> users = new LinkedList<>();
             while (rs.next()) {
-                user = new User();
+                User user = new User();
                 user.setId(rs.getLong(PARAM_USER_ID));
                 user.setEmail(rs.getString(PARAM_USER_EMAIL));
                 user.setPassword(rs.getString(PARAM_USER_PASSWORD));
@@ -244,8 +295,10 @@ public class UserDaoImpl implements UserDao {
                 if (addressId > 0) {
                     user.setAddress(addressDao.findById(addressId));
                 }
+
+                users.add(user);
             }
-            return user;
+            return users;
         }
     }
 }

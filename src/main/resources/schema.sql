@@ -9,6 +9,7 @@ CREATE TABLE address
      id BIGSERIAL  NOT NULL ,
      latitude DOUBLE PRECISION  NOT NULL ,
      longitude DOUBLE PRECISION  NOT NULL ,
+     formatted_address VARCHAR (300) NOT NULL ,
      region_id INTEGER  NOT NULL ,
      details VARCHAR (500)
     )

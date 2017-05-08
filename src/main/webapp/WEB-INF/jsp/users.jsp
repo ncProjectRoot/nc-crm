@@ -23,7 +23,65 @@
         </div>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="all-users-wrapper" class="col s12">
-
+                <div id="table-all-users" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
+                                </th>
+                                <th class="th-dropdown" data-field="roleId">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-user-role' data-default-name="User Role">
+                                        User Role
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-user-role" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" value="1">Admin</a></li>
+                                        <li><a href="#" class="a-dummy" value="2">Customer</a></li>
+                                        <li><a href="#" class="a-dummy" value="3">CSR</a></li>
+                                        <li><a href="#" class="a-dummy" value="4">PMG</a></li>
+                                    </ul>
+                                </th>
+                                <th class="th-dropdown" data-field="contactPerson">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
+                                        Contact Person
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-contact-person" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" value="false">No</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="7">
+                                    <a href="#!" class="sorted-element a-dummy">Address</a>
+                                </th>
+                                <th data-field="8">
+                                    <a href="#!" class="sorted-element a-dummy">Organization</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div id="create-wrapper" class="col s12">
@@ -103,6 +161,7 @@
                                 <input type="hidden" name="addressRegionName" id="customer_region_name">
                                 <input type="hidden" name="addressLatitude" id="customer_address_lat">
                                 <input type="hidden" name="addressLongitude" id="customer_address_long">
+                                <input type="hidden" name="formattedAddress" id="customer_formatted_address">
                                 <button id="submit-user-create" class="btn waves-effect waves-light" type="submit"
                                         name="action">Create Customer
                                     <i class="material-icons right">send</i>
@@ -129,13 +188,14 @@
         }
     });
 
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     //////// create ////////
 
     $('select').material_select();
     $('#user_role option[value="ROLE_CUSTOMER"]').attr("selected", true);
 
     var organizationData = {};
-    $.get("/organization/all", function (data) {
+    $.get("/organizations", function (data) {
         data.forEach(function (item) {
             organizationData[item.name] = null;
         });
@@ -167,6 +227,7 @@
             $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
             $('#customer_address_lat').val(mapContext.location.latitude);
             $('#customer_address_long').val(mapContext.location.longitude);
+            $('#customer_formatted_address').val(mapContext.location.formattedAddress);
         },
         addressFormat: 'street_number'
     });
@@ -185,12 +246,56 @@
     $(document).on("click", "#submit-user-create", function () {
         event.preventDefault();
         var userForm = "#form-user-create";
-        var url = "/user/registration";
+        var url = "/users/registration";
         sendPost(userForm, url);
     });
 
-
     //////// all ////////
 
+    $("#table-all-users").karpo_table({
+        urlSearch: "/users/",
+        urlTable: "/users",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#user?id=" + object.id
+            })));
+            tr.append($("<td>", {text: object.firstName}));
+            tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));
+            tr.append($("<td>", {text: object.lastName}));
+            tr.append($("<td>", {text: object.email}));
+            tr.append($("<td>", {text: object.phone}));
+            tr.append($("<td>", {text: object.userRole}));
+            tr.append($("<td>", {text: object.contactPerson}));
+            tr.append($("<td>", {text: object.formattedAddress}));
+            tr.append($("<td>", {text: object.organizationName}));
+            return tr;
+        }
+    });
+
+    </sec:authorize>
+
+    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+    $("#table-my-products").karpo_table({
+        urlSearch: "/customer/load/actualProductNames",
+        urlTable: "/customer/load/products",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#product?id=" + object.id
+            })));
+            tr.append($("<td>", {text: object.title}));
+            tr.append($("<td>", {text: object.status}));
+            tr.append($("<td>", {text: object.price}));
+            tr.append($("<td>", {text: object.discountTitle}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
+            tr.append($("<td>", {text: object.discountActive}));
+            tr.append($("<td>", {text: object.groupName}));
+            return tr;
+        }
+    });
+    </sec:authorize>
 
 </script>
