@@ -18,29 +18,65 @@ import java.util.List;
 public class ReportServiceImpl implements ReportService {
     private final OrderDao orderDao;
 
+    private Workbook lastReportWorkbook;
+
+    private String lastReportFileName;
+
     @Autowired
     public ReportServiceImpl(OrderDao orderDao) {
         this.orderDao = orderDao;
     }
 
-    public Workbook createOrdersBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        return org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+    public Workbook getLastReportWorkbook() {
+        return lastReportWorkbook;
     }
 
-    public Workbook createOrdersBetweenDatesOfCustomer_ReportGraphic(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        return org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+    public String getLastReportFileName() {
+        return lastReportFileName;
     }
 
-    public Workbook createOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+    public void createOrdersBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        return org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportFileName = "Orders of customer ( id=" +customer_id+" )"
+                +getOrderFileNameEnding(date_finish_first, date_finish_last)
+                +"."+fileFormat;
     }
 
-    public Workbook createOrdersBetweenDatesOfArrayCustomer_ReportGraphic(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+    public void createOrdersBetweenDatesOfCustomer_ReportChart(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        return org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportFileName = "Orders of customer ( id=" +customer_id+" )"
+                +getOrderFileNameEnding(date_finish_first, date_finish_last)
+                +" with charts"
+                +"."+fileFormat;
+    }
+
+    public void createOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportFileName = "Orders of group of customers"
+                +getOrderFileNameEnding(date_finish_first, date_finish_last)
+                +"."+fileFormat;
+    }
+
+    public void createOrdersBetweenDatesOfArrayCustomer_ReportChart(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportFileName = "Orders of group of customers"
+                +getOrderFileNameEnding(date_finish_first, date_finish_last)
+                +" with charts"
+                +"."+fileFormat;
+    }
+
+    private String getOrderFileNameEnding(LocalDateTime date_finish_first, LocalDateTime date_finish_last){
+        return " between "
+                +date_finish_first.getDayOfMonth()+"-"
+                +date_finish_first.getMonthValue()+"-"
+                +date_finish_first.getYear()+" and "
+                +date_finish_last.getDayOfMonth()+"-"
+                +date_finish_last.getMonthValue()+"-"
+                +date_finish_last.getYear();
     }
 
 }
