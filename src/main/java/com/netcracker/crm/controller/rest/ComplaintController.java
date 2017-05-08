@@ -8,10 +8,7 @@ import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.ComplaintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -110,6 +107,39 @@ public class ComplaintController {
             customer.setId(3L);
         }
         return complaintService.getNamesByCustId(likeTitle, customer.getId());
+    }
+
+    @RequestMapping(value = "/pmg/complaintsaa/{id}", method = RequestMethod.GET)
+    public Complaint discountByTitle(@PathVariable Long id){
+        return complaintService.findById(id);
+    }
+
+    @PostMapping("/pmg/acceptComplaint")
+    public boolean acceptComplaint(Map<String, Object> model, Long complaintId, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User pmg = null;
+        if (principal instanceof UserDetailsImpl) {
+            pmg = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            pmg = new User();
+            pmg.setId(5002L);
+        }
+        return complaintService.acceptComplaint(complaintId, pmg.getId());
+    }
+
+    @PostMapping("/pmg/closeComplaint")
+    public boolean closeComplaint(Map<String, Object> model, Long complaintId, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User pmg = null;
+        if (principal instanceof UserDetailsImpl) {
+            pmg = (UserDetailsImpl) principal;
+        } else {
+            //!production
+            pmg = new User();
+            pmg.setId(5002L);
+        }
+        return complaintService.closeComplaint(complaintId, pmg.getId());
     }
 
 }

@@ -33,5 +33,9 @@ public interface ComplaintService {
     public List<String> getNamesByPmgId(String likeTitle, Long pmgId);
 
     public List<String> getNamesByCustId(String likeTitle, Long pmgId);
+
+    public boolean acceptComplaint(Long complaintId, Long pmgId);
+
+    public boolean closeComplaint(Long complaintId, Long pmgId);
 }
 

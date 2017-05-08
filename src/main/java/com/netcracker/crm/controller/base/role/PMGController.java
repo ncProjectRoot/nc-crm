@@ -1,7 +1,12 @@
 package com.netcracker.crm.controller.base.role;
 
+import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.service.ComplaintService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Map;
@@ -14,6 +19,9 @@ import java.util.Map;
 @RequestMapping(value = "/ROLE_PMG")
 @Controller
 public class PMGController {
+
+    @Autowired
+    private ComplaintService complaintService;
 
     @GetMapping("/")
     public String main(Map<String, Object> model) {
@@ -33,6 +41,13 @@ public class PMGController {
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model) {
         return "complaints";
+    }
+
+    @GetMapping("/complaint/{id}")
+    public String complaint(Map<String, Object> model, @PathVariable("id") Long id) {
+        Complaint complaint = complaintService.findById(id);
+        model.put("complaint", complaint);
+        return "complaint";
     }
 
 }

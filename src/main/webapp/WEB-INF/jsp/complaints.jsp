@@ -228,14 +228,14 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">title</i>
-                            <input id="title" type="text" class="validate" name="title" maxlength="50">
+                            <input id="title" type="text" class="validate" name="title" maxlength="50" data-length="50">
                             <label for="title">Title</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">view_carousel</i>
-                            <select id="orderSelect" size="2" name="orderId">
+                            <select id="orderSelect" name="orderId">
                                 <option value="" disabled selected>Choose order</option>
                                 <c:forEach items="${orders}" var="i">
                                     <option value="${i.id}"># ${i.id} ${i.product.title} </option>
@@ -248,7 +248,7 @@
                         <div class="input-field col s6">
                             <i class="material-icons prefix">mode_edit</i>
                             <textarea name="message" id="message" class="materialize-textarea"
-                                      maxlength="400"></textarea>
+                                      maxlength="375" data-length="375"></textarea>
                             <label for="message">Message</label>
                         </div>
                     </div>
@@ -268,41 +268,42 @@
 </div>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
-    $(document).ready(function () {
-        $('ul.tabs').tabs();
-        $('select').material_select();
-        $('.modal').modal();
+    $('ul.tabs').tabs();
+    $('select').material_select();
+    $('input#title, textarea#message').characterCounter();
+    $('#message').trigger('autoresize');
 
-        $("#createComplaintForm").on("submit", function (e) {
-                e.preventDefault();
-                var titleLenth = $("#title").val().length;
-                var messageLenth = $("#message").val().length;
-                var selectVal = $("#orderSelect").val();
-                if (titleLenth < 5 || titleLenth > 50) {
-                    Materialize.toast("Title length must be 5-50", 5000, 'rounded');
-                } else if (messageLenth < 5 || messageLenth > 400) {
-                    Materialize.toast("Description length must be 5-400", 5000, 'rounded');
-                } else if (!selectVal > 0) {
-                    Materialize.toast("Order can't be empty", 5000, 'rounded');
-                } else {
-                    $('ul.tabs').tabs('select_tab', 'swipe-all-customer-complaints');
-                    $(".progress").addClass("progress-active");
-                    $.post("/customer/createComplaint", $("#createComplaintForm").serialize(), function (data) {
-                        $("#createComplaintForm")[0].reset();
-                        $(".progress").removeClass("progress-active");
-                        Materialize.toast("Complaint with id " + data.id + " successfuly created", 5000, 'rounded');
-                    });
-                }
+
+    $("#createComplaintForm").on("submit", function (e) {
+            e.preventDefault();
+            var titleLenth = $("#title").val().length;
+            var messageLenth = $("#message").val().length;
+            var selectVal = $("#orderSelect").val();
+            if (titleLenth < 5 || titleLenth > 50) {
+                Materialize.toast("Title length must be 5-50", 5000, 'rounded');
+            } else if (messageLenth < 5 || messageLenth > 400) {
+                Materialize.toast("Description length must be 5-400", 5000, 'rounded');
+            } else if (!selectVal > 0) {
+                Materialize.toast("Order can't be empty", 5000, 'rounded');
+            } else {
+                $('ul.tabs').tabs('select_tab', 'swipe-all-customer-complaints');
+                $(".progress").addClass("progress-active");
+                $.post("/customer/createComplaint", $("#createComplaintForm").serialize(), function (data) {
+                    $("#createComplaintForm")[0].reset();
+                    $(".progress").removeClass("progress-active");
+                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 5000, 'rounded');
+                });
             }
-        );
-    })
+        }
+    );
+
     <sec:authorize access="hasAnyRole('ROLE_PMG')">
     $("#table-all-complaints").karpo_table({
         urlSearch: "/pmg/load/complaintsNames",
         urlTable: "/pmg/load/complaints",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -321,7 +322,7 @@
         urlTable: "/pmg/load/pmgComplaints",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -340,7 +341,7 @@
         urlTable: "/customer/load/complaints",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {text: object.id}));
+            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.order}));
