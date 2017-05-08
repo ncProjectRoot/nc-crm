@@ -212,7 +212,10 @@ public class UserDaoImpl implements UserDao {
     public Long getUserRowsCount(UserRowRequest rowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
-                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset());
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
+                .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
+                .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
 
         String sql = rowRequest.getSqlCount();
 
@@ -230,7 +233,10 @@ public class UserDaoImpl implements UserDao {
     public List<User> findUserRows(UserRowRequest rowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
-                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset());
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
+                .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
+                .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
         String sql = rowRequest.getSql();
 
         if (rowRequest.getKeywordsArray() != null) {

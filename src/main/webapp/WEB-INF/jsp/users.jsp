@@ -53,10 +53,10 @@
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-user-role" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" value="1">Admin</a></li>
-                                        <li><a href="#" class="a-dummy" value="2">Customer</a></li>
-                                        <li><a href="#" class="a-dummy" value="3">CSR</a></li>
-                                        <li><a href="#" class="a-dummy" value="4">PMG</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
                                     </ul>
                                 </th>
                                 <th class="th-dropdown" data-field="contactPerson">
@@ -66,8 +66,8 @@
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-contact-person" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" value="true">Yes</a></li>
-                                        <li><a href="#" class="a-dummy" value="false">No</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="7">
@@ -253,7 +253,7 @@
     //////// all ////////
 
     $("#table-all-users").karpo_table({
-        urlSearch: "/users/",
+        urlSearch: "/users/lastNames",
         urlTable: "/users",
         mapper: function (object) {
             var tr = $("<tr>");
