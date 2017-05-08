@@ -33,18 +33,6 @@
                                 <th data-field="3">
                                     <a href="#!" class="sorted-element a-dummy">Price</a>
                                 </th>
-                                <th class="th-dropdown" data-field="statusId">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-my-product-status' data-default-name="Product Status">
-                                        Product Status
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-my-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
-                                    </ul>
-                                </th>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Discount</a>
                                 </th>
@@ -319,7 +307,6 @@
                 href: "#product?id=" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));

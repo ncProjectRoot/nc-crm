@@ -77,6 +77,12 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findById(id);
     }
 
+
+    @Override
+    public boolean hasCustomerProduct(Long productId, Long customerId) {
+        return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
     private Order convertFromDtoToEntity(OrderDto orderDto){
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());

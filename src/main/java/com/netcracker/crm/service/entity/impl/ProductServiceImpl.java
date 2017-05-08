@@ -3,10 +3,7 @@ package com.netcracker.crm.service.entity.impl;
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.domain.model.Address;
-import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.domain.model.Group;
-import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
@@ -80,6 +77,11 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId) {
         return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
+        return productDao.hasCustomerAccessToProduct(productId, customerId);
     }
 
     @Override

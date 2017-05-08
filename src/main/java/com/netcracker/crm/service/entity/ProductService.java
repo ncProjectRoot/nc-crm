@@ -2,6 +2,7 @@ package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
@@ -29,4 +30,6 @@ public interface ProductService {
     Product getProductsById(Long id);
 
     List<String> getActualNamesByCustomerId(String likeTitle, Long customerId);
+
+    boolean hasCustomerAccessToProduct(Long productId, Long customerId);
 }

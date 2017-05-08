@@ -119,7 +119,7 @@
         <div class="section">
             <h5 class="status ${product.status.name}">${product.status.name}</h5>
             <sec:authorize access="hasRole('ROLE_CUSTOMER')">
-                <c:if test="${product.status == 'ACTUAL'}">
+                <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
                     <a class="btn-floating btn-large waves-effect waves-light green darken-4 order-btn" href="#order"><i
                             class="material-icons">attach_money</i></a>
                     <div id="order" class="modal bottom-sheet">
@@ -176,7 +176,7 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
 
-    <c:if test="${product.status == 'ACTUAL'}">
+    <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
     $('.modal').modal({
             opacity: .5
         }
