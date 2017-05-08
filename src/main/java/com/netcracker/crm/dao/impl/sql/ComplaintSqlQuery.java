@@ -78,6 +78,14 @@ public final class ComplaintSqlQuery {
             "FROM users " +
             "WHERE id = :customer_id));";
 
+    public static final String SQL_FIND_COMPLAINTS_TITLES_FOR_CONTACT_PERSON = "SELECT title " +
+            "FROM complaint " +
+            "WHERE title ILIKE :title AND customer_id IN (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id));";
+
 
     public static final String SQL_DELETE_COMPLAINT = "DELETE FROM complaint WHERE id = :id;";
 

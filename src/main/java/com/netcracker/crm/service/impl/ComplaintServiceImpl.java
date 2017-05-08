@@ -109,19 +109,23 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Transactional
     @Override
     public List<String> getNames(String likeTitle) {
-        return complaintDao.findProductsTitleLikeTitle(likeTitle);
+        return complaintDao.findComplaintsTitleLikeTitle(likeTitle);
     }
 
     @Transactional
     @Override
     public List<String> getNamesByPmgId(String likeTitle, Long pmgId) {
-        return complaintDao.findProductsTitleByPmgId(likeTitle, pmgId);
+        return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmgId);
     }
 
     @Transactional
     @Override
-    public List<String> getNamesByCustId(String likeTitle, Long custId) {
-        return complaintDao.findProductsTitleByCustId(likeTitle, custId);
+    public List<String> getNamesByCustomer(String likeTitle, User customer) {
+        if (customer.isContactPerson()) {
+            return getNamesForContactPerson(likeTitle, customer.getId());
+        } else {
+            return getNamesForNotContactPerson(likeTitle, customer.getId());
+        }
     }
 
     @Transactional
@@ -184,6 +188,16 @@ public class ComplaintServiceImpl implements ComplaintService {
             return count > 0;
         }
         return false;
+    }
+
+    @Transactional
+    private List<String> getNamesForContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
+    }
+
+    @Transactional
+    private List<String> getNamesForNotContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
     }
 
     private ComplaintRowDto convertToRowDto(Complaint complaint) {

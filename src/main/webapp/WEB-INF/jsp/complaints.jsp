@@ -189,7 +189,7 @@
                                     <li><a href="#" class="a-dummy" data-value="3">CLOSED</a></li>
                                 </ul>
                             </th>
-                            <th data-field="3">
+                            <th data-field="4">
                                 <a href="#!" class="sorted-element a-dummy">Order</a>
                             </th>
                             <th class="th-dropdown" data-field="orderStatusId">
@@ -207,10 +207,10 @@
                                     <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
                                 </ul>
                             </th>
-                            <th data-field="4">
+                            <th data-field="5">
                                 <a href="#!" class="sorted-element a-dummy">Product</a>
                             </th>
-                            <th data-field="5">
+                            <th data-field="7">
                                 <a href="#!" class="sorted-element a-dummy">Date</a>
                             </th>
                         </tr>

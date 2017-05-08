@@ -109,7 +109,7 @@ public class ComplaintController {
             customer = new User();
             customer.setId(3L);
         }
-        return complaintService.getNamesByCustId(likeTitle, customer.getId());
+        return complaintService.getNamesByCustomer(likeTitle, customer);
     }
 
     @PostMapping("/pmg/acceptComplaint")

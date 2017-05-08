@@ -239,14 +239,14 @@ public class ComplaintDaoImpl implements ComplaintDao {
     }
 
     @Override
-    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+    public List<String> findComplaintsTitleLikeTitle(String likeTitle) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
         return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE, params, String.class);
     }
 
     @Override
-    public List<String> findProductsTitleByPmgId(String likeTitle, Long pmgId) {
+    public List<String> findComplaintsTitleByPmgId(String likeTitle, Long pmgId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
         params.addValue(PARAM_COMPLAINT_PMG_ID, pmgId);
@@ -254,7 +254,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     }
 
     @Override
-    public List<String> findProductsTitleByCustId(String likeTitle, Long custId) {
+    public List<String> findComplaintsTitleByCustId(String likeTitle, Long custId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
         params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
@@ -275,6 +275,14 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 .addValue(PARAM_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
         return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CUSTOMER, params, Long.class);
+    }
+
+    @Override
+    public List<String> findComplaintsTitleForContactPerson(String likeTitle, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_FOR_CONTACT_PERSON, params, String.class);
     }
 
     @Autowired

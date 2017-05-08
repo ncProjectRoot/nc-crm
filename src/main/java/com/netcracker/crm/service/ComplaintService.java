@@ -4,6 +4,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -33,7 +34,7 @@ public interface ComplaintService {
 
     public List<String> getNamesByPmgId(String likeTitle, Long pmgId);
 
-    public List<String> getNamesByCustId(String likeTitle, Long pmgId);
+    public List<String> getNamesByCustomer(String likeTitle, User customer);
 
     public boolean acceptComplaint(Long complaintId, Long pmgId);
 

@@ -2,6 +2,7 @@ package com.netcracker.crm.service.impl;
 
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.OrderService;
@@ -30,14 +31,21 @@ public class OrderServiceImpl implements OrderService {
         this.orderDao = orderDao;
     }
 
-    @Override
-    public List<Order> findByCustomerId(Long id) {
+    private List<Order> findByCustomerId(Long id) {
         return orderDao.findAllByCustomerId(id);
     }
 
-    @Override
-    public List<Order> findOrgOrdersByCustId(Long id) {
+    private List<Order> findOrgOrdersByCustId(Long id) {
         return orderDao.findOrgOrdersByCustId(id);
+    }
+
+    @Override
+    public List<Order> findByCustomer(User customer) {
+        if(customer.isContactPerson()){
+            return findOrgOrdersByCustId(customer.getId());
+        } else {
+            return findByCustomerId(customer.getId());
+        }
     }
 
     @Override

@@ -43,11 +43,4 @@ public class PMGController {
         return "complaints";
     }
 
-    @GetMapping("/complaint/{id}")
-    public String complaint(Map<String, Object> model, @PathVariable("id") Long id) {
-        Complaint complaint = complaintService.findById(id);
-        model.put("complaint", complaint);
-        return "complaint";
-    }
-
 }
