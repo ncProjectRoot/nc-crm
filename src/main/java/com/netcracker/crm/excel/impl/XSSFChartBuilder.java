@@ -27,17 +27,18 @@ public class XSSFChartBuilder implements ChartBuilder {
         this.coordinates_Y = coordinates_Y;
     }
 
-    public void buildChart(){
-        createChart();
+    public int buildChart(int startCell){
+        int endCell = createChart(startCell);
         addData();
         plotChart();
+        return endCell;
     }
 
-    private void createChart(){
+    private int createChart(int startCell){
         /* Create a drawing canvas on the worksheet */
         sheet = workbook.getSheetAt(0);
         Drawing drawing = sheet.createDrawingPatriarch();
-        Coordinates coordinates = calculatePlotCoordinates();
+        Coordinates coordinates = calculatePlotCoordinates(startCell);
         int leftTopCell = coordinates.getStartColumn();
         int leftTopRow = coordinates.getStartRow();
         int rightBottomCell = coordinates.getEndColumn();
@@ -50,6 +51,7 @@ public class XSSFChartBuilder implements ChartBuilder {
         bottomAxis = lineChart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
         leftAxis = lineChart.getChartAxisFactory().createValueAxis(AxisPosition.LEFT);
         leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+        return rightBottomCell;
     }
 
     private void addData(){
@@ -75,9 +77,8 @@ public class XSSFChartBuilder implements ChartBuilder {
         lineChart.plot(data, bottomAxis, leftAxis);
     }
 
-    private Coordinates calculatePlotCoordinates(){
+    private Coordinates calculatePlotCoordinates(int startCol){
         int modifier = 2 + coordinates_X.getEndRow() - coordinates_X.getStartRow();
-        int startCol = 0;
         int startRow = coordinates_X.getEndRow() + 2;
         int endCol = modifier;
         int endRow = startRow + 15;

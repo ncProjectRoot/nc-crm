@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by AN on 24.04.2017.
@@ -46,16 +47,19 @@ public class DefaultExcelBuilder {
         return getExcelFiller(fileFormat, table, sheetName).fillExcel();
     }
 
-    public Workbook getWorkbookChart(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, String xColumnName, List<String> yColumnName){
+    public Workbook getWorkbookChart(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, Map<String, List<String>> xColumns_yColumns){
         DefaultExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName);
         Workbook workbook = defaultExcelFiller.fillExcel();
-        Coordinates coordinates_X = defaultExcelFiller.getCoordinatesOfColumns().get(xColumnName);
-        ArrayList<Coordinates> coordinates_Y = new ArrayList<Coordinates>();
-        for (String string : yColumnName){
-            coordinates_Y.add(defaultExcelFiller.getCoordinatesOfColumns().get(string));
+        int chartStartCell = 0;
+        for (String xColumnName: xColumns_yColumns.keySet()) {
+            Coordinates coordinates_X = defaultExcelFiller.getCoordinatesOfColumns().get(xColumnName);
+            ArrayList<Coordinates> coordinates_Y = new ArrayList<Coordinates>();
+            for (String string : xColumns_yColumns.get(xColumnName)){
+                coordinates_Y.add(defaultExcelFiller.getCoordinatesOfColumns().get(string));
+            }
+            ChartBuilder chartBuilder = getChartBuilder(fileFormat, workbook, coordinates_X, coordinates_Y);
+            chartStartCell = chartBuilder.buildChart(chartStartCell) + 2;
         }
-        ChartBuilder chartBuilder = getChartBuilder(fileFormat, workbook, coordinates_X, coordinates_Y);
-        chartBuilder.buildChart();
         return workbook;
     }
 

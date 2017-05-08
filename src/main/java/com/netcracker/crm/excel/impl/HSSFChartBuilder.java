@@ -19,7 +19,8 @@ public class HSSFChartBuilder implements ChartBuilder {
         this.coordinates_X = coordinates_X;
         this.coordinates_Y = coordinates_Y;
     }
-    public void buildChart(){
+    public int buildChart(int startCell){
         System.out.println("This is not finished chart");
+        return startCell;
     }
 }

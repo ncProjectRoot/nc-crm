@@ -293,7 +293,7 @@ public class OrderDaoImpl implements OrderDao {
 
                 }
 
-                long statusId = rs.getLong(PARAM_ORDER_STATUS);
+                Long statusId = rs.getLong(PARAM_ORDER_STATUS);
                 Status status = Status.getStatusByID(statusId);
                 if (status instanceof OrderStatus) {
                     order.setStatus((OrderStatus) status);
