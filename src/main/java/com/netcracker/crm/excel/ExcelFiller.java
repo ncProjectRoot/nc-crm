@@ -11,6 +11,8 @@ import java.util.Map;
 public interface ExcelFiller {
     Workbook fillExcel();
 
-    Map<String, Coordinates> getCoordinatesOfColumns();
+    Map<String, Coordinates> getCoordinatesOfTableColumns();
+
+    Workbook getWorkbook();
 
 }

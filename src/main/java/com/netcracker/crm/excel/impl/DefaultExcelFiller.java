@@ -1,5 +1,6 @@
 package com.netcracker.crm.excel.impl;
 
+import com.netcracker.crm.excel.ExcelFiller;
 import com.netcracker.crm.excel.additional.Coordinates;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -12,14 +13,22 @@ import java.util.*;
 /**
  * Created by AN on 16.04.2017.
  */
-public class DefaultExcelFiller {
+public class DefaultExcelFiller implements ExcelFiller{
     private Workbook workbook;
-    private Map<String, List<?>> table;
-    private Map<String, Coordinates> coordinatesOfColumns;
-    private List<String> titles;
+    private Sheet sheet;
     private String sheetName;
+
+    private Map<String, List<?>> table;
+    private Map<String, Coordinates> coordinatesOfTableColumns;
+    private List<String> titles;
     private int rowStart;
     private int cellStart;
+
+    private List<LinkedHashMap<String, List<?>>> additionalDataTables;
+    private List<Map<String, Coordinates>> coordinatesOfAddDataColumns;
+    private List<List<String>> additionalDataTitles;
+   // private List<Integer> additionalDataRowStart;
+   // private List<Integer> additionalDataCellStart;
 
 
     public DefaultExcelFiller(Workbook workbook, Map<String, List<?>> table, String sheetName, int rowStart, int cellStart) {
@@ -29,23 +38,72 @@ public class DefaultExcelFiller {
         this.rowStart = rowStart;
         this.cellStart = cellStart;
         titles = new ArrayList<>(table.keySet());
+        this.workbook.createSheet(sheetName);
+        sheet = workbook.getSheet(sheetName);
+    }
+
+    public DefaultExcelFiller
+            (Workbook workbook, Map<String, List<?>> table, String sheetName,
+             int rowStart, int cellStart, List<LinkedHashMap<String, List<?>>> additionalDataTables) {
+        this.workbook = workbook;
+        this.table = table;
+        this.sheetName = sheetName;
+        this.rowStart = rowStart;
+        this.cellStart = cellStart;
+        titles = new ArrayList<>(table.keySet());
+        this.workbook.createSheet(sheetName);
+        sheet = workbook.getSheet(sheetName);
+        this.additionalDataTables = additionalDataTables;
+        additionalDataTitles = new ArrayList<>();
+        for (int i = 0; i < additionalDataTables.size(); i++){
+            List<String> localTitles = new ArrayList<>(additionalDataTables.get(i).keySet());
+            additionalDataTitles.add(localTitles);
+        }
     }
 
      public Workbook fillExcel(){
-        createSheet(sheetName);
-        Sheet sheet = workbook.getSheet(sheetName);
-        setTitles(sheet);
-        fillData(sheet);
-        setColumnAutoSize(sheet);
+        setTitles(titles, rowStart, cellStart);
+        fillData(table, titles, rowStart, cellStart);
+        coordinatesOfTableColumns = new HashMap<>();
+        calculateCoordinates(coordinatesOfTableColumns, table, titles, rowStart, cellStart);
+        setColumnAutoSize(cellStart, titles);
+        if(additionalDataTables != null){
+            fillAdditionalData();
+        }
         return workbook;
+    }
+
+    private void fillAdditionalData(){
+        int rowStep = 2;
+        int cellStep = 2;
+        int additionalRowStart = rowStart + 1 + table.get(titles.get(0)).size() + rowStep;
+        int additionalCellStart = 0;
+       // additionalDataRowStart = new ArrayList<>();
+       // additionalDataCellStart = new ArrayList<>();
+        coordinatesOfAddDataColumns = new ArrayList<>();
+        for (int i = 0; i < additionalDataTitles.size(); i++){
+            //additionalDataRowStart.add(additionalRowStart);
+            //additionalDataCellStart.add(additionalCellStart);
+            setTitles(additionalDataTitles.get(i), additionalRowStart, additionalCellStart);
+            fillData(additionalDataTables.get(i), additionalDataTitles.get(i), additionalRowStart, additionalCellStart);
+            coordinatesOfAddDataColumns.add(new HashMap<>());
+            calculateCoordinates(coordinatesOfAddDataColumns.get(i), additionalDataTables.get(i),
+                    additionalDataTitles.get(i), additionalRowStart, additionalCellStart);
+            setColumnAutoSize(additionalCellStart,additionalDataTitles.get(i));
+
+            additionalCellStart += additionalDataTitles.get(i).size() + cellStep;
+        }
     }
 
     private void createSheet(String sheetName){
         workbook.createSheet(sheetName);
     }
 
-    private void setTitles(Sheet sheet){
-        Row row = sheet.createRow(rowStart);
+    private void setTitles(List<String> titles,int rowStart, int cellStart){
+        if(sheet.getRow(rowStart) == null){
+            sheet.createRow(rowStart);
+        }
+        Row row = sheet.getRow(rowStart);
         row.createCell(cellStart).setCellValue("№");
         String title;
         for(int i = 0; i < titles.size(); i++){
@@ -55,26 +113,27 @@ public class DefaultExcelFiller {
         }
     }
 
-    private void fillData(Sheet sheet){
+    private void fillData(Map<String, List<?>> table, List<String> titles, int rowStart, int cellStart){
         int numOfColumns = table.size();
         int numOfRows = table.get(titles.get(0)).size();
         Row row;
         String currentTitle;
         Object currentValue;
         for(int i = 0; i < numOfRows; i++){
-            row = sheet.createRow(i+1+rowStart);
+            if(sheet.getRow(i+1+rowStart) == null){
+                sheet.createRow(i+1+rowStart);
+            }
+            row = sheet.getRow(i+1+rowStart);
             row.createCell(cellStart).setCellValue(i+1);
             for (int j = 0; j < numOfColumns; j++){
                 currentTitle = titles.get(j);
                 currentValue = table.get(currentTitle).get(i);
-                setValueFromTable(currentValue, j, row);
+                setValueFromTable(cellStart, currentValue, j, row);
             }
-
         }
-        calculateCoordinates();
     }
 
-    private void setValueFromTable(Object currentValue, int titleIndex, Row row){
+    private void setValueFromTable(int cellStart, Object currentValue, int titleIndex, Row row){
         if(currentValue instanceof String){
             row.createCell(titleIndex+1+cellStart).setCellType(Cell.CELL_TYPE_STRING);
             row.getCell(titleIndex+1+cellStart).setCellValue((String) currentValue);
@@ -97,12 +156,12 @@ public class DefaultExcelFiller {
         }
     }
 
-    private void calculateCoordinates(){
+    private void calculateCoordinates
+            (Map<String, Coordinates> coordinatesOfTableColumns, Map<String, List<?>> table, List<String> titles, int rowStart, int cellStart){
         int startColumn;
         int startRow;
         int endColumn;
         int endRow;
-        coordinatesOfColumns = new HashMap<>();
         String currentTitle;
         for (int i = 0; i < titles.size(); i++){
             currentTitle = titles.get(i);
@@ -110,18 +169,27 @@ public class DefaultExcelFiller {
             startRow = rowStart + 1;
             endColumn = startColumn;
             endRow = rowStart  +  table.get(currentTitle).size();
-            coordinatesOfColumns.put(currentTitle, new Coordinates(startColumn,startRow,endColumn,endRow));
+            coordinatesOfTableColumns.put(currentTitle, new Coordinates(startColumn,startRow,endColumn,endRow));
         }
     }
 
-    private void setColumnAutoSize(Sheet sheet){
+    private void setColumnAutoSize(int cellStart, List<String> titles){
         for(int i = cellStart; i < titles.size() + cellStart + 1; i++){
             sheet.autoSizeColumn(i);
         }
     }
 
-    public Map<String, Coordinates> getCoordinatesOfColumns() {
-        return coordinatesOfColumns;
+    public Map<String, Coordinates> getCoordinatesOfTableColumns() {
+        return coordinatesOfTableColumns;
     }
+
+    public List<Map<String, Coordinates>> getCoordinatesOfAddDataColumns() {
+        return coordinatesOfAddDataColumns;
+    }
+
+    public Workbook getWorkbook() {
+        return workbook;
+    }
+
 
 }

@@ -71,14 +71,33 @@ public class OrderReportGenerator {
         String reportName = "Orders of several accounts";
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
-        String xAxis = "Order_id";
+        String xAxis = "Full_name";
         List<String> yAxis = new ArrayList<>();
         yAxis.add("Product_default_price");
+        yAxis.add("Order_date");
 
-        Map<String, List<String>> xColumn_yColumns = new HashMap<>();
-        xColumn_yColumns.put(xAxis, yAxis);
+        Map<String, List<String>> graphic = new HashMap<>();
+        graphic.put(xAxis, yAxis);
+
+        String xAxis1 = "Full_name";
+        List<String> yAxis1 = new ArrayList<>();
+        yAxis1.add("Order_preffered");
+        yAxis1.add("Order_date");
+
+
+        Map<String, List<String>> graphic1 = new HashMap<>();
+        graphic.put(xAxis, yAxis);
+        graphic1.put(xAxis1, yAxis1);
+        List<Map<String, List<String>>> graphics = new ArrayList<>();
+        graphics.add(graphic);
+        graphics.add(graphic1);
+        List<LinkedHashMap<String, List<?>>> additionalData = new ArrayList<>();
+        additionalData.add(data);
+        additionalData.add(data);
+        additionalData.add(data);
+
         return new DefaultExcelBuilder().getWorkbookChart
-                (fileFormat,data,reportName, xColumn_yColumns);
+                (fileFormat,data,reportName, graphics, additionalData);
     }
 
 

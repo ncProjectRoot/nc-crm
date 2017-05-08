@@ -13,7 +13,8 @@ import java.util.List;
  */
 public class XSSFChartBuilder implements ChartBuilder {
     private Workbook workbook;
-    private Sheet sheet;
+    private Sheet sourceSheet;
+    private Sheet chartSheet;
     private Chart lineChart;
     private LineChartData data;
     private Coordinates coordinates_X;
@@ -36,8 +37,11 @@ public class XSSFChartBuilder implements ChartBuilder {
 
     private int createChart(int startCell){
         /* Create a drawing canvas on the worksheet */
-        sheet = workbook.getSheetAt(0);
-        Drawing drawing = sheet.createDrawingPatriarch();
+        sourceSheet = workbook.getSheetAt(0);
+        workbook.createSheet();
+        chartSheet = workbook.getSheetAt(1);
+        workbook.setSheetName(1, "Charts");
+        Drawing drawing = chartSheet.createDrawingPatriarch();
         Coordinates coordinates = calculatePlotCoordinates(startCell);
         int leftTopCell = coordinates.getStartColumn();
         int leftTopRow = coordinates.getStartRow();
@@ -60,15 +64,15 @@ public class XSSFChartBuilder implements ChartBuilder {
         int startRow = coordinates_X.getStartRow();
         int endRow = coordinates_X.getEndRow();
         String title;
-        ChartDataSource<?> xs = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(startRow, endRow, startCol, endCol));
+        ChartDataSource<?> xs = DataSources.fromNumericCellRange(sourceSheet, new CellRangeAddress(startRow, endRow, startCol, endCol));
         ChartDataSource<Number> ys;
         for (Coordinates aCoordinates_Y : coordinates_Y) {
             startCol = aCoordinates_Y.getStartColumn();
             endCol = aCoordinates_Y.getEndColumn();
             startRow = aCoordinates_Y.getStartRow();
             endRow = aCoordinates_Y.getEndRow();
-            ys = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(startRow, endRow, startCol, endCol));
-            title = sheet.getRow(startRow - 1).getCell(startCol).toString();
+            ys = DataSources.fromNumericCellRange(sourceSheet, new CellRangeAddress(startRow, endRow, startCol, endCol));
+            title = sourceSheet.getRow(startRow - 1).getCell(startCol).toString();
             data.addSeries(xs, ys).setTitle(title);
         }
     }
@@ -79,8 +83,8 @@ public class XSSFChartBuilder implements ChartBuilder {
 
     private Coordinates calculatePlotCoordinates(int startCol){
         int modifier = 2 + coordinates_X.getEndRow() - coordinates_X.getStartRow();
-        int startRow = coordinates_X.getEndRow() + 2;
-        int endCol = modifier;
+        int startRow = 0;
+        int endCol = startCol + modifier;
         int endRow = startRow + 15;
         return new Coordinates(startCol,startRow,endCol,endRow);
     }
