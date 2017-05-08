@@ -21,10 +21,12 @@ import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.Status;
 import com.netcracker.crm.domain.model.User;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -45,7 +47,7 @@ public class OrderDaoImpl implements OrderDao {
     private UserDao userDao;
     @Autowired
     private ProductDao productDao;
-    
+
     private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
@@ -176,7 +178,7 @@ public class OrderDaoImpl implements OrderDao {
         }
         return order;
     }
-    
+
     @Override
     public List<Order> findAllByDateFinish(LocalDate date) {
         SqlParameterSource params = new MapSqlParameterSource()
@@ -250,6 +252,14 @@ public class OrderDaoImpl implements OrderDao {
         return namedJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
+    @Override
+    public List<Order> findOrgOrdersByCustId(Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.query(SQL_FIND_ORG_ORDERS_BY_CUSTOMER_ID, params, orderWithDetailExtractor);
+
+    }
+
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {
 
         private UserDao userDao;
@@ -283,7 +293,7 @@ public class OrderDaoImpl implements OrderDao {
                 if (status instanceof OrderStatus) {
                     order.setStatus((OrderStatus) status);
                 }
-                           
+
                 Long customerId = rs.getLong(PARAM_CUSTOMER_ID);
                 if (customerId > 0) {
                     order.setCustomer(userDao.findById(customerId));
@@ -293,12 +303,12 @@ public class OrderDaoImpl implements OrderDao {
                 if (productId > 0) {
                     order.setProduct(productDao.findById(productId));
                 }
-                
+
                 Long csrId = rs.getLong(PARAM_CSR_ID);
                 if (csrId > 0) {
                     order.setCsr(userDao.findById(csrId));
                 }
-                
+
                 allOrder.add(order);
             }
             return allOrder;

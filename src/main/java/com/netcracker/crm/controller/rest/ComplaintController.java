@@ -92,6 +92,9 @@ public class ComplaintController {
             customer.setId(3L);
         }
         complaintRowRequest.setCustId(customer.getId());
+        if (customer.isContactPerson()) {
+            complaintRowRequest.setContactPerson(true);
+        }
         return complaintService.getComplaintRow(complaintRowRequest);
     }
 
@@ -107,11 +110,6 @@ public class ComplaintController {
             customer.setId(3L);
         }
         return complaintService.getNamesByCustId(likeTitle, customer.getId());
-    }
-
-    @RequestMapping(value = "/pmg/complaintsaa/{id}", method = RequestMethod.GET)
-    public Complaint discountByTitle(@PathVariable Long id){
-        return complaintService.findById(id);
     }
 
     @PostMapping("/pmg/acceptComplaint")

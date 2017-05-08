@@ -70,18 +70,22 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaint;
     }
 
+    @Transactional
     public List<Complaint> findByTitle(String title) {
         return complaintDao.findByTitle(title);
     }
 
+    @Transactional
     public List<Complaint> findByDate(LocalDate date) {
         return complaintDao.findAllByDate(date);
     }
 
+    @Transactional
     public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
 
+    @Transactional
     public Complaint findById(Long id) {
         return complaintDao.findById(id);
     }
@@ -89,6 +93,7 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Transactional
     @Override
     public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException {
+
         Map<String, Object> response = new HashMap<>();
         Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
         response.put("length", length);
@@ -124,7 +129,7 @@ public class ComplaintServiceImpl implements ComplaintService {
     public boolean acceptComplaint(Long complaintId, Long pmgId) {
         Complaint complaint = complaintDao.findById(complaintId);
 
-        if(complaint.getPmg()!=null){
+        if (complaint.getPmg() != null) {
             return false;
         }
         User pmg = new User();
@@ -138,6 +143,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         history.setDescChangeStatus("Pmg with id " + pmgId + " accepted complaint");
         history.setOldStatus(ComplaintStatus.OPEN);
         historyDao.create(history);
+        sendEmail(complaint);
         return true;
     }
 
@@ -145,7 +151,7 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Override
     public boolean closeComplaint(Long complaintId, Long pmgId) {
         Complaint complaint = complaintDao.findById(complaintId);
-        if(complaint.getPmg()==null||!complaint.getPmg().getId().equals(pmgId)){
+        if (complaint.getPmg() == null || !complaint.getPmg().getId().equals(pmgId)) {
             return false;
         }
         complaint.setStatus(ComplaintStatus.CLOSED);
@@ -156,7 +162,28 @@ public class ComplaintServiceImpl implements ComplaintService {
         history.setDescChangeStatus("Pmg with id " + complaint.getPmg().getId() + " solved complaint");
         history.setOldStatus(ComplaintStatus.SOLVING);
         historyDao.create(history);
+        sendEmail(complaint);
         return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean checkAccess(User customer, Long complaintId) {
+        UserRole role = customer.getUserRole();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_PMG)) {
+            return true;
+        } else if (role.equals(UserRole.ROLE_CSR)) {
+            return false;
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            Long count = null;
+            if (customer.isContactPerson()) {
+                count = complaintDao.checkOwnershipOfContactPerson(complaintId, customer.getId());
+            } else {
+                count = complaintDao.checkOwnershipOfCustomer(complaintId, customer.getId());
+            }
+            return count > 0;
+        }
+        return false;
     }
 
     private ComplaintRowDto convertToRowDto(Complaint complaint) {

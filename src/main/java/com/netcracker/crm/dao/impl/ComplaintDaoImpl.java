@@ -261,6 +261,22 @@ public class ComplaintDaoImpl implements ComplaintDao {
         return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_CUSTOMER_ID, params, String.class);
     }
 
+    @Override
+    public Long checkOwnershipOfContactPerson(Long complaintId, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ID, complaintId)
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON, params, Long.class);
+    }
+
+    @Override
+    public Long checkOwnershipOfCustomer(Long complaintId, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ID, complaintId)
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CUSTOMER, params, Long.class);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.complaintInsert = new SimpleJdbcInsert(dataSource)

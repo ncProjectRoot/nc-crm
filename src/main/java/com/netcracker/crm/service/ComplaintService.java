@@ -1,6 +1,7 @@
 package com.netcracker.crm.service;
 
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 
@@ -37,5 +38,7 @@ public interface ComplaintService {
     public boolean acceptComplaint(Long complaintId, Long pmgId);
 
     public boolean closeComplaint(Long complaintId, Long pmgId);
+
+    boolean checkAccess(User customer, Long id);
 }
 

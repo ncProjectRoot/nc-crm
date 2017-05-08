@@ -238,7 +238,7 @@
                             <select id="orderSelect" name="orderId">
                                 <option value="" disabled selected>Choose order</option>
                                 <c:forEach items="${orders}" var="i">
-                                    <option value="${i.id}"># ${i.id} ${i.product.title} </option>
+                                    <option value="${i.id}"># ${i.id} ${i.product.title} ${i.date.toLocalDate()} </option>
                                 </c:forEach>
                             </select>
                             <label>Order Select</label>
@@ -248,7 +248,7 @@
                         <div class="input-field col s6">
                             <i class="material-icons prefix">mode_edit</i>
                             <textarea name="message" id="message" class="materialize-textarea"
-                                      maxlength="375" data-length="375"></textarea>
+                                      maxlength="400" data-length="400"></textarea>
                             <label for="message">Message</label>
                         </div>
                     </div>
@@ -271,6 +271,7 @@
     $('ul.tabs').tabs();
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
+
     $('#message').trigger('autoresize');
 
 

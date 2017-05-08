@@ -1,7 +1,6 @@
 package com.netcracker.crm.dao.impl.sql;
 
 /**
- *
  * @author YARUS
  */
 public final class OrderSqlQuery {
@@ -22,30 +21,41 @@ public final class OrderSqlQuery {
             + "SET date_finish = :date_finish, preferred_date = :preferred_date, "
             + "status_id = :status_id, customer_id = :customer_id, product_id = :product_id, "
             + "csr_id = :csr_id WHERE id = :id;";
-    
+
     public static final String SQL_DELETE_ORDER = "DELETE FROM orders WHERE id = :id;";
 
     public static final String SQL_FIND_ORDER_BY_ID = "SELECT id, date_finish, "
             + "preferred_date, status_id, customer_id, product_id, csr_id "
             + "FROM orders WHERE id = :id;";
-    
+
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE date_trunc('day', date_finish) = :date_finish;";
-    
+
     public static final String SQL_FIND_ALL_ORDER_BY_PREFERRED_DATE = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE date_trunc('day', preferred_date) = :preferred_date;";
-    
+
     public static final String SQL_FIND_ALL_ORDER_BY_PRODUCT_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE product_id = :product_id;";
-    
+
     public static final String SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
-            + "csr_id FROM orders WHERE customer_id = :customer_id;";
-    
+            + "csr_id FROM orders WHERE customer_id = :customer_id "
+            + "ORDER BY date_finish desc";
+
     public static final String SQL_FIND_ALL_ORDER_BY_CSR_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE csr_id = :csr_id;";
+
+    public static final String SQL_FIND_ORG_ORDERS_BY_CUSTOMER_ID = "SELECT id, date_finish, " +
+            "preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders " +
+            "WHERE customer_id IN (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id)) " +
+            "ORDER BY date_finish desc";
 }

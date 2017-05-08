@@ -66,6 +66,19 @@ public final class ComplaintSqlQuery {
             "ORDER BY title " +
             "LIMIT 5;";
 
+    public static final String SQL_CHECK_OWNERSHIP_OF_CUSTOMER = "SELECT count(*) " +
+            "FROM complaint " +
+            "WHERE id = :id AND customer_id = :customer_id";
+
+    public static final String SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON = "SELECT count(*) " +
+            "FROM complaint " +
+            "WHERE id = :id AND customer_id IN (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id));";
+
+
     public static final String SQL_DELETE_COMPLAINT = "DELETE FROM complaint WHERE id = :id;";
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -66,25 +67,41 @@ public class CustomerController {
 
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model, Authentication authentication) {
-        Long customerId = null;
+        User customer = null;
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetailsImpl) {
-            User customer = (UserDetailsImpl) principal;
-            customerId = customer.getId();
+            customer = (UserDetailsImpl) principal;
         } else {
             //!production
-            customerId = 1L;
+            customer = new User();
+            customer.setId(3L);
         }
-        List<Order> orders = orderService.findByCustomerId(customerId);
+        List<Order> orders = null;
+        if (customer.isContactPerson()) {
+            orders = orderService.findOrgOrdersByCustId(customer.getId());
+        } else {
+            orders = orderService.findByCustomerId(customer.getId());
+        }
         model.put("orders", orders);
         return "complaints";
     }
 
     @GetMapping("/complaint/{id}")
-    public String complaint(Map<String, Object> model, @PathVariable("id") Long id) {
-        Complaint complaint = complaintService.findById(id);
-        model.put("complaint", complaint);
-        return "complaint";
+    public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
+                            Authentication authentication, HttpServletResponse httpServletResponse) {
+        User customer = null;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+        }
+        boolean allowed = complaintService.checkAccess(customer, id);
+        if(allowed) {
+            Complaint complaint = complaintService.findById(id);
+            model.put("complaint", complaint);
+            return "complaint";
+        } else {
+            return "403";
+        }
     }
 
 }

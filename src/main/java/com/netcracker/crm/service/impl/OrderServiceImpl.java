@@ -1,17 +1,17 @@
 package com.netcracker.crm.service.impl;
 
 import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,9 +30,16 @@ public class OrderServiceImpl implements OrderService {
         this.orderDao = orderDao;
     }
 
+    @Override
     public List<Order> findByCustomerId(Long id) {
         return orderDao.findAllByCustomerId(id);
     }
+
+    @Override
+    public List<Order> findOrgOrdersByCustId(Long id) {
+        return orderDao.findOrgOrdersByCustId(id);
+    }
+
     @Override
     public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) throws IOException {
         Map<String, Object> response = new HashMap<>();
