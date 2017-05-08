@@ -99,7 +99,7 @@
     }
 
     #order {
-        min-height: 250px;
+        min-height: 320px;
     }
 
     #order-form {
@@ -128,9 +128,15 @@
                             <div class="input-field col s12">
                                 <form id="order-form">
                                     <div class="input-field col s4">
-                                        <input id="preferred-date" type="date" class="datepicker">
+                                        <input name="preferredDate" id="preferred-date" type="date" class="datepicker">
                                         <label for="preferred-date">Preferred date</label>
                                     </div>
+                                    <div class="input-field col s12">
+                                        <label for="timepicker_ampm_dark">Preferred time</label>
+                                        <input name="preferredTime" id="timepicker_ampm_dark" class="timepicker"
+                                               type="time">
+                                    </div>
+                                    <input name="productId" type="hidden" value="${product.id}"/>
                                     <button class="btn waves-effect waves-light" type="submit" name="action">Pay
                                         <i class="material-icons left">attach_money</i>
                                     </button>
@@ -177,9 +183,31 @@
     );
     $('.datepicker').pickadate({
         selectMonths: true,
-        format: 'dd-mm-yyyy',
-        min: new Date()
+        format: 'yyyy-mm-dd',
+        min: new Date(),
+        autoclose: true
     });
+
+    $('.timepicker').pickatime({
+        default: 'now',
+        twelvehour: false, // change to 12 hour AM/PM clock from 24 hour
+        donetext: 'OK',
+        autoclose: true,
+        vibrate: true // vibrate the device when dragging clock hand
+    });
+
+    $('#order-form').on("submit", function (e) {
+        e.preventDefault();
+        var url = "/customer/put/order";
+        var form = "#order-form";
+        sendPost(form, url).done(function (orderId) {
+            if (orderId) {
+                location.hash = '#order?id=' + orderId;
+            }
+            $('.modal').modal('close');
+        })
+    })
+    ;
     </c:if>
     </sec:authorize>
 

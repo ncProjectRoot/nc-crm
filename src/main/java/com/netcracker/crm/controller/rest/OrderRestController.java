@@ -45,7 +45,7 @@ public class OrderRestController {
     private BindingResultHandler bindingResultHandler;
 
 
-    @PostMapping("/customer/createOrder")
+    @PostMapping("/customer/put/order")
     public ResponseEntity<?> createOrder(@Valid OrderDto orderDto, BindingResult bindingResult
             , Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -57,7 +57,7 @@ public class OrderRestController {
         }
         Order order = orderService.persist(orderDto);
         if (order.getId() > 0) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_ORDER_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(order.getId(), SUCCESS_MESSAGE, SUCCESS_ORDER_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }

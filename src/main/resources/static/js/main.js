@@ -95,5 +95,6 @@ function sendPost(form, url) {
                 Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
             }
         }
-    })
+    });
+    return xhr;
 }
