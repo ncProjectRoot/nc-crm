@@ -181,22 +181,7 @@
     </div>
 </div>
 <script>
-    $("#addProduct").on("submit", function (e) {
-        e.preventDefault();
-        var title = $('#title').val();
-        var price = $('#price').val();
-        if (title.length < 5) {
-            Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
-        } else if (price < 1) {
-            Materialize.toast("Please enter price more 0", 10000, 'rounded');
-        } else {
-            $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
-                $("#addProduct")[0].reset();
-                Materialize.toast(data, 10000, 'rounded');
-            });
-            loadProductsWithoutGroup();
-        }
-    });
+    
 
     console.log("profile");
 </script>
