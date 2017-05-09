@@ -38,11 +38,7 @@
 </style>
 
 
-<div class="content-header z-depth-1 valign-wrapper">
-    <i class="black-text material-icons">person_pin</i>
-    <span>Profile</span>
-</div>
-<div class="content-body-wrapper z-depth-1" >
+<div class="content-header z-depth-1 valid-wrapper">
     <div id="head-name" class="center-align">
         <h1 id="FIO" class="card-panel hoverable">Іванов Іван Іванович</h1>
     </div>
@@ -137,7 +133,7 @@
                         </div>
                         <div class="input-field">
                             <input type="checkbox" class="filled-in" id="customer_contact_person"
-                                   />
+                            />
                             <label for="customer_contact_person">Contact Person</label>
                         </div>
                         <div class="input-field" id="address_input">
@@ -180,6 +176,7 @@
         </div>
     </div>
 </div>
+
 <script>
 
 
