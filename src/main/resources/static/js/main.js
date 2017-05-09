@@ -105,8 +105,7 @@ jQuery.fn.karpo_status = function (activeStatusId) {
         statusContainer.prepend("<option value='' disabled selected>Choose your option</option>")
     } else {
         statusContainer.find("option").each(function () {
-            if ($(this).val() == activeStatusId) {
-                console.log($(this).val() + " " + activeStatusId)
+            if ($(this).data("value") == activeStatusId) {
                 $(this).attr("selected", true)
             }
             if ($(this).data("after-disabled") <= activeStatusId) {
@@ -116,8 +115,7 @@ jQuery.fn.karpo_status = function (activeStatusId) {
     }
     this.disabled = function (disabledStatusId) {
         statusContainer.find("option").each(function () {
-            if ($(this).val() == disabledStatusId) {
-                console.log($(this).val() + " " + disabledStatusId)
+            if ($(this).data("value") == disabledStatusId) {
                 $(this).attr("disabled", true)
             }
         });

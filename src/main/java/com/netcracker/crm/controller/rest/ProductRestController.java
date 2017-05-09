@@ -65,6 +65,20 @@ public class ProductRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @RequestMapping(value = "/csr/post/product", method = RequestMethod.POST)
+    public ResponseEntity<?> updateProduct(@Valid ProductDto productDto, BindingResult bindingResult) {
+        productValidator.validate(productDto, bindingResult);
+        if (bindingResult.hasErrors()){
+            return bindingResultHandler.handle(bindingResult);
+        }
+
+        Product product = productService.update(productDto);
+        if(product.getId() > 0){
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @GetMapping("/csr/load/productWithoutGroup")
     public List<ProductGroupDto> productsWithoutGroup() {
         return productService.getProductsWithoutGroup();
@@ -110,12 +124,12 @@ public class ProductRestController {
 
 
     @GetMapping("/csr/load/products")
-    public Map<String, Object> allProductsForCsr(ProductRowRequest orderRowRequest) throws IOException {
+    public Map<String, Object> allProductsForCsr(ProductRowRequest orderRowRequest) {
         return productService.getProductsRow(orderRowRequest);
     }
 
     @GetMapping("/customer/load/products")
-    public Map<String, Object> customerProducts(ProductRowRequest orderRowRequest, Authentication authentication) throws IOException {
+    public Map<String, Object> customerProducts(ProductRowRequest orderRowRequest, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {
@@ -127,7 +141,7 @@ public class ProductRestController {
     }
 
     @GetMapping("/customer/load/possibleProducts")
-    public Map<String, Object> possibleProductForCustomer(ProductRowRequest productRowRequest, Authentication authentication) throws IOException {
+    public Map<String, Object> possibleProductForCustomer(ProductRowRequest productRowRequest, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User customer;
         if (principal instanceof UserDetailsImpl) {

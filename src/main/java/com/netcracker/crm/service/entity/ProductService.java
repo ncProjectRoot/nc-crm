@@ -17,6 +17,8 @@ import java.util.Map;
 public interface ProductService {
     Product persist(ProductDto productDto);
 
+    Product update(ProductDto productDto);
+
     List<ProductGroupDto> getProductsWithoutGroup();
 
     List<String> getTitlesLikeTitle(String likeTitle);

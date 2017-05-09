@@ -56,6 +56,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product update(ProductDto productDto) {
+        Product product = convertToEntity(productDto);
+        productDao.update(product);
+        return product;
+    }
+
+    @Override
     public List<ProductGroupDto> getProductsWithoutGroup() {
         List<Product> products = productDao.findAllWithoutGroup();
         return convertToDto(products);

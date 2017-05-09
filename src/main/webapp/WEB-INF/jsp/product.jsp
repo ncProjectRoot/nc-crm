@@ -139,6 +139,7 @@
             <form id="change-form">
                 <div class="modal-content row">
                     <h4>Change Product</h4>
+                    <input type="hidden" name="id" value="${product.id}"/>
                     <div class='input-field col s7'>
                         <i class="material-icons prefix">title</i>
                         <label for="title">Title</label>
@@ -147,9 +148,9 @@
                     <div class="input-field col s7">
                         <i class="material-icons prefix">cached</i>
                         <select name="statusName" id="select_product_status">
-                            <option value="10" data-after-disabled="11">PLANNED</option>
-                            <option value="11" data-after-disabled="12">ACTUAL</option>
-                            <option value="12">OUTDATED</option>
+                            <option value="PLANNED" data-value="10" data-after-disabled="11">PLANNED</option>
+                            <option value="ACTUAL" data-value="11" data-after-disabled="12">ACTUAL</option>
+                            <option value="OUTDATED" data-value="12">OUTDATED</option>
                         </select>
                         <label for="select_product_status">Choose product status</label>
                     </div>
