@@ -50,7 +50,7 @@ public class UserRestController {
         this.generator = generator;
     }
 
-    @PostMapping(value = "/registration")
+    @PostMapping("/registration")
     public ResponseEntity<?> registerUser(@Valid UserDto userDto, BindingResult bindingResult) throws RegistrationException {
         userValidator.validate(userDto, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -75,8 +75,8 @@ public class UserRestController {
     }
 
     @GetMapping("/lastNames")
-    public List<String> getLastNames(String pattern) {
-        return userService.getUserLastNamesByPattern(pattern);
+    public ResponseEntity<List<String>> getLastNames(String pattern) {
+        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern), HttpStatus.OK);
     }
 
 }

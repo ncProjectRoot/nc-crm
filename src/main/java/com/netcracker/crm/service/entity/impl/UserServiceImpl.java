@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         Long length = userDao.getUserRowsCount(userRowRequest);
         response.put("length", length);
-        List<User> users = userDao.findUserRows(userRowRequest);
+        List<User> users = userDao.findUsers(userRowRequest);
 
         List<UserRowDto> dtoRows = new ArrayList<>();
         for (User user : users) {
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<String> getUserLastNamesByPattern(String pattern) {
-        return userDao.findUsersByLastNamePattern(pattern);
+        return userDao.findUserLastNamesByPattern(pattern);
     }
 
     private String createUserRegistrationToken(User user) {

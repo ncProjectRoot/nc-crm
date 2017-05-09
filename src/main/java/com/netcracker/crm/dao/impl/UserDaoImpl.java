@@ -230,7 +230,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findUserRows(UserRowRequest rowRequest) {
+    public List<User> findUsers(UserRowRequest rowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
                 .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
@@ -249,7 +249,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<String> findUsersByLastNamePattern(String pattern) {
+    public List<String> findUserLastNamesByPattern(String pattern) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%");
 

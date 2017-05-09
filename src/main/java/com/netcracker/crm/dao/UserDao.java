@@ -16,7 +16,7 @@ public interface UserDao extends CrudDao<User> {
 
     Long getUserRowsCount(UserRowRequest userRowRequest);
 
-    List<User> findUserRows(UserRowRequest userRowRequest);
+    List<User> findUsers(UserRowRequest userRowRequest);
 
-    List<String> findUsersByLastNamePattern(String pattern);
+    List<String> findUserLastNamesByPattern(String pattern);
 }

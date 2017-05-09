@@ -222,7 +222,7 @@
         var title = $('#search_title').val();
         if (title.length > 1) {
             $('#select_disc').children().remove();
-            $.get("/csr/discountByTitle/" + title).success(function (data) {
+            $.get("/discounts/" + title).success(function (data) {
                 $('#select_disc').append($('<option value="0">Default</option>'));
                 $.each(data, function (i, item) {
                     $('#select_disc').append($('<option/>', {
