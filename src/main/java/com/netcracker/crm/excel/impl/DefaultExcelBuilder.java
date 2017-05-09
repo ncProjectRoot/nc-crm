@@ -42,23 +42,30 @@ public class DefaultExcelBuilder {
     }
 
     public Workbook getWorkbook
-            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<LinkedHashMap<String, List<?>>> additionalDataTables){
-        return getExcelFiller(fileFormat, table, sheetName, additionalDataTables).fillExcel();
+            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<LinkedHashMap<String, List<?>>> additionalDataTables, List<String>  additionalDataTitles){
+        return getExcelFiller(fileFormat, table, sheetName, additionalDataTables, additionalDataTitles).fillExcel();
     }
 
     public Workbook getWorkbookChart
-            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, Map<String, List<String>> xColumns_yColumns, List<LinkedHashMap<String, List<?>>> additionalDataTables){
-        ExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName, additionalDataTables);
+            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, Map<String, List<String>> xColumns_yColumns,
+             List<LinkedHashMap<String, List<?>>> additionalDataTables, List<String> additionalDataTitles){
+
+        ExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName, additionalDataTables, additionalDataTitles);
         Workbook workbook = defaultExcelFiller.fillExcel();
-        addChart(fileFormat, defaultExcelFiller, xColumns_yColumns);
+        List<Map<String, List<String>>> mapList = new ArrayList<>();
+        mapList.add(xColumns_yColumns);
+        addChartsAdditionalData(fileFormat,defaultExcelFiller,mapList);
         return workbook;
     }
 
     public Workbook getWorkbookChart
-            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<Map<String, List<String>>> xColumns_yColumns, List<LinkedHashMap<String, List<?>>> additionalDataTables){
-        ExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName, additionalDataTables);
+            (ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table,
+             String sheetName, List<Map<String, List<String>>> xColumns_yColumns,
+             List<LinkedHashMap<String, List<?>>> additionalDataTables, List<String> additionalDataTitles){
+
+        ExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName, additionalDataTables, additionalDataTitles);
         Workbook workbook = defaultExcelFiller.fillExcel();
-        addCharts(fileFormat, defaultExcelFiller, xColumns_yColumns);
+        addChartsAdditionalData(fileFormat,defaultExcelFiller,xColumns_yColumns);
         return workbook;
     }
 
@@ -89,29 +96,39 @@ public class DefaultExcelBuilder {
         }
     }
 
-    private ExcelFiller getExcelFiller(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName) {
-        int tableRowStart = 1;
-        int tableCellStart = 0;
-        switch (fileFormat) {
-            case XLS:
-                return new DefaultExcelFiller(new HSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart);
-            case XLSX:
-                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart);
-            default:
-                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart);
+    private void addChartsAdditionalData(ExcelFormat fileFormat, ExcelFiller excelFiller, List<Map<String, List<String>>> xColumns_yColumns){
+        int chartStartCell = 0;
+        for (int i = 0; i < xColumns_yColumns.size(); i++) {
+            String xColumnName = (String) xColumns_yColumns.get(i).keySet().toArray()[0];
+            Coordinates coordinates_X = excelFiller.getCoordinatesOfAddDataRow().get(i).get(xColumnName);
+            ArrayList<Coordinates> coordinates_Y = new ArrayList<Coordinates>();
+            for (String string : xColumns_yColumns.get(i).get(xColumnName)){
+                coordinates_Y.add(excelFiller.getCoordinatesOfAddDataRow().get(i).get(string));
+            }
+            ChartBuilder chartBuilder = getChartBuilder(fileFormat, excelFiller.getWorkbook(), coordinates_X, coordinates_Y);
+            chartStartCell = chartBuilder.buildChart(chartStartCell) + 2;
         }
     }
 
-    private ExcelFiller getExcelFiller(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<LinkedHashMap<String, List<?>>> additionalDataTable) {
-        int tableRowStart = 1;
-        int tableCellStart = 0;
+    private ExcelFiller getExcelFiller(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName) {
         switch (fileFormat) {
             case XLS:
-                return new DefaultExcelFiller(new HSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart, additionalDataTable);
+                return new DefaultExcelFiller(new HSSFWorkbook(), table, sheetName);
             case XLSX:
-                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart, additionalDataTable);
+                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName);
             default:
-                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, tableRowStart, tableCellStart, additionalDataTable);
+                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName);
+        }
+    }
+
+    private ExcelFiller getExcelFiller(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<LinkedHashMap<String, List<?>>> additionalDataTable, List<String> additionalDataTitles) {
+        switch (fileFormat) {
+            case XLS:
+                return new DefaultExcelFiller(new HSSFWorkbook(), table, sheetName, additionalDataTable, additionalDataTitles);
+            case XLSX:
+                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, additionalDataTable, additionalDataTitles);
+            default:
+                return new DefaultExcelFiller(new XSSFWorkbook(), table, sheetName, additionalDataTable, additionalDataTitles);
         }
     }
 
@@ -120,9 +137,9 @@ public class DefaultExcelBuilder {
             case XLS:
                 return new HSSFChartBuilder(workbook, coordinates_X,coordinates_Y);
             case XLSX:
-                return new XSSFChartBuilder(workbook, coordinates_X,coordinates_Y);
+                return new XSSFHistogramChartBuilder(workbook, coordinates_X,coordinates_Y);
             default:
-                return new XSSFChartBuilder(workbook, coordinates_X,coordinates_Y);
+                return new XSSFHistogramChartBuilder(workbook, coordinates_X,coordinates_Y);
         }
     }
 }

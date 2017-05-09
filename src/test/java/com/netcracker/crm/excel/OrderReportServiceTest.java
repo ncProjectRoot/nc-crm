@@ -64,7 +64,7 @@ public class OrderReportServiceTest {
         reportService = new ReportServiceImpl(orderDao);
         reportService.createOrdersBetweenDatesOfCustomer_Report(ExcelFormat.XLSX,csr_id,customer_id,firstDate,lastDate);
         Workbook workbook = reportService.getLastReportWorkbook();
-        String fileName = FOLDER_PATH+"createOrdersBetweenDatesOfCustomer_Report.xlsx";
+        String fileName = FOLDER_PATH+reportService.getLastReportFileName();
         FileOutputStream fos = new FileOutputStream(fileName);
         workbook.write(fos);
         File file = new File(fileName);

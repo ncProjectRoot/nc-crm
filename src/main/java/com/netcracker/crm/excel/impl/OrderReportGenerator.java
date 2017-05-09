@@ -26,9 +26,9 @@ public class OrderReportGenerator {
     public Workbook generateOrdersBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         List<Order> orders = orderDao.findAllByCsrIdAndCustomerId(csr_id,customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders of " +
-                orders.get(0).getCustomer().getFirstName() + " " +
-                orders.get(0).getCustomer().getMiddleName() +  " " +
+        String reportName = "Orders_of_" +
+                orders.get(0).getCustomer().getFirstName() + "_" +
+                orders.get(0).getCustomer().getMiddleName() +  "_" +
                 orders.get(0).getCustomer().getLastName();
 
         OrderConverter orderConverter = new OrderConverter();
@@ -39,9 +39,9 @@ public class OrderReportGenerator {
     public Workbook generateOrdersBetweenDatesOfCustomer_ReportGraphic(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         List<Order> orders = orderDao.findAllByCsrIdAndCustomerId(csr_id,customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders of " +
-                orders.get(0).getCustomer().getFirstName() + " " +
-                orders.get(0).getCustomer().getMiddleName() +  " " +
+        String reportName = "Orders_of_" +
+                orders.get(0).getCustomer().getFirstName() + "_" +
+                orders.get(0).getCustomer().getMiddleName() +  "_" +
                 orders.get(0).getCustomer().getLastName();
 
         OrderConverter orderConverter = new OrderConverter();
@@ -58,7 +58,7 @@ public class OrderReportGenerator {
         List<Order> orders = orderDao.findAllByCsrIdAndArrayOfCustomerId
                 (csr_id, customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders of several accounts";
+        String reportName = "Orders_of_several_accounts";
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
         return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName);
@@ -68,36 +68,55 @@ public class OrderReportGenerator {
         List<Order> orders = orderDao.findAllByCsrIdAndArrayOfCustomerId
                 (csr_id, customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders of several accounts";
+        String reportName = "Orders_of_several_accounts";
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
-        String xAxis = "Full_name";
-        List<String> yAxis = new ArrayList<>();
-        yAxis.add("Product_default_price");
-        yAxis.add("Order_date");
+
+        List<LinkedHashMap<String, List<?>>> additionalData = new ArrayList<>();
+        LinkedHashMap<String,List<?>> firstAddData = new LinkedHashMap<>();
+
+        List<String> names = new ArrayList<>();
+        names.add("name1");
+        names.add("name2");
+        names.add("name3");
+        names.add("name4");
+        firstAddData.put("names", names);
+
+        List<Long> firstDate = new ArrayList<>();
+        firstDate.add(1L);
+        firstDate.add(2L);
+        firstDate.add(3L);
+        firstDate.add(4L);
+        firstAddData.put("firstDate", firstDate);
+
+        List<Long> secondDate = new ArrayList<>();
+        secondDate.add(2L);
+        secondDate.add(3L);
+        secondDate.add(4L);
+        secondDate.add(1L);
+        firstAddData.put("secondDate", secondDate);
+
+        additionalData.add(firstAddData);
+
+        String xAxis = "TestData";
+        String addDataOuterTitle = xAxis;
+
+        List<String> addDataOuterTitles = new ArrayList<>();
+        addDataOuterTitles.add(addDataOuterTitle);
+
+        List<String> yAxis = names;
+
 
         Map<String, List<String>> graphic = new HashMap<>();
         graphic.put(xAxis, yAxis);
 
-        String xAxis1 = "Full_name";
-        List<String> yAxis1 = new ArrayList<>();
-        yAxis1.add("Order_preffered");
-        yAxis1.add("Order_date");
 
-
-        Map<String, List<String>> graphic1 = new HashMap<>();
         graphic.put(xAxis, yAxis);
-        graphic1.put(xAxis1, yAxis1);
         List<Map<String, List<String>>> graphics = new ArrayList<>();
         graphics.add(graphic);
-        graphics.add(graphic1);
-        List<LinkedHashMap<String, List<?>>> additionalData = new ArrayList<>();
-        additionalData.add(data);
-        additionalData.add(data);
-        additionalData.add(data);
 
         return new DefaultExcelBuilder().getWorkbookChart
-                (fileFormat,data,reportName, graphics, additionalData);
+                (fileFormat,data,reportName, graphics, additionalData, addDataOuterTitles);
     }
 
 
