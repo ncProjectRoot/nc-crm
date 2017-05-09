@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-    .content-body-wrapper {        
+    .content-body-wrapper {
         width: calc(100% - 20px * 2);
         margin: 20px;
         background-color: #fff;
@@ -9,25 +9,25 @@
     #button-cancel, #swipe-customer-form{
         display: none;
     }
-    
+
     #map2{
         width: 1040px;
     }
 
     #map, #map2 {
         height: 270px;
-        
+
     }
 
     #map {
-        //width: 785px; 
-        width: 1040px; 
+        //width: 785px;
+        width: 1040px;
     }
 
     .little{
-        height:80px;                
+        height:80px;
     }
-    
+
     .left_tab{
         //margin-left: 150px;
     }
@@ -44,9 +44,9 @@
 </div>
 <div class="content-body-wrapper z-depth-1" >
     <div id="head-name" class="center-align">
-        <h1 id="FIO" class="card-panel hoverable">Іванов Іван Іванович</h1>        
+        <h1 id="FIO" class="card-panel hoverable">Іванов Іван Іванович</h1>
     </div>
-    <div class="col s12">      
+    <div class="col s12">
         <a id="button-change" onclick="get_edit_form()"   >
             <div class="fixed-action-btn horizontal">
                 <div   class="btn-floating btn-large red">
@@ -65,49 +65,49 @@
     <div id="swipe-admin-form" class="col s12">
         <div class="row" >
             <div class="row little left_tab" >
-                <div class="col s3" >                        
+                <div class="col s3" >
                     <div class="input-field">
-                        <i id="user_email" class="material-icons prefix">email</i>                            
-                        <label id="user_email_data" for="user_email">yarusrpog@mail.ru</label>                                       
+                        <i id="user_email" class="material-icons prefix">email</i>
+                        <label id="user_email_data" for="user_email">yarusrpog@mail.ru</label>
                     </div>
                 </div>
-                <div class="col s3">                        
+                <div class="col s3">
                     <div class="input-field">
-                        <i id="user_phone" class="material-icons prefix">phone</i>                            
+                        <i id="user_phone" class="material-icons prefix">phone</i>
                         <label id="user_phone_data" for="user_phone">0933794982</label>
-                    </div>   
+                    </div>
                 </div>
-                <div class="col s3">                        
+                <div class="col s3">
                     <div class="input-field">
-                        <i id="user_phone" class="material-icons prefix">lock</i>                            
+                        <i id="user_phone" class="material-icons prefix">lock</i>
                         <label id="user_phone_data" for="user_phone">Acount unlocked</label>
-                    </div>   
+                    </div>
                 </div>
-                <div class="col s3">                        
+                <div class="col s3">
                     <div class="input-field">
-                        <i id="user_phone" class="material-icons prefix">assignment_turned_in</i>                         
+                        <i id="user_phone" class="material-icons prefix">assignment_turned_in</i>
                         <label id="user_phone_data" for="user_phone">Acount activated</label>
-                    </div>   
+                    </div>
                 </div>
-                
+
             </div>
             <div  class="row little left_tab" >
-                <div class="col s3">                        
+                <div class="col s3">
                     <div class="input-field">
-                        <i id="customer_organization" class="material-icons prefix">business</i>                            
+                        <i id="customer_organization" class="material-icons prefix">business</i>
                         <label id="user_organization_data" for="customer_organization">КПІ</label>
                     </div>
                 </div>
-                <div class="col s3">  
+                <div class="col s3">
                     <div class="input-field ">
                         <i id="cus" class="material-icons prefix">open_with</i>
                         <label id="address_details" for="cus">Квартира 53</label>
                     </div>
                 </div>
-                
+
             </div>
             <div class="row left_tab">
-                <div class="col s12 " > 
+                <div class="col s12 " >
                     <span>Your Address</span>
                     <div id="map" ></div>
                 </div>
@@ -181,7 +181,7 @@
     </div>
 </div>
 <script>
-    
+
 
     console.log("profile");
 </script>
@@ -218,19 +218,19 @@
 
 
     function get_edit_form() {
-        document.getElementById("head-name").style.display = "none";        
+        document.getElementById("head-name").style.display = "none";
         document.getElementById("swipe-admin-form").style.display = "none";
         $("#swipe-customer-form").fadeIn(3000);
-        document.getElementById("button-cancel").style.display = "block";        
+        document.getElementById("button-cancel").style.display = "block";
         document.getElementById("button-change").style.display = "none";
     }
 
-    function get_info() {        
-        $("#head-name").fadeIn(3000);        
+    function get_info() {
+        $("#head-name").fadeIn(3000);
         $("#swipe-admin-form").fadeIn(3000);
         document.getElementById("swipe-customer-form").style.display = "none";
         document.getElementById("button-cancel").style.display = "none";
-        document.getElementById("button-change").style.display = "block";        
+        document.getElementById("button-change").style.display = "block";
     }
 
     function initMap() {
