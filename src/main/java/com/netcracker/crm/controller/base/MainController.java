@@ -34,8 +34,6 @@ public class MainController {
             }
         }
         model.put("user", user);
-//        model.put("newMessage", 5);
-
         return "main";
     }
 

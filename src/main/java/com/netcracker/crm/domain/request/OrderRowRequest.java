@@ -8,6 +8,7 @@ public class OrderRowRequest extends RowRequest {
 
     private Integer statusId;
     private Integer productStatusId;
+    private Long customerId;
 
     private static final String BEGIN_SQL = ""
             + "SELECT o.id, product_id, p.title, customer_id, csr_id, date_finish, preferred_date, o.status_id "
@@ -46,6 +47,14 @@ public class OrderRowRequest extends RowRequest {
         this.productStatusId = productStatusId;
     }
 
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
     @Override
     protected String beginSql() {
         return BEGIN_SQL;
@@ -65,6 +74,15 @@ public class OrderRowRequest extends RowRequest {
         if (productStatusId != null) {
             appendWhere(sql);
             sql.append("p.status_id = :product_status_id ");
+        }
+        return sql;
+    }
+
+    @Override
+    protected StringBuilder appendWhereParam(StringBuilder sql) {
+        if (customerId != null) {
+            appendWhere(sql);
+            sql.append("customer_id = :customer_id ");
         }
         return sql;
     }

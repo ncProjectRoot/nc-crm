@@ -1,4 +1,4 @@
-package com.netcracker.crm.service;
+package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
@@ -6,10 +6,8 @@ import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Melnyk_Dmytro
@@ -28,7 +26,6 @@ public interface ComplaintService {
 
     public Complaint findById(Long id);
 
-    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException;
 
     public List<String> getNames(String likeTitle);
 
@@ -42,4 +39,3 @@ public interface ComplaintService {
 
     boolean checkAccess(User customer, Long id);
 }
-

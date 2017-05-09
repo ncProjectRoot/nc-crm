@@ -3,7 +3,7 @@
 <style>
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-body" data-page-name="Discounts">
+<div class="content-body" data-page-name="Groups">
     <div id="content-body" class="row">
 
         <div class="col s12">
@@ -42,7 +42,7 @@
                     <div class="row">
                         <div class='input-field col s6'>
                             <i class="material-icons prefix">done_all</i>
-                            <select multiple="multiple" id="products_without_group" name="products">
+                            <select multiple id="products_without_group" name="products">
                                 <option value="" disabled selected>Choose products</option>
                             </select>
                             <label>Products without group</label>
@@ -51,7 +51,7 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Group
+                            <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">Create Group
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -120,6 +120,30 @@
                 loadProductsWithoutGroup();
             });
         }
+    });
+
+    loadProductsWithoutGroup();
+    function loadProductsWithoutGroup() {
+        $.get("/csr/load/productWithoutGroup").success(function (data) {
+            var prods = $('#products_without_group');
+            prods.children().remove();
+            prods.append('<option value="" disabled selected>Choose products</option>')
+            $.each(data, function (i, item) {
+                prods.append($('<option/>', {
+                    value: item.id,
+                    text: item.title + ' - ' + item.statusName
+                }));
+            });
+            prods.material_select('updating');
+        });
+    }
+
+    $(document).on("click","#submit-group", function (e) {
+        event.preventDefault();
+        var url = "/csr/addGroup";
+        var form = "#addGroup";
+        sendPost(form, url);
+        $(form)[0].reset();
     });
 
     //////// all ////////

@@ -168,7 +168,12 @@ public class ProductDaoImpl implements ProductDao {
     public Long getProductRowsCount(ProductRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive());
+                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
+
+        if (orderRowRequest.getAddress() != null) {
+            params.addValue(PARAM_PRODUCT_REGION_ID, orderRowRequest.getAddress().getRegion().getId());
+        }
 
         String sql = orderRowRequest.getSqlCount();
 
@@ -188,7 +193,12 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
                 .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
                 .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
-                .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset());
+                .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset())
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
+
+        if (orderRowRequest.getAddress() != null) {
+            params.addValue(PARAM_PRODUCT_REGION_ID, orderRowRequest.getAddress().getRegion().getId());
+        }
 
         String sql = orderRowRequest.getSql();
 
@@ -200,6 +210,31 @@ public class ProductDaoImpl implements ProductDao {
         }
 
         return namedJdbcTemplate.query(sql, params, productWithDetailExtractor);
+    }
+
+    @Override
+    public List<String> findProductsTitleByCustomerId(String likeTitle, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId, Long regionId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId)
+                .addValue(PARAM_PRODUCT_REGION_ID, regionId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_POSSIBLE_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_ACTUAL_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
     }
 
     @Override

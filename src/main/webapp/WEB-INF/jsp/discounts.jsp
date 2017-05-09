@@ -50,7 +50,7 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Create Discount
+                            <button class="btn waves-effect waves-light" type="submit" id="submit-discount" name="action">Create Discount
                                 <i class="material-icons right">send</i>
                             </button>
                         </div>
@@ -90,6 +90,14 @@
             }
         }
     );
+
+    $(document).on("click", "#submit-discount", function (e) {
+        event.preventDefault();
+        var url = "/csr/addDiscount";
+        var form = "#addDiscount";
+        sendPost(form, url);
+        $(form)[0].reset();
+    });
 
     //////// all ////////
 

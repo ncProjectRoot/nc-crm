@@ -1,20 +1,19 @@
-package com.netcracker.crm.service.impl;
+package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
+import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
-import com.netcracker.crm.dto.row.ProductRowDto;
-import com.netcracker.crm.dto.ProductStatusDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
-import com.netcracker.crm.service.ProductService;
+import com.netcracker.crm.dto.row.ProductRowDto;
+import com.netcracker.crm.service.entity.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,20 +46,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
-    public Product persist(ProductDto productDto){
-        Product product = convertToEntity(productDto);
-        productDao.create(product);
-        return product;
+    public Product getProductsById(Long id) {
+        return productDao.findById(id);
     }
 
     @Override
-    public List<ProductStatusDto> getStatuses() {
-        List<ProductStatusDto> list = new ArrayList<>();
-        for (ProductStatus status : ProductStatus.values()){
-            list.add(new ProductStatusDto(status.getId(), status.getName()));
-        }
-        return list;
+    @Transactional
+    public Product persist(ProductDto productDto) {
+        Product product = convertToEntity(productDto);
+        productDao.create(product);
+        return product;
     }
 
     @Override
@@ -69,14 +64,35 @@ public class ProductServiceImpl implements ProductService {
         return convertToDto(products);
     }
 
-
-
     @Override
-    public List<String> getNames(String likeTitle) {
+    @Transactional(readOnly = true)
+    public List<String> getTitlesLikeTitle(String likeTitle) {
         return productDao.findProductsTitleLikeTitle(likeTitle);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
+        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId) {
+        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address) {
+        if (address.getRegion() != null) {
+            return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, address.getRegion().getId());
+        }
+        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = productDao.getProductRowsCount(orderRowRequest);
@@ -99,11 +115,13 @@ public class ProductServiceImpl implements ProductService {
         productRowDto.setStatus(product.getStatus().getName());
         if (product.getDiscount() != null) {
             productRowDto.setDiscount(product.getDiscount().getId());
+            productRowDto.setDiscountTitle(product.getDiscount().getTitle());
             productRowDto.setPercentage(product.getDiscount().getPercentage());
             productRowDto.setDiscountActive(product.getDiscount().getActive());
         }
         if (product.getGroup() != null) {
             productRowDto.setGroup(product.getGroup().getId());
+            productRowDto.setGroupName(product.getGroup().getName());
         }
         return productRowDto;
     }
@@ -123,16 +141,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    private List<ProductGroupDto> convertToDto(List<Product> products){
+    private List<ProductGroupDto> convertToDto(List<Product> products) {
         ModelMapper mapper = configureMapper();
         List<ProductGroupDto> result = new ArrayList<>();
-        for (Product product : products){
+        for (Product product : products) {
             result.add(mapper.map(product, ProductGroupDto.class));
         }
         return result;
     }
 
-    private ModelMapper configureMapper(){
+    private ModelMapper configureMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
         modelMapper.addMappings(new ProductMapper());

@@ -1,5 +1,6 @@
 package com.netcracker.crm.datagenerator.impl.user;
 
+import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Organization;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
@@ -13,6 +14,7 @@ import java.util.List;
 @Service
 public class CustomerSetter extends AbstractUserSetter {
     private List<Organization> organizationList;
+    private List<Address> addresses;
     @Override
     protected UserRole getRole() {
         return UserRole.ROLE_CUSTOMER;
@@ -29,11 +31,20 @@ public class CustomerSetter extends AbstractUserSetter {
     }
 
     @Override
+    protected void setAddress(User user) {
+        user.setAddress(addresses.remove(random.nextInt(addresses.size())));
+    }
+
+    @Override
     protected void setContactPerson(User user, int counter) {
         user.setContactPerson(counter % 20 == 0);
     }
 
     public void setOrganizationList(List<Organization> organizationList) {
         this.organizationList = organizationList;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 }

@@ -1,6 +1,5 @@
 package com.netcracker.crm.datagenerator;
 
-import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.datagenerator.impl.*;
 import com.netcracker.crm.datagenerator.impl.user.AdminSetter;
 import com.netcracker.crm.datagenerator.impl.user.CsrSetter;
@@ -27,6 +26,8 @@ public class GeneratorDbData {
     private static final int INDEX_CUSTOMER = 5000;
     private static final int INDEX_ORDER = 20_000;
     private static final int INDEX_COMPLAINT = 500;
+    private static final int INDEX_ADDRESSES = 5000;
+    private static final int INDEX_REGION = 20;
 
     @Autowired
     private DiscountSetter discountSetter;
@@ -48,6 +49,12 @@ public class GeneratorDbData {
     private OrderSetter orderSetter;
     @Autowired
     private ComplaintSetter complaintSetter;
+    @Autowired
+    private RegionSetter regionSetter;
+    @Autowired
+    private AddressSetter addressSetter;
+    @Autowired
+    private RegionGroupsSetter regionGroupsSetter;
 
     public void generateDataForDB(int number){
         List<Discount> discounts = discountSetter.generate(number * INDEX_DISCOUNT);
@@ -59,8 +66,20 @@ public class GeneratorDbData {
 
         List<Product> products = productSetter.generate(number * INDEX_PRODUCT);
 
+        List<Region> regions = regionSetter.generate(number * INDEX_REGION);
+
+        regionGroupsSetter.setRegions(regions);
+        regionGroupsSetter.setGroups(groups);
+//        Relationship many to many
+        List emptyList = regionGroupsSetter.generate(0);
+
+        addressSetter.setRegions(regions);
+
+        List<Address> addresses = addressSetter.generate(number * INDEX_ADDRESSES);
+
         List<Organization> organizations = organizationSetter.generate(number * INDEX_ORGANIZATION);
         customerSetter.setOrganizationList(organizations);
+        customerSetter.setAddresses(addresses);
         List<User> customers = customerSetter.generate(number * INDEX_CUSTOMER);
         List<User> pmgs = pmgSetter.generate(number * INDEX_PMG);
         List<User> csrs = csrSetter.generate(number * INDEX_CSR);
@@ -69,7 +88,7 @@ public class GeneratorDbData {
 
         orderSetter.setCsrs(csrs);
         orderSetter.setCustomers(customers);
-        orderSetter.setProducts(products);
+        orderSetter.setProducts(regionGroupsSetter.getProductInRegion());
 
         List<Order> orders = orderSetter.generate(number * INDEX_ORDER);
 

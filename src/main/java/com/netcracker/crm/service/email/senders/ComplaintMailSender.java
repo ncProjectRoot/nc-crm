@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -42,6 +43,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
     @Autowired
     private JavaMailSenderImpl mailSender;
 
+    @Async
     public void send(EmailParam emailParam) throws MessagingException {
         checkEmailMap(emailParam);
         Complaint complaint = getComplaint(emailParam);

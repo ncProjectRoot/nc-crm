@@ -8,12 +8,14 @@ public class ProductRowDto {
 
     private Long id;
     private String title;
-    private Double price;
     private String status;
+    private Double price;
     private Long discount;
+    private String discountTitle;
     private Double percentage;
     private Boolean discountActive;
     private Long group;
+    private String groupName;
 
     public Long getId() {
         return id;
@@ -77,5 +79,21 @@ public class ProductRowDto {
 
     public void setGroup(Long group) {
         this.group = group;
+    }
+
+    public String getDiscountTitle() {
+        return discountTitle;
+    }
+
+    public void setDiscountTitle(String discountTitle) {
+        this.discountTitle = discountTitle;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

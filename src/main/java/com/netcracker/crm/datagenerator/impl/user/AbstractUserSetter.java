@@ -46,6 +46,7 @@ public abstract class AbstractUserSetter extends AbstractSetter<User> {
         user.setUserRole(getRole());
         setContactPerson(user, counter);
         setOrganization(user);
+        setAddress(user);
         user.setEmail(getEmail(counter));
         user.setPassword(password);
         counter++;
@@ -56,6 +57,7 @@ public abstract class AbstractUserSetter extends AbstractSetter<User> {
     protected abstract String getEmail(int counter);
 
     protected abstract void setOrganization(User user);
+    protected abstract void setAddress(User user);
     protected abstract void setContactPerson(User user, int counter);
 
 
