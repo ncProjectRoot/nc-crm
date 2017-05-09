@@ -1,7 +1,11 @@
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.*;
+import com.netcracker.crm.dao.ComplaintDao;
+import com.netcracker.crm.dao.OrderDao;
+import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,6 +184,67 @@ public class ComplaintDaoImpl implements ComplaintDao {
             return orderId;
         }
         return null;
+    }
+
+    @Override
+    public List<Complaint> findComplaintRows(ComplaintRowRequest complaintRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ROW_STATUS, complaintRowRequest.getStatusId())
+                .addValue(PARAM_COMPLAINT_ROW_ORDER_STATUS, complaintRowRequest.getOrderStatusId())
+                .addValue(PARAM_COMPLAINT_ROW_PRODUCT_STATUS, complaintRowRequest.getProductStatusId())
+                .addValue(RowRequest.PARAM_ROW_LIMIT, complaintRowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, complaintRowRequest.getRowOffset());
+
+        String query = complaintRowRequest.getSql();
+
+        if (complaintRowRequest.getPmgId() != null) {
+            params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
+        }
+
+        if (complaintRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : complaintRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.query(query, params, complaintWithDetailExtractor);
+    }
+
+    @Override
+    public Long getComplaintRowsCount(ComplaintRowRequest complaintRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_ROW_STATUS, complaintRowRequest.getStatusId());
+        params.addValue(PARAM_COMPLAINT_ROW_ORDER_STATUS, complaintRowRequest.getOrderStatusId());
+        params.addValue(PARAM_COMPLAINT_ROW_PRODUCT_STATUS, complaintRowRequest.getProductStatusId());
+
+        String query = complaintRowRequest.getSqlCount();
+
+        if (complaintRowRequest.getPmgId() != null) {
+            params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
+        }
+
+        if (complaintRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : complaintRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.queryForObject(query, params, Long.class);
+    }
+
+    @Override
+    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<String> findProductsTitleByPmgId(String likeTitle, Long pmgId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_PMG_ID, pmgId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_PMG_ID, params, String.class);
     }
 
     @Autowired

@@ -16,6 +16,10 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import static com.netcracker.crm.dao.impl.sql.OrganizationSqlQuery.*;
 
@@ -87,16 +91,30 @@ public class OrganizationDaoImpl implements OrganizationDao {
     public Organization findById(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_ID, id);
+        List<Organization> organizations = namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, organizationWithDetailExtractor);
 
-        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_ID, params, organizationWithDetailExtractor);
+        if (!organizations.isEmpty()) {
+            return organizations.get(0);
+        }
+        return null;
     }
 
     @Override
     public Organization findByName(String name) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORG_NAME, name);
+        List<Organization> organizations = namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, organizationWithDetailExtractor);
 
-        return namedJdbcTemplate.query(SQL_FIND_ORGANIZATION_BY_NAME, params, organizationWithDetailExtractor);
+        if (!organizations.isEmpty()) {
+            return organizations.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public Set<Organization> getAll() {
+        List<Organization> organizations = namedJdbcTemplate.query(SQL_FIND_ALL_ORGANIZATIONS, new OrganizationWithDetailExtractor());
+        return new HashSet<>(organizations);
     }
 
     @Autowired
@@ -108,16 +126,18 @@ public class OrganizationDaoImpl implements OrganizationDao {
         organizationWithDetailExtractor = new OrganizationWithDetailExtractor();
     }
 
-    private static final class OrganizationWithDetailExtractor implements ResultSetExtractor<Organization> {
+    private static final class OrganizationWithDetailExtractor implements ResultSetExtractor<List<Organization>> {
         @Override
-        public Organization extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Organization organization = null;
-            if (rs.next()) {
-                organization = new Organization();
+        public List<Organization> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<Organization> organizations = new LinkedList<>();
+            while (rs.next()) {
+                Organization organization = new Organization();
                 organization.setId(rs.getLong(PARAM_ORG_ID));
                 organization.setName(rs.getString(PARAM_ORG_NAME));
+
+                organizations.add(organization);
             }
-            return organization;
+            return organizations;
         }
     }
 }

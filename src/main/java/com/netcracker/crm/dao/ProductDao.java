@@ -1,6 +1,8 @@
 package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.request.ProductRowRequest;
+
 import java.util.List;
 
 /**
@@ -14,4 +16,14 @@ public interface ProductDao extends CrudDao<Product>{
     List<Product> findAllWithoutGroup();
 
     List<String> findProductsTitleLikeTitle(String likeTitle);
+
+    Long getProductRowsCount(ProductRowRequest orderRowRequest);
+
+    List<Product> findProductRows(ProductRowRequest orderRowRequest);
+
+    List<String> findProductsTitleByCustomerId(String likeTitle, Long customerId);
+
+    List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId, Long regionId);
+
+    List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId);
 }

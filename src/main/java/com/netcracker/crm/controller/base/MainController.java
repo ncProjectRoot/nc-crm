@@ -34,9 +34,6 @@ public class MainController {
             }
         }
         model.put("user", user);
-        model.put("newMessage", 5);
-        model.put("currentLanguage", "English");
-
         return "main";
     }
 

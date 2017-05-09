@@ -5,8 +5,8 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
-import com.netcracker.crm.service.ComplaintService;
-import com.netcracker.crm.service.OrderService;
+import com.netcracker.crm.service.entity.ComplaintService;
+import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -38,11 +38,6 @@ public class CustomerController {
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
         return "dashboard/customer";
-    }
-
-    @GetMapping("/profile")
-    public String profile(Map<String, Object> model) {
-        return "profile";
     }
 
     @GetMapping("/users")
@@ -83,7 +78,7 @@ public class CustomerController {
         List<Order> orders = orderService.findByCustomerId(customerId);
         model.put("complaints", complaints);
         model.put("orders", orders);
-        return "complaints";
+        return "complaintCustomer";
     }
 
 
