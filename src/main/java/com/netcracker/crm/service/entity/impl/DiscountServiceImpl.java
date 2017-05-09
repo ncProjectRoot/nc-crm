@@ -2,6 +2,7 @@ package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.dto.mapper.DiscountMapper;
 import com.netcracker.crm.service.entity.DiscountService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,10 +40,27 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    public List<AutocompleteDto> getAutocompleteDiscount(String pattern) {
+        List<Discount> discounts = discountDao.findByIdOrTitle(pattern);
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Discount discount: discounts) {
+            result.add(convertToAutocompleteDto(discount));
+        }
+        return result;
+    }
+
+    @Override
     public List<Discount> getProductDiscount(String title){
         return discountDao.findByTitle(title);
     }
 
+
+    private AutocompleteDto convertToAutocompleteDto(Discount discount) {
+        AutocompleteDto autocompleteDto = new AutocompleteDto();
+        autocompleteDto.setId(discount.getId());
+        autocompleteDto.setValue(discount.getTitle());
+        return autocompleteDto;
+    }
 
     private Discount convertToEntity(DiscountDto discountDto) {
         ModelMapper mapper = configureMapper();

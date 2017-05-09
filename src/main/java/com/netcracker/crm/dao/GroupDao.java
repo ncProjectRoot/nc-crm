@@ -14,4 +14,6 @@ public interface GroupDao extends CrudDao<Group>{
     List<Group> findByName(String name);
 
     Long getCount();
+
+    List<Group> findByIdOrTitle(String pattern);
 }

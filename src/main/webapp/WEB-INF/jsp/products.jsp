@@ -172,7 +172,7 @@
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
-                                <textarea id="descProduct" name="description" class="materialize-textarea"></textarea>
+                                <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>
                                 <label for="descProduct">Description</label>
                             </div>
                         </div>

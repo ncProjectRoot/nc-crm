@@ -108,16 +108,91 @@
         text-align: center;
     }
 
+    .change-trigger {
+        position: absolute;
+        margin: 20px;
+    }
+
+    .modal.modal-fixed-footer {
+        max-height: 85%;
+        height: 98%;
+    }
+
+    .row .col {
+        float: none;
+        margin: 30px auto;
+    }
+
+    .modal .modal-footer .btn {
+        float: none;
+    }
+
+    .modal-content h4 {
+        margin-top: 20px;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Product #${product.id}">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <a class="modal-trigger brown-text change-trigger" href="#change"><i class='material-icons medium'>settings</i></a>
+        <div id="change" class="modal modal-fixed-footer">
+            <form id="change-form">
+                <div class="modal-content row">
+                    <h4>Change Product</h4>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">title</i>
+                        <label for="title">Title</label>
+                        <input class="validate" id="title" type="text" name="title">
+                    </div>
+                    <div class="input-field col s7">
+                        <i class="material-icons prefix">cached</i>
+                        <select name="statusName" id="select_product_status">
+                            <option value="10" data-after-disabled="11">PLANNED</option>
+                            <option value="11" data-after-disabled="12">ACTUAL</option>
+                            <option value="12">OUTDATED</option>
+                        </select>
+                        <label for="select_product_status">Choose product status</label>
+                    </div>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">attach_money</i>
+                        <input class='validate' type='number' name='defaultPrice' id='price'/>
+                        <label for="price">Price</label>
+                    </div>
+                    <div class="input-field col s7">
+                        <i class="material-icons prefix">loyalty</i>
+                        <input type="text" id="discount-input" class="autocomplete">
+                        <input type="hidden" id="discount-hidden-input" name="discountId"/>
+                        <label for="discount-input">Selected discount: <span id="selected-discount"></span></label>
+                    </div>
+                    <div class="input-field col s7">
+                        <i class="material-icons prefix">bubble_chart</i>
+                        <input type="text" id="group-input" class="autocomplete">
+                        <input type="hidden" id="group-hidden-input" name="groupId"/>
+                        <label for="group-input">Selected group: <span id="selected-group"></span></label>
+                    </div>
+                    <div class="input-field col s11">
+                        <i class="material-icons prefix">description</i>
+                        <textarea id="descProduct" name="description"
+                                  class="materialize-textarea">${product.description}</textarea>
+                        <label for="descProduct">Description</label>
+                    </div>
+                </div>
+                <div class="modal-footer center-align">
+                    <button class="btn waves-effect waves-light" id="submit-product" type="submit" name="action">Update
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </sec:authorize>
     <c:if test="${product.discount.active}">
         <img class="discount-img" src="${discountUrl}"/>
     </c:if>
     <div class="container">
-        <h4 class="title">${product.title}</h4>
+        <h4 class="title field">${product.title}</h4>
         <div class="divider"></div>
         <div class="section">
-            <h5 class="status ${product.status.name}">${product.status.name}</h5>
+            <h5 class="status ${product.status.name} field">${product.status.name}</h5>
             <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                 <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
                     <a class="btn-floating btn-large waves-effect waves-light green darken-4 order-btn" href="#order"><i
@@ -146,10 +221,10 @@
                     </div>
                 </c:if>
             </sec:authorize>
-            <h6>${product.group.name}</h6>
+            <h6 class="group field">${product.group.name}</h6>
         </div>
         <div class="section">
-            <div class="div-price">
+            <div class="div-price field">
                 <h5 class="price">${product.defaultPrice}$</h5>
                 <c:if test="${product.discount.active}">
                     <h5 class="new-price"></h5>
@@ -159,9 +234,10 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <h5>${product.description}</h5>
+            <h5 class="description field">${product.description}</h5>
         </div>
     </div>
+
 </div>
 <script>
 
@@ -209,6 +285,41 @@
     })
     ;
     </c:if>
+    </sec:authorize>
+
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+
+    $('.modal').modal({
+            opacity: .5, // Opacity of modal background
+            endingTop: '8%' // Starting top style attribute
+        }
+    );
+
+
+    $(".modal-content input[name='title']").val("${product.title}");
+    $(".modal-content input[name='defaultPrice']").val("${product.defaultPrice}");
+    $('#select_product_status').karpo_status(${product.status.id});
+    $('#discount-input').karpo_autocomplete({
+        url: "/csr/discountByTitle/",
+        label: "#selected-discount",
+        defaultValue: "${product.discount.id} ${product.discount.title}",
+        hideInput: "#discount-hidden-input"
+    });
+    $('#group-input').karpo_autocomplete({
+        url: "/csr/groupByName/",
+        label: "#selected-group",
+        defaultValue: "${product.group.id} ${product.group.name}",
+        hideInput: "#group-hidden-input"
+    });
+
+    $('.materialize-textarea').trigger('autoresize');
+    Materialize.updateTextFields();
+
+    $("#change-form").on("submit", function (e) {
+        e.preventDefault();
+        sendPost("#change-form", "");
+    });
+
     </sec:authorize>
 
 </script>

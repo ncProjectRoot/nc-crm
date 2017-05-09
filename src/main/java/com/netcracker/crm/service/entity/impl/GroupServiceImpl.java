@@ -6,6 +6,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
 import com.netcracker.crm.dto.mapper.GroupMapper;
 import com.netcracker.crm.service.entity.GroupService;
@@ -59,8 +60,25 @@ public class GroupServiceImpl implements GroupService{
     }
 
     @Override
+    public List<AutocompleteDto> getAutocompleteGroup(String pattern) {
+        List<Group> groups = groupDao.findByIdOrTitle(pattern);
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Group group: groups) {
+            result.add(convertToAutocompleteDto(group));
+        }
+        return result;
+    }
+
+    @Override
     public List<Group> groupsByName(String name) {
         return groupDao.findByName(name);
+    }
+
+    private AutocompleteDto convertToAutocompleteDto(Group group) {
+        AutocompleteDto autocompleteDto = new AutocompleteDto();
+        autocompleteDto.setId(group.getId());
+        autocompleteDto.setValue(group.getName());
+        return autocompleteDto;
     }
 
     private Group convertToEntity(GroupDto groupDto) {
