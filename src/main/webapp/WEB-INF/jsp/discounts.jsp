@@ -61,7 +61,16 @@
                                 <input class='validate' type='text' name='title' id='disc_title'/>
                                 <label for="disc_title">Title</label>
                             </div>
-                            <div class="switch">
+                        </div>
+                        <div class="row">
+                            <div class='input-field col s6'>
+                                <i class="material-icons prefix">call_received</i>
+                                <input class='validate' type='number' name='percentage' id='disc_percentage'/>
+                                <label for="disc_percentage">Percentage</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class='switch col s6'>
                                 <i class="material-icons prefix">touch_app</i>
                                 <label>
                                     Inactive
@@ -72,14 +81,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class='input-field col s6'>
-                                <i class="material-icons prefix">call_received</i>
-                                <input class='validate' type='number' name='percentage' id='disc_percentage'/>
-                                <label for="disc_percentage">Percentage</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
+                            <div class="input-field col s6">
                                 <i class="material-icons prefix">description</i>
                                 <textarea id="disc_description" name="description"
                                           class="materialize-textarea"></textarea>
