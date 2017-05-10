@@ -66,7 +66,7 @@ public class ComplaintRestController {
 
     @GetMapping("/complaints")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
-    public Map<String, Object> complaints(ComplaintRowRequest complaintRowRequest, Authentication authentication,
+    public ResponseEntity<Map<String, Object>> complaints(ComplaintRowRequest complaintRowRequest, Authentication authentication,
                                           @RequestParam(required = false) Long userId) throws IOException {
         Object principal = authentication.getPrincipal();
         User user = null;
@@ -85,12 +85,12 @@ public class ComplaintRestController {
                 }
             }
         }
-        return complaintService.getComplaintRow(complaintRowRequest);
+        return new ResponseEntity<>(complaintService.getComplaintRow(complaintRowRequest), HttpStatus.OK);
     }
 
     @GetMapping("/complaints/titles")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
-    public List<String> complaintsTitles(String likeTitle, Authentication authentication,
+    public ResponseEntity<List<String>> complaintsTitles(String likeTitle, Authentication authentication,
                                          @RequestParam(required = false) Long userId) {
         Object principal = authentication.getPrincipal();
         User user = null;
@@ -98,14 +98,14 @@ public class ComplaintRestController {
             user = (UserDetailsImpl) principal;
         }
         if (userId != null && user.getUserRole().equals(UserRole.ROLE_PMG)) {
-            return complaintService.getTitlesByPmg(likeTitle, user);
+            new ResponseEntity<>(complaintService.getTitlesByPmg(likeTitle, user), HttpStatus.OK);
         }
-        return complaintService.getTitles(likeTitle, user);
+        return new ResponseEntity<>(complaintService.getTitles(likeTitle, user), HttpStatus.OK);
     }
 
     @PutMapping("/complaints/{id}")
     @PreAuthorize("hasRole('ROLE_PMG')")
-    public boolean acceptComplaint(Map<String, Object> model, Authentication authentication,
+    public ResponseEntity<Boolean> acceptComplaint(Map<String, Object> model, Authentication authentication,
                                    @RequestParam(value = "type") String type,
                                    @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
@@ -114,10 +114,10 @@ public class ComplaintRestController {
             pmg = (UserDetailsImpl) principal;
         }
         if ("ACCEPT".equals(type)) {
-            return complaintService.acceptComplaint(id, pmg.getId());
+            return new ResponseEntity<>( complaintService.acceptComplaint(id, pmg.getId()), HttpStatus.OK);
         } else if ("CLOSE".equals(type)) {
-            return complaintService.closeComplaint(id, pmg.getId());
+            return new ResponseEntity<>( complaintService.closeComplaint(id, pmg.getId()), HttpStatus.OK);
         }
-        return false;
+        return new ResponseEntity<>(Boolean.FALSE, HttpStatus.OK);
     }
 }
