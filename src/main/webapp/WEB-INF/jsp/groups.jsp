@@ -13,7 +13,43 @@
             </ul>
         </div>
         <div id="all-groups-wrapper" class="col s12">
-
+            <div id="table-all-groups" class="table-container row">
+                <div class="table-wrapper col s11 center-align">
+                    <table class="striped responsive-table centered ">
+                        <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">Name</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="passive-single-sort sorted-element a-dummy">Number products</a>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Discount</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
+                                </th>
+                                <th class="th-dropdown" data-field="discountActive">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-my-discount-status' data-default-name="Discount Active">
+                                        Discount Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-my-discount-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                                    </ul>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <div id="create-wrapper" class="col s12">
             <div class="row">
@@ -59,8 +95,6 @@
                 </form>
             </div>
         </div>
-
-
     </div>
 </div>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
@@ -68,6 +102,21 @@
 
     $('ul#tabs').tabs({
         onShow: function (tab) {
+        }
+    });
+
+    $("#table-all-groups").karpo_table({
+        urlSearch : "/groups/name",
+        urlTable: "/groups",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>", {html: '<a href="">' + object.id +'</a>'}));
+            tr.append($("<td>", {text: object.name}));
+            tr.append($("<td>", {text: object.numberProducts}));
+            tr.append($("<td>", {text: object.discountName}));
+            tr.append($("<td>", {text: object.discountValue}));
+            tr.append($("<td>", {text: object.discountActive}));
+            return tr;
         }
     });
 

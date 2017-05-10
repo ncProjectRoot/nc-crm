@@ -48,4 +48,8 @@ public final class OrderSqlQuery {
     public static final String SQL_FIND_ALL_ORDER_BY_CSR_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE csr_id = :csr_id;";
+
+    public static final String SQL_HAS_CUSTOMER_PRODUCT = "SELECT CAST(COUNT(o.id) AS BIT) "
+            + "FROM orders o "
+            + "WHERE o.customer_id = :customer_id AND o.product_id = :product_id";
 }

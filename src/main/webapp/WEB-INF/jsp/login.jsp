@@ -91,6 +91,7 @@
         });
 
         $('.modal-trigger').leanModal();
+        Materialize.updateTextFields();
     });
 </script>
 </body>

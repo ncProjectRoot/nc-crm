@@ -42,4 +42,13 @@ public class ResponseGenerator<T> {
         }
         return getHttpResponse(obj, httpStatus);
     }
+
+    public ResponseEntity<Long> getHttpResponse(Long objectId, MessageHeader header, String messageProperty, HttpStatus httpStatus) {
+        if (env.containsProperty(messageProperty)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(header.getHeaderName(), env.getProperty(messageProperty));
+            return new ResponseEntity<>(objectId, headers, httpStatus);
+        }
+        return new ResponseEntity<>(objectId, httpStatus);
+    }
 }

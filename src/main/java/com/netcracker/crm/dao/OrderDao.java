@@ -24,4 +24,6 @@ public interface OrderDao extends CrudDao<Order>{
     List<Order> findOrderRows(OrderRowRequest orderRowRequest);
 
     Long getOrderRowsCount(OrderRowRequest orderRowRequest);
+
+    Boolean hasCustomerProduct(Long productId, Long customerId);
 }

@@ -88,6 +88,15 @@ public final class ProductSqlQuery {
             + " WHERE customer_id = :customer_id"
             + ");";
 
+    public static final String SQL_HAS_CUSTOMER_ACCESS_TO_PRODUCT = ""
+            + "SELECT CAST(COUNT(p.id) AS BIT) "
+            + "FROM product p "
+            + "INNER JOIN statuses s ON p.status_id = s.id "
+            + "INNER JOIN region_groups rg ON p.group_id = rg.group_id "
+            + "INNER JOIN address a ON a.region_id = rg.region_id "
+            + "INNER JOIN users u ON u.address_id = a.id "
+            + "WHERE u.id = :customer_id AND p.id = :id AND (s.name = 'ACTUAL' OR s.name = 'OUTDATED');";
+
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 
 }

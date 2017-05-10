@@ -104,25 +104,32 @@
                 fillTable(data);
                 if (params.complete) {
                     params.complete();
-                };
+                }
+                ;
             });
         }
 
         function fillTable(data) {
-            if (data.length == 0) {
-                tableContainer.find(".message").show();
-                countTablePages = 0;
-            } else {
-                tableContainer.find(".message").hide();
+            try {
+                if (data.length == 0) {
+                    tableContainer.find(".message").show();
+                    countTablePages = 0;
+                } else {
+                    tableContainer.find(".message").hide();
 
-                countTablePages = Math.ceil(data.length / countTr);
+                    countTablePages = Math.ceil(data.length / countTr);
 
-                data.rows.forEach(function (element) {
-                    tableContainer.find("tbody").append(params.mapper(element));
-                });
+
+                    data.rows.forEach(function (element) {
+                        tableContainer.find("tbody").append(params.mapper(element));
+                    });
+                }
+
+                fillPagination();
+            } catch (err) {
+                window.location.reload();
             }
 
-            fillPagination();
         }
 
         function fillPagination() {
@@ -258,7 +265,7 @@
             downloadTable();
         });
         var iSearch = $("<i>", {text: "search", class: "material-icons search-element tiny"});
-        tableContainer.find(".sorted-element").before(iSearch);
+        tableContainer.find(".sorted-element:not(.passive-single-sort)").before(iSearch);
 
         tableContainer.find(".search-element").on("click", function () {
             var dataField = $(this).closest("th").data("field")

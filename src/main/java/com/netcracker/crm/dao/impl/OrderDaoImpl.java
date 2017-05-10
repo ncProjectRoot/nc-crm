@@ -248,6 +248,14 @@ public class OrderDaoImpl implements OrderDao {
         return namedJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
+    @Override
+    public Boolean hasCustomerProduct(Long productId, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, productId)
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_PRODUCT, params, Boolean.class);
+    }
+
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {
 
         private UserDao userDao;
