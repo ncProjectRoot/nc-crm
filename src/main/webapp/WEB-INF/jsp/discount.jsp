@@ -1,4 +1,5 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
 </style>
@@ -7,6 +8,7 @@
     <div id="content-body" class="row">
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="update-wrapper" class="col s12">
+                <br>
                 <div class="row">
                     <form class="col s12" id="updateDiscount">
                         <div class="row">
@@ -20,7 +22,7 @@
                                 <i class="material-icons prefix">touch_app</i>
                                 <label>
                                     Inactive
-                                    <input name="active" type="checkbox" checked="${discount.active}" id="disc_active">
+                                    <input name="active" type="checkbox" id="disc_active" <c:if test="${discount.active==true}">checked="checked"</c:if>>
                                     <span class="lever"></span>
                                     Active
                                 </label>
