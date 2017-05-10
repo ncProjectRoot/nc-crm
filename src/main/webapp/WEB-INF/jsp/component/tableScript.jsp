@@ -265,9 +265,9 @@
             downloadTable();
         });
         var iSearch = $("<i>", {text: "search", class: "material-icons search-element tiny"});
-        tableContainer.find(".sorted-element").before(iSearch);
+        tableContainer.find(".sorted-element:not(.passive-single-sort)").before(iSearch);
 
-        tableContainer.find(".search-element:not(.passive-single-sort)").on("click", function () {
+        tableContainer.find(".search-element").on("click", function () {
             var dataField = $(this).closest("th").data("field")
             tableContainer.find(".chips-search input").val(dataField + ":");
             tableContainer.find(".chips-search input").focus();
