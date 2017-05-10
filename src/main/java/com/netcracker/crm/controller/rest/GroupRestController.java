@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.request.GroupRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
 import com.netcracker.crm.service.entity.GroupService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -41,6 +42,11 @@ public class GroupRestController {
     @RequestMapping(value = "/csr/groupByName/{name}", method = RequestMethod.GET)
     public List<Group> discountByTitle(@PathVariable String name){
         return groupService.groupsByName(name);
+    }
+
+    @RequestMapping(value = "/csr/groupByName/", method = RequestMethod.GET)
+    public List<AutocompleteDto> discountByPattern(String pattern){
+        return groupService.getAutocompleteGroup(pattern);
     }
 
     @PostMapping("/csr/addGroup")

@@ -14,4 +14,5 @@ public interface DiscountDao extends CrudDao<Discount> {
 
     Long getCount();
 
+    List<Discount> findByIdOrTitle(String pattern);
 }

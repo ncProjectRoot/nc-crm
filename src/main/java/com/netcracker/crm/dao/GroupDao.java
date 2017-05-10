@@ -19,4 +19,6 @@ public interface GroupDao extends CrudDao<Group>{
     Long getCount(GroupRowRequest request);
 
     List<GroupTableDto> getPartRows(GroupRowRequest request);
+
+    List<Group> findByIdOrTitle(String pattern);
 }

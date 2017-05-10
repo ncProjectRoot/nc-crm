@@ -1,6 +1,8 @@
 package com.netcracker.crm.controller.base;
 
+import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderService;
 import com.netcracker.crm.service.entity.ProductService;
@@ -28,27 +30,35 @@ public class EntityController {
 
     @RequestMapping(value = "/*/product", method = {RequestMethod.GET})
     public String product(Map<String, Object> model, Authentication authentication,
-                       @RequestParam Long id) {
+                          @RequestParam Long id) {
         Object principal = authentication.getPrincipal();
         User user;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
+            if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
+                if (!productService.hasCustomerAccessToProduct(id, user.getId())) {
+                    return "error/403"; //TODO: error/403.jsp
+                }
+                model.put("hasProduct", orderService.hasCustomerProduct(id, user.getId()));
+            }
         }
-//        model.put("user", user);
         model.put("product", productService.getProductsById(id));
         return "product";
     }
 
     @RequestMapping(value = "/*/order", method = {RequestMethod.GET})
     public String order(Map<String, Object> model, Authentication authentication,
-                       @RequestParam Long id) {
+                        @RequestParam Long id) {
         Object principal = authentication.getPrincipal();
+        Order order = orderService.getOrderById(id);
         User user;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
+            if (user.getUserRole() == UserRole.ROLE_CUSTOMER && !order.getCustomer().getId().equals(user.getId())) {
+                return "error/403";
+            }
         }
-//        model.put("user", user);
-        model.put("order", orderService.getOrderById(id));
+        model.put("order", order);
         return "order";
     }
 
