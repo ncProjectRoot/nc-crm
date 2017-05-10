@@ -25,7 +25,7 @@
                                     <a href="#!" class="sorted-element a-dummy">Name</a>
                                 </th>
                                 <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Number products</a>
+                                    <a href="#!" class="passive-single-sort sorted-element a-dummy">Number products</a>
                                 </th>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Discount</a>
