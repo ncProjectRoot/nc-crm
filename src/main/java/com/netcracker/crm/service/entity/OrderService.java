@@ -3,6 +3,7 @@ package com.netcracker.crm.service.entity;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface OrderService {
     Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest);
 
     Order getOrderById(Long id);
+
+    List<AutocompleteDto> getAutocompleteOrder(String pattern);
 
 }

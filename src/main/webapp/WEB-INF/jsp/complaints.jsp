@@ -59,7 +59,6 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
                                     <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
                                     <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
                                     <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
@@ -134,7 +133,6 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-own" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
                                     <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
                                     <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
                                     <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
@@ -203,7 +201,6 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-customer" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
                                     <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
                                     <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
                                     <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
@@ -227,7 +224,7 @@
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
         <div id="swipe-create-complaint-form" class="col s12">
             <div class="row">
-                <form id="createComplaintForm" class="col s12">
+                <form id="createComplaintForm" class="col s12" name="createComplaint">
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">title</i>
@@ -237,15 +234,10 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <i class="material-icons prefix">view_carousel</i>
-                            <select id="orderSelect" name="orderId">
-                                <option value="" disabled selected>Choose order</option>
-                                <c:forEach items="${orders}" var="i">
-                                    <option value="${i.id}">
-                                        # ${i.id} ${i.product.title} ${i.date.toLocalDate()} </option>
-                                </c:forEach>
-                            </select>
-                            <label>Order Select</label>
+                            <i class="material-icons prefix">loyalty</i>
+                            <input type="text" id="order-input" class="autocomplete">
+                            <input type="hidden" id="order-hidden-input" name="orderId"/>
+                            <label for="order-input">Selected order: <span id="selected-order"></span></label>
                         </div>
                     </div>
                     <div class="row">
@@ -275,6 +267,14 @@
     $('ul.tabs').tabs();
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
+
+    $('#discount-input').karpo_autocomplete({
+        url: "/orders/users/${user.id}/",
+        label: "#selected-order",
+        defaultValue: "/",
+        hideInput: "#order-hidden-input"
+    });
+
 
     $("#createComplaintForm").on("submit", function (e) {
             e.preventDefault();

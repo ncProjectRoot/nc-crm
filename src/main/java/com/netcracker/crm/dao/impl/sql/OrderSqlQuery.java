@@ -14,6 +14,8 @@ public final class OrderSqlQuery {
     public static final String PARAM_PRODUCT_ID = "product_id";
     public static final String PARAM_CSR_ID = "csr_id";
 
+    public static final String PARAM_PATTERN = "pattern";
+
     public static final String PARAM_ORDER_ROW_STATUS = "status_id";
     public static final String PARAM_ORDER_ROW_PRODUCT_STATUS = "product_status_id";
 
@@ -58,4 +60,11 @@ public final class OrderSqlQuery {
             "FROM users " +
             "WHERE id = :customer_id)) " +
             "ORDER BY date_finish desc";
+
+    public static final String SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE = "SELECT o.id, date_finish, " +
+            "preferred_date, o.status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "INNER JOIN product p ON o.product_id = p.id" +
+            "WHERE concat(o.id, ' ', p.title) ILIKE :pattern " +
+            "ORDER BY date_finish desc;";
 }

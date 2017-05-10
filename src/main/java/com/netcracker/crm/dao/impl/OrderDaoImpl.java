@@ -255,6 +255,13 @@ public class OrderDaoImpl implements OrderDao {
 
     }
 
+    @Override
+    public List<Order> findByIdOrTitle(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
+    }
+
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {
 
         private UserDao userDao;

@@ -15,12 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
@@ -76,6 +78,18 @@ public class OrderRestController {
             orderRowRequest.setCustomerId(customer.getId());
         }
         return orderService.getOrdersRow(orderRowRequest);
+    }
+
+    @GetMapping("/orders/users/{id}")
+    public List<Order> getOrdersByCustomer(OrderRowRequest orderRowRequest, Authentication authentication,
+                                    @PathVariable(value = "id", required = true) Long id) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User customer = null;
+        if (principal instanceof UserDetailsImpl) {
+            customer = (UserDetailsImpl) principal;
+            orderRowRequest.setCustomerId(customer.getId());
+        }
+        return orderService.findByCustomer(customer);
     }
 
 

@@ -25,4 +25,6 @@ public interface OrderDao extends CrudDao<Order> {
     Long getOrderRowsCount(OrderRowRequest orderRowRequest);
 
     List<Order> findOrgOrdersByCustId(Long custId);
+
+    List<Order> findByIdOrTitle(String pattern);
 }

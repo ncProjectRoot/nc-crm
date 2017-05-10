@@ -8,6 +8,7 @@ import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
@@ -115,6 +116,23 @@ public class OrderServiceImpl implements OrderService {
         orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return orderRowDto;
+    }
+
+    @Override
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern) {
+        List<Order> orders = orderDao.findByIdOrTitle(pattern);
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            result.add(convertToAutocompleteDto(order));
+        }
+        return result;
+    }
+
+    private AutocompleteDto convertToAutocompleteDto(Order order) {
+        AutocompleteDto autocompleteDto = new AutocompleteDto();
+        autocompleteDto.setId(order.getId());
+        autocompleteDto.setValue(order.getProduct().getTitle() + " " + order.getDate().toLocalDate());
+        return autocompleteDto;
     }
 
 }
