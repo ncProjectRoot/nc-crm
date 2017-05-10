@@ -64,6 +64,21 @@ public class DiscountServiceImpl implements DiscountService {
         return discountDao.findByTitle(title);
     }
 
+    @Override
+    public Discount getDiscountById(Long id) {
+        return discountDao.findById(id);
+    }
+
+    @Override
+    public boolean updateDiscount(DiscountDto discountDto) {
+        Discount discount = convertToEntity(discountDto);
+        Long updateId = discountDao.update(discount);
+        if (updateId > 0) {
+            return true;
+        }
+        return false;
+    }
+
     private DiscountRowDto convertToRowDto(Discount discount) {
         DiscountRowDto rowDto = new DiscountRowDto();
         rowDto.setId(discount.getId());

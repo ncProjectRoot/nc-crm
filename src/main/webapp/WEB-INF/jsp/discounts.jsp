@@ -64,10 +64,10 @@
                             <div class="switch">
                                 <i class="material-icons prefix">touch_app</i>
                                 <label>
-                                    Off
+                                    Inactive
                                     <input name="active" type="checkbox" checked="checked" id="disc_active">
                                     <span class="lever"></span>
-                                    On
+                                    Active
                                 </label>
                             </div>
                         </div>
@@ -151,7 +151,7 @@
                 href: "#discount?id=" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.description}));
             tr.append($("<td>", {text: object.discountActive}));
             return tr;

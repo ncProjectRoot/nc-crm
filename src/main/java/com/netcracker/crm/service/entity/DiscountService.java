@@ -16,4 +16,8 @@ public interface DiscountService {
     Discount persist(DiscountDto discountDto);
 
     Map<String, Object> getDiscounts(DiscountRowRequest rowRequest);
+
+    Discount getDiscountById(Long id);
+
+    boolean updateDiscount(DiscountDto discountDto);
 }

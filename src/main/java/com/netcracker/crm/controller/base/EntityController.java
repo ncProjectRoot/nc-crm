@@ -2,6 +2,7 @@ package com.netcracker.crm.controller.base;
 
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.security.UserDetailsImpl;
+import com.netcracker.crm.service.entity.DiscountService;
 import com.netcracker.crm.service.entity.OrderService;
 import com.netcracker.crm.service.entity.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class EntityController {
     private ProductService productService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private DiscountService discountService;
 
     @RequestMapping(value = "/*/product", method = {RequestMethod.GET})
     public String product(Map<String, Object> model, Authentication authentication,
@@ -50,6 +53,19 @@ public class EntityController {
 //        model.put("user", user);
         model.put("order", orderService.getOrderById(id));
         return "order";
+    }
+
+    @RequestMapping(value = "/*/discount", method = {RequestMethod.GET})
+    public String discount(Map<String, Object> model, Authentication authentication,
+                        @RequestParam Long id) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+//        model.put("user", user);
+        model.put("discount", discountService.getDiscountById(id));
+        return "discount";
     }
 
 }

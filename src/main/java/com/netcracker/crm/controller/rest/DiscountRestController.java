@@ -3,7 +3,6 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
-import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.service.entity.DiscountService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -22,6 +21,7 @@ import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISCOUNT_CREATED;
+import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISCOUNT_UPDATED;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -57,6 +57,19 @@ public class DiscountRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @PutMapping
+    public ResponseEntity<?> updateDiscount(@Valid DiscountDto discountDto, BindingResult bindingResult) {
+        discountValidator.validate(discountDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
+        boolean isUpdated = discountService.updateDiscount(discountDto);
+        if (isUpdated) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getUsers(DiscountRowRequest rowRequest) {
         return new ResponseEntity<>(discountService.getDiscounts(rowRequest), HttpStatus.OK);
@@ -66,4 +79,8 @@ public class DiscountRestController {
     public ResponseEntity<List<Discount>> getDiscountByTitle(@PathVariable String title) {
         return new ResponseEntity<>(discountService.getDiscountByTitle(title), HttpStatus.OK);
     }
+
+
+
+
 }
