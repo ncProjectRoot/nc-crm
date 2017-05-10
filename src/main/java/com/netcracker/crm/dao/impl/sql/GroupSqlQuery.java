@@ -20,6 +20,8 @@ public final class GroupSqlQuery {
 
 
 
+    public static final String PARAM_PATTERN = "pattern";
+
     public static final String SQL_UPDATE_GROUP = "UPDATE groups " +
             "SET name=:name, discount_id=:discount_id " +
             "WHERE id=:id;";
@@ -34,6 +36,11 @@ public final class GroupSqlQuery {
     public static final String SQL_FIND_GROUP_BY_NAME = "SELECT id, name, discount_id " +
             "FROM groups " +
             "WHERE UPPER(name) like UPPER(:name) " +
+            "ORDER BY id;";
+
+    public static final String SQL_FIND_GROUP_BY_ID_OR_TITLE = "SELECT id, name, discount_id " +
+            "FROM groups " +
+            "WHERE concat(id, ' ', name) ILIKE :pattern " +
             "ORDER BY id;";
 
     public static final String SQL_GET_GROUP_COUNT = "SELECT count(*) " +

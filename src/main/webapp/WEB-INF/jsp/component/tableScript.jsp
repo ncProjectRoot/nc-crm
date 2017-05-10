@@ -104,25 +104,32 @@
                 fillTable(data);
                 if (params.complete) {
                     params.complete();
-                };
+                }
+                ;
             });
         }
 
         function fillTable(data) {
-            if (data.length == 0) {
-                tableContainer.find(".message").show();
-                countTablePages = 0;
-            } else {
-                tableContainer.find(".message").hide();
+            try {
+                if (data.length == 0) {
+                    tableContainer.find(".message").show();
+                    countTablePages = 0;
+                } else {
+                    tableContainer.find(".message").hide();
 
-                countTablePages = Math.ceil(data.length / countTr);
+                    countTablePages = Math.ceil(data.length / countTr);
 
-                data.rows.forEach(function (element) {
-                    tableContainer.find("tbody").append(params.mapper(element));
-                });
+
+                    data.rows.forEach(function (element) {
+                        tableContainer.find("tbody").append(params.mapper(element));
+                    });
+                }
+
+                fillPagination();
+            } catch (err) {
+                window.location.reload();
             }
 
-            fillPagination();
         }
 
         function fillPagination() {

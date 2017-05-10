@@ -230,6 +230,16 @@ nav .button-collapse i {
     background-color: #4eb9ed;
 }
 
+.autocomplete-content.dropdown-content {
+    max-height: 200px;
+    position: absolute;
+}
+
+.input-field label i.deleter {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
 /****** @media ******/
 
 @media (max-width: 992px) {
@@ -237,7 +247,7 @@ nav .button-collapse i {
         margin-left: 0;
     }
 
-    .content.full-content {
+    .content {
         width: 100%;
     }
 }

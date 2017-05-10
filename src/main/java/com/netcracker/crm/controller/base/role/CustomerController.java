@@ -50,7 +50,7 @@ public class CustomerController {
                 return "users";
             }
         }
-        return "error";
+        return "error/403";
     }
 
     @GetMapping("/orders")
