@@ -235,6 +235,11 @@ nav .button-collapse i {
     position: absolute;
 }
 
+.input-field label i.deleter {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
 /****** @media ******/
 
 @media (max-width: 992px) {

@@ -228,7 +228,7 @@
         }
     });
 
-    $(document).on("click", "#submit-product", function () {
+    $("#submit-product").on("click", function () {
         event.preventDefault();
         var url = "/csr/addProduct";
         var form = "#addProduct";

@@ -30,6 +30,7 @@ import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_PRODUCT_CREATED;
+import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_PRODUCT_UPDATE;
 
 /**
  * Created by Pasha on 29.04.2017.
@@ -74,7 +75,7 @@ public class ProductRestController {
 
         Product product = productService.update(productDto);
         if(product.getId() > 0){
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }

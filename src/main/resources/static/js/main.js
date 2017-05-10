@@ -85,6 +85,9 @@ function sendPost(form, url) {
             xhr.setRequestHeader(header, token);
         },
         statusCode: {
+            200: function (data) {
+                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
+            },
             201: function (data) {
                 Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
             },
@@ -127,11 +130,17 @@ jQuery.fn.karpo_status = function (activeStatusId) {
 jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
     var dataAutocomplete = {"null":null};
-    if (params.defaultValue) {
+    var deleter;
+    console.log(params.defaultValue)
+    console.log(!!params.defaultValue)
+    if (params.defaultValue.length > 1) {
         var defaultObject = convert(params.defaultValue);
         $(params.label).text("#" + params.defaultValue);
         autocomplete.val(params.defaultValue);
         $(params.hideInput).val(defaultObject.id);
+        toggleDeleter();
+    } else {
+        $(params.hideInput).val(0);
     }
     autocomplete.on("input", function (event) {
         var typedText = autocomplete.val();
@@ -149,10 +158,28 @@ jQuery.fn.karpo_autocomplete = function (params) {
         onAutocomplete: function(val) {
             $(params.label).text("#" + val);
             $(params.hideInput).val(convert(val).id);
+            toggleDeleter();
         },
         limit: Infinity,
         minLength: 1
     });
+    function toggleDeleter() {
+        if (deleter) {
+            $(params.label).next().remove();
+            deleter.off("click", deleteValue);
+            deleter = null;
+        } else {
+            deleter = $("<i class='material-icons tiny deleter'>delete_forever</i>");
+            $(params.label).after(deleter)
+            deleter.on("click", deleteValue);
+        }
+    }
+    function deleteValue() {
+        $(params.label).text("#");
+        autocomplete.val("");
+        $(params.hideInput).val(0);
+        toggleDeleter();
+    }
     function convert(val) {
         return {
             id: parseFloat(val.substring(0, val.indexOf(" "))),

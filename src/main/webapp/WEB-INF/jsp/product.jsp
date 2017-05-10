@@ -318,7 +318,10 @@
 
     $("#change-form").on("submit", function (e) {
         e.preventDefault();
-        sendPost("#change-form", "");
+        sendPost("#change-form", "/csr/post/product").done(function (orderId) {
+            $('.modal').modal('close');
+            $(window).trigger('hashchange')
+        })
     });
 
     </sec:authorize>
