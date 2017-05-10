@@ -23,6 +23,8 @@ public interface OrderService {
 
     Order getOrderById(Long id);
 
+    boolean hasCustomerProduct(Long productId, Long customerId);
+
     List<AutocompleteDto> getAutocompleteOrder(String pattern);
 
 }

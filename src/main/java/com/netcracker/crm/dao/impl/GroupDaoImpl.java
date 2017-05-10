@@ -4,6 +4,9 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.domain.request.GroupRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
+import com.netcracker.crm.dto.GroupTableDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,7 @@ public class GroupDaoImpl implements GroupDao {
     private SimpleJdbcInsert insert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private GroupExtractor groupExtractor;
+    private GroupTableDtoExtractor groupTableExtractor;
 
     @Override
     public Long create(Group group) {
@@ -129,6 +133,45 @@ public class GroupDaoImpl implements GroupDao {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_GROUP_COUNT, Long.class);
     }
 
+    @Override
+    public Long getCount(GroupRowRequest request) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_ROW_DISCOUNT_ACTIVE, request.getDiscountActive());
+        String query = request.getSqlCount();
+        query = prepareQuery(query, params, request);
+        return namedJdbcTemplate.queryForObject(query, params, Long.class);
+    }
+
+    @Override
+    public List<GroupTableDto> getPartRows(GroupRowRequest request) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_ROW_DISCOUNT_ACTIVE, request.getDiscountActive())
+                .addValue(RowRequest.PARAM_ROW_LIMIT, request.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, request.getRowOffset());
+        String query = request.getSql();
+        query = prepareQuery(query, params, request);
+        return namedJdbcTemplate.query(query, params, groupTableExtractor);
+    }
+
+    private String prepareQuery(String query, MapSqlParameterSource params,GroupRowRequest request){
+        String resultQuery = query;
+        if (request.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : request.getKeywordsArray()) {
+                resultQuery = resultQuery.replace("OR cast(products as text) ILIKE :keyword" + i, " ");
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return resultQuery;
+    }
+
+    @Override
+    public List<Group> findByIdOrTitle(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID_OR_TITLE, params, groupExtractor);
+    }
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.insert = new SimpleJdbcInsert(dataSource)
@@ -136,6 +179,7 @@ public class GroupDaoImpl implements GroupDao {
                 .usingGeneratedKeyColumns(PARAM_GROUP_ID);
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         groupExtractor = new GroupExtractor(discountDao);
+        groupTableExtractor = new GroupTableDtoExtractor();
     }
 
     private Long getDiscountId(Discount discount) {
@@ -170,6 +214,27 @@ public class GroupDaoImpl implements GroupDao {
                 if (discountId > 0) {
                     group.setDiscount(discountDao.findById(discountId));
                 }
+                groups.add(group);
+            }
+            log.debug("End extracting data");
+            return groups;
+        }
+    }
+    static final class GroupTableDtoExtractor implements ResultSetExtractor<List<GroupTableDto>> {
+        @Override
+        public List<GroupTableDto> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            log.debug("Start extracting data");
+            List<GroupTableDto> groups = new ArrayList<>();
+            while (rs.next()) {
+                GroupTableDto group = new GroupTableDto();
+                group.setId(rs.getLong(PARAM_GROUP_ID));
+                group.setName(rs.getString(PARAM_GROUP_NAME));
+                group.setDiscountName(rs.getString(PARAM_GROUP_ROW_DISCOUNT_TITLE));
+                if (group.getDiscountName() != null){
+                    group.setDiscountValue(rs.getDouble(PARAM_GROUP_ROW_DISCOUNT_VALUE));
+                    group.setDiscountActive(rs.getBoolean(PARAM_GROUP_ROW_DISCOUNT_ACTIVE));
+                }
+                group.setNumberProducts(rs.getLong(PARAM_GROUP_ROW_PRODUCT_COUNT));
                 groups.add(group);
             }
             log.debug("End extracting data");

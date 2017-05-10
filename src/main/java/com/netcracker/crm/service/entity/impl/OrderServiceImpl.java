@@ -90,6 +90,11 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findById(id);
     }
 
+
+    @Override
+    public boolean hasCustomerProduct(Long productId, Long customerId) {
+        return orderDao.hasCustomerProduct(productId, customerId);
+    }
     private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
@@ -99,6 +104,18 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomer(customer);
         order.setStatus(OrderStatus.NEW);
         order.setDate(LocalDateTime.now());
+
+        StringBuilder preferredDataTime = new StringBuilder();
+        if (!orderDto.getPreferredDate().isEmpty()) {
+            preferredDataTime.append(orderDto.getPreferredDate());
+            if (!orderDto.getPreferredTime().isEmpty()) {
+                preferredDataTime.append('T');
+                preferredDataTime.append(orderDto.getPreferredTime());
+            }
+        }
+        if (preferredDataTime.length() != 0) {
+            order.setPreferedDate(LocalDateTime.parse(preferredDataTime));
+        }
         return order;
     }
 
@@ -113,8 +130,12 @@ public class OrderServiceImpl implements OrderService {
         if (order.getCsr() != null) {
             orderRowDto.setCsr(order.getCsr().getId());
         }
-        orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        if (order.getDate() != null) {
+            orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        if (order.getPreferedDate() != null) {
+            orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
         return orderRowDto;
     }
 

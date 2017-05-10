@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_CODE_WRONG_FORMAT;
-import static com.netcracker.crm.validation.field.OrderDtoField.CUSTOMER_ID;
-import static com.netcracker.crm.validation.field.OrderDtoField.PRODUCT_ID;
+import static com.netcracker.crm.validation.field.OrderDtoField.*;
 
 /**
  * Created by Pasha on 07.05.2017.
@@ -19,6 +18,10 @@ import static com.netcracker.crm.validation.field.OrderDtoField.PRODUCT_ID;
 @Component
 @PropertySource(value = "classpath:message.properties")
 public class OrderValidator extends AbstractValidator {
+
+    private static final String REGEX_PATTERN_DATE = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$";
+
+    private static final String REGEX_PATTERN_TIME = "^[0-9]{2}:[0-9]{2}$";
 
     @Autowired
     private UserDao userDao;
@@ -35,6 +38,8 @@ public class OrderValidator extends AbstractValidator {
         OrderDto orderDto = (OrderDto) target;
         checkCustomer(errors, orderDto);
         checkProduct(errors, orderDto);
+        checkDate(errors, orderDto);
+        checkTime(errors, orderDto);
     }
 
 
@@ -54,6 +59,24 @@ public class OrderValidator extends AbstractValidator {
             if (productDao.findById(productId) == null) {
                 errors.rejectValue(PRODUCT_ID.getName(), ERROR_CODE_WRONG_FORMAT,
                         getErrorMessage(PRODUCT_ID, ERROR_CODE_WRONG_FORMAT));
+            }
+        }
+    }
+
+    private void checkDate(Errors errors, OrderDto orderDto) {
+        if (!orderDto.getPreferredDate().isEmpty()) {
+            if (!orderDto.getPreferredDate().matches(REGEX_PATTERN_DATE)) {
+                errors.rejectValue(PREFERRED_DATE.getName(), ERROR_CODE_WRONG_FORMAT,
+                        getErrorMessage(PREFERRED_DATE, ERROR_CODE_WRONG_FORMAT));
+            }
+        }
+    }
+
+    private void checkTime(Errors errors, OrderDto orderDto) {
+        if (!orderDto.getPreferredTime().isEmpty()) {
+            if (!orderDto.getPreferredTime().matches(REGEX_PATTERN_TIME)) {
+                errors.rejectValue(PREFERRED_TIME.getName(), ERROR_CODE_WRONG_FORMAT,
+                        getErrorMessage(PREFERRED_DATE, ERROR_CODE_WRONG_FORMAT));
             }
         }
     }

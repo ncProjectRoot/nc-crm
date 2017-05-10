@@ -13,6 +13,8 @@ public final class DiscountSqlQuery {
     public static final String PARAM_DISCOUNT_DESCRIPTION = "description";
     public static final String PARAM_DISCOUNT_ACTIVE = "active";
 
+    public static final String PARAM_PATTERN = "pattern";
+
     public static final String SQL_UPDATE_DISCOUNT = "UPDATE discount " +
             "SET title=:title, percentage=:percentage, description=:description, " +
             "active = :active " +
@@ -29,6 +31,11 @@ public final class DiscountSqlQuery {
     public static final String SQL_FIND_DISC_BY_TITLE = "SELECT id, title, percentage, description, active " +
             "FROM discount " +
             "WHERE UPPER(title) like UPPER(:title) " +
+            "ORDER BY id;";
+
+    public static final String SQL_FIND_DISC_BY_ID_OR_TITLE = "SELECT id, title, percentage, description, active " +
+            "FROM discount " +
+            "WHERE concat(id, ' ', title) ILIKE :pattern " +
             "ORDER BY id;";
 
     public static final String SQL_GET_DISC_COUNT = "SELECT count(*) " +

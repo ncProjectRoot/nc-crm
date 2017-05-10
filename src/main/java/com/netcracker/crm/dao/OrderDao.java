@@ -27,4 +27,6 @@ public interface OrderDao extends CrudDao<Order> {
     List<Order> findOrgOrdersByCustId(Long custId);
 
     List<Order> findByIdOrTitle(String pattern);
+
+    Boolean hasCustomerProduct(Long productId, Long customerId);
 }

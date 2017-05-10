@@ -238,6 +238,15 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public Boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, productId)
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_ACCESS_TO_PRODUCT, params, Boolean.class);
+
+    }
+
+    @Override
     public List<Product> findAllWithoutGroup() {
         return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
     }
