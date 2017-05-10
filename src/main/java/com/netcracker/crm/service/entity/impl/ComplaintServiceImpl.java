@@ -23,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,24 +108,39 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public List<String> getNames(String likeTitle) {
+    public List<String> getTitles(String likeTitle, User user) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            if (user.isContactPerson()) {
+                return getTitlesForContactPerson(likeTitle, user.getId());
+            } else {
+                return getTitlesForNotContactPerson(likeTitle, user.getId());
+            }
+        } else if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
+            return getAllTitles(likeTitle);
+        }
+        return new ArrayList<>();
+    }
+
+    @Transactional
+    @Override
+    public List<String> getTitlesByPmg(String likeTitle, User pmg) {
+        return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
+    }
+
+    @Transactional
+    private List<String> getAllTitles(String likeTitle) {
         return complaintDao.findComplaintsTitleLikeTitle(likeTitle);
     }
 
     @Transactional
-    @Override
-    public List<String> getNamesByPmgId(String likeTitle, Long pmgId) {
-        return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmgId);
+    private List<String> getTitlesForContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
     }
 
     @Transactional
-    @Override
-    public List<String> getNamesByCustomer(String likeTitle, User customer) {
-        if (customer.isContactPerson()) {
-            return getNamesForContactPerson(likeTitle, customer.getId());
-        } else {
-            return getNamesForNotContactPerson(likeTitle, customer.getId());
-        }
+    private List<String> getTitlesForNotContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
     }
 
     @Transactional
@@ -170,7 +187,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public boolean checkAccess(User customer, Long complaintId) {
+    public boolean checkAccessToComplaint(User customer, Long complaintId) {
         UserRole role = customer.getUserRole();
         if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_PMG)) {
             return true;
@@ -186,16 +203,6 @@ public class ComplaintServiceImpl implements ComplaintService {
             return count > 0;
         }
         return false;
-    }
-
-    @Transactional
-    private List<String> getNamesForContactPerson(String likeTitle, Long custId) {
-        return complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
-    }
-
-    @Transactional
-    private List<String> getNamesForNotContactPerson(String likeTitle, Long custId) {
-        return complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
     }
 
     private ComplaintRowDto convertToRowDto(Complaint complaint) {

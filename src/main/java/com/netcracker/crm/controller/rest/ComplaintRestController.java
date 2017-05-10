@@ -3,6 +3,8 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ComplaintService;
@@ -11,13 +13,15 @@ import com.netcracker.crm.validation.impl.ComplaintValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
@@ -42,10 +46,11 @@ public class ComplaintRestController {
     @Autowired
     private ComplaintValidator complaintValidator;
 
-    @RequestMapping(value = "/customer/createComplaint", method = RequestMethod.POST)
+    @PostMapping(value = "/complaints")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<?> createComplaint(@Valid ComplaintDto complaintDto, BindingResult bindingResult, Authentication authentication) {
         complaintValidator.validate(complaintDto, bindingResult);
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
         Object principal = authentication.getPrincipal();
@@ -53,12 +58,66 @@ public class ComplaintRestController {
         complaintDto.setCustomerId(user.getId());
 
         Complaint complaint = complaintService.persist(complaintDto);
-        if(complaint.getId() > 0){
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_COMPLAINT_CREATED, HttpStatus.CREATED);
+        if (complaint.getId() > 0) {
+            return generator.getHttpResponse(complaint, SUCCESS_MESSAGE, SUCCESS_COMPLAINT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping("/complaints")
+    @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
+    public Map<String, Object> complaints(ComplaintRowRequest complaintRowRequest, Authentication authentication,
+                                          @RequestParam(required = false) Long userId) throws IOException {
+        Object principal = authentication.getPrincipal();
+        User user = null;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
 
+        if (userId != null) {
+            UserRole role = user.getUserRole();
+            if (role.equals(UserRole.ROLE_PMG)) {
+                complaintRowRequest.setPmgId(user.getId());
+            } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+                complaintRowRequest.setCustId(user.getId());
+                if (user.isContactPerson()) {
+                    complaintRowRequest.setContactPerson(true);
+                }
+            }
+        }
+        return complaintService.getComplaintRow(complaintRowRequest);
+    }
 
+    @GetMapping("/complaints/titles")
+    @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
+    public List<String> complaintsTitles(String likeTitle, Authentication authentication,
+                                         @RequestParam(required = false) Long userId) {
+        Object principal = authentication.getPrincipal();
+        User user = null;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+        if (userId != null && user.getUserRole().equals(UserRole.ROLE_PMG)) {
+            return complaintService.getTitlesByPmg(likeTitle, user);
+        }
+        return complaintService.getTitles(likeTitle, user);
+    }
+
+    @PutMapping("/complaints/{id}")
+    @PreAuthorize("hasRole('ROLE_PMG')")
+    public boolean acceptComplaint(Map<String, Object> model, Authentication authentication,
+                                   @RequestParam(value = "type") String type,
+                                   @PathVariable Long id) {
+        Object principal = authentication.getPrincipal();
+        User pmg = null;
+        if (principal instanceof UserDetailsImpl) {
+            pmg = (UserDetailsImpl) principal;
+        }
+        if ("ACCEPT".equals(type)) {
+            return complaintService.acceptComplaint(id, pmg.getId());
+        } else if ("CLOSE".equals(type)) {
+            return complaintService.closeComplaint(id, pmg.getId());
+        }
+        return false;
+    }
 }

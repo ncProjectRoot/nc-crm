@@ -1,6 +1,5 @@
 package com.netcracker.crm.controller.base.role;
 
-import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -66,15 +64,8 @@ public class CustomerController {
 
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model, Authentication authentication) {
-        User customer = null;
         Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-        } else {
-            //!production
-            customer = new User();
-            customer.setId(3L);
-        }
+        User customer = (UserDetailsImpl) principal;
         List<Order> orders = orderService.findByCustomer(customer);
         model.put("orders", orders);
         return "complaints";

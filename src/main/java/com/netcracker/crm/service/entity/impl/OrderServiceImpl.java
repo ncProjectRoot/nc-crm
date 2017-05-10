@@ -4,10 +4,10 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findByCustomer(User customer) {
-        if(customer.isContactPerson()){
+        if (customer.isContactPerson()) {
             return findOrgOrdersByCustId(customer.getId());
         } else {
             return findByCustomerId(customer.getId());
@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest){
+    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findById(id);
     }
 
-    private Order convertFromDtoToEntity(OrderDto orderDto){
+    private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
         User customer = userDao.findById(orderDto.getCustomerId());

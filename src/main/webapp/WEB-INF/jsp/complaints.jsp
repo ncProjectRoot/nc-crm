@@ -1,14 +1,17 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<sec:authentication var="user" property="principal"/>
 <style>
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
 <div class="content-body" data-page-name="Complaints">
     <div class="col s12">
         <ul class="tabs" id="tabs">
-            <sec:authorize access="hasAnyRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
                 <li class="tab col s3"><a href="#swipe-all-complaints">All complaints</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasAnyRole('ROLE_PMG')">
                 <li class="tab col s3"><a href="#swipe-pmg-complaints">Your complaints</a></li>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
@@ -17,7 +20,7 @@
             </sec:authorize>
         </ul>
     </div>
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
         <div id="swipe-all-complaints" class="col s12">
             <div id="table-all-complaints" class="table-container row">
                 <div class="table-wrapper col s11 center-align">
@@ -94,7 +97,7 @@
     </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_PMG')">
         <div id="swipe-pmg-complaints" class="col s12">
-            <div id="table-your-complaints" class="table-container row">
+            <div id="table-pmg-complaints" class="table-container row">
                 <div class="table-wrapper col s11 center-align">
                     <table class="striped responsive-table centered ">
                         <thead>
@@ -238,7 +241,8 @@
                             <select id="orderSelect" name="orderId">
                                 <option value="" disabled selected>Choose order</option>
                                 <c:forEach items="${orders}" var="i">
-                                    <option value="${i.id}"># ${i.id} ${i.product.title} ${i.date.toLocalDate()} </option>
+                                    <option value="${i.id}">
+                                        # ${i.id} ${i.product.title} ${i.date.toLocalDate()} </option>
                                 </c:forEach>
                             </select>
                             <label>Order Select</label>
@@ -272,9 +276,6 @@
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
 
-    $('#message').trigger('autoresize');
-
-
     $("#createComplaintForm").on("submit", function (e) {
             e.preventDefault();
             var titleLenth = $("#title").val().length;
@@ -288,23 +289,25 @@
                 Materialize.toast("Order can't be empty", 5000, 'rounded');
             } else {
                 $(".progress").addClass("progress-active");
-                $.post("/customer/createComplaint", $("#createComplaintForm").serialize(), function (data) {
+                $.post("/complaints", $("#createComplaintForm").serialize(), function (data) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
-                    setTimeout(function() {window.location.href = "/#/complaint/"+data.id;}, 2000);
-                });
+                    setTimeout(function () {
+                        window.location.href = "/#/complaint/" + data.id;
+                    }, 2000);
+                }).error();
             }
         }
     );
 
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
     $("#table-all-complaints").karpo_table({
-        urlSearch: "/pmg/load/complaintsNames",
-        urlTable: "/pmg/load/complaints",
+        urlSearch: "/complaints/titles",
+        urlTable: "/complaints/",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -317,13 +320,15 @@
             return tr;
         }
     });
+    </sec:authorize>
 
-    $("#table-your-complaints").karpo_table({
-        urlSearch: "/pmg/load/pmgComplaintsNames",
-        urlTable: "/pmg/load/pmgComplaints",
+    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    $("#table-pmg-complaints").karpo_table({
+        urlSearch: "/complaints/titles?userId=${user.id}",
+        urlTable: "/complaints?userId=${user.id}",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -336,13 +341,14 @@
         }
     });
     </sec:authorize>
+
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
     $("#table-customer-complaints").karpo_table({
-        urlSearch: "/customer/load/complaintsNames",
-        urlTable: "/customer/load/complaints",
+        urlSearch: "/complaints/titles",
+        urlTable: "/complaints?userId=${user.id}",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaint/'+object.id+'">' + object.id +'</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.order}));

@@ -139,10 +139,13 @@
 
     $('#acceptBtn').bind('click', function () {
         $(".progress").addClass("progress-active");
-        $.post("/pmg/acceptComplaint", {
-                complaintId: ${complaint.id},
+        $.ajax({
+            url: "/complaints/${complaint.id}",
+            type: 'PUT',
+            data: {
+                type: 'ACCEPT'
             },
-            function (data) {
+            success: function (data) {
                 if (data === true) {
                     $('#acceptBtn').remove();
                     $('#status').replaceWith('SOLVING');
@@ -151,18 +154,23 @@
                 } else if (data === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
-                    setTimeout(function() {window.location.reload();}, 3000);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
                 }
             }
-        )
+        });
     });
 
     $('#closeBtn').bind('click', function () {
         $(".progress").addClass("progress-active");
-        $.post("/pmg/closeComplaint", {
-                complaintId: ${complaint.id},
+        $.ajax({
+            url: "/complaints/${complaint.id}",
+            type: 'PUT',
+            data: {
+                type: 'CLOSE'
             },
-            function (data) {
+            success: function (data) {
                 if (data === true) {
                     $('#closeBtn').remove();
                     $('#status').replaceWith('CLOSED');
@@ -171,10 +179,12 @@
                 } else if (data === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
-                    setTimeout(function() {window.location.reload();}, 3000);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
                 }
             }
-        )
+        });
     });
     </sec:authorize>
 
