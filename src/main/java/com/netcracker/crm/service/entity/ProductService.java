@@ -5,7 +5,6 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
-import com.netcracker.crm.dto.ProductStatusDto;
 
 import java.util.List;
 import java.util.Map;

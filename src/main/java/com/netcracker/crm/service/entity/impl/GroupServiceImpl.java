@@ -6,7 +6,9 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.GroupDto;
+import com.netcracker.crm.dto.GroupTableDto;
 import com.netcracker.crm.dto.mapper.GroupMapper;
 import com.netcracker.crm.service.entity.GroupService;
 import org.modelmapper.ModelMapper;
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -59,8 +63,27 @@ public class GroupServiceImpl implements GroupService{
     }
 
     @Override
+    public Map<String, Object> getGroupPage(GroupRowRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        Long length = groupDao.getCount(request);
+        List<GroupTableDto> groups = groupDao.getPartRows(request);
+        result.put("length", length);
+        result.put("rows", groups);
+        return result;
+    }
+
+    @Override
     public List<Group> groupsByName(String name) {
         return groupDao.findByName(name);
+    }
+
+    @Override
+    public List<String> groupByName(String name) {
+        List<String> groupNames = new ArrayList<>();
+        for (Group g : groupDao.findByName(name)){
+            groupNames.add(g.getName());
+        }
+        return groupNames;
     }
 
     private Group convertToEntity(GroupDto groupDto) {

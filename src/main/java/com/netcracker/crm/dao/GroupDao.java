@@ -2,6 +2,8 @@ package com.netcracker.crm.dao;
 
 
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.domain.request.GroupRowRequest;
+import com.netcracker.crm.dto.GroupTableDto;
 
 import java.util.List;
 
@@ -14,4 +16,7 @@ public interface GroupDao extends CrudDao<Group>{
     List<Group> findByName(String name);
 
     Long getCount();
+    Long getCount(GroupRowRequest request);
+
+    List<GroupTableDto> getPartRows(GroupRowRequest request);
 }

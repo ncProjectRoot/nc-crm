@@ -11,6 +11,15 @@ public final class GroupSqlQuery {
     public static final String PARAM_GROUP_NAME = "name";
     public static final String PARAM_GROUP_DISCOUNT_ID = "discount_id";
 
+
+    public static final String PARAM_GROUP_ROW_DISCOUNT_TITLE = "title";
+    public static final String PARAM_GROUP_ROW_DISCOUNT_VALUE = "percentage";
+    public static final String PARAM_GROUP_ROW_DISCOUNT_ACTIVE = "active";
+    public static final String PARAM_GROUP_ROW_PRODUCT_COUNT = "products";
+
+
+
+
     public static final String SQL_UPDATE_GROUP = "UPDATE groups " +
             "SET name=:name, discount_id=:discount_id " +
             "WHERE id=:id;";
