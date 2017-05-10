@@ -16,8 +16,13 @@ public class NewOrder extends OrderState {
     }
 
     @Override
-    public History acceptOrder() {
-        History history = getOrderHistory();
+    public History newOrder() {
+        return getOrderHistory("New order was created.");
+    }
+
+    @Override
+    public History processOrder() {
+        History history = getOrderHistory(DESC_ORDER_PROCESSING);
         order.setState(new ProcessingOrder(order));
 
         return history;

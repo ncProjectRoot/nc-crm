@@ -10,23 +10,24 @@ import com.netcracker.crm.domain.model.state.order.OrderState;
  * Created by bpogo on 5/9/2017.
  */
 public class ActiveOrder extends OrderState {
+
     public ActiveOrder(Order order) {
         super(order);
         this.order.setStatus(OrderStatus.ACTIVE);
     }
 
     @Override
-    public History pauseOrder() {
-        History history = getOrderHistory();
-        order.setState(new PausedOrder(order));
+    public History requestToPauseOrder() {
+        History history = getOrderHistory(DESC_REQUEST_TO_PAUSE_ORDER);
+        order.setState(new RequestToPauseOrder(order));
 
         return history;
     }
 
     @Override
-    public History cancelOrder() {
-        History history = getOrderHistory();
-        order.setState(new DisabledOrder(order));
+    public History requestToDisableOrder() {
+        History history = getOrderHistory(DESC_REQUEST_TO_DISABLE_ORDER);
+        order.setState(new RequestToDisableOrder(order));
 
         return history;
     }

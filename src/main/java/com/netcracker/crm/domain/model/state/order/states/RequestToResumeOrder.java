@@ -1,5 +1,6 @@
 package com.netcracker.crm.domain.model.state.order.states;
 
+
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
@@ -8,16 +9,16 @@ import com.netcracker.crm.domain.model.state.order.OrderState;
 /**
  * Created by bpogo on 5/9/2017.
  */
-public class ProcessingOrder extends OrderState {
+public class RequestToResumeOrder extends OrderState {
 
-    public ProcessingOrder(Order order) {
+    public RequestToResumeOrder(Order order) {
         super(order);
-        this.order.setStatus(OrderStatus.PROCESSING);
+        this.order.setStatus(OrderStatus.REQUEST_TO_RESUME);
     }
 
     @Override
-    public History activateOrder() {
-        History history = getOrderHistory(DESC_ORDER_ACTIVATED);
+    public History resumeOrder() {
+        History history = getOrderHistory(DESC_ORDER_RESUMED);
         order.setState(new ActiveOrder(order));
 
         return history;

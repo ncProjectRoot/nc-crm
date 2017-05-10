@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
 import org.junit.After;
 import org.junit.Before;
@@ -34,34 +35,46 @@ public class OrderLifecycleServiceImplTest {
     @Autowired
     private OrderLifecycleService lifecycleService;
 
-    private User user;
+    private User csr;
+    private User customer;
     private Order order;
     private Product product;
 
     @Before
     public void setUp() throws Exception {
-        user = new User();
-        user.setPassword("test password");
-        user.setFirstName("test first name");
-        user.setMiddleName("test middle name");
-        user.setEmail(UUID.randomUUID().toString());
-        user.setEnable(false);
-        user.setAccountNonLocked(false);
-        user.setContactPerson(false);
-        user.setUserRole(UserRole.ROLE_CUSTOMER);
+        customer = new User();
+        customer.setPassword("test password");
+        customer.setFirstName("test first name");
+        customer.setMiddleName("test middle name");
+        customer.setEmail(UUID.randomUUID().toString());
+        customer.setEnable(false);
+        customer.setAccountNonLocked(false);
+        customer.setContactPerson(false);
+        customer.setUserRole(UserRole.ROLE_CUSTOMER);
+
+        csr = new User();
+        csr.setPassword("test password");
+        csr.setFirstName("test first name");
+        csr.setMiddleName("test middle name");
+        csr.setEmail(UUID.randomUUID().toString());
+        csr.setEnable(false);
+        csr.setAccountNonLocked(false);
+        csr.setContactPerson(false);
+        csr.setUserRole(UserRole.ROLE_CSR);
 
         this.order = new Order();
         this.order.setDate(LocalDateTime.now());
         this.order.setPreferedDate(LocalDateTime.now());
-        this.order.setCustomer(user);
-        this.order.setCsr(user);
+        this.order.setCustomer(customer);
+        this.order.setCsr(customer);
 
         product = new Product();
         product.setTitle("test product title");
         product.setStatus(ProductStatus.ACTUAL);
         this.order.setProduct(product);
 
-        userDao.create(user);
+        userDao.create(customer);
+        userDao.create(csr);
         productDao.create(product);
         orderDao.create(order);
     }
@@ -70,17 +83,13 @@ public class OrderLifecycleServiceImplTest {
     public void tearDown() throws Exception {
         orderDao.delete(order.getId());
         productDao.delete(product.getId());
-        userDao.delete(user.getId());
+        userDao.delete(customer.getId());
+        userDao.delete(csr.getId());
     }
 
     @Test
-    public void createOrder() throws Exception {
-
-    }
-
-    @Test
-    public void acceptOrder() throws Exception {
-        boolean isAccepted = lifecycleService.acceptOrder(order.getId());
+    public void processOrder() throws Exception {
+        boolean isAccepted = lifecycleService.processOrder(order.getId(), csr.getId());
         Order acceptedOrder = orderDao.findById(order.getId());
 
         assertTrue(isAccepted);
@@ -89,7 +98,7 @@ public class OrderLifecycleServiceImplTest {
 
     @Test
     public void activateOrder() throws Exception {
-        lifecycleService.acceptOrder(order.getId());
+        lifecycleService.processOrder(order.getId(), csr.getId());
         boolean isActivated = lifecycleService.activateOrder(order.getId());
         Order activatedOrder = orderDao.findById(order.getId());
 
@@ -99,8 +108,9 @@ public class OrderLifecycleServiceImplTest {
 
     @Test
     public void pauseOrder() throws Exception {
-        lifecycleService.acceptOrder(order.getId());
+        lifecycleService.processOrder(order.getId(), csr.getId());
         lifecycleService.activateOrder(order.getId());
+        lifecycleService.requestToPauseOrder(order.getId());
         boolean isPaused = lifecycleService.pauseOrder(order.getId());
         Order pausedOrder = orderDao.findById(order.getId());
 
@@ -110,21 +120,24 @@ public class OrderLifecycleServiceImplTest {
 
     @Test
     public void resumeOrderFromPausedToActive() throws Exception {
-        lifecycleService.acceptOrder(order.getId());
+        lifecycleService.processOrder(order.getId(), csr.getId());
         lifecycleService.activateOrder(order.getId());
+        lifecycleService.requestToPauseOrder(order.getId());
         lifecycleService.pauseOrder(order.getId());
-        boolean isActivated = lifecycleService.resumeOrder(order.getId());
+        lifecycleService.requestToResumeOrder(order.getId());
+        boolean isResumed = lifecycleService.resumeOrder(order.getId());
         Order activatedOrder = orderDao.findById(order.getId());
 
-        assertTrue(isActivated);
+        assertTrue(isResumed);
         assertEquals(OrderStatus.ACTIVE, activatedOrder.getStatus());
     }
 
     @Test
     public void cancelOrderFromActive() throws Exception {
-        lifecycleService.acceptOrder(order.getId());
+        lifecycleService.processOrder(order.getId(), csr.getId());
         lifecycleService.activateOrder(order.getId());
-        boolean isDisabled = lifecycleService.cancelOrder(order.getId());
+        lifecycleService.requestToDisableOrder(order.getId());
+        boolean isDisabled = lifecycleService.disableOrder(order.getId());
         Order activatedOrder = orderDao.findById(order.getId());
 
         assertTrue(isDisabled);
@@ -133,10 +146,12 @@ public class OrderLifecycleServiceImplTest {
 
     @Test
     public void cancelOrderFromPaused() throws Exception {
-        lifecycleService.acceptOrder(order.getId());
+        lifecycleService.processOrder(order.getId(), csr.getId());
         lifecycleService.activateOrder(order.getId());
+        lifecycleService.requestToPauseOrder(order.getId());
         lifecycleService.pauseOrder(order.getId());
-        boolean isDisabled = lifecycleService.cancelOrder(order.getId());
+        lifecycleService.requestToDisableOrder(order.getId());
+        boolean isDisabled = lifecycleService.disableOrder(order.getId());
         Order activatedOrder = orderDao.findById(order.getId());
 
         assertTrue(isDisabled);

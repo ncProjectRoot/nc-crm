@@ -21,7 +21,6 @@ public class Order {
     private OrderState state;
 
     public Order() {
-        this.status = OrderStatus.NEW;
         this.state = new NewOrder(this);
     }
 

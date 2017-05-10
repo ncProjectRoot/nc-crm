@@ -647,14 +647,17 @@ INSERT INTO public.statuses(id, name) VALUES (1, 'OPEN');
 INSERT INTO public.statuses(id, name) VALUES (2, 'SOLVING');
 INSERT INTO public.statuses(id, name) VALUES (3, 'CLOSED');
 INSERT INTO public.statuses(id, name) VALUES (4, 'NEW');
-INSERT INTO public.statuses(id, name) VALUES (5, 'IN_QUEUE');
-INSERT INTO public.statuses(id, name) VALUES (6, 'PROCESSING');
-INSERT INTO public.statuses(id, name) VALUES (7, 'ACTIVE');
-INSERT INTO public.statuses(id, name) VALUES (8, 'DISABLED');
-INSERT INTO public.statuses(id, name) VALUES (9, 'PAUSED');
-INSERT INTO public.statuses(id, name) VALUES (10, 'PLANNED');
-INSERT INTO public.statuses(id, name) VALUES (11, 'ACTUAL');
-INSERT INTO public.statuses(id, name) VALUES (12, 'OUTDATED');
+INSERT INTO public.statuses(id, name) VALUES (5, 'PROCESSING');
+INSERT INTO public.statuses(id, name) VALUES (6, 'ACTIVE');
+INSERT INTO public.statuses(id, name) VALUES (7, 'DISABLED');
+INSERT INTO public.statuses(id, name) VALUES (8, 'PAUSED');
+INSERT INTO public.statuses(id, name) VALUES (9, 'REQUEST_TO_RESUME');
+INSERT INTO public.statuses(id, name) VALUES (10, 'REQUEST_TO_PAUSE');
+INSERT INTO public.statuses(id, name) VALUES (11, 'REQUEST_TO_DISABLE');
+INSERT INTO public.statuses(id, name) VALUES (12, 'PLANNED');
+INSERT INTO public.statuses(id, name) VALUES (13, 'ACTUAL');
+INSERT INTO public.statuses(id, name) VALUES (14, 'OUTDATED');
+
 --
 --
 -- -- INSERT INTO public.groups(id, name) VALUES (1, 'group1');

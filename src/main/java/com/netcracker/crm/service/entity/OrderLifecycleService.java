@@ -9,7 +9,7 @@ public interface OrderLifecycleService {
 
     boolean createOrder(OrderDto orderDto);
 
-    boolean acceptOrder(Long orderId);
+    boolean processOrder(Long orderId, Long csrId);
 
     boolean activateOrder(Long orderId);
 
@@ -17,5 +17,11 @@ public interface OrderLifecycleService {
 
     boolean resumeOrder(Long orderId);
 
-    boolean cancelOrder(Long orderId);
+    boolean disableOrder(Long orderId);
+
+    boolean requestToResumeOrder(Long orderId);
+
+    boolean requestToPauseOrder(Long orderId);
+
+    boolean requestToDisableOrder(Long orderId);
 }

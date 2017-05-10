@@ -35,13 +35,26 @@ import java.time.LocalDateTime;
  * OrderState interface.
  */
 public class OrderState {
+
+    protected static final String DESC_ORDER_PAUSED = "Order was paused.";
+    protected static final String DESC_ORDER_ACTIVATED = "Order was successful activated and ready to use.";
+    protected static final String DESC_ORDER_PROCESSING = "Order is assigned to CSR. Processing is started.";
+    protected static final String DESC_ORDER_RESUMED = "Order was resumed and ready to use.";
+    protected static final String DESC_REQUEST_TO_RESUME_ORDER = "Request to resume order.";
+    protected static final String DESC_REQUEST_TO_PAUSE_ORDER = "Request to pause order.";
+    protected static final String DESC_REQUEST_TO_DISABLE_ORDER = "Request to disable order.";
+
     protected Order order;
 
     public OrderState(Order order) {
         this.order = order;
     }
 
-    public History acceptOrder() {
+    public History newOrder() {
+        throw new NotImplementedException();
+    }
+
+    public History processOrder() {
         throw new NotImplementedException();
     }
 
@@ -57,7 +70,19 @@ public class OrderState {
         throw new NotImplementedException();
     }
 
-    public History cancelOrder() {
+    public History disableOrder() {
+        throw new NotImplementedException();
+    }
+
+    public History requestToResumeOrder() {
+        throw new NotImplementedException();
+    }
+
+    public History requestToPauseOrder() {
+        throw new NotImplementedException();
+    }
+
+    public History requestToDisableOrder() {
         throw new NotImplementedException();
     }
 
@@ -65,13 +90,12 @@ public class OrderState {
         return order;
     }
 
-    protected History getOrderHistory() {
+    protected History getOrderHistory(String description) {
         History history = new History();
 
         history.setOrder(this.order);
         history.setDateChangeStatus(LocalDateTime.now());
-        //TODO: implement logic to create history description
-        history.setDescChangeStatus("Change Status");
+        history.setDescChangeStatus(description);
         history.setOldStatus(order.getStatus());
 
         return history;
@@ -101,6 +125,15 @@ public class OrderState {
                 break;
             case DISABLED:
                 order.setState(new DisabledOrder(order));
+                break;
+            case REQUEST_TO_DISABLE:
+                order.setState(new RequestToDisableOrder(order));
+                break;
+            case REQUEST_TO_PAUSE:
+                order.setState(new RequestToPauseOrder(order));
+                break;
+            case REQUEST_TO_RESUME:
+                order.setState(new RequestToResumeOrder(order));
                 break;
             default:
                 break;

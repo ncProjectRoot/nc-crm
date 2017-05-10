@@ -35,18 +35,24 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
     @Override
     public boolean createOrder(OrderDto orderDto) {
         Order order = convertFromDtoToEntity(orderDto);
-        orderDao.create(order);
-        return true;
+        History history = order.getState().newOrder();
+
+        return saveCondition(order, history);
     }
 
     @Override
     @Transactional
-    public boolean acceptOrder(Long orderId) {
-        if (orderId == null) return false;
+    public boolean processOrder(Long orderId, Long csrId) {
+        if (orderId == null || csrId == null) return false;
 
         Order order = orderDao.findById(orderId);
-        History history = order.getState().acceptOrder();
-        return save(order, history);
+        User csr = userDao.findById(csrId);
+        if (csr != null || order != null) {
+            order.setCsr(csr);
+            History history = order.getState().processOrder();
+            return saveCondition(order, history);
+        }
+        return false;
     }
 
     @Override
@@ -55,8 +61,11 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (orderId == null) return false;
 
         Order order = orderDao.findById(orderId);
-        History history = order.getState().activateOrder();
-        return save(order, history);
+        if (order != null) {
+            History history = order.getState().activateOrder();
+            return saveCondition(order, history);
+        }
+        return false;
     }
 
     @Override
@@ -65,8 +74,11 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (orderId == null) return false;
 
         Order order = orderDao.findById(orderId);
-        History history = order.getState().pauseOrder();
-        return save(order, history);
+        if (order != null) {
+            History history = order.getState().pauseOrder();
+            return saveCondition(order, history);
+        }
+        return false;
     }
 
     @Override
@@ -75,33 +87,78 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (orderId == null) return false;
 
         Order order = orderDao.findById(orderId);
-        History history = order.getState().resumeOrder();
-        return save(order, history);
+        if (order != null) {
+            History history = order.getState().resumeOrder();
+            return saveCondition(order, history);
+        }
+        return false;
     }
 
     @Override
     @Transactional
-    public boolean cancelOrder(Long orderId) {
+    public boolean disableOrder(Long orderId) {
         if (orderId == null) return false;
 
         Order order = orderDao.findById(orderId);
-        History history = order.getState().cancelOrder();
-        return save(order, history);
+        if (order != null) {
+            History history = order.getState().disableOrder();
+            return saveCondition(order, history);
+        }
+        return false;
     }
 
-    private Order convertFromDtoToEntity(OrderDto orderDto){
+    @Override
+    @Transactional
+    public boolean requestToResumeOrder(Long orderId) {
+        if (orderId == null) return false;
+
+        Order order = orderDao.findById(orderId);
+        if (order != null) {
+            History history = order.getState().requestToResumeOrder();
+            return saveCondition(order, history);
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean requestToPauseOrder(Long orderId) {
+        if (orderId == null) return false;
+
+        Order order = orderDao.findById(orderId);
+        if (order != null) {
+            History history = order.getState().requestToPauseOrder();
+            return saveCondition(order, history);
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean requestToDisableOrder(Long orderId) {
+        if (orderId == null) return false;
+
+        Order order = orderDao.findById(orderId);
+        if (order != null) {
+            History history = order.getState().requestToDisableOrder();
+            return saveCondition(order, history);
+        }
+        return false;
+    }
+
+    private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
         User customer = userDao.findById(orderDto.getCustomerId());
 
         order.setProduct(product);
         order.setCustomer(customer);
-        order.setStatus(OrderStatus.NEW);
         order.setDate(LocalDateTime.now());
         return order;
     }
 
-    private boolean save(Order order, History history) {
+
+    private boolean saveCondition(Order order, History history) {
         return historyDao.create(history) != null && orderDao.update(order) != null;
     }
 }
