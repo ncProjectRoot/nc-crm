@@ -1,7 +1,7 @@
 package com.netcracker.crm.dao;
 
-import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.request.OrderRowRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,9 +24,9 @@ public interface OrderDao extends CrudDao<Order> {
 
     Long getOrderRowsCount(OrderRowRequest orderRowRequest);
 
-    List<Order> findOrgOrdersByCustId(Long custId);
+    List<Order> findOrgOrdersByIdOrTitle(String pattern, Long customerId);
 
-    List<Order> findByIdOrTitle(String pattern);
+    List<Order> findByIdOrTitleByCustomer(String pattern, Long customerId);
 
     Boolean hasCustomerProduct(Long productId, Long customerId);
 }

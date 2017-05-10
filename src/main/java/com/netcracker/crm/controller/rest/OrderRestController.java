@@ -4,6 +4,7 @@ import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderService;
@@ -80,16 +81,16 @@ public class OrderRestController {
         return orderService.getOrdersRow(orderRowRequest);
     }
 
-    @GetMapping("/orders/users/{id}")
-    public List<Order> getOrdersByCustomer(OrderRowRequest orderRowRequest, Authentication authentication,
-                                    @PathVariable(value = "id", required = true) Long id) throws IOException {
+    @GetMapping("/orders/users/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_CUSTOMER')")
+    public List<AutocompleteDto> getAutocompleteDto(String pattern, Authentication authentication,
+                                                     @PathVariable(value = "userId") Long userId) throws IOException {
         Object principal = authentication.getPrincipal();
         User customer = null;
         if (principal instanceof UserDetailsImpl) {
             customer = (UserDetailsImpl) principal;
-            orderRowRequest.setCustomerId(customer.getId());
         }
-        return orderService.findByCustomer(customer);
+        return orderService.getAutocompleteOrder(pattern, customer);
     }
 
 

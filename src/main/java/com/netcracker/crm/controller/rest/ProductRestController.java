@@ -22,15 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_PRODUCT_CREATED;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_PRODUCT_UPDATE;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by Pasha on 29.04.2017.
@@ -44,8 +41,8 @@ public class ProductRestController {
 
     @Autowired
     public ProductRestController(ProductService productService,
-                             BindingResultHandler bindingResultHandler, ProductValidator productValidator,
-                             ResponseGenerator<Product> generator) {
+                                 BindingResultHandler bindingResultHandler, ProductValidator productValidator,
+                                 ResponseGenerator<Product> generator) {
         this.productService = productService;
         this.bindingResultHandler = bindingResultHandler;
         this.productValidator = productValidator;
@@ -55,12 +52,12 @@ public class ProductRestController {
     @RequestMapping(value = "/csr/addProduct", method = RequestMethod.POST)
     public ResponseEntity<?> addProduct(@Valid ProductDto productDto, BindingResult bindingResult) {
         productValidator.validate(productDto, bindingResult);
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
 
         Product product = productService.persist(productDto);
-        if(product.getId() > 0){
+        if (product.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -69,12 +66,12 @@ public class ProductRestController {
     @RequestMapping(value = "/csr/post/product", method = RequestMethod.POST)
     public ResponseEntity<?> updateProduct(@Valid ProductDto productDto, BindingResult bindingResult) {
         productValidator.validate(productDto, bindingResult);
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
 
         Product product = productService.update(productDto);
-        if(product.getId() > 0){
+        if (product.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -153,7 +150,6 @@ public class ProductRestController {
         productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
         return productService.getProductsRow(productRowRequest);
     }
-
 
 
 }

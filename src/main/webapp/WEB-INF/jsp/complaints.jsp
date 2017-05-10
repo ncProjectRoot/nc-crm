@@ -237,7 +237,7 @@
                             <i class="material-icons prefix">loyalty</i>
                             <input type="text" id="order-input" class="autocomplete">
                             <input type="hidden" id="order-hidden-input" name="orderId"/>
-                            <label for="order-input">Selected order: <span id="selected-order"></span></label>
+                            <label for="order-input">Order: <span id="selected-order"></span></label>
                         </div>
                     </div>
                     <div class="row">
@@ -268,10 +268,10 @@
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
 
-    $('#discount-input').karpo_autocomplete({
-        url: "/orders/users/${user.id}/",
+    $('#order-input').karpo_autocomplete({
+        url: "/orders/users/${user.id}",
         label: "#selected-order",
-        defaultValue: "/",
+        defaultValue: "",
         hideInput: "#order-hidden-input"
     });
 
@@ -280,23 +280,22 @@
             e.preventDefault();
             var titleLenth = $("#title").val().length;
             var messageLenth = $("#message").val().length;
-            var selectVal = $("#orderSelect").val();
+            var selectVal = $("#order-hidden-input").val();
             if (titleLenth < 5 || titleLenth > 50) {
                 Materialize.toast("Title length must be 5-50", 5000, 'rounded');
             } else if (messageLenth < 5 || messageLenth > 375) {
                 Materialize.toast("Description length must be 5-375", 5000, 'rounded');
-            } else if (!selectVal > 0) {
+            } else if (!(selectVal > 0)) {
                 Materialize.toast("Order can't be empty", 5000, 'rounded');
             } else {
                 $(".progress").addClass("progress-active");
-                $.post("/complaints", $("#createComplaintForm").serialize(), function (data) {
+                sendPost('#createComplaintForm', '/complaints' ).done(function (id) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
-                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
-                    setTimeout(function () {
-                        window.location.href = "/#/complaint/" + data.id;
-                    }, 2000);
-                }).error();
+//                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
+                        window.location.href = "/#/complaints/" + id;
+                    }
+                );
             }
         }
     );

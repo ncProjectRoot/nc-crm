@@ -59,7 +59,7 @@ public class ComplaintRestController {
 
         Complaint complaint = complaintService.persist(complaintDto);
         if (complaint.getId() > 0) {
-            return generator.getHttpResponse(complaint, SUCCESS_MESSAGE, SUCCESS_COMPLAINT_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(complaint.getId(), SUCCESS_MESSAGE, SUCCESS_COMPLAINT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -67,7 +67,7 @@ public class ComplaintRestController {
     @GetMapping("/complaints")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<Map<String, Object>> complaints(ComplaintRowRequest complaintRowRequest, Authentication authentication,
-                                          @RequestParam(required = false) Long userId) throws IOException {
+                                                          @RequestParam(required = false) Long userId) throws IOException {
         Object principal = authentication.getPrincipal();
         User user = null;
         if (principal instanceof UserDetailsImpl) {
@@ -91,7 +91,7 @@ public class ComplaintRestController {
     @GetMapping("/complaints/titles")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<List<String>> complaintsTitles(String likeTitle, Authentication authentication,
-                                         @RequestParam(required = false) Long userId) {
+                                                         @RequestParam(required = false) Long userId) {
         Object principal = authentication.getPrincipal();
         User user = null;
         if (principal instanceof UserDetailsImpl) {
@@ -106,17 +106,17 @@ public class ComplaintRestController {
     @PutMapping("/complaints/{id}")
     @PreAuthorize("hasRole('ROLE_PMG')")
     public ResponseEntity<Boolean> acceptComplaint(Map<String, Object> model, Authentication authentication,
-                                   @RequestParam(value = "type") String type,
-                                   @PathVariable Long id) {
+                                                   @RequestParam(value = "type") String type,
+                                                   @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
         User pmg = null;
         if (principal instanceof UserDetailsImpl) {
             pmg = (UserDetailsImpl) principal;
         }
         if ("ACCEPT".equals(type)) {
-            return new ResponseEntity<>( complaintService.acceptComplaint(id, pmg.getId()), HttpStatus.OK);
+            return new ResponseEntity<>(complaintService.acceptComplaint(id, pmg.getId()), HttpStatus.OK);
         } else if ("CLOSE".equals(type)) {
-            return new ResponseEntity<>( complaintService.closeComplaint(id, pmg.getId()), HttpStatus.OK);
+            return new ResponseEntity<>(complaintService.closeComplaint(id, pmg.getId()), HttpStatus.OK);
         }
         return new ResponseEntity<>(Boolean.FALSE, HttpStatus.OK);
     }

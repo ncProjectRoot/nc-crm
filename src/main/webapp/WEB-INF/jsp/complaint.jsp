@@ -75,13 +75,20 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <h5>Order: #${complaint.order.id}</h5>
-            <h5>Product: ${complaint.order.product.title}</h5>
+            <h5>Order: <a href="/#order?id=${complaint.order.id}"> #${complaint.order.id}</a></h5>
+            <h5>Product: <a href="/#product?id=${complaint.order.product.id}"> ${complaint.order.product.title}</a>
+            </h5>
         </div>
         <div class="divider"></div>
         <div class="section">
             <h5>Customer info:</h5>
-            <h5> #${complaint.customer.id} ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
+            <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
+                <h5> #${complaint.customer.id} ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
+            </sec:authorize>
+            <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
+                <h5><a href="/#user?id=${complaint.customer.id}">
+                    #${complaint.customer.id} </a> ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
+            </sec:authorize>
             <h5>email: <a href="mailto:${complaint.customer.email}">${complaint.customer.email}</a></h5>
         </div>
         <sec:authorize access="hasRole('ROLE_PMG')">

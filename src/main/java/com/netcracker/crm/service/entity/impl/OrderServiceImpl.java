@@ -51,22 +51,9 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    private List<Order> findByCustomerId(Long id) {
-        return orderDao.findAllByCustomerId(id);
-    }
-
-
-    private List<Order> findOrgOrdersByCustId(Long id) {
-        return orderDao.findOrgOrdersByCustId(id);
-    }
-
     @Override
     public List<Order> findByCustomer(User customer) {
-        if (customer.isContactPerson()) {
-            return findOrgOrdersByCustId(customer.getId());
-        } else {
-            return findByCustomerId(customer.getId());
-        }
+        return orderDao.findAllByCustomerId(customer.getId());
     }
 
     @Override
@@ -95,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
     }
+
     private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
@@ -139,9 +127,15 @@ public class OrderServiceImpl implements OrderService {
         return orderRowDto;
     }
 
+    @Transactional
     @Override
-    public List<AutocompleteDto> getAutocompleteOrder(String pattern) {
-        List<Order> orders = orderDao.findByIdOrTitle(pattern);
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
+        List<Order> orders;
+        if (user.isContactPerson()) {
+            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
+        } else {
+            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
+        }
         List<AutocompleteDto> result = new ArrayList<>();
         for (Order order : orders) {
             result.add(convertToAutocompleteDto(order));

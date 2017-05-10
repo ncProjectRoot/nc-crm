@@ -55,20 +55,23 @@ public final class OrderSqlQuery {
             + "FROM orders o "
             + "WHERE o.customer_id = :customer_id AND o.product_id = :product_id";
 
-    public static final String SQL_FIND_ORG_ORDERS_BY_CUSTOMER_ID = "SELECT id, date_finish, " +
-            "preferred_date, status_id, customer_id, product_id, csr_id " +
-            "FROM orders " +
+    public static final String SQL_FIND_ORG_ORDERS_BY_ID_OR_PRODUCT_TITLE = "SELECT o.id, date_finish, " +
+            "preferred_date, o.status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "INNER JOIN product p ON o.product_id = p.id " +
             "WHERE customer_id IN (SELECT id " +
             "FROM users " +
             "WHERE org_id = (SELECT org_id " +
             "FROM users " +
             "WHERE id = :customer_id)) " +
+            "AND concat(o.id, ' ', p.title) ILIKE :pattern " +
             "ORDER BY date_finish desc";
 
     public static final String SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE = "SELECT o.id, date_finish, " +
             "preferred_date, o.status_id, customer_id, product_id, csr_id " +
             "FROM orders o " +
-            "INNER JOIN product p ON o.product_id = p.id" +
-            "WHERE concat(o.id, ' ', p.title) ILIKE :pattern " +
+            "INNER JOIN product p ON o.product_id = p.id " +
+            "WHERE o.customer_id=:customer_id " +
+            "AND concat(o.id, ' ', p.title) ILIKE :pattern " +
             "ORDER BY date_finish desc;";
 }

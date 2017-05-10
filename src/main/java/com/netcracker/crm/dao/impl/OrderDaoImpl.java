@@ -256,18 +256,19 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public List<Order> findOrgOrdersByCustId(Long custId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_CUSTOMER_ID, custId);
-        return namedJdbcTemplate.query(SQL_FIND_ORG_ORDERS_BY_CUSTOMER_ID, params, orderWithDetailExtractor);
-
+    public List<Order> findByIdOrTitleByCustomer(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
     }
 
     @Override
-    public List<Order> findByIdOrTitle(String pattern) {
+    public List<Order> findOrgOrdersByIdOrTitle(String pattern, Long customerId) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PATTERN, "%" + pattern + "%");
-        return namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORG_ORDERS_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
     }
 
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {

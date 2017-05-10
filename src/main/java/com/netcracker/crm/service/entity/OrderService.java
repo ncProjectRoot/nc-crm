@@ -25,6 +25,6 @@ public interface OrderService {
 
     boolean hasCustomerProduct(Long productId, Long customerId);
 
-    List<AutocompleteDto> getAutocompleteOrder(String pattern);
+    List<AutocompleteDto> getAutocompleteOrder(String pattern, User user);
 
 }
