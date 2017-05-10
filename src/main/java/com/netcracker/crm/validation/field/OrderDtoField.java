@@ -5,7 +5,9 @@ package com.netcracker.crm.validation.field;
  */
 public enum OrderDtoField implements DtoField {
     CUSTOMER_ID("customerId", "Client"),
-    PRODUCT_ID("productId", "Product");
+    PRODUCT_ID("productId", "Product"),
+    PREFERRED_DATE("preferredDate", "Preferred date"),
+    PREFERRED_TIME("preferredTime", "Preferred time");
 
     private final String name;
     private final String errorName;

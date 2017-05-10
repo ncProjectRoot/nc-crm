@@ -39,7 +39,7 @@ public class ProductValidator extends AbstractValidator {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, DESCRIPTION.getName(), ERROR_CODE_REQUIRED, getErrorMessage(DESCRIPTION, ERROR_CODE_REQUIRED));
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, DEFAULT_PRICE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(DEFAULT_PRICE, ERROR_CODE_REQUIRED));
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, TITLE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(TITLE, ERROR_CODE_REQUIRED));
+        ValidationUtils.rejectIfEmpty(errors, TITLE.getName(), ERROR_CODE_REQUIRED, getErrorMessage(TITLE, ERROR_CODE_REQUIRED));
     }
 
 

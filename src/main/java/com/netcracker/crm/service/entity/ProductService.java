@@ -2,10 +2,10 @@ package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
-import com.netcracker.crm.dto.ProductStatusDto;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,8 @@ import java.util.Map;
  */
 public interface ProductService {
     Product persist(ProductDto productDto);
+
+    Product update(ProductDto productDto);
 
     List<ProductGroupDto> getProductsWithoutGroup();
 
@@ -29,4 +31,6 @@ public interface ProductService {
     Product getProductsById(Long id);
 
     List<String> getActualNamesByCustomerId(String likeTitle, Long customerId);
+
+    boolean hasCustomerAccessToProduct(Long productId, Long customerId);
 }

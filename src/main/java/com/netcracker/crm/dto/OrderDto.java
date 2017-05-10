@@ -6,6 +6,8 @@ package com.netcracker.crm.dto;
 public class OrderDto {
     private Long customerId;
     private Long productId;
+    private String preferredDate;
+    private String preferredTime;
 
     public Long getCustomerId() {
         return customerId;
@@ -21,5 +23,21 @@ public class OrderDto {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public String getPreferredDate() {
+        return preferredDate;
+    }
+
+    public void setPreferredDate(String preferredDate) {
+        this.preferredDate = preferredDate;
+    }
+
+    public String getPreferredTime() {
+        return preferredTime;
+    }
+
+    public void setPreferredTime(String preferredTime) {
+        this.preferredTime = preferredTime;
     }
 }
