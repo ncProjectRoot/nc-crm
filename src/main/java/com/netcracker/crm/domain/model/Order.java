@@ -1,5 +1,8 @@
 package com.netcracker.crm.domain.model;
 
+import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.state.order.states.*;
+
 import java.time.LocalDateTime;
 
 /**
@@ -15,8 +18,11 @@ public class Order {
     private User customer;
     private Product product;
     private User csr;
+    private OrderState state;
 
     public Order() {
+        this.status = OrderStatus.NEW;
+        this.state = new NewOrder(this);
     }
 
     public Long getId() {
@@ -74,4 +80,13 @@ public class Order {
     public void setPreferedDate(LocalDateTime preferedDate) {
         this.preferedDate = preferedDate;
     }
+
+    public OrderState getState() {
+        return state;
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
+    }
+
 }
