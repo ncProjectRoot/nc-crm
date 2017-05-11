@@ -81,11 +81,13 @@ td.discount .percentage.show{
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-status" class='dropdown-content'>
                                         <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="2">
@@ -101,9 +103,9 @@ td.discount .percentage.show{
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="12">Planned</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="13">Actual</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="4">
@@ -144,11 +146,13 @@ td.discount .percentage.show{
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-my-status" class='dropdown-content'>
                                         <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="5">In queue</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="9">Reques resume</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="2">
@@ -164,9 +168,9 @@ td.discount .percentage.show{
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-my-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="12">Planned</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="13">Actual</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="5">

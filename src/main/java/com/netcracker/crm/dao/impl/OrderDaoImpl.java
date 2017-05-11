@@ -42,6 +42,7 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     private ProductDao productDao;
 
+
     private SimpleJdbcInsert orderInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;

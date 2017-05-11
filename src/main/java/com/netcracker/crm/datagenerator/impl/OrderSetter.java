@@ -54,7 +54,7 @@ public class OrderSetter extends AbstractSetter<Order> {
     }
 
     private OrderStatus getStatus(){
-        return OrderStatus.values()[random.nextInt(6)];
+        return OrderStatus.values()[random.nextInt(OrderStatus.values().length)];
     }
 
     private User getCsr(){
