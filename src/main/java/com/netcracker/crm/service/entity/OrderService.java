@@ -19,8 +19,6 @@ public interface OrderService {
 
     Order persist(OrderDto orderDto);
 
-    List<Order> findByCustomerId(Long id);
-
     Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest);
 
     Order getOrderById(Long id);
