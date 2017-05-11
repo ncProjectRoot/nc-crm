@@ -211,8 +211,3 @@ function sendPut(form, url) {
         }
     })
 }
-
-function doSmth() {
-
-
-}

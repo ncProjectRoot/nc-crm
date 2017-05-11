@@ -5,10 +5,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
-import com.netcracker.crm.service.entity.DiscountService;
-import com.netcracker.crm.service.entity.ComplaintService;
-import com.netcracker.crm.service.entity.OrderService;
-import com.netcracker.crm.service.entity.ProductService;
+import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -32,6 +29,8 @@ public class EntityController {
     private OrderService orderService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/*/complaints/{id}")
     public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
@@ -96,6 +95,19 @@ public class EntityController {
 //        model.put("user", user);
         model.put("discount", discountService.getDiscountById(id));
         return "discount";
+    }
+
+    @RequestMapping(value = "/*/user", method = {RequestMethod.GET})
+    public String user(Map<String, Object> model, Authentication authentication,
+                           @RequestParam Long id) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+//        model.put("user", user);
+        model.put("user", userService.getUserById(id));
+        return "user";
     }
 
 }

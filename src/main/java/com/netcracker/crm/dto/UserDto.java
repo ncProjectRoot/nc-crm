@@ -143,4 +143,5 @@ public class UserDto {
     public void setFormattedAddress(String formattedAddress) {
         this.formattedAddress = formattedAddress;
     }
+
 }

@@ -11,6 +11,7 @@ public final class MessageProperty {
     public static final String REPLACE_WILD_CARD = "%wild_card%";
     //Success Keys
     public static final String SUCCESS_USER_CREATED = "success.user-create";
+    public static final String SUCCESS_USER_UPDATED = "success.user-update";
     public static final String SUCCESS_PRODUCT_CREATED = "success.product-create";
     public static final String SUCCESS_DISCOUNT_CREATED = "success.discount-create";
     public static final String SUCCESS_DISCOUNT_UPDATED = "success.discount-update";

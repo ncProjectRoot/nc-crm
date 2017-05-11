@@ -94,6 +94,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserById(Long id) {
+        return userDao.findById(id);
+    }
+
+    @Override
+    public boolean updateUser(UserDto userDto) {
+        User user = convertToEntity(userDto);
+        Long updateId = userDao.update(user);
+        if (updateId > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getUsers(UserRowRequest userRowRequest) {
         Map<String, Object> response = new HashMap<>();
@@ -198,6 +213,15 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setAddress(null);
             user.setOrganization(null);
+        }
+        return user;
+    }
+
+    private User convertToEntity(UserDto userDto) {
+        ModelMapper mapper = configureMapper();
+        User user = mapper.map(userDto, User.class);
+        if (userDto.getId() == null) {
+            user.setEnable(false);
         }
         return user;
     }

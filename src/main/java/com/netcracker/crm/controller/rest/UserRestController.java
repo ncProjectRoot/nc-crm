@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,8 +23,7 @@ import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_USER_CREATED;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by bpogo on 4/30/2017.
@@ -43,10 +39,10 @@ public class UserRestController {
     private final ResponseGenerator<User> generator;
 
     @Autowired
-    public UserRestController(UserService userService, UserValidator userValidator,
+    public UserRestController(UserService userService, UserValidator userRowValidator,
                               BindingResultHandler bindingResultHandler, ResponseGenerator generator) {
         this.userService = userService;
-        this.userValidator = userValidator;
+        this.userValidator = userRowValidator;
         this.bindingResultHandler = bindingResultHandler;
         this.generator = generator;
     }
@@ -68,6 +64,19 @@ public class UserRestController {
         }
 
         log.error("User was not created.");
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto, BindingResult bindingResult) {
+        userValidator.validate(userDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
+        boolean isUpdated = userService.updateUser(userDto);
+        if (isUpdated) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
+        }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

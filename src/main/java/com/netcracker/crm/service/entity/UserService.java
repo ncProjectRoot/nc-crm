@@ -1,6 +1,6 @@
 package com.netcracker.crm.service.entity;
 
-import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
@@ -15,6 +15,10 @@ public interface UserService {
     Long createUser(UserDto userDto) throws RegistrationException;
 
     boolean activateUser(String userToken);
+
+    User getUserById(Long id);
+
+    boolean updateUser(UserDto userDto);
 
     Map<String, Object> getUsers(UserRowRequest userRowRequest);
 
