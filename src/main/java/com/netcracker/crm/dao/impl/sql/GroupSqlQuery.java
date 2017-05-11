@@ -18,8 +18,6 @@ public final class GroupSqlQuery {
     public static final String PARAM_GROUP_ROW_PRODUCT_COUNT = "products";
 
 
-
-
     public static final String PARAM_PATTERN = "pattern";
 
     public static final String SQL_UPDATE_GROUP = "UPDATE groups " +

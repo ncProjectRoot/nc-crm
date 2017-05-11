@@ -12,10 +12,11 @@ import java.util.List;
  * @version 1.0
  * @since 26.04.2017
  */
-public interface GroupDao extends CrudDao<Group>{
+public interface GroupDao extends CrudDao<Group> {
     List<Group> findByName(String name);
 
     Long getCount();
+
     Long getCount(GroupRowRequest request);
 
     List<GroupTableDto> getPartRows(GroupRowRequest request);

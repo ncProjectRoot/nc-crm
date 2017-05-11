@@ -8,6 +8,7 @@ import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,13 +52,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByCustomerId(Long id) {
-        return orderDao.findAllByCustomerId(id);
+    public List<Order> findByCustomer(User customer) {
+        return orderDao.findAllByCustomerId(customer.getId());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest){
+    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.hasCustomerProduct(productId, customerId);
     }
 
-    private Order convertFromDtoToEntity(OrderDto orderDto){
+    private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
         User customer = userDao.findById(orderDto.getCustomerId());
@@ -125,6 +125,29 @@ public class OrderServiceImpl implements OrderService {
             orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
         return orderRowDto;
+    }
+
+    @Transactional
+    @Override
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
+        List<Order> orders;
+        if (user.isContactPerson()) {
+            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
+        } else {
+            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
+        }
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            result.add(convertToAutocompleteDto(order));
+        }
+        return result;
+    }
+
+    private AutocompleteDto convertToAutocompleteDto(Order order) {
+        AutocompleteDto autocompleteDto = new AutocompleteDto();
+        autocompleteDto.setId(order.getId());
+        autocompleteDto.setValue(order.getProduct().getTitle() + " " + order.getDate().toLocalDate());
+        return autocompleteDto;
     }
 
 }
