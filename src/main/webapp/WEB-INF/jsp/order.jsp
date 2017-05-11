@@ -40,33 +40,33 @@
 
     <div class="row">
         <div class="section">
-            <sec:authentication var="user" property="principal" />
+            <sec:authentication var="user" property="principal"/>
             <sec:authorize access="hasRole('ROLE_CSR')">
+                <input type="hidden" id="csrfToken" value="${_csrf.token}"/>
+                <input type="hidden" id="csrfHeader" value="${_csrf.headerName}"/>
+                <c:if test="${order.status == 'NEW'}">
+                    <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept</a>
+                </c:if>
                 <c:if test="${user.id == order.csr.id}">
-                    <input type="hidden" id="csrfToken" value="${_csrf.token}"/>
-                    <input type="hidden" id="csrfHeader" value="${_csrf.headerName}"/>
                     <c:choose>
-                        <c:when test="${order.status == 'NEW'}">
-                            <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept</a>
-                        </c:when>
-                        <c:when test="${order.status == 'PROCESSING'}">
-                            <a class="waves-effect waves-light btn" id="csr_activate">activate</a>
-                        </c:when>
-                        <%--<c:when test="${order.status == 'ACTIVE'}">--%>
+                            <c:when test="${order.status == 'PROCESSING'}">
+                                <a class="waves-effect waves-light btn" id="csr_activate">activate</a>
+                            </c:when>
+                            <%--<c:when test="${order.status == 'ACTIVE'}">--%>
 
-                        <%--</c:when>--%>
-                        <%--<c:when test="${order.status == 'PAUSED'}">--%>
+                            <%--</c:when>--%>
+                            <%--<c:when test="${order.status == 'PAUSED'}">--%>
 
-                        <%--</c:when>--%>
-                        <c:when test="${order.status == 'REQUEST_TO_RESUME'}">
-                            <a class="waves-effect waves-light btn" id="csr_resume">resume</a>
-                        </c:when>
-                        <c:when test="${order.status == 'REQUEST_TO_PAUSE'}">
-                            <a class="waves-effect waves-light btn" id="csr_pause">pause</a>
-                        </c:when>
-                        <c:when test="${order.status == 'REQUEST_TO_DISABLE'}">
-                            <a class="waves-effect waves-light btn" id="csr_disable">disable</a>
-                        </c:when>
+                            <%--</c:when>--%>
+                            <c:when test="${order.status == 'REQUEST_TO_RESUME'}">
+                                <a class="waves-effect waves-light btn" id="csr_resume">resume</a>
+                            </c:when>
+                            <c:when test="${order.status == 'REQUEST_TO_PAUSE'}">
+                                <a class="waves-effect waves-light btn" id="csr_pause">pause</a>
+                            </c:when>
+                            <c:when test="${order.status == 'REQUEST_TO_DISABLE'}">
+                                <a class="waves-effect waves-light btn" id="csr_disable">disable</a>
+                            </c:when>
                     </c:choose>
                 </c:if>
             </sec:authorize>
@@ -130,7 +130,7 @@
     </c:choose>
 </div>
 <script>
-//            CSR
+    //            CSR
     $('#csr_accept').on('click', function () {
         sendPut("/orders/" + ${order.id} +"/accept");
     });
@@ -152,7 +152,7 @@
     });
 
 
-//    CUSTOMER
+    //    CUSTOMER
     $('#customer_pause').on('click', function () {
         sendPut("/orders/" + ${order.id} +"/request-pause");
     });
@@ -165,15 +165,15 @@
         sendPut("/orders/" + ${order.id} +"/request-resume");
     });
 
-//    PUT FUNCTION
+    //    PUT FUNCTION
     function sendPut(url) {
         var token = $('#csrfToken').val();
         var header = $('#csrfHeader').val();
 
         var xhr = $.ajax({
-            type : 'PUT',
-            url : url,
-            dataType : 'json',
+            type: 'PUT',
+            url: url,
+            dataType: 'json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader(header, token);
             },
@@ -185,9 +185,6 @@
         });
         return xhr;
     }
-
-
-
 
 
 </script>
