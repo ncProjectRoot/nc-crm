@@ -73,7 +73,16 @@ public class OrderReportGenerator {
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
 
         List<LinkedHashMap<String, List<?>>> additionalData = new ArrayList<>();
-        LinkedHashMap<String,List<?>> firstAddData = new LinkedHashMap<>();
+        List<String> addDataOuterTitles = new ArrayList<>();
+        additionalData.add(orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last));
+        addDataOuterTitles.add(orderConverter.getLastAdditionalDataName());
+        String xAxis = orderConverter.getLastAdditionalDataName();
+        List<String> yAxises = orderConverter.getLastAdditionalData_firstColumns();
+        List<Map<String, List<String >>> graphics = new ArrayList<>();
+        Map<String, List<String>> graphic1 = new HashMap<>();
+        graphic1.put(xAxis, yAxises);
+        graphics.add(graphic1);
+       /* LinkedHashMap<String,List<?>> firstAddData = new LinkedHashMap<>();
 
         List<String> names = new ArrayList<>();
         names.add("name1");
@@ -113,7 +122,7 @@ public class OrderReportGenerator {
 
         graphic.put(xAxis, yAxis);
         List<Map<String, List<String>>> graphics = new ArrayList<>();
-        graphics.add(graphic);
+        graphics.add(graphic);*/
 
         return new DefaultExcelBuilder().getWorkbookChart
                 (fileFormat,data,reportName, graphics, additionalData, addDataOuterTitles);
