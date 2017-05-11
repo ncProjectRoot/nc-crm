@@ -1,6 +1,7 @@
 package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
 import com.netcracker.crm.dto.DiscountDto;
 
@@ -20,4 +21,6 @@ public interface DiscountService {
     Discount getDiscountById(Long id);
 
     boolean updateDiscount(DiscountDto discountDto);
+
+    List<AutocompleteDto> getAutocompleteDiscount(String pattern);
 }

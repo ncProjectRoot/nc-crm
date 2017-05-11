@@ -1,14 +1,14 @@
 package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.ComplaintStatus;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
+import com.netcracker.crm.dto.row.ComplaintRowDto;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
@@ -23,9 +23,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Melnyk_Dmytro
@@ -40,15 +45,18 @@ public class ComplaintServiceImpl implements ComplaintService {
     private ComplaintDao complaintDao;
     private OrderDao orderDao;
     private UserDao userDao;
+    private HistoryDao historyDao;
     private AbstractEmailSender emailSender;
 
     @Autowired
     public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
-                                @Qualifier("complaintSender") AbstractEmailSender emailSender) {
+                                @Qualifier("complaintSender") AbstractEmailSender emailSender,
+                                HistoryDao historyDao) {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.emailSender = emailSender;
+        this.historyDao = historyDao;
     }
 
     @Transactional
@@ -62,20 +70,157 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaint;
     }
 
+    @Transactional
     public List<Complaint> findByTitle(String title) {
         return complaintDao.findByTitle(title);
     }
 
+    @Transactional
     public List<Complaint> findByDate(LocalDate date) {
         return complaintDao.findAllByDate(date);
     }
 
+    @Transactional
     public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
 
+    @Transactional
     public Complaint findById(Long id) {
         return complaintDao.findById(id);
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException {
+
+        Map<String, Object> response = new HashMap<>();
+        Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
+        response.put("length", length);
+        List<Complaint> complaints = complaintDao.findComplaintRows(complaintRowRequest);
+        List<ComplaintRowDto> dtos = new ArrayList<>();
+        for (Complaint complaint : complaints) {
+            dtos.add(convertToRowDto(complaint));
+        }
+        response.put("rows", dtos);
+        return response;
+    }
+
+    @Transactional
+    @Override
+    public List<String> getTitles(String likeTitle, User user) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            if (user.isContactPerson()) {
+                return getTitlesForContactPerson(likeTitle, user.getId());
+            } else {
+                return getTitlesForNotContactPerson(likeTitle, user.getId());
+            }
+        } else if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
+            return getAllTitles(likeTitle);
+        }
+        return new ArrayList<>();
+    }
+
+    @Transactional
+    @Override
+    public List<String> getTitlesByPmg(String likeTitle, User pmg) {
+        return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
+    }
+
+    @Transactional
+    private List<String> getAllTitles(String likeTitle) {
+        return complaintDao.findComplaintsTitleLikeTitle(likeTitle);
+    }
+
+    @Transactional
+    private List<String> getTitlesForContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
+    }
+
+    @Transactional
+    private List<String> getTitlesForNotContactPerson(String likeTitle, Long custId) {
+        return complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
+    }
+
+    @Transactional
+    @Override
+    public boolean acceptComplaint(Long complaintId, Long pmgId) {
+        Complaint complaint = complaintDao.findById(complaintId);
+
+        if (complaint.getPmg() != null) {
+            return false;
+        }
+        User pmg = new User();
+        pmg.setId(pmgId);
+        complaint.setPmg(pmg);
+        complaint.setStatus(ComplaintStatus.SOLVING);
+        complaintDao.update(complaint);
+        History history = new History();
+        history.setComplaint(complaint);
+        history.setDateChangeStatus(LocalDateTime.now());
+        history.setDescChangeStatus("Pmg with id " + pmgId + " accepted complaint");
+        history.setOldStatus(ComplaintStatus.OPEN);
+        historyDao.create(history);
+        sendEmail(complaint);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean closeComplaint(Long complaintId, Long pmgId) {
+        Complaint complaint = complaintDao.findById(complaintId);
+        if (complaint.getPmg() == null || !complaint.getPmg().getId().equals(pmgId)) {
+            return false;
+        }
+        complaint.setStatus(ComplaintStatus.CLOSED);
+        complaintDao.update(complaint);
+        History history = new History();
+        history.setComplaint(complaint);
+        history.setDateChangeStatus(LocalDateTime.now());
+        history.setDescChangeStatus("Pmg with id " + complaint.getPmg().getId() + " solved complaint");
+        history.setOldStatus(ComplaintStatus.SOLVING);
+        historyDao.create(history);
+        sendEmail(complaint);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean checkAccessToComplaint(User customer, Long complaintId) {
+        UserRole role = customer.getUserRole();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_PMG)) {
+            return true;
+        } else if (role.equals(UserRole.ROLE_CSR)) {
+            return false;
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            Long count = null;
+            if (customer.isContactPerson()) {
+                count = complaintDao.checkOwnershipOfContactPerson(complaintId, customer.getId());
+            } else {
+                count = complaintDao.checkOwnershipOfCustomer(complaintId, customer.getId());
+            }
+            return count > 0;
+        }
+        return false;
+    }
+
+    private ComplaintRowDto convertToRowDto(Complaint complaint) {
+        ComplaintRowDto complaintRowDto = new ComplaintRowDto();
+        complaintRowDto.setId(complaint.getId());
+        complaintRowDto.setTitle(complaint.getTitle());
+        complaintRowDto.setMessage(complaint.getMessage());
+        complaintRowDto.setStatus(complaint.getStatus().getName());
+        complaintRowDto.setCustomer(complaint.getCustomer().getId());
+        complaintRowDto.setOrder(complaint.getOrder().getId());
+        complaintRowDto.setOrderStatus(complaint.getOrder().getStatus().getName());
+        complaintRowDto.setProductTitle(complaint.getOrder().getProduct().getTitle());
+        complaintRowDto.setProductStatus(complaint.getOrder().getProduct().getStatus().getName());
+        complaintRowDto.setDate(complaint.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh-mm")));
+        if (complaint.getPmg() != null) {
+            complaintRowDto.setPmg(complaint.getPmg().getId());
+        }
+        return complaintRowDto;
     }
 
     private void sendEmail(Complaint complaint) {

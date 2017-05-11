@@ -18,4 +18,5 @@ public interface DiscountDao extends CrudDao<Discount> {
     Long getDiscountRowsCount(DiscountRowRequest rowRequest);
 
     List<Discount> findDiscounts(DiscountRowRequest rowRequest);
+    List<Discount> findByIdOrTitle(String pattern);
 }

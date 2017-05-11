@@ -103,6 +103,7 @@ public class ComplaintMailSender extends AbstractEmailSender {
         return html.replaceAll("%name%", complaint.getCustomer().getFirstName())
                 .replaceAll("%surname%", complaint.getCustomer().getLastName())
                 .replaceAll("%complaintTitle%", complaint.getTitle())
+                .replaceAll("%id%", complaint.getId().toString())
                 .replaceAll("%complaintStatus%", complaint.getStatus().getName());
     }
 

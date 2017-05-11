@@ -8,6 +8,7 @@ import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
@@ -51,13 +52,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByCustomerId(Long id) {
-        return orderDao.findAllByCustomerId(id);
+    public List<Order> findByCustomer(User customer) {
+        return orderDao.findAllByCustomerId(customer.getId());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest){
+    public Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = orderDao.getOrderRowsCount(orderRowRequest);
         response.put("length", length);
@@ -76,7 +77,13 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findById(id);
     }
 
-    private Order convertFromDtoToEntity(OrderDto orderDto){
+
+    @Override
+    public boolean hasCustomerProduct(Long productId, Long customerId) {
+        return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
+    private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
         Product product = productDao.findById(orderDto.getProductId());
         User customer = userDao.findById(orderDto.getCustomerId());
@@ -85,6 +92,18 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomer(customer);
         order.setStatus(OrderStatus.NEW);
         order.setDate(LocalDateTime.now());
+
+        StringBuilder preferredDataTime = new StringBuilder();
+        if (!orderDto.getPreferredDate().isEmpty()) {
+            preferredDataTime.append(orderDto.getPreferredDate());
+            if (!orderDto.getPreferredTime().isEmpty()) {
+                preferredDataTime.append('T');
+                preferredDataTime.append(orderDto.getPreferredTime());
+            }
+        }
+        if (preferredDataTime.length() != 0) {
+            order.setPreferedDate(LocalDateTime.parse(preferredDataTime));
+        }
         return order;
     }
 
@@ -99,9 +118,36 @@ public class OrderServiceImpl implements OrderService {
         if (order.getCsr() != null) {
             orderRowDto.setCsr(order.getCsr().getId());
         }
-        orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        if (order.getDate() != null) {
+            orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        if (order.getPreferedDate() != null) {
+            orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
         return orderRowDto;
+    }
+
+    @Transactional
+    @Override
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
+        List<Order> orders;
+        if (user.isContactPerson()) {
+            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
+        } else {
+            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
+        }
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            result.add(convertToAutocompleteDto(order));
+        }
+        return result;
+    }
+
+    private AutocompleteDto convertToAutocompleteDto(Order order) {
+        AutocompleteDto autocompleteDto = new AutocompleteDto();
+        autocompleteDto.setId(order.getId());
+        autocompleteDto.setValue(order.getProduct().getTitle() + " " + order.getDate().toLocalDate());
+        return autocompleteDto;
     }
 
 }

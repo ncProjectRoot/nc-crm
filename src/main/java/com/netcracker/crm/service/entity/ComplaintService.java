@@ -1,10 +1,14 @@
 package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Melnyk_Dmytro
@@ -13,15 +17,25 @@ import java.util.List;
  */
 public interface ComplaintService {
 
-    public Complaint persist(ComplaintDto dto);
+    Complaint persist(ComplaintDto dto);
 
-    public List<Complaint> findByTitle(String title);
+    List<Complaint> findByTitle(String title);
 
-    public List<Complaint> findByDate(LocalDate date);
+    List<Complaint> findByDate(LocalDate date);
 
-    public List<Complaint> findByCustomerId(Long id);
+    List<Complaint> findByCustomerId(Long id);
 
-    public Complaint findById(Long id);
+    Complaint findById(Long id);
 
+    Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException;
 
+    List<String> getTitlesByPmg(String likeTitle, User pmg);
+
+    boolean acceptComplaint(Long complaintId, Long pmgId);
+
+    boolean closeComplaint(Long complaintId, Long pmgId);
+
+    boolean checkAccessToComplaint(User customer, Long id);
+
+    List<String> getTitles(String likeTitle, User user);
 }

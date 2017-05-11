@@ -33,18 +33,6 @@
                                 <th data-field="3">
                                     <a href="#!" class="sorted-element a-dummy">Price</a>
                                 </th>
-                                <th class="th-dropdown" data-field="statusId">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-my-product-status' data-default-name="Product Status">
-                                        Product Status
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-my-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
-                                    </ul>
-                                </th>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Discount</a>
                                 </th>
@@ -139,52 +127,41 @@
                                 <label for="title">Title</label>
                                 <input class="validate" id="title" type="text" name="title">
                             </div>
-                            <div class="input-field col s3">
-                                <i class="material-icons prefix">add_shopping_cart</i>
-                                <select name="discountId" id="select_disc">
-                                    <option value="0">Default</option>
-                                </select>
-                                <label for="select_disc">Choose discount</label>
-                            </div>
-                            <div class="input-field col s3">
-                                <i class="material-icons prefix">search</i>
-                                <input class='validate' type='text' onkeyup="fetchDiscounts()" id='search_title'/>
-                                <label for="search_title">Search discount <span id="discount_numbers"></span></label>
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">bubble_chart</i>
+                                <input type="text" id="group-input" class="autocomplete">
+                                <input type="hidden" id="group-hidden-input" name="groupId"/>
+                                <label for="group-input">Selected group: <span id="selected-group"></span></label>
                             </div>
                         </div>
                         <div class="row">
                             <div class='input-field col s6'>
-                                <i class="material-icons prefix">euro_symbol</i>
+                                <i class="material-icons prefix">attach_money</i>
                                 <input class='validate' type='number' name='defaultPrice' id='price'/>
                                 <label for="price">Price</label>
                             </div>
-                            <div class="input-field col s3">
-                                <i class="material-icons prefix">add</i>
-                                <select name="groupId" id="select_group">
-                                    <option value="0">Default</option>
-                                </select>
-                                <label for="select_group">Choose group</label>
-                            </div>
-                            <div class="input-field col s3">
-                                <i class="material-icons prefix">search</i>
-                                <input class='validate' type='text' onkeyup="fetchGroups()" id='search_group'/>
-                                <label for="search_group">Search group <span id="group_numbers"></span></label>
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">loyalty</i>
+                                <input type="text" id="discount-input" class="autocomplete">
+                                <input type="hidden" id="discount-hidden-input" name="discountId"/>
+                                <label for="discount-input">Selected discount: <span id="selected-discount"></span></label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">cached</i>
                                 <select name="statusName" id="select_product_status">
-                                    <option value="ACTUAL">ACTUAL</option>
-                                    <option value="PLANNED">PLANNED</option>
+                                    <option value="PLANNED" data-value="10" data-after-disabled="11">PLANNED</option>
+                                    <option value="ACTUAL" data-value="11" data-after-disabled="12">ACTUAL</option>
+                                    <option value="OUTDATED" data-value="12">OUTDATED</option>
                                 </select>
-                                <label for="select_disc">Choose product status</label>
+                                <label for="select_product_status">Choose product status</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
-                                <textarea id="descProduct" name="description" class="materialize-textarea"></textarea>
+                                <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>
                                 <label for="descProduct">Description</label>
                             </div>
                         </div>
@@ -214,8 +191,21 @@
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
-    //////// create ////////
+    //////// create product ////////
 
+    $('#select_product_status').karpo_status(10).disabled(12);
+    $('#discount-input').karpo_autocomplete({
+        url: "/csr/discountByTitle/",
+        label: "#selected-discount",
+        defaultValue: "${product.discount.id} ${product.discount.title}",
+        hideInput: "#discount-hidden-input"
+    });
+    $('#group-input').karpo_autocomplete({
+        url: "/csr/groupByName/",
+        label: "#selected-group",
+        defaultValue: "${product.group.id} ${product.group.name}",
+        hideInput: "#group-hidden-input"
+    });
     $('select').material_select();
 
     function fetchDiscounts() {
@@ -236,26 +226,10 @@
         }
     }
 
-    function fetchGroups() {
-        var title = $('#search_group').val();
-        if (title.length > 1) {
-            $('#select_group').children().remove();
-            $.get("/csr/groupByName/" + title).success(function (data) {
-                $('#select_group').append($('<option value="0">Default</option>'));
-                $.each(data, function (i, item) {
-                    console.log(item);
-                    $('#select_group').append($('<option/>', {
-                        value: item.id,
-                        text: item.name
-                    }));
-                });
-                $('#select_group').material_select('updating');
-                $('#group_numbers').html(", results " + data.length);
-            });
-        }
-    }
+    $('.materialize-textarea').trigger('autoresize');
+    Materialize.updateTextFields();
 
-    //        create product
+
     $("#addProduct").on("submit", function (e) {
         e.preventDefault();
         var title = $('#title').val();
@@ -266,14 +240,14 @@
             Materialize.toast("Please enter price more 0", 10000, 'rounded');
         } else {
             $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
-                $("#addProduct")[0].reset();
+//                $("#addProduct")[0].reset();
                 Materialize.toast(data, 10000, 'rounded');
             });
             loadProductsWithoutGroup();
         }
     });
 
-    $(document).on("click", "#submit-product", function () {
+    $("#submit-product").on("click", function () {
         event.preventDefault();
         var url = "/csr/addProduct";
         var form = "#addProduct";
@@ -319,7 +293,6 @@
                 href: "#product?id=" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));

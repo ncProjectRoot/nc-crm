@@ -2,6 +2,7 @@ package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
 import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.service.entity.DiscountService;
@@ -70,6 +71,11 @@ public class DiscountRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @RequestMapping(value = "/csr/discountByTitle/", method = RequestMethod.GET)
+    public List<AutocompleteDto> discountByPattern(String pattern) {
+        return discountService.getAutocompleteDiscount(pattern);
+    }
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getUsers(DiscountRowRequest rowRequest) {
         return new ResponseEntity<>(discountService.getDiscounts(rowRequest), HttpStatus.OK);
@@ -79,8 +85,4 @@ public class DiscountRestController {
     public ResponseEntity<List<Discount>> getDiscountByTitle(@PathVariable String title) {
         return new ResponseEntity<>(discountService.getDiscountByTitle(title), HttpStatus.OK);
     }
-
-
-
-
 }
