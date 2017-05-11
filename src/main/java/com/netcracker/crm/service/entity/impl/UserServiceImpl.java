@@ -163,4 +163,18 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = encoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);
     }
+
+    @Override
+    public Long update(UserDto userDto) {
+        if(userDto == null)
+            return null;
+        User user = mapFromDto(userDto);
+        userDao.update(user);
+        return user.getId();
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);        
+    }
 }

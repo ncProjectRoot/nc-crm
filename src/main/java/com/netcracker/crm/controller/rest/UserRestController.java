@@ -23,6 +23,9 @@ import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_USER_CREATED;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Created by bpogo on 4/30/2017.
@@ -65,5 +68,34 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @PostMapping(value = "/update")
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto, BindingResult bindingResult) throws RegistrationException {
+        userValidator.validate(userDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            log.error("Validation form error.");
+            return bindingResultHandler.handle(bindingResult);
+        }
+
+        Long userId = userService.update(userDto);
+
+        if (userId > 0) {
+            log.info("User with id: " + userId + " successful updated.");
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
+        }
+
+        log.error("User was not updated.");
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public User getUser() {
+        //return "Vasa pupkin";
+        return userService.findByEmail(getCurrentUsername());
+    }
+    
+    public String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.netcracker.crm.service.entity;
 
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
 
@@ -10,4 +11,8 @@ public interface UserService {
     Long createUser(UserDto userDto) throws RegistrationException;
 
     boolean activateUser(String userToken);
+    
+    Long update(UserDto userDto);
+    
+    User findByEmail(String email);
 }
