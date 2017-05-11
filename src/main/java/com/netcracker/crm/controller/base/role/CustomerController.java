@@ -1,6 +1,5 @@
 package com.netcracker.crm.controller.base.role;
 
-import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
@@ -65,21 +64,11 @@ public class CustomerController {
 
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model, Authentication authentication) {
-        Long customerId;
         Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetailsImpl) {
-            User customer = (UserDetailsImpl) principal;
-            customerId = customer.getId();
-        } else {
-            //!production
-            customerId = 1L;
-        }
-        List<Complaint> complaints = complaintService.findByCustomerId(customerId);
-        List<Order> orders = orderService.findByCustomerId(customerId);
-        model.put("complaints", complaints);
+        User customer = (UserDetailsImpl) principal;
+        List<Order> orders = orderService.findByCustomer(customer);
         model.put("orders", orders);
         return "complaints";
     }
-
 
 }

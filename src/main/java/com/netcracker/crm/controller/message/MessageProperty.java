@@ -13,6 +13,7 @@ public final class MessageProperty {
     public static final String SUCCESS_USER_CREATED = "success.user-create";
     public static final String SUCCESS_PRODUCT_CREATED = "success.product-create";
     public static final String SUCCESS_DISCOUNT_CREATED = "success.discount-create";
+    public static final String SUCCESS_DISCOUNT_UPDATED = "success.discount-update";
     public static final String SUCCESS_GROUP_CREATED = "success.group-create";
     public static final String SUCCESS_COMPLAINT_CREATED = "success.complaint-create";
     public static final String SUCCESS_ORDER_CREATED = "success.order-create";

@@ -1,18 +1,18 @@
-package com.netcracker.crm.domain.model;
+package com.netcracker.crm.dto.row;
 
 /**
- * @author Melnyk_Dmytro
- * @version 1.0
- * @since 24.04.2017
+ * @author Karpunets
+ * @since 05.05.2017
  */
-public class Discount {
+public class DiscountRowDto {
+
     private Long id;
     private String title;
     private Double percentage;
+    private Boolean discountActive;
     private String description;
-    private boolean active;
 
-    public Discount() {
+    public DiscountRowDto() {
     }
 
     public Long getId() {
@@ -39,19 +39,19 @@ public class Discount {
         this.percentage = percentage;
     }
 
+    public Boolean getDiscountActive() {
+        return discountActive;
+    }
+
+    public void setDiscountActive(Boolean discountActive) {
+        this.discountActive = discountActive;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

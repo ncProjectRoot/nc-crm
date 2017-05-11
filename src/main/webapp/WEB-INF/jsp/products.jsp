@@ -195,7 +195,7 @@
 
     $('#select_product_status').karpo_status(10).disabled(12);
     $('#discount-input').karpo_autocomplete({
-        url: "/csr/discountByTitle/",
+        url: "/discounts/csr/discountByTitle/",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
@@ -206,6 +206,25 @@
         defaultValue: "${product.group.id} ${product.group.name}",
         hideInput: "#group-hidden-input"
     });
+    $('select').material_select();
+
+    function fetchDiscounts() {
+        var title = $('#search_title').val();
+        if (title.length > 1) {
+            $('#select_disc').children().remove();
+            $.get("/discounts/" + title).success(function (data) {
+                $('#select_disc').append($('<option value="0">Default</option>'));
+                $.each(data, function (i, item) {
+                    $('#select_disc').append($('<option/>', {
+                        value: item.id,
+                        text: item.title + ' - ' + item.percentage + '%'
+                    }));
+                });
+                $('#select_disc').material_select('updating');
+                $('#discount_numbers').html(", results " + data.length);
+            });
+        }
+    }
 
     $('.materialize-textarea').trigger('autoresize');
     Materialize.updateTextFields();

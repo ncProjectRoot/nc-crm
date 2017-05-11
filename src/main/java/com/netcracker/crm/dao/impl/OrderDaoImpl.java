@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class OrderDaoImpl implements OrderDao {
 
 
     private SimpleJdbcInsert orderInsert;
+
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
 
@@ -255,6 +257,22 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CUSTOMER_ID, customerId);
         return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_PRODUCT, params, Boolean.class);
+    }
+
+    @Override
+    public List<Order> findByIdOrTitleByCustomer(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findOrgOrdersByIdOrTitle(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORG_ORDERS_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
     }
 
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {

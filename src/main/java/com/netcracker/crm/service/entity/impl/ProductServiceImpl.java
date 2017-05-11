@@ -126,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
             productRowDto.setDiscount(product.getDiscount().getId());
             productRowDto.setDiscountTitle(product.getDiscount().getTitle());
             productRowDto.setPercentage(product.getDiscount().getPercentage());
-            productRowDto.setDiscountActive(product.getDiscount().getActive());
+            productRowDto.setDiscountActive(product.getDiscount().isActive());
         }
         if (product.getGroup() != null) {
             productRowDto.setGroup(product.getGroup().getId());

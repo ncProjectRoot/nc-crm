@@ -44,6 +44,7 @@ public class AddressDaoImpl implements AddressDao {
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
                 .addValue(PARAM_ADDRESS_LONGITUDE, address.getLongitude())
                 .addValue(PARAM_ADDRESS_DETAILS, address.getDetails())
+                .addValue(PARAM_ADDRESS_FORMATTED_ADDRESS, address.getFormattedAddress())
                 .addValue(PARAM_ADDRESS_REGION_ID, getRegionId(address.getRegion()));
 
         Long newId = addressInsert.executeAndReturnKey(params).longValue();
@@ -74,6 +75,7 @@ public class AddressDaoImpl implements AddressDao {
                 .addValue(PARAM_ADDRESS_LATITUDE, address.getLatitude())
                 .addValue(PARAM_ADDRESS_LONGITUDE, address.getLongitude())
                 .addValue(PARAM_ADDRESS_DETAILS, address.getDetails())
+                .addValue(PARAM_ADDRESS_FORMATTED_ADDRESS, address.getFormattedAddress())
                 .addValue(PARAM_ADDRESS_REGION_ID, getRegionId(address.getRegion()));
 
         int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ADDRESS, params);
@@ -137,6 +139,7 @@ public class AddressDaoImpl implements AddressDao {
                 address.setId(rs.getLong(PARAM_ADDRESS_ID));
                 address.setLatitude(rs.getDouble(PARAM_ADDRESS_LATITUDE));
                 address.setLongitude(rs.getDouble(PARAM_ADDRESS_LONGITUDE));
+                address.setFormattedAddress(rs.getString(PARAM_ADDRESS_FORMATTED_ADDRESS));
                 address.setDetails(rs.getString(PARAM_ADDRESS_DETAILS));
 
                 long regionId = rs.getLong(PARAM_ADDRESS_REGION_ID);

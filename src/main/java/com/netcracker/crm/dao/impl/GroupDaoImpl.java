@@ -153,7 +153,7 @@ public class GroupDaoImpl implements GroupDao {
         return namedJdbcTemplate.query(query, params, groupTableExtractor);
     }
 
-    private String prepareQuery(String query, MapSqlParameterSource params,GroupRowRequest request){
+    private String prepareQuery(String query, MapSqlParameterSource params, GroupRowRequest request) {
         String resultQuery = query;
         if (request.getKeywordsArray() != null) {
             int i = 0;
@@ -220,6 +220,7 @@ public class GroupDaoImpl implements GroupDao {
             return groups;
         }
     }
+
     static final class GroupTableDtoExtractor implements ResultSetExtractor<List<GroupTableDto>> {
         @Override
         public List<GroupTableDto> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -230,7 +231,7 @@ public class GroupDaoImpl implements GroupDao {
                 group.setId(rs.getLong(PARAM_GROUP_ID));
                 group.setName(rs.getString(PARAM_GROUP_NAME));
                 group.setDiscountName(rs.getString(PARAM_GROUP_ROW_DISCOUNT_TITLE));
-                if (group.getDiscountName() != null){
+                if (group.getDiscountName() != null) {
                     group.setDiscountValue(rs.getDouble(PARAM_GROUP_ROW_DISCOUNT_VALUE));
                     group.setDiscountActive(rs.getBoolean(PARAM_GROUP_ROW_DISCOUNT_ACTIVE));
                 }

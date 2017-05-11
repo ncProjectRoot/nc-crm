@@ -126,7 +126,7 @@
         var title = $('#search_for_group_title').val();
         if (title.length > 1) {
             $('#select_group_disc').children().remove();
-            $.get("/csr/discountByTitle/" + title).success(function (data) {
+            $.get("/discounts/" + title).success(function (data) {
                 $('#select_group_disc').append($('<option value="0">Default</option>'));
                 $.each(data, function (i, item) {
                     $('#select_group_disc').append($('<option/>', {

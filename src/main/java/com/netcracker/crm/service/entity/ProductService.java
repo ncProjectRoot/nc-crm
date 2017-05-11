@@ -2,7 +2,6 @@ package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
@@ -22,7 +21,7 @@ public interface ProductService {
 
     List<String> getTitlesLikeTitle(String likeTitle);
 
-    Map<String,Object> getProductsRow(ProductRowRequest orderRowRequest);
+    Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest);
 
     List<String> getNamesByCustomerId(String likeTitle, Long customerId);
 
