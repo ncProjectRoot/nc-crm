@@ -45,7 +45,7 @@ public class ProductSetter extends AbstractSetter<Product> {
         product.setDefaultPrice((double) random.nextInt(defaultPrice));
         product.setTitle("Product " + counter++);
         product.setDescription(randomString.nextString());
-        product.setStatus(ProductStatus.values()[random.nextInt(3)]);
+        product.setStatus(ProductStatus.values()[random.nextInt(ProductStatus.values().length)]);
         return product;
     }
 

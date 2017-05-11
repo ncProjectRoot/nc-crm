@@ -4,6 +4,8 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -41,13 +43,15 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     private ProductDao productDao;
 
-    private SimpleJdbcInsert complaintInsert;
+
+    private SimpleJdbcInsert orderInsert;
+
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
-        this.complaintInsert = new SimpleJdbcInsert(dataSource)
+        this.orderInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_ORDER_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ORDER_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -71,7 +75,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CSR_ID, csrId);
 
-        long newId = complaintInsert.executeAndReturnKey(params)
+        long newId = orderInsert.executeAndReturnKey(params)
                 .longValue();
         order.setId(newId);
 
@@ -303,6 +307,7 @@ public class OrderDaoImpl implements OrderDao {
                 Status status = Status.getStatusByID(statusId);
                 if (status instanceof OrderStatus) {
                     order.setStatus((OrderStatus) status);
+                    OrderState.setStateForOrder((OrderStatus) status, order);
                 }
 
                 Long customerId = rs.getLong(PARAM_CUSTOMER_ID);

@@ -82,9 +82,9 @@
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="10">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="11">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="12">Outdated</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="12">Planned</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="13">Actual</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
                                     </ul>
                                 </th>
                                 <th data-field="3">
@@ -151,9 +151,9 @@
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">cached</i>
                                 <select name="statusName" id="select_product_status">
-                                    <option value="PLANNED" data-value="10" data-after-disabled="11">PLANNED</option>
-                                    <option value="ACTUAL" data-value="11" data-after-disabled="12">ACTUAL</option>
-                                    <option value="OUTDATED" data-value="12">OUTDATED</option>
+                                    <option value="PLANNED" data-value="11" data-after-disabled="12">PLANNED</option>
+                                    <option value="ACTUAL" data-value="12" data-after-disabled="13">ACTUAL</option>
+                                    <option value="OUTDATED" data-value="14">OUTDATED</option>
                                 </select>
                                 <label for="select_product_status">Choose product status</label>
                             </div>
