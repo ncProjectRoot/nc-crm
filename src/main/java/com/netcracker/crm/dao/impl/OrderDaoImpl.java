@@ -3,6 +3,9 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.OrderRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.domain.OrderRowRequest;
 import com.netcracker.crm.domain.model.Order;
 
@@ -13,21 +16,21 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.Status;
-import com.netcracker.crm.domain.model.User;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.OrderSqlQuery.*;
 
@@ -44,7 +47,7 @@ public class OrderDaoImpl implements OrderDao {
     private UserDao userDao;
     @Autowired
     private ProductDao productDao;
-    
+
     private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
@@ -175,7 +178,7 @@ public class OrderDaoImpl implements OrderDao {
         }
         return order;
     }
-    
+
     @Override
     public List<Order> findAllByDateFinish(LocalDate date) {
         SqlParameterSource params = new MapSqlParameterSource()
@@ -216,33 +219,63 @@ public class OrderDaoImpl implements OrderDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
                 .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
-                .addValue(PARAM_ORDER_ROW_ROW_LIMIT, orderRowRequest.getRowLimit())
-                .addValue(PARAM_ORDER_ROW_ROW_OFFSET, orderRowRequest.getRowOffset());
+                .addValue(PARAM_CUSTOMER_ID, orderRowRequest.getCustomerId())
+                .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset());
 
-        if (!orderRowRequest.getKeywords().isEmpty()) {
+        String sql = orderRowRequest.getSql();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
             int i = 0;
-            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
-                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
             }
         }
 
-        return namedJdbcTemplate.query(orderRowRequest.getSql(), params, orderWithDetailExtractor);
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
     }
 
     @Override
     public Long getOrderRowsCount(OrderRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId());
+                .addValue(PARAM_ORDER_ROW_PRODUCT_STATUS, orderRowRequest.getProductStatusId())
+                .addValue(PARAM_CUSTOMER_ID, orderRowRequest.getCustomerId());
 
-        if (!orderRowRequest.getKeywords().isEmpty()) {
+        String sql = orderRowRequest.getSqlCount();
+
+        if (orderRowRequest.getKeywordsArray() != null) {
             int i = 0;
-            for (String keyword : orderRowRequest.getKeywords().split("\n")) {
-                params.addValue(PARAM_ORDER_ROW_KEYWORD + i++, "%" + keyword + "%");
+            for (String keyword : orderRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
             }
         }
 
-        return namedJdbcTemplate.queryForObject(orderRowRequest.getSqlCount(), params, Long.class);
+        return namedJdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    @Override
+    public Boolean hasCustomerProduct(Long productId, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, productId)
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_PRODUCT, params, Boolean.class);
+    }
+
+    @Override
+    public List<Order> findByIdOrTitleByCustomer(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findOrgOrdersByIdOrTitle(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ORG_ORDERS_BY_ID_OR_PRODUCT_TITLE, params, orderWithDetailExtractor);
     }
 
     @Override
@@ -293,12 +326,12 @@ public class OrderDaoImpl implements OrderDao {
 
                 }
 
-                Long statusId = rs.getLong(PARAM_ORDER_STATUS);
+                long statusId = rs.getLong(PARAM_ORDER_STATUS);
                 Status status = Status.getStatusByID(statusId);
                 if (status instanceof OrderStatus) {
                     order.setStatus((OrderStatus) status);
                 }
-                           
+
                 Long customerId = rs.getLong(PARAM_CUSTOMER_ID);
                 if (customerId > 0) {
                     order.setCustomer(userDao.findById(customerId));
@@ -308,12 +341,12 @@ public class OrderDaoImpl implements OrderDao {
                 if (productId > 0) {
                     order.setProduct(productDao.findById(productId));
                 }
-                
+
                 Long csrId = rs.getLong(PARAM_CSR_ID);
                 if (csrId > 0) {
                     order.setCsr(userDao.findById(csrId));
                 }
-                
+
                 allOrder.add(order);
             }
             return allOrder;

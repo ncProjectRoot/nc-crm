@@ -1,7 +1,5 @@
 package com.netcracker.crm.domain.model;
 
-import java.time.LocalDate;
-
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -12,7 +10,7 @@ public class Discount {
     private String title;
     private Double percentage;
     private String description;
-    private Boolean active;
+    private boolean active;
 
     public Discount() {
     }
@@ -49,11 +47,11 @@ public class Discount {
         this.description = description;
     }
 
-    public Boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 }

@@ -58,4 +58,8 @@ public final class UserSqlQuery {
     public static final String SQL_USERS_UPDATE_PASSWORD = "UPDATE users " +
             "SET password = :password " +
             "WHERE email = :email;";
+    public static final String SQL_FIND_USER_LAST_NAMES_BY_PATTERN = "" +
+            "SELECT last_name " +
+            "FROM users " +
+            "WHERE last_name ILIKE :last_name;";
 }

@@ -1,7 +1,11 @@
 package com.netcracker.crm.dao.impl;
 
-import com.netcracker.crm.dao.*;
+import com.netcracker.crm.dao.ComplaintDao;
+import com.netcracker.crm.dao.OrderDao;
+import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +153,13 @@ public class ComplaintDaoImpl implements ComplaintDao {
         return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_DATE, params, complaintWithDetailExtractor);
     }
 
+    @Override
+    public List<Complaint> findAllByCustomerId(Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_CUSTOMER_ID, params, complaintWithDetailExtractor);
+    }
+
     private Long getUserId(User user) {
         if (user != null) {
             Long userId = user.getId();
@@ -173,6 +184,105 @@ public class ComplaintDaoImpl implements ComplaintDao {
             return orderId;
         }
         return null;
+    }
+
+    @Override
+    public List<Complaint> findComplaintRows(ComplaintRowRequest complaintRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ROW_STATUS, complaintRowRequest.getStatusId())
+                .addValue(PARAM_COMPLAINT_ROW_ORDER_STATUS, complaintRowRequest.getOrderStatusId())
+                .addValue(PARAM_COMPLAINT_ROW_PRODUCT_STATUS, complaintRowRequest.getProductStatusId())
+                .addValue(RowRequest.PARAM_ROW_LIMIT, complaintRowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, complaintRowRequest.getRowOffset());
+
+        String query = complaintRowRequest.getSql();
+
+        if (complaintRowRequest.getPmgId() != null) {
+            params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
+        }
+        if (complaintRowRequest.getCustId() != null) {
+            params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, complaintRowRequest.getCustId());
+        }
+
+        if (complaintRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : complaintRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.query(query, params, complaintWithDetailExtractor);
+    }
+
+    @Override
+    public Long getComplaintRowsCount(ComplaintRowRequest complaintRowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_ROW_STATUS, complaintRowRequest.getStatusId());
+        params.addValue(PARAM_COMPLAINT_ROW_ORDER_STATUS, complaintRowRequest.getOrderStatusId());
+        params.addValue(PARAM_COMPLAINT_ROW_PRODUCT_STATUS, complaintRowRequest.getProductStatusId());
+
+        String query = complaintRowRequest.getSqlCount();
+
+        if (complaintRowRequest.getPmgId() != null) {
+            params.addValue(PARAM_COMPLAINT_PMG_ID, complaintRowRequest.getPmgId());
+        }
+        if (complaintRowRequest.getCustId() != null) {
+            params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, complaintRowRequest.getCustId());
+        }
+
+        if (complaintRowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : complaintRowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.queryForObject(query, params, Long.class);
+    }
+
+    @Override
+    public List<String> findComplaintsTitleLikeTitle(String likeTitle) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE, params, String.class);
+    }
+
+    @Override
+    public List<String> findComplaintsTitleByPmgId(String likeTitle, Long pmgId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_PMG_ID, pmgId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_PMG_ID, params, String.class);
+    }
+
+    @Override
+    public List<String> findComplaintsTitleByCustId(String likeTitle, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_BY_CUSTOMER_ID, params, String.class);
+    }
+
+    @Override
+    public Long checkOwnershipOfContactPerson(Long complaintId, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ID, complaintId)
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON, params, Long.class);
+    }
+
+    @Override
+    public Long checkOwnershipOfCustomer(Long complaintId, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_COMPLAINT_ID, complaintId)
+                .addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CUSTOMER, params, Long.class);
+    }
+
+    @Override
+    public List<String> findComplaintsTitleForContactPerson(String likeTitle, Long custId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
+        return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_FOR_CONTACT_PERSON, params, String.class);
     }
 
     @Autowired

@@ -2,6 +2,8 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.domain.request.DiscountRowRequest;
+import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 .addValue(PARAM_DISCOUNT_TITLE, discount.getTitle())
                 .addValue(PARAM_DISCOUNT_PERCENTAGE, discount.getPercentage())
                 .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription())
-                .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive());
+                .addValue(PARAM_DISCOUNT_ACTIVE, discount.isActive());
         Long id = discountInsert.executeAndReturnKey(params).longValue();
         discount.setId(id);
         log.info("Discount with id: " + id + " is successfully created.");
@@ -62,7 +64,7 @@ public class DiscountDaoImpl implements DiscountDao {
                 .addValue(PARAM_DISCOUNT_TITLE, discount.getTitle())
                 .addValue(PARAM_DISCOUNT_PERCENTAGE, discount.getPercentage())
                 .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription())
-                .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive());
+                .addValue(PARAM_DISCOUNT_ACTIVE, discount.isActive());
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_DISCOUNT, params);
         if (affectedRows == 0) {
             log.error("Discount has not been updated");
@@ -123,6 +125,49 @@ public class DiscountDaoImpl implements DiscountDao {
     @Override
     public Long getCount() {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_DISC_COUNT, Long.class);
+    }
+
+    @Override
+    public Long getDiscountRowsCount(DiscountRowRequest rowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
+                .addValue(PARAM_DISCOUNT_ACTIVE, rowRequest.getActive());
+
+        String sql = rowRequest.getSqlCount();
+
+        if (rowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : rowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+
+        return namedJdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    @Override
+    public List<Discount> findDiscounts(DiscountRowRequest rowRequest) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(RowRequest.PARAM_ROW_LIMIT, rowRequest.getRowLimit())
+                .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
+                .addValue(PARAM_DISCOUNT_ACTIVE, rowRequest.getActive());
+        String sql = rowRequest.getSql();
+
+        if (rowRequest.getKeywordsArray() != null) {
+            int i = 0;
+            for (String keyword : rowRequest.getKeywordsArray()) {
+                params.addValue(RowRequest.PARAM_KEYWORD + i++, "%" + keyword + "%");
+            }
+        }
+        return namedJdbcTemplate.query(sql, params, discountExtractor);
+    }
+
+    @Override
+    public List<Discount> findByIdOrTitle(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_DISC_BY_ID_OR_TITLE, params, discountExtractor);
     }
 
     @Autowired

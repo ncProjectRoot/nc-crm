@@ -21,4 +21,6 @@ public final class OrganizationSqlQuery {
     public static final String SQL_DELETE_ORGANIZATION = "DELETE FROM organization " +
             "WHERE id=:id;";
 
+    public static final String SQL_FIND_ALL_ORGANIZATIONS = "" +
+            "SELECT id, name FROM organization;";
 }
