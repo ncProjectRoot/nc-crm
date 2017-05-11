@@ -16,6 +16,7 @@ public class UserDto {
     private String organizationName;
     private Double addressLatitude;
     private Double addressLongitude;
+    private String formattedAddress;
     private String addressDetails;
     private String addressRegionName;
 
@@ -133,5 +134,13 @@ public class UserDto {
 
     public void setAddressDetails(String addressDetails) {
         this.addressDetails = addressDetails;
+    }
+
+    public String getFormattedAddress() {
+        return formattedAddress;
+    }
+
+    public void setFormattedAddress(String formattedAddress) {
+        this.formattedAddress = formattedAddress;
     }
 }

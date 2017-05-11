@@ -18,17 +18,16 @@ import java.util.Set;
  * Created by bpogo on 5/4/2017.
  */
 @RestController
-@RequestMapping("/organization")
+@RequestMapping("/organizations")
 public class OrganizationRestController {
     private static final Logger log = LoggerFactory.getLogger(OrganizationRestController.class);
 
     @Autowired
     private OrganizationService organizationService;
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<Set<Organization>> registerUser() throws RegistrationException {
         Set<Organization> organizations = organizationService.getAllOrganizations();
-
         return new ResponseEntity<>(organizations, HttpStatus.OK);
     }
 }

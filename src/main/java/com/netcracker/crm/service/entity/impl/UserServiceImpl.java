@@ -6,14 +6,16 @@ import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.dto.mapper.UserMap;
+import com.netcracker.crm.dto.row.UserRowDto;
 import com.netcracker.crm.exception.RegistrationException;
-import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.security.RandomString;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by bpogo on 4/30/2017.
@@ -91,6 +93,27 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getUsers(UserRowRequest userRowRequest) {
+        Map<String, Object> response = new HashMap<>();
+        Long length = userDao.getUserRowsCount(userRowRequest);
+        response.put("length", length);
+        List<User> users = userDao.findUsers(userRowRequest);
+
+        List<UserRowDto> dtoRows = new ArrayList<>();
+        for (User user : users) {
+            dtoRows.add(convertToRowDto(user));
+        }
+        response.put("rows", dtoRows);
+        return response;
+    }
+
+    @Override
+    public List<String> getUserLastNamesByPattern(String pattern) {
+        return userDao.findUserLastNamesByPattern(pattern);
+    }
+
     private String createUserRegistrationToken(User user) {
         UserToken userToken = new UserToken();
         userToken.setToken(generateToken());
@@ -123,6 +146,31 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private UserRowDto convertToRowDto(User user) {
+        UserRowDto userRowDto = new UserRowDto();
+        userRowDto.setId(user.getId());
+        userRowDto.setFirstName(user.getFirstName());
+        userRowDto.setMiddleName(user.getMiddleName());
+        userRowDto.setLastName(user.getLastName());
+        userRowDto.setEmail(user.getEmail());
+        userRowDto.setPhone(user.getPhone());
+        userRowDto.setContactPerson(user.isContactPerson());
+        userRowDto.setUserRole(user.getUserRole().getFormattedName());
+        userRowDto.setAccountNonLocked(user.isAccountNonLocked());
+
+        Organization organization = user.getOrganization();
+        if (organization != null) {
+            userRowDto.setOrganizationName(organization.getName());
+        }
+
+        Address address = user.getAddress();
+        if (address != null) {
+            userRowDto.setFormattedAddress(address.getFormattedAddress());
+        }
+
+        return userRowDto;
+    }
+
     private User mapFromDto(UserDto userDto) {
         ModelMapper mapper = configureMapper();
         User user = mapper.map(userDto, User.class);
@@ -132,6 +180,7 @@ public class UserServiceImpl implements UserService {
             address.setLatitude(userDto.getAddressLatitude());
             address.setLongitude(userDto.getAddressLongitude());
             address.setDetails(userDto.getAddressDetails());
+            address.setFormattedAddress(userDto.getFormattedAddress());
             Region region = regionDao.findByName(userDto.getAddressRegionName());
             if (region == null) {
                 region = new Region();

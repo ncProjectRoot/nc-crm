@@ -5,6 +5,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
+import com.netcracker.crm.service.entity.DiscountService;
 import com.netcracker.crm.service.entity.ComplaintService;
 import com.netcracker.crm.service.entity.OrderService;
 import com.netcracker.crm.service.entity.ProductService;
@@ -29,6 +30,8 @@ public class EntityController {
     private ProductService productService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private DiscountService discountService;
 
     @GetMapping("/*/complaints/{id}")
     public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
@@ -80,6 +83,19 @@ public class EntityController {
         }
         model.put("order", order);
         return "order";
+    }
+
+    @RequestMapping(value = "/*/discount", method = {RequestMethod.GET})
+    public String discount(Map<String, Object> model, Authentication authentication,
+                        @RequestParam Long id) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+//        model.put("user", user);
+        model.put("discount", discountService.getDiscountById(id));
+        return "discount";
     }
 
 }
