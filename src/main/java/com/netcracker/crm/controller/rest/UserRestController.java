@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,7 @@ public class UserRestController {
     }
 
     @PostMapping("/registration")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> registerUser(@Valid UserDto userDto, BindingResult bindingResult) throws RegistrationException {
         userValidator.validate(userDto, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -70,11 +72,13 @@ public class UserRestController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest) {
         return new ResponseEntity<>(userService.getUsers(userRowRequest), HttpStatus.OK);
     }
 
     @GetMapping("/lastNames")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<List<String>> getLastNames(String pattern) {
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern), HttpStatus.OK);
     }

@@ -77,7 +77,7 @@ public class DiscountRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getUsers(DiscountRowRequest rowRequest) {
+    public ResponseEntity<Map<String, Object>> getDiscounts(DiscountRowRequest rowRequest) {
         return new ResponseEntity<>(discountService.getDiscounts(rowRequest), HttpStatus.OK);
     }
 

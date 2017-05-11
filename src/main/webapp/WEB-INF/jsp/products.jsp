@@ -195,7 +195,7 @@
 
     $('#select_product_status').karpo_status(10).disabled(12);
     $('#discount-input').karpo_autocomplete({
-        url: "/csr/discountByTitle/",
+        url: "/discounts/csr/discountByTitle/",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"

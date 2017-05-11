@@ -301,7 +301,7 @@
     $(".modal-content input[name='defaultPrice']").val("${product.defaultPrice}");
     $('#select_product_status').karpo_status(${product.status.id});
     $('#discount-input').karpo_autocomplete({
-        url: "/csr/discountByTitle/",
+        url: "/discounts/csr/discountByTitle/",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
