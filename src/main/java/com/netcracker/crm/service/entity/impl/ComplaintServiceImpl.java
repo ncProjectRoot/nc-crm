@@ -145,21 +145,19 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public boolean acceptComplaint(Long complaintId, Long pmgId) {
+    public boolean acceptComplaint(Long complaintId, User user) {
         Complaint complaint = complaintDao.findById(complaintId);
 
         if (complaint.getPmg() != null) {
             return false;
         }
-        User pmg = new User();
-        pmg.setId(pmgId);
-        complaint.setPmg(pmg);
+        complaint.setPmg(user);
         complaint.setStatus(ComplaintStatus.SOLVING);
         complaintDao.update(complaint);
         History history = new History();
         history.setComplaint(complaint);
         history.setDateChangeStatus(LocalDateTime.now());
-        history.setDescChangeStatus("Pmg with id " + pmgId + " accepted complaint");
+        history.setDescChangeStatus(user.getUserRole().getName() + " with id " + user.getId() + " accepted complaint");
         history.setOldStatus(ComplaintStatus.OPEN);
         historyDao.create(history);
         sendEmail(complaint);
@@ -168,17 +166,21 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public boolean closeComplaint(Long complaintId, Long pmgId) {
+    public boolean closeComplaint(Long complaintId, User user) {
+        Boolean isRoleAdmin = user.getUserRole().equals(UserRole.ROLE_ADMIN);
         Complaint complaint = complaintDao.findById(complaintId);
-        if (complaint.getPmg() == null || !complaint.getPmg().getId().equals(pmgId)) {
+        if (complaint.getPmg() == null || (!complaint.getPmg().getId().equals(user.getId())) && (!isRoleAdmin)) {
             return false;
+        }
+        if(isRoleAdmin){
+            complaint.setPmg(user);
         }
         complaint.setStatus(ComplaintStatus.CLOSED);
         complaintDao.update(complaint);
         History history = new History();
         history.setComplaint(complaint);
         history.setDateChangeStatus(LocalDateTime.now());
-        history.setDescChangeStatus("Pmg with id " + complaint.getPmg().getId() + " solved complaint");
+        history.setDescChangeStatus(user.getUserRole().getName() + " with id " + user.getId() + " solved complaint");
         history.setOldStatus(ComplaintStatus.SOLVING);
         historyDao.create(history);
         sendEmail(complaint);

@@ -1,3 +1,4 @@
+<%@ page import="com.netcracker.crm.domain.model.UserRole" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -91,7 +92,7 @@
             </sec:authorize>
             <h5>email: <a href="mailto:${complaint.customer.email}">${complaint.customer.email}</a></h5>
         </div>
-        <sec:authorize access="hasRole('ROLE_PMG')">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
             <c:if test="${complaint.pmg!=null}">
                 <div class="divider"></div>
                 <div class="section">
@@ -113,14 +114,14 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <sec:authorize access="hasRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
                 <c:if test="${complaint.status=='OPEN'}">
                     <div class="button-pmg">
                         <a class="waves-effect waves-light btn" id="acceptBtn">accept</a>
                     </div>
                 </c:if>
                 <c:if test="${complaint.status=='SOLVING'}">
-                    <c:if test="${user.id==complaint.pmg.id}">
+                    <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
                         <div class="button-pmg">
                             <a class="waves-effect waves-light btn" id="closeBtn">close</a>
                         </div>
@@ -132,7 +133,7 @@
 </div>
 <script>
     $('.collapsible').collapsible();
-    <sec:authorize access="hasRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
 
     $.ajaxSetup({
         complete: $(function () {

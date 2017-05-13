@@ -11,7 +11,7 @@
             <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
                 <li class="tab col s3"><a href="#swipe-all-complaints">All complaints</a></li>
             </sec:authorize>
-            <sec:authorize access="hasAnyRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
                 <li class="tab col s3"><a href="#swipe-pmg-complaints">Your complaints</a></li>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
@@ -94,7 +94,7 @@
             </div>
         </div>
     </sec:authorize>
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
         <div id="swipe-pmg-complaints" class="col s12">
             <div id="table-pmg-complaints" class="table-container row">
                 <div class="table-wrapper col s11 center-align">
@@ -321,7 +321,7 @@
     });
     </sec:authorize>
 
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
     $("#table-pmg-complaints").karpo_table({
         urlSearch: "/complaints/titles?userId=${user.id}",
         urlTable: "/complaints?userId=${user.id}",

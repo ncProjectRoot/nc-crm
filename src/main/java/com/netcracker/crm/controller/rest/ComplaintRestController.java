@@ -76,7 +76,7 @@ public class ComplaintRestController {
 
         if (userId != null) {
             UserRole role = user.getUserRole();
-            if (role.equals(UserRole.ROLE_PMG)) {
+            if (role.equals(UserRole.ROLE_PMG)||role.equals(UserRole.ROLE_ADMIN)) {
                 complaintRowRequest.setPmgId(user.getId());
             } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
                 complaintRowRequest.setCustId(user.getId());
@@ -104,8 +104,8 @@ public class ComplaintRestController {
     }
 
     @PutMapping("/complaints/{id}")
-    @PreAuthorize("hasRole('ROLE_PMG')")
-    public ResponseEntity<Boolean> acceptComplaint(Map<String, Object> model, Authentication authentication,
+    @PreAuthorize("hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')")
+    public ResponseEntity<Boolean> acceptOrCloseComplaint(Map<String, Object> model, Authentication authentication,
                                                    @RequestParam(value = "type") String type,
                                                    @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
@@ -114,9 +114,9 @@ public class ComplaintRestController {
             pmg = (UserDetailsImpl) principal;
         }
         if ("ACCEPT".equals(type)) {
-            return new ResponseEntity<>(complaintService.acceptComplaint(id, pmg.getId()), HttpStatus.OK);
+            return new ResponseEntity<>(complaintService.acceptComplaint(id, pmg), HttpStatus.OK);
         } else if ("CLOSE".equals(type)) {
-            return new ResponseEntity<>(complaintService.closeComplaint(id, pmg.getId()), HttpStatus.OK);
+            return new ResponseEntity<>(complaintService.closeComplaint(id, pmg), HttpStatus.OK);
         }
         return new ResponseEntity<>(Boolean.FALSE, HttpStatus.OK);
     }

@@ -31,9 +31,9 @@ public interface ComplaintService {
 
     List<String> getTitlesByPmg(String likeTitle, User pmg);
 
-    boolean acceptComplaint(Long complaintId, Long pmgId);
+    boolean acceptComplaint(Long complaintId, User user);
 
-    boolean closeComplaint(Long complaintId, Long pmgId);
+    boolean closeComplaint(Long complaintId, User user);
 
     boolean checkAccessToComplaint(User customer, Long id);
 
