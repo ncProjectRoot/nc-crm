@@ -3,6 +3,7 @@ package com.netcracker.crm.domain.model;
 import com.netcracker.crm.domain.model.state.order.OrderState;
 import com.netcracker.crm.domain.model.state.order.states.*;
 
+import java.beans.Transient;
 import java.time.LocalDateTime;
 
 /**

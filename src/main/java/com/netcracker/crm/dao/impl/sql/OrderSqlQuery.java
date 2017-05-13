@@ -14,6 +14,9 @@ public final class OrderSqlQuery {
     public static final String PARAM_PRODUCT_ID = "product_id";
     public static final String PARAM_CSR_ID = "csr_id";
 
+    public static final String PARAM_ORDER_PREF_DATE_TO = "to_date";
+
+
     public static final String PARAM_PATTERN = "pattern";
 
     public static final String PARAM_ORDER_ROW_STATUS = "status_id";
@@ -29,6 +32,18 @@ public final class OrderSqlQuery {
     public static final String SQL_FIND_ORDER_BY_ID = "SELECT id, date_finish, "
             + "preferred_date, status_id, customer_id, product_id, csr_id "
             + "FROM orders WHERE id = :id;";
+
+    public static final String SQL_FIND_ALL_ORDER_BY_DATE_LESS = "SELECT id," +
+            "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "WHERE o.status_id = :status_id " +
+            "AND o.preferred_date < :to_date";
+
+    public static final String SQL_FIND_ALL_ORDER_BY_CSR_AND_DATE = "SELECT id," +
+            "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "WHERE o.status_id = :status_id " +
+            "AND o.preferred_date < :to_date";
 
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
