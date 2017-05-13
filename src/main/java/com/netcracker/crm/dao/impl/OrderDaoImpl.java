@@ -5,7 +5,6 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.model.state.order.OrderState;
-import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -169,6 +168,7 @@ public class OrderDaoImpl implements OrderDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ID, id);
         List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, orderWithDetailExtractor);
+        System.out.println("Order");
         Order order = null;
         if (allOrder.size() != 0) {
             order = allOrder.get(0);

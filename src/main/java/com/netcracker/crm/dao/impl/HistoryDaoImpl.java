@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -31,16 +32,20 @@ public class HistoryDaoImpl implements HistoryDao {
 
     private static final Logger log = LoggerFactory.getLogger(HistoryDaoImpl.class);
 
-    @Autowired
-    private ComplaintDao complaintDao;
-    @Autowired
-    private OrderDao orderDao;
-    @Autowired
-    private ProductDao productDao;
+    private final ComplaintDao complaintDao;
+    private final OrderDao orderDao;
+    private final ProductDao productDao;
 
     private SimpleJdbcInsert historyInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private HistoryWithDetailExtractor historyWithDetailExtractor;
+
+    @Autowired
+    public HistoryDaoImpl(ComplaintDao complaintDao, OrderDao orderDao, ProductDao productDao) {
+        this.complaintDao = complaintDao;
+        this.orderDao = orderDao;
+        this.productDao = productDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -233,17 +238,13 @@ public class HistoryDaoImpl implements HistoryDao {
                 }
                            
                 Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
+                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
+                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
                 if (orderId > 0) {
                     history.setOrder(orderDao.findById(orderId));
-                }
-
-                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
-                if (complaintId > 0) {
+                }else if (complaintId > 0) {
                     history.setComplaint(complaintDao.findById(complaintId));
-                }
-
-                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
-                if (productId > 0) {
+                }else if (productId > 0) {
                     history.setProduct(productDao.findById(productId));
                 }
                 allHistory.add(history);
