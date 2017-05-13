@@ -109,13 +109,16 @@
         urlSearch : "/groups/name",
         urlTable: "/groups",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>", {html: '<a href="">' + object.id +'</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
             tr.append($("<td>", {text: object.discountValue}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             return tr;
         }
     });
