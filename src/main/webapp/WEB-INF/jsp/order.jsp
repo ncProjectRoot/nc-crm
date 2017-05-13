@@ -132,18 +132,22 @@
     //    CUSTOMER
     $('#customer_pause').on('click', function () {
         $('#customer_pause').remove();
+        $('#customer_disable').remove();
         sendPut("/orders/" + ${order.id} +"/request-pause");
         $('#status').text('REQUEST TO PAUSE');
     });
 
     $('#customer_disable').on('click', function () {
         $('#customer_disable').remove();
+        $('#customer_resume').remove();
+        $('#customer_pause').remove();
         sendPut("/orders/" + ${order.id} +"/request-disable");
         $('#status').text('REQUEST TO DISABLE');
     });
 
     $('#customer_resume').on('click', function () {
         $('#customer_resume').remove();
+        $('#customer_disable').remove();
         sendPut("/orders/" + ${order.id} +"/request-resume");
         $('#status').text('REQUEST TO RESUME');
     });
