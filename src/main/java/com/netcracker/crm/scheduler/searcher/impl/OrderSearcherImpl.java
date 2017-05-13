@@ -36,7 +36,7 @@ public class OrderSearcherImpl implements OrderSearcher {
     public List<Order> searchForActivate(){
         List<User> csr = getOnlineCsrs();
         if (csr.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         LocalDateTime toDate = LocalDateTime.now().plusDays(1);
         return orderDao.findAllByPrefDateAndStatus(sqlGenerator, csr, toDate, OrderStatus.PROCESSING);

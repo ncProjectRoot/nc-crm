@@ -77,7 +77,9 @@ public class OrderCache extends Cache<Order> {
     }
 
     public void removeOrderFromCache(Long csrId, Long orderId) {
-        csrOrderCache.get(csrId).remove(orderId);
+        if(csrOrderCache.get(csrId) != null) {
+            csrOrderCache.get(csrId).remove(orderId);
+        }
     }
 
     @Override
@@ -96,8 +98,7 @@ public class OrderCache extends Cache<Order> {
      * after remove from set all csr that is online, after clean
      * all that remained
      * */
-    @Scheduled(cron = "0 */45 * * * *")
-    private void cleanCache() {
+    public void cleanCache() {
         List<User> csrOnline = searcher.getOnlineCsrs();
         Set<Long> csrCache = csrOrderCache.keySet();
         stayOfflineCsr(csrCache, csrOnline);

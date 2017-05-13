@@ -3,12 +3,13 @@ package com.netcracker.crm.scheduler;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 
 /**
  * Created by Pasha on 11.05.2017.
  */
-@Component
+@Service
 public class OrderScheduler {
     private final OrderCache orderCache;
 
@@ -22,5 +23,11 @@ public class OrderScheduler {
     @Scheduled(cron = "0 */1 * * * *")
     public void orderForActivate(){
         orderCache.fillCache();
+    }
+
+
+    @Scheduled(cron = "0 */45 * * * *")
+    public void cleanCache(){
+        orderCache.cleanCache();
     }
 }
