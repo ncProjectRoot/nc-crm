@@ -24,7 +24,7 @@
                     submitOrder(item.id, item.status);
                 });
                 var li = $("<li>").addClass("collection-item");
-                div.append(item.title +  ', status - ' + item.status);
+                div.append(item.title +  ', status - ' + item.status + ', prefered date for activate ' + item.date);
                 div.append(button);
                 li.append(div);
                 ul.append(li);

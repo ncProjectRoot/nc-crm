@@ -5,14 +5,10 @@ import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.scheduler.cacher.Cache;
 import com.netcracker.crm.scheduler.searcher.OrderSearcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Pasha on 12.05.2017.
@@ -100,7 +96,7 @@ public class OrderCache extends Cache<Order> {
      * */
     public void cleanCache() {
         List<User> csrOnline = searcher.getOnlineCsrs();
-        Set<Long> csrCache = csrOrderCache.keySet();
+        Set<Long> csrCache = new HashSet<>(csrOrderCache.keySet());
         stayOfflineCsr(csrCache, csrOnline);
         cleanOfflineCsr(csrCache);
     }
@@ -117,7 +113,6 @@ public class OrderCache extends Cache<Order> {
 
     private void cleanOfflineCsr(Set<Long> cacheCsr) {
         for (Long id : cacheCsr) {
-            System.out.println(id);
             csrOrderCache.remove(id);
         }
     }

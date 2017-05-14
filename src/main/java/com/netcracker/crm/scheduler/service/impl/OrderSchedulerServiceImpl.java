@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     @Autowired
     private OrderCache orderCache;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 
     @Override
@@ -46,7 +48,7 @@ public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     private List<OrderViewDto> convertMapToList(Map<Long, Order> map){
         List<OrderViewDto> orders = new ArrayList<>();
         for (Map.Entry<Long, Order> m : map.entrySet()){
-            orders.add(new OrderViewDto(m.getValue()));
+            orders.add(new OrderViewDto(m.getValue(), formatter));
         }
         return orders;
     }

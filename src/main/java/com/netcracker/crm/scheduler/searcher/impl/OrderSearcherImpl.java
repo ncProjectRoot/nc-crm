@@ -38,17 +38,21 @@ public class OrderSearcherImpl implements OrderSearcher {
         if (csr.isEmpty()){
             return new ArrayList<>();
         }
-        LocalDateTime toDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime toDate = getSerchTime();
         return orderDao.findAllByPrefDateAndStatus(sqlGenerator, csr, toDate, OrderStatus.PROCESSING);
     }
 
     @Override
     public List<Order> searchCsrOrder(Long csrId) {
-        LocalDateTime toDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime toDate = getSerchTime();
         return orderDao.findAllByCsrId(toDate, OrderStatus.PROCESSING, csrId);
     }
 
 
+
+    private LocalDateTime getSerchTime(){
+        return LocalDateTime.now().plusDays(1);
+    }
     public List<User> getOnlineCsrs(){
         List principals = sessionRegistry.getAllPrincipals();
         List<User> csrList = new ArrayList<>();

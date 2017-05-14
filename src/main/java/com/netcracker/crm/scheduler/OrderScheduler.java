@@ -26,7 +26,7 @@ public class OrderScheduler {
     }
 
 
-    @Scheduled(cron = "0 */45 * * * *")
+    @Scheduled(cron = "0 */2 * * * *")
     public void cleanCache(){
         orderCache.cleanCache();
     }
