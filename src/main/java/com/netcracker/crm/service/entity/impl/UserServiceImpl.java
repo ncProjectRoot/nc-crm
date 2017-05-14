@@ -1,9 +1,6 @@
 package com.netcracker.crm.service.entity.impl;
 
-import com.netcracker.crm.dao.OrganizationDao;
-import com.netcracker.crm.dao.RegionDao;
-import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.dao.UserTokenDao;
+import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.UserRowRequest;
@@ -46,17 +43,19 @@ public class UserServiceImpl implements UserService {
     private final UserTokenDao tokenDao;
     private final RegionDao regionDao;
     private final OrganizationDao organizationDao;
+    private final AddressDao addressDao;
     private final AbstractEmailSender emailSender;
     private final PasswordEncoder encoder;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, RegionDao regionDao,
-                           OrganizationDao organizationDao, PasswordEncoder encoder,
+                           OrganizationDao organizationDao, AddressDao addressDao, PasswordEncoder encoder,
                            @Qualifier("registrationSender") AbstractEmailSender emailSender) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
         this.regionDao = regionDao;
         this.organizationDao = organizationDao;
+        this.addressDao = addressDao;
         this.emailSender = emailSender;
         this.encoder = encoder;
     }
@@ -99,13 +98,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUser(UserDto userDto) {
+    public User update(UserDto userDto) {
         User user = convertToEntity(userDto);
-        Long updateId = userDao.update(user);
-        if (updateId > 0) {
-            return true;
-        }
-        return false;
+        userDao.update(user);
+        return user;
     }
 
     @Override
@@ -219,10 +215,14 @@ public class UserServiceImpl implements UserService {
 
     private User convertToEntity(UserDto userDto) {
         ModelMapper mapper = configureMapper();
+
+        Organization organization = userDto.getOrgId() > 0 ? organizationDao.findById(userDto.getOrgId()) : null;
+        Address address = userDto.getAddressId() > 0 ? addressDao.findById(userDto.getAddressId()) : null;
         User user = mapper.map(userDto, User.class);
-        if (userDto.getId() == null) {
-            user.setEnable(false);
-        }
+
+        user.setOrganization(organization);
+        user.setAddress(address);
+
         return user;
     }
 

@@ -18,7 +18,9 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    boolean updateUser(UserDto userDto);
+    //boolean updateUser(UserDto userDto);
+
+    User update(UserDto userDto);
 
     Map<String, Object> getUsers(UserRowRequest userRowRequest);
 

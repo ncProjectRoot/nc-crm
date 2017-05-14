@@ -49,78 +49,62 @@
 
 </style>
 <div class="content-body z-depth-1" data-page-name="User #${user.id}">
-    <%--<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">--%>
-        <%--<a class="modal-trigger brown-text change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>--%>
-        <%--<div id="update" class="modal modal-fixed-footer">--%>
-            <%--<form id="update-user-form">--%>
-                <%--<div class="modal-content row">--%>
-                    <%--<h4>Update user</h4>--%>
-                    <%--<input type="hidden" name="id" value="${user.id}"/>--%>
-                    <%--<input type="hidden" name="password" value="${user.password}"/>--%>
-                    <%--<input type="hidden" name="email" value="${user.email}"/>--%>
-                    <%--<input type="hidden" name="phone" value="${user.phone}"/>--%>
-                    <%--<input type="hidden" name="enable" value="${user.enable}"/>--%>
-                    <%--<input type="hidden" name="accountNonLocked" value="${user.accountNonLocked}"/>--%>
-                    <%--<input type="hidden" name="address" value="${user.address}"/>--%>
-                    <%--<input type="hidden" name="contactPerson" value="${user.contactPerson}"/>--%>
-                    <%--<input type="hidden" name="userRole" value="${user.userRole}"/>--%>
-                    <%--<input type="hidden" name="organization" value="${user.organization}"/>--%>
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <a class="modal-trigger brown-text change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>
+        <div id="update" class="modal modal-fixed-footer">
+            <form id="update-user-form">
+                <div class="modal-content row">
+                    <h4>Update user</h4>
+                    <input type="hidden" name="id" value="${user.id}"/>
+                    <input type="hidden" name="password" value="${user.password}"/>
+                    <input type="hidden" name="email" value="${user.email}"/>
+                    <input type="hidden" name="enable" value="${user.enable}"/>
+                    <input type="hidden" name="accountNonLocked" value="${user.accountNonLocked}"/>
+                    <input type="hidden" name="contactPerson" value="${user.contactPerson}"/>
+                    <input type="hidden" name="userRole" value="${user.userRole}"/>
 
-                    <%--<input type="hidden" name="organizationName"/>--%>
-                    <%--<input type="hidden" name="addressLatitude"/>--%>
-                    <%--<input type="hidden" name="addressLongitude"/>--%>
-                    <%--<input type="hidden" name="formattedAddress"/>--%>
-                    <%--<input type="hidden" name="addressDetails"/>--%>
-                    <%--<input type="hidden" name="addressRegionName"/>--%>
-                    <%--<div class='input-field col s7'>--%>
-                        <%--<i class="material-icons prefix">title</i>--%>
-                        <%--<input class='validate' type='text' name='lastName' id='user_lname'--%>
-                               <%--value="${user.lastName}"/>--%>
-                        <%--<label for="user_lname" class="active">Last name</label>--%>
-                    <%--</div>--%>
-                    <%--<div class='input-field col s7'>--%>
-                        <%--<i class="material-icons prefix">title</i>--%>
-                        <%--<input class='validate' type='text' name='middleName' id='user_mname'--%>
-                               <%--value="${user.middleName}"/>--%>
-                        <%--<label for="user_mname" class="active">Middle name</label>--%>
-                    <%--</div>--%>
-                    <%--<div class='input-field col s7'>--%>
-                        <%--<i class="material-icons prefix">title</i>--%>
-                        <%--<input class='validate' type='text' name='firstName' id='user_fname'--%>
-                               <%--value="${user.firstName}"/>--%>
-                        <%--<label for="user_fname" class="active">First name</label>--%>
-                    <%--</div>--%>
-                    <%--<div class="input-field col s7">--%>
-                        <%--<i class="material-icons prefix">call_received</i>--%>
-                        <%--<input class='validate' type='number' name='percentage' id='disc_percentage'--%>
-                               <%--value="${discount.percentage}"/>--%>
-                        <%--<label for="disc_percentage" class="active">Percentage</label>--%>
-                    <%--</div>--%>
-                    <%--<div class='switch col s7'>--%>
-                        <%--<i class="material-icons prefix">touch_app</i>--%>
-                        <%--<label>--%>
-                            <%--Inactive--%>
-                            <%--<input name="active" type="checkbox" id="disc_active"--%>
-                                   <%--<c:if test="${discount.active==true}">checked="checked"</c:if>>--%>
-                            <%--<span class="lever"></span>--%>
-                            <%--Active--%>
-                        <%--</label>--%>
-                    <%--</div>--%>
-                    <%--<div class="input-field col s7">--%>
-                        <%--<i class="material-icons prefix">description</i>--%>
-                        <%--<textarea id="descProduct" name="description"--%>
-                                  <%--class="materialize-textarea">${discount.description}</textarea>--%>
-                        <%--<label for="descProduct">Description</label>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-                <%--<div class="modal-footer center-align">--%>
-                    <%--<button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">Update--%>
-                        <%--<i class="material-icons right">send</i>--%>
-                    <%--</button>--%>
-                <%--</div>--%>
+                    <input type="hidden" name="orgId" value="${user.organization.id}"/>
+                    <input type="hidden" name="addressId" value="${user.address.id}"/>
+
+                    <input type="hidden" name="organizationName" value="${user.organization.name}"/>
+                    <input type="hidden" name="addressRegionName" id="customer_region_name" value="${user.address.region}">
+                    <input type="hidden" name="addressLatitude" id="customer_address_lat" value="${user.address.latitude}">
+                    <input type="hidden" name="addressLongitude" id="customer_address_long" value="${user.address.longitude}">
+                    <input type="hidden" name="formattedAddress" id="customer_formatted_address" value="${user.address.formattedAddress}">
+                    <input type="hidden" name="addressDetails" value="${user.address.details}"/>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">title</i>
+                        <input class='validate' type='text' name='lastName' id='user_lname'
+                               value="${user.lastName}"/>
+                        <label for="user_lname" class="active">Last name</label>
+                    </div>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">title</i>
+                        <input class='validate' type='text' name='middleName' id='user_mname'
+                               value="${user.middleName}"/>
+                        <label for="user_mname" class="active">Middle name</label>
+                    </div>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">title</i>
+                        <input class='validate' type='text' name='firstName' id='user_fname'
+                               value="${user.firstName}"/>
+                        <label for="user_fname" class="active">First name</label>
+                    </div>
+                    <div class='input-field col s7'>
+                        <i class="material-icons prefix">phone</i>
+                        <input class='validate' type='text' name='phone' id='user_phone'
+                               value="${user.phone}"/>
+                        <label for="user_phone" class="active">Phone</label>
+                    </div>
+                </div>
+                <div class="modal-footer center-align">
+                    <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">Update
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
             </form>
         </div>
-    <%--</sec:authorize>--%>
+    </sec:authorize>
     <div class="container">
         <h4 class="name field">${user.lastName} ${user.middleName} ${user.firstName}</h4>
         <div class="divider"></div>
@@ -157,7 +141,7 @@
         enableAutocomplete: true,
         enableReverseGeocode: true,
         draggable: true,
-        onchanged: function (currentLocation, radius, isMarkerDropped) {
+        onchanged: function asd(currentLocation, radius, isMarkerDropped) {
             var mapContext = $(this).locationpicker('map');
             $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
             $('#customer_address_lat').val(mapContext.location.latitude);
@@ -178,7 +162,7 @@
 
     $("#update-user-form").on("submit", function (e) {
         e.preventDefault();
-        sendPut("#update-user-form", "/users").done(function () {
+        sendPut("#update-user-form", "/users").done(function (userId) {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })

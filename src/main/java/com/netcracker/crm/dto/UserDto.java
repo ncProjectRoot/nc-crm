@@ -19,6 +19,8 @@ public class UserDto {
     private String formattedAddress;
     private String addressDetails;
     private String addressRegionName;
+    private Long orgId;
+    private Long addressId;
 
     public UserDto() {
     }
@@ -144,4 +146,19 @@ public class UserDto {
         this.formattedAddress = formattedAddress;
     }
 
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
+    }
+
+    public Long getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Long addressId) {
+        this.addressId = addressId;
+    }
 }

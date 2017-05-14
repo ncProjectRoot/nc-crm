@@ -69,12 +69,14 @@ public class UserRestController {
 
     @PutMapping
     public ResponseEntity<?> updateUser(@Valid UserDto userDto, BindingResult bindingResult) {
-        userValidator.validate(userDto, bindingResult);
-        if (bindingResult.hasErrors()) {
-            return bindingResultHandler.handle(bindingResult);
-        }
-        boolean isUpdated = userService.updateUser(userDto);
-        if (isUpdated) {
+//        userValidator.validate(userDto, bindingResult);
+//        if (bindingResult.hasErrors()) {
+//            return bindingResultHandler.handle(bindingResult);
+//        }
+
+        User user = userService.update(userDto);
+
+        if (user.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
