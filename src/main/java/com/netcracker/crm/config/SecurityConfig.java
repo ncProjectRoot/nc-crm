@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        Session management, need for scheduler logic
         http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
         http.authorizeRequests()
-                .anyRequest().fullyAuthenticated()
+                .anyRequest().authenticated()
+                .antMatchers("/forgot").permitAll()
                 .and()
                 .httpBasic()
                 .and()
