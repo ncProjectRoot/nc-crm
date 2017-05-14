@@ -23,7 +23,6 @@
         word-wrap: break-word;
     }
 
-
     .change-trigger {
         position: absolute;
         margin: 20px;
@@ -86,7 +85,8 @@
                     </div>
                 </div>
                 <div class="modal-footer center-align">
-                    <button class="btn waves-effect waves-light" id="submit-update-discount" type="submit" name="action">Update
+                    <button class="btn waves-effect waves-light" id="submit-update-discount" type="submit"
+                            name="action">Update
                         <i class="material-icons right">send</i>
                     </button>
                 </div>

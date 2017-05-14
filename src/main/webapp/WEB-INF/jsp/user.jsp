@@ -23,7 +23,6 @@
         word-wrap: break-word;
     }
 
-
     .change-trigger {
         position: absolute;
         margin: 20px;
@@ -67,10 +66,14 @@
                     <input type="hidden" name="addressId" value="${user.address.id}"/>
 
                     <input type="hidden" name="organizationName" value="${user.organization.name}"/>
-                    <input type="hidden" name="addressRegionName" id="customer_region_name" value="${user.address.region}">
-                    <input type="hidden" name="addressLatitude" id="customer_address_lat" value="${user.address.latitude}">
-                    <input type="hidden" name="addressLongitude" id="customer_address_long" value="${user.address.longitude}">
-                    <input type="hidden" name="formattedAddress" id="customer_formatted_address" value="${user.address.formattedAddress}">
+                    <input type="hidden" name="addressRegionName" id="customer_region_name"
+                           value="${user.address.region}">
+                    <input type="hidden" name="addressLatitude" id="customer_address_lat"
+                           value="${user.address.latitude}">
+                    <input type="hidden" name="addressLongitude" id="customer_address_long"
+                           value="${user.address.longitude}">
+                    <input type="hidden" name="formattedAddress" id="customer_formatted_address"
+                           value="${user.address.formattedAddress}">
                     <input type="hidden" name="addressDetails" value="${user.address.details}"/>
                     <div class='input-field col s7'>
                         <i class="material-icons prefix">title</i>
@@ -98,7 +101,8 @@
                     </div>
                 </div>
                 <div class="modal-footer center-align">
-                    <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">Update
+                    <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
+                        Update
                         <i class="material-icons right">send</i>
                     </button>
                 </div>
@@ -150,7 +154,7 @@
 
     $("#update-user-form").on("submit", function (e) {
         e.preventDefault();
-        sendPut("#update-user-form", "/users").done(function (userId) {
+        sendPut("#update-user-form", "/users").done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })

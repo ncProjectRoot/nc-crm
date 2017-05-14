@@ -202,6 +202,9 @@ function sendPut(form, url) {
             200: function (data) {
                 Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
             },
+            201: function (data) {
+                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
+            },
             417: function (data) {
                 Materialize.toast(xhr.getResponseHeader("validationMessage"), 10000);
             },
@@ -209,5 +212,6 @@ function sendPut(form, url) {
                 Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
             }
         }
-    })
+    });
+    return xhr;
 }
