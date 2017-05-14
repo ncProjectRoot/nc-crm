@@ -68,11 +68,7 @@ public class UserRestController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid UserDto userDto, BindingResult bindingResult) {
-//        userValidator.validate(userDto, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return bindingResultHandler.handle(bindingResult);
-//        }
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
 
         User user = userService.update(userDto);
 

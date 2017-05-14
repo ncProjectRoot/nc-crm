@@ -130,25 +130,13 @@
 
     $('#map').locationpicker({
         location: {
-            latitude: 40.7324319,
-            longitude: -73.82480777777776
+            latitude: document.getElementById('customer_address_lat').value,
+            longitude: document.getElementById('customer_address_long').value
         },
-        locationName: "",
         radius: 1,
-        inputBinding: {
-            locationNameInput: $('#customer_address')
-        },
         enableAutocomplete: true,
         enableReverseGeocode: true,
-        draggable: true,
-        onchanged: function asd(currentLocation, radius, isMarkerDropped) {
-            var mapContext = $(this).locationpicker('map');
-            $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
-            $('#customer_address_lat').val(mapContext.location.latitude);
-            $('#customer_address_long').val(mapContext.location.longitude);
-            $('#customer_formatted_address').val(mapContext.location.formattedAddress);
-        },
-        addressFormat: 'street_number'
+        draggable: false,
     });
 
     $('.modal').modal({
