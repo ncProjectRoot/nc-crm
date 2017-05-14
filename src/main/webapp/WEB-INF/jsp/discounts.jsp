@@ -137,7 +137,7 @@
         event.preventDefault();
         var url = "/discounts";
         var form = "#addDiscount";
-        sendPost(form, url);
+        send(form, url, "POST");
         $(form)[0].reset();
     });
 

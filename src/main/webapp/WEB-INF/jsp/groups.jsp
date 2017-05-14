@@ -191,7 +191,7 @@
         event.preventDefault();
         var url = "/csr/addGroup";
         var form = "#addGroup";
-        sendPost(form, url);
+        send(form, url, "POST");
         $(form)[0].reset();
     });
 

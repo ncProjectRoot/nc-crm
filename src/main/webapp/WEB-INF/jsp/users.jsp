@@ -247,7 +247,7 @@
         event.preventDefault();
         var userForm = "#form-user-create";
         var url = "/users/registration";
-        sendPost(userForm, url);
+        send(userForm, url, "POST");
     });
 
     //////// all ////////
