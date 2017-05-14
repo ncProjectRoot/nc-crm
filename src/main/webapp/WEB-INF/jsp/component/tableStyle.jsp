@@ -92,4 +92,16 @@
         max-height: 250px;
     }
 
+    .highlighted-row {
+        background-color: #f2f2f2;
+    }
+
+    #bulk-card {
+        position: fixed;
+        display: none;
+        top: 15%;
+        right: -20%;
+        width: 50%;
+    }
+
 </style>

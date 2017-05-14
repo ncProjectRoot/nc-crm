@@ -66,9 +66,10 @@
 
                 <div id="table-all-products" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
-                        <table class="striped responsive-table centered ">
+                        <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
+                                <th></th>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
@@ -98,7 +99,8 @@
                                 </th>
                                 <th class="th-dropdown" data-field="discountActive">
                                     <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-discount-status' data-default-name="Discount Active">
+                                       data-activates='dropdown-all-discount-status'
+                                       data-default-name="Discount Active">
                                         Discount Active
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
@@ -144,7 +146,8 @@
                                 <i class="material-icons prefix">loyalty</i>
                                 <input type="text" id="discount-input" class="autocomplete">
                                 <input type="hidden" id="discount-hidden-input" name="discountId"/>
-                                <label for="discount-input">Selected discount: <span id="selected-discount"></span></label>
+                                <label for="discount-input">Selected discount: <span
+                                        id="selected-discount"></span></label>
                             </div>
                         </div>
                         <div class="row">
@@ -161,14 +164,16 @@
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
-                                <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>
+                                <textarea id="descProduct" name="description" class="materialize-textarea"
+                                          data-length="400"></textarea>
                                 <label for="descProduct">Description</label>
                             </div>
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <div class="row">
                             <div class="col s6">
-                                <button class="btn waves-effect waves-light" id="submit-product" type="submit" name="action">Create Product
+                                <button class="btn waves-effect waves-light" id="submit-product" type="submit"
+                                        name="action">Create Product
                                     <i class="material-icons right">send</i>
                                 </button>
                             </div>
@@ -176,14 +181,30 @@
                     </form>
                 </div>
             </div>
+
+            <div id="bulk-card" class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content center-align">
+                            <span class="card-title">Items Selected </span>
+                            <h5 class="selected-items">0</h5>
+                        </div>
+                        <div class="card-action center-align">
+                            <a id="bulk-change-btn" class="a-dummy" href="#!">Change</a>
+                            <a id="bulk-cancel-btn" class="a-dummy" href="#!">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </sec:authorize>
-
-
     </div>
 </div>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
-
+    //TODO: help me
+    $(document).ready(function () {
+        $('.scrollspy').scrollSpy();
+    });
     $('ul#tabs').tabs({
         onShow: function (tab) {
         }
@@ -263,8 +284,10 @@
     $("#table-all-products").karpo_table({
         urlSearch: "/csr/load/productNames",
         urlTable: "/csr/load/products",
+        cardTitle: "Selected products",
         mapper: function (object) {
             var tr = $("<tr>");
+            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#product?id=" + object.id
@@ -273,12 +296,16 @@
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.discountActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
     });
+
+    //    $("#table-all-products").bulk_table({
+    //        url: "/products/bulk"
+    //    });
 
     </sec:authorize>
 
@@ -295,7 +322,7 @@
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
+            tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.discountActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
