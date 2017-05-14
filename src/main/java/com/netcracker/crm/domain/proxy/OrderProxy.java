@@ -12,9 +12,9 @@ import com.netcracker.crm.domain.model.User;
  */
 public class OrderProxy extends Order {
 
-    private Long customerId;
-    private Long productId;
-    private Long csrId;
+    private long customerId;
+    private long productId;
+    private long csrId;
 
     private UserDao userDao;
     private ProductDao productDao;
@@ -26,7 +26,7 @@ public class OrderProxy extends Order {
 
     @Override
     public User getCustomer() {
-        if (super.getCustomer() == null && customerId != null) {
+        if (super.getCustomer() == null && customerId != 0) {
             super.setCustomer(userDao.findById(customerId));
         }
         return super.getCustomer();
@@ -34,7 +34,7 @@ public class OrderProxy extends Order {
 
     @Override
     public Product getProduct() {
-        if (super.getProduct() == null && productId != null) {
+        if (super.getProduct() == null && productId != 0) {
             super.setProduct(productDao.findById(productId));
         }
         return super.getProduct();
@@ -42,33 +42,33 @@ public class OrderProxy extends Order {
 
     @Override
     public User getCsr() {
-        if (super.getCsr() == null && csrId != null) {
+        if (super.getCsr() == null && csrId != 0) {
             super.setCsr(userDao.findById(csrId));
         }
         return super.getCsr();
     }
 
-    public Long getCustomerId() {
+    public long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(long customerId) {
         this.customerId = customerId;
     }
 
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
-    public Long getCsrId() {
+    public long getCsrId() {
         return csrId;
     }
 
-    public void setCsrId(Long csrId) {
+    public void setCsrId(long csrId) {
         this.csrId = csrId;
     }
 }

@@ -14,9 +14,9 @@ import com.netcracker.crm.domain.model.Product;
  */
 public class HistoryProxy extends History {
 
-    private Long orderId;
-    private Long complaintId;
-    private Long productId;
+    private long orderId;
+    private long complaintId;
+    private long productId;
 
     private OrderDao orderDao;
     private ComplaintDao complaintDao;
@@ -30,7 +30,7 @@ public class HistoryProxy extends History {
 
     @Override
     public Order getOrder() {
-        if (super.getOrder() == null && orderId != null) {
+        if (super.getOrder() == null && orderId != 0) {
             super.setOrder(orderDao.findById(orderId));
         }
         return super.getOrder();
@@ -38,7 +38,7 @@ public class HistoryProxy extends History {
 
     @Override
     public Complaint getComplaint() {
-        if (super.getComplaint() == null && complaintId != null) {
+        if (super.getComplaint() == null && complaintId != 0) {
             super.setComplaint(complaintDao.findById(complaintId));
         }
         return super.getComplaint();
@@ -46,33 +46,33 @@ public class HistoryProxy extends History {
 
     @Override
     public Product getProduct() {
-        if (super.getProduct() == null && productId != null) {
+        if (super.getProduct() == null && productId != 0) {
             super.setProduct(productDao.findById(productId));
         }
         return super.getProduct();
     }
 
-    public Long getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
-    public Long getComplaintId() {
+    public long getComplaintId() {
         return complaintId;
     }
 
-    public void setComplaintId(Long complaintId) {
+    public void setComplaintId(long complaintId) {
         this.complaintId = complaintId;
     }
 
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 }

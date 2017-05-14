@@ -12,8 +12,8 @@ import com.netcracker.crm.domain.model.Product;
  */
 public class ProductProxy extends Product {
 
-    private Long discountId;
-    private Long groupId;
+    private long discountId;
+    private long groupId;
 
     private DiscountDao discountDao;
     private GroupDao groupDao;
@@ -25,7 +25,7 @@ public class ProductProxy extends Product {
 
     @Override
     public Discount getDiscount() {
-        if (super.getDiscount() == null && discountId != null) {
+        if (super.getDiscount() == null && discountId != 0) {
             super.setDiscount(discountDao.findById(discountId));
         }
         return super.getDiscount();
@@ -33,25 +33,25 @@ public class ProductProxy extends Product {
 
     @Override
     public Group getGroup() {
-        if (super.getGroup() == null && groupId != null) {
+        if (super.getGroup() == null && groupId != 0) {
             super.setGroup(groupDao.findById(groupId));
         }
         return super.getGroup();
     }
 
-    public Long getDiscountId() {
+    public long getDiscountId() {
         return discountId;
     }
 
-    public void setDiscountId(Long discountId) {
+    public void setDiscountId(long discountId) {
         this.discountId = discountId;
     }
 
-    public Long getGroupId() {
+    public long getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Long groupId) {
+    public void setGroupId(long groupId) {
         this.groupId = groupId;
     }
 }

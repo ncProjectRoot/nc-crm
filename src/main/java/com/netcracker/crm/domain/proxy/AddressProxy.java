@@ -10,7 +10,8 @@ import com.netcracker.crm.domain.model.Region;
  */
 public class AddressProxy extends Address {
 
-    private Long regionId;
+    private long regionId;
+
     private RegionDao regionDao;
 
     public AddressProxy(RegionDao regionDao) {
@@ -19,17 +20,17 @@ public class AddressProxy extends Address {
 
     @Override
     public Region getRegion() {
-        if (super.getRegion() == null && regionId != null) {
+        if (super.getRegion() == null && regionId != 0) {
             super.setRegion(regionDao.findById(regionId));
         }
         return super.getRegion();
     }
 
-    public Long getRegionId() {
+    public long getRegionId() {
         return regionId;
     }
 
-    public void setRegionId(Long regionId) {
+    public void setRegionId(long regionId) {
         this.regionId = regionId;
     }
 }

@@ -10,7 +10,7 @@ import com.netcracker.crm.domain.model.Group;
  */
 public class GroupProxy extends Group {
 
-    private Long discountId;
+    private long discountId;
 
     private DiscountDao discountDao;
 
@@ -20,17 +20,17 @@ public class GroupProxy extends Group {
 
     @Override
     public Discount getDiscount() {
-        if (super.getDiscount() == null && discountId != null) {
+        if (super.getDiscount() == null && discountId != 0) {
             super.setDiscount(discountDao.findById(discountId));
         }
         return super.getDiscount();
     }
 
-    public Long getDiscountId() {
+    public long getDiscountId() {
         return discountId;
     }
 
-    public void setDiscountId(Long discountId) {
+    public void setDiscountId(long discountId) {
         this.discountId = discountId;
     }
 }

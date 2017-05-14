@@ -12,9 +12,9 @@ import com.netcracker.crm.domain.model.User;
  */
 public class ComplaintProxy extends Complaint {
 
-    private Long customerId;
-    private Long pmgId;
-    private Long orderId;
+    private long customerId;
+    private long pmgId;
+    private long orderId;
 
     private UserDao userDao;
     private OrderDao orderDao;
@@ -26,7 +26,7 @@ public class ComplaintProxy extends Complaint {
 
     @Override
     public User getCustomer() {
-        if (super.getCustomer() == null && customerId != null) {
+        if (super.getCustomer() == null && customerId != 0) {
             super.setCustomer(userDao.findById(customerId));
         }
         return super.getCustomer();
@@ -34,7 +34,7 @@ public class ComplaintProxy extends Complaint {
 
     @Override
     public User getPmg() {
-        if (super.getPmg() == null && pmgId != null) {
+        if (super.getPmg() == null && pmgId != 0) {
             super.setPmg(userDao.findById(pmgId));
         }
         return super.getPmg();
@@ -42,33 +42,33 @@ public class ComplaintProxy extends Complaint {
 
     @Override
     public Order getOrder() {
-        if (super.getOrder() == null && orderId != null) {
+        if (super.getOrder() == null && orderId != 0) {
             super.setOrder(orderDao.findById(orderId));
         }
         return super.getOrder();
     }
 
-    public Long getCustomerId() {
+    public long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(long customerId) {
         this.customerId = customerId;
     }
 
-    public Long getPmgId() {
+    public long getPmgId() {
         return pmgId;
     }
 
-    public void setPmgId(Long pmgId) {
+    public void setPmgId(long pmgId) {
         this.pmgId = pmgId;
     }
 
-    public Long getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 }

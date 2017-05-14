@@ -12,8 +12,8 @@ import com.netcracker.crm.domain.model.User;
  */
 public class UserProxy extends User {
 
-    private Long addressId;
-    private Long organizationId;
+    private long addressId;
+    private long organizationId;
 
     private AddressDao addressDao;
     private OrganizationDao organizationDao;
@@ -25,7 +25,7 @@ public class UserProxy extends User {
 
     @Override
     public Address getAddress() {
-        if (super.getAddress() == null && addressId != null) {
+        if (super.getAddress() == null && addressId != 0) {
             super.setAddress(addressDao.findById(addressId));
         }
         return super.getAddress();
@@ -33,25 +33,25 @@ public class UserProxy extends User {
 
     @Override
     public Organization getOrganization() {
-        if (super.getOrganization() == null && organizationId != null) {
+        if (super.getOrganization() == null && organizationId != 0) {
             super.setOrganization(organizationDao.findById(organizationId));
         }
         return super.getOrganization();
     }
 
-    public Long getAddressId() {
+    public long getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(Long addressId) {
+    public void setAddressId(long addressId) {
         this.addressId = addressId;
     }
 
-    public Long getOrganizationId() {
+    public long getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Long organizationId) {
+    public void setOrganizationId(long organizationId) {
         this.organizationId = organizationId;
     }
 }
