@@ -59,10 +59,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -133,10 +136,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-own" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -201,10 +207,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-customer" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -292,8 +301,7 @@
                 sendPost('#createComplaintForm', '/complaints' ).done(function (id) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
-//                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
-                        window.location.href = "/#/complaints/" + id;
+                        window.location.href = "/#/complaint/" + id;
                     }
                 );
             }
@@ -302,11 +310,11 @@
 
     <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
     $("#table-all-complaints").karpo_table({
-        urlSearch: "/complaints/titles",
+        urlSearch: "/complaints/autocomplete",
         urlTable: "/complaints/",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -323,11 +331,11 @@
 
     <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
     $("#table-pmg-complaints").karpo_table({
-        urlSearch: "/complaints/titles?userId=${user.id}",
-        urlTable: "/complaints?userId=${user.id}",
+        urlSearch: "/complaints/autocomplete?individual=true",
+        urlTable: "/complaints?individual=true",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -343,11 +351,11 @@
 
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
     $("#table-customer-complaints").karpo_table({
-        urlSearch: "/complaints/titles",
-        urlTable: "/complaints?userId=${user.id}",
+        urlSearch: "/complaints/autocomplete",
+        urlTable: "/complaints",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.order}));

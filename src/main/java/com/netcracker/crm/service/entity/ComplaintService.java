@@ -27,15 +27,11 @@ public interface ComplaintService {
 
     Complaint findById(Long id);
 
-    Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException;
-
-    List<String> getTitlesByPmg(String likeTitle, User pmg);
-
-    boolean acceptComplaint(Long complaintId, User user);
-
-    boolean closeComplaint(Long complaintId, User user);
-
     boolean checkAccessToComplaint(User customer, Long id);
 
-    List<String> getTitles(String likeTitle, User user);
+    List<String> getTitles(String likeTitle, User user, boolean individual);
+
+    boolean changeStatusComplaint(Long id, String type, User pmg);
+
+    Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual);
 }

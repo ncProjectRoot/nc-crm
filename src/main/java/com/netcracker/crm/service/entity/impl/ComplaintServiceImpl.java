@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -92,39 +91,26 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException {
-
-        Map<String, Object> response = new HashMap<>();
-        Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
-        response.put("length", length);
-        List<Complaint> complaints = complaintDao.findComplaintRows(complaintRowRequest);
-        List<ComplaintRowDto> dtos = new ArrayList<>();
-        for (Complaint complaint : complaints) {
-            dtos.add(convertToRowDto(complaint));
-        }
-        response.put("rows", dtos);
-        return response;
-    }
-
-    @Transactional
-    @Override
-    public List<String> getTitles(String likeTitle, User user) {
+    public List<String> getTitles(String likeTitle, User user, boolean individual) {
         UserRole role = user.getUserRole();
-        if (role.equals(UserRole.ROLE_CUSTOMER)) {
+        if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
+            if (individual) {
+                return getTitlesByPmg(likeTitle, user);
+            } else {
+                return getAllTitles(likeTitle);
+            }
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
             if (user.isContactPerson()) {
                 return getTitlesForContactPerson(likeTitle, user.getId());
             } else {
                 return getTitlesForNotContactPerson(likeTitle, user.getId());
             }
-        } else if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
-            return getAllTitles(likeTitle);
         }
         return new ArrayList<>();
     }
 
     @Transactional
-    @Override
-    public List<String> getTitlesByPmg(String likeTitle, User pmg) {
+    private List<String> getTitlesByPmg(String likeTitle, User pmg) {
         return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
     }
 
@@ -145,7 +131,42 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Transactional
     @Override
-    public boolean acceptComplaint(Long complaintId, User user) {
+    public boolean changeStatusComplaint(Long complaintId, String type, User pmg) {
+        if ("ACCEPT".equals(type)) {
+            return acceptComplaint(complaintId, pmg);
+        } else if ("CLOSE".equals(type)) {
+            return closeComplaint(complaintId, pmg);
+        }
+        return false;
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            complaintRowRequest.setCustId(user.getId());
+            if (user.isContactPerson()) {
+                complaintRowRequest.setContactPerson(true);
+            }
+        } else if ((role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) && (individual)) {
+            complaintRowRequest.setPmgId(user.getId());
+        }
+        Map<String, Object> response = new HashMap<>();
+        Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
+        response.put("length", length);
+        List<Complaint> complaints = complaintDao.findComplaintRows(complaintRowRequest);
+        List<ComplaintRowDto> dtos = new ArrayList<>();
+        for (Complaint complaint : complaints) {
+            dtos.add(convertToRowDto(complaint));
+        }
+        response.put("rows", dtos);
+        return response;
+    }
+
+
+    @Transactional
+    private boolean acceptComplaint(Long complaintId, User user) {
         Complaint complaint = complaintDao.findById(complaintId);
 
         if (complaint.getPmg() != null) {
@@ -165,14 +186,13 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Transactional
-    @Override
-    public boolean closeComplaint(Long complaintId, User user) {
+    private boolean closeComplaint(Long complaintId, User user) {
         Boolean isRoleAdmin = user.getUserRole().equals(UserRole.ROLE_ADMIN);
         Complaint complaint = complaintDao.findById(complaintId);
         if (complaint.getPmg() == null || (!complaint.getPmg().getId().equals(user.getId())) && (!isRoleAdmin)) {
             return false;
         }
-        if(isRoleAdmin){
+        if (isRoleAdmin) {
             complaint.setPmg(user);
         }
         complaint.setStatus(ComplaintStatus.CLOSED);

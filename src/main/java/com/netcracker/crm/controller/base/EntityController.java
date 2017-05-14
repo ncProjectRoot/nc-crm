@@ -33,7 +33,7 @@ public class EntityController {
     @Autowired
     private DiscountService discountService;
 
-    @GetMapping("/*/complaints/{id}")
+    @GetMapping("/*/complaint/{id}")
     public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
                             Authentication authentication) {
         User customer = null;
