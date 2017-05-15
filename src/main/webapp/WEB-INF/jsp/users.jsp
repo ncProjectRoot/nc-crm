@@ -309,7 +309,7 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-users").karpo_table({
-        urlSearch: "/users/lastNames",
+        urlSearch: "/users/autocomplete",
         urlTable: "/users?individual=true",
         mapper: function (object) {
             var tr = $("<tr>");

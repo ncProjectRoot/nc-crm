@@ -29,9 +29,9 @@
 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     <c:if test="${user.isContactPerson()}">
         <li>
-            <a href="#users" class="valign-wrapper menu-element">
+            <a href="#organization" class="valign-wrapper menu-element">
                 <i class="white-text material-icons">face</i>
-                <h2>Users</h2>
+                <h2>Organization</h2>
             </a>
         </li>
     </c:if>

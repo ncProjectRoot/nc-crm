@@ -122,20 +122,20 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
+        UserRole role = principal.getUserRole();
+        List<String> names;
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+            names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
+        } else {
+            names = userDao.findUserLastNamesByPattern(pattern);
+        }
         List<AutocompleteDto> result = new ArrayList<>();
-        for (String userLastName: userDao.findUserLastNamesByPattern(pattern)) {
+        for (String userLastName: names) {
             AutocompleteDto autocompleteDto = new AutocompleteDto();
             autocompleteDto.setValue(userLastName);
             result.add(autocompleteDto);
         }
         return result;
-    public List<String> getUserLastNamesByPattern(String pattern, User principal) {
-        UserRole role = principal.getUserRole();
-        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
-            return userDao.findOrgUserLastNamesByPattern(pattern, principal);
-        } else {
-            return userDao.findUserLastNamesByPattern(pattern);
-        }
     }
 
     private String createUserRegistrationToken(User user) {
