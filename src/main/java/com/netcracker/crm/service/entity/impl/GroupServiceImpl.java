@@ -45,7 +45,7 @@ public class GroupServiceImpl implements GroupService{
 
     @Override
     @Transactional
-    public Group persist(GroupDto groupDto) {
+    public Group create(GroupDto groupDto) {
         Group group = convertToEntity(groupDto);
         groupDao.create(group);
         if (groupDto.getProducts() != null) {
@@ -81,20 +81,6 @@ public class GroupServiceImpl implements GroupService{
             result.add(convertToAutocompleteDto(group));
         }
         return result;
-    }
-
-    @Override
-    public List<Group> groupsByName(String name) {
-        return groupDao.findByName(name);
-    }
-
-    @Override
-    public List<String> groupByName(String name) {
-        List<String> groupNames = new ArrayList<>();
-        for (Group g : groupDao.findByName(name)){
-            groupNames.add(g.getName());
-        }
-        return groupNames;
     }
 
     private AutocompleteDto convertToAutocompleteDto(Group group) {

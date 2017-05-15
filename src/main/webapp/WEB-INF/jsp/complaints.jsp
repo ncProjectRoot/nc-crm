@@ -11,7 +11,7 @@
             <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
                 <li class="tab col s3"><a href="#swipe-all-complaints">All complaints</a></li>
             </sec:authorize>
-            <sec:authorize access="hasAnyRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
                 <li class="tab col s3"><a href="#swipe-pmg-complaints">Your complaints</a></li>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
@@ -59,10 +59,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -94,7 +97,7 @@
             </div>
         </div>
     </sec:authorize>
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
         <div id="swipe-pmg-complaints" class="col s12">
             <div id="table-pmg-complaints" class="table-container row">
                 <div class="table-wrapper col s11 center-align">
@@ -133,10 +136,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-own" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -201,10 +207,13 @@
                                 <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                 <ul id="dropdown-order-status-customer" class='dropdown-content'>
                                     <li><a href="#" class="a-dummy" data-value="4">New</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="6">Processing</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="7">Active</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="8">Disabled</a></li>
-                                    <li><a href="#" class="a-dummy" data-value="9">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="5">Processing</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
+                                    <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                 </ul>
                             </th>
                             <th data-field="5">
@@ -268,13 +277,13 @@
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
 
+
     $('#order-input').karpo_autocomplete({
         url: "/orders/users/${user.id}",
         label: "#selected-order",
-        defaultValue: "",
+        defaultValue: " ",
         hideInput: "#order-hidden-input"
     });
-
 
     $("#createComplaintForm").on("submit", function (e) {
             e.preventDefault();
@@ -289,11 +298,10 @@
                 Materialize.toast("Order can't be empty", 5000, 'rounded');
             } else {
                 $(".progress").addClass("progress-active");
-                sendPost('#createComplaintForm', '/complaints' ).done(function (id) {
+                send('#createComplaintForm', '/complaints', "POST").done(function (id) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
-//                    Materialize.toast("Complaint with id " + data.id + " successfuly created", 2000, 'rounded');
-                        window.location.href = "/#/complaints/" + id;
+                        window.location.href = "/#/complaint/" + id;
                     }
                 );
             }
@@ -302,11 +310,11 @@
 
     <sec:authorize access="hasAnyRole('ROLE_PMG, ROLE_ADMIN')">
     $("#table-all-complaints").karpo_table({
-        urlSearch: "/complaints/titles",
+        urlSearch: "/complaints/autocomplete",
         urlTable: "/complaints/",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -321,13 +329,13 @@
     });
     </sec:authorize>
 
-    <sec:authorize access="hasAnyRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
     $("#table-pmg-complaints").karpo_table({
-        urlSearch: "/complaints/titles?userId=${user.id}",
-        urlTable: "/complaints?userId=${user.id}",
+        urlSearch: "/complaints/autocomplete?individual=true",
+        urlTable: "/complaints?individual=true",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.customer}));
@@ -343,11 +351,11 @@
 
     <sec:authorize access="hasAnyRole('ROLE_CUSTOMER')">
     $("#table-customer-complaints").karpo_table({
-        urlSearch: "/complaints/titles",
-        urlTable: "/complaints?userId=${user.id}",
+        urlSearch: "/complaints/autocomplete",
+        urlTable: "/complaints",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#complaints/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>", {text: object.order}));

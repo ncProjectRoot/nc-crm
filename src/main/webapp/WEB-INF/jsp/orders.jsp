@@ -35,7 +35,7 @@ td.discount .percentage {
     position: absolute;
     border-radius: 30px;
     top: 7px;
-    right: 55px;
+    right: 40px;
     opacity: 0.7;
     transform: rotate(12deg);
     transform: scale(0);
@@ -150,7 +150,7 @@ td.discount .percentage.show{
                                         <li><a href="#" class="a-dummy" data-value="6">Active</a></li>
                                         <li><a href="#" class="a-dummy" data-value="7">Disabled</a></li>
                                         <li><a href="#" class="a-dummy" data-value="8">Paused</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="9">Reques resume</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="9">Request resume</a></li>
                                         <li><a href="#" class="a-dummy" data-value="10">Request pause</a></li>
                                         <li><a href="#" class="a-dummy" data-value="11">Request disable</a></li>
                                     </ul>
@@ -226,25 +226,22 @@ td.discount .percentage.show{
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
-    $('ul#tabs').tabs({
-        onShow: function (tab) {
-        }
-    });
+    $('ul#tabs').tabs();
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     $("#table-all-orders").karpo_table({
-        urlSearch: "/csr/load/productNames",
-        urlTable: "/csr/load/orders",
+        urlSearch: "/products/autocomplete?type=all",
+        urlTable: "/orders",
         mapper: function (object) {
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#order?id=" + object.id
+                href: "#order/" + object.id
             })));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>").append($("<a>", {
                 text: object.productId,
-                href: "#product?id=" + object.productId
+                href: "#product/" + object.productId
             })));
             tr.append($("<td>", {text: object.productTitle}));
             tr.append($("<td>", {text: object.productStatus}));
@@ -259,18 +256,18 @@ td.discount .percentage.show{
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-orders").karpo_table({
-        urlSearch: "/customer/load/productNames",
-        urlTable: "/customer/load/orders",
+        urlSearch: "/products/autocomplete?type=actual",
+        urlTable: "/orders",
         mapper: function (object) {
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#order?id=" + object.id
+                href: "#order/" + object.id
             })));
             tr.append($("<td>", {text: object.status}));
             tr.append($("<td>").append($("<a>", {
                 text: object.productId,
-                href: "#product?id=" + object.productId
+                href: "#product/" + object.productId
             })));
             tr.append($("<td>", {text: object.productTitle}));
             tr.append($("<td>", {text: object.productStatus}));
@@ -282,13 +279,13 @@ td.discount .percentage.show{
     });
 
     $("#table-create-orders").karpo_table({
-        urlSearch: "/customer/load/possibleProductNames",
-        urlTable: "/customer/load/possibleProducts",
+        urlSearch: "/products/autocomplete?type=possible",
+        urlTable: "/products?type=possible",
         countTr: 5,
         mapper: function (object) {
             var tr = $("<tr>");
             var aId = $("<a>", {
-                href: "#product?id=" + object.id,
+                href: "#product/" + object.id,
                 text: object.id
             })
             tr.append($("<td>").append(aId));
@@ -315,7 +312,7 @@ td.discount .percentage.show{
             tr.append(priceTd);
             tr.append($("<td>", {text: object.groupName}));
             tr.append($("<td>").append($("<a>", {
-                href: "#product?id=" + object.id,
+                href: "#product/" + object.id,
                 class: "waves-effect waves-light btn",
                 text: "Details"
             })));
