@@ -43,13 +43,13 @@ public class ReportServiceImpl implements ReportService {
                 +"."+fileFormat;
     }
 
-    public void createOrdersBetweenDatesOfCustomer_ReportChart(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+    public void createOrdersBetweenDatesOfCustomer_ReportChart(Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of customer ( id=" +customer_id+" )"
                 +getOrderFileNameEnding(date_finish_first, date_finish_last)
                 +" with charts"
-                +"."+fileFormat;
+                +"."+ExcelFormat.XLSX;
     }
 
     public void createOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
@@ -60,13 +60,13 @@ public class ReportServiceImpl implements ReportService {
                 +"."+fileFormat;
     }
 
-    public void createOrdersBetweenDatesOfArrayCustomer_ReportChart(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+    public void createOrdersBetweenDatesOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
         OrderReportGenerator org = new OrderReportGenerator(orderDao);
-        lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
+        lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of group of customers"
                 +getOrderFileNameEnding(date_finish_first, date_finish_last)
                 +" with charts"
-                +"."+fileFormat;
+                +"."+ExcelFormat.XLSX;
     }
 
     private String getOrderFileNameEnding(LocalDateTime date_finish_first, LocalDateTime date_finish_last){

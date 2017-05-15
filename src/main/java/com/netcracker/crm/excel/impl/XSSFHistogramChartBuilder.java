@@ -33,7 +33,7 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
     public int buildChart(int startRow){
         int endRow = createChart(startRow);
         addData();
-        tempMethod();
+        plotChart();
         return endRow;
     }
 
@@ -101,7 +101,6 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
 
             //at least the border lines in Libreoffice Calc ;-)
             ctBarSer.addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {0,0,0});
-
         }
     }
 
@@ -109,17 +108,15 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
         StringBuilder reference = new StringBuilder(sourceSheet.getSheetName()+"!$");
         reference.append(cellAddess1.substring(0, 1));
         reference.append('$');
-        int index1 = reference.length();
         reference.append(cellAddess1.substring(1, cellAddess1.length()));
         reference.append(":$");
         reference.append(cellAdress2.substring(0, 1));
         reference.append('$');
-        int index2 = reference.length();
         reference.append(cellAdress2.substring(1, cellAdress2.length()));
         return reference.toString();
     }
 
-    private void tempMethod(){
+    private void plotChart(){
         //telling the BarChart that it has axes and giving them Ids
         ctBarChart.addNewAxId().setVal(123456);
         ctBarChart.addNewAxId().setVal(123457);
@@ -155,7 +152,7 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
                 *coordinates_Y.size();
         int startCol = 0;
         int endCol = startCol + modifier;
-        int endRow = startRow + 15;
+        int endRow = startRow + 15 + coordinates_Y.size();
         return new Coordinates(startCol,startRow,endCol,endRow);
     }
 }

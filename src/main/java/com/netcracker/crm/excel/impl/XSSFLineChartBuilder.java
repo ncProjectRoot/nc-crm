@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by AN on 17.04.2017.
  */
-public class XSSFChartBuilder implements ChartBuilder {
+public class XSSFLineChartBuilder implements ChartBuilder {
     private Workbook workbook;
     private Sheet sourceSheet;
     private Sheet chartSheet;
@@ -22,27 +22,26 @@ public class XSSFChartBuilder implements ChartBuilder {
     private ChartAxis bottomAxis;
     private ValueAxis leftAxis;
 
-    public XSSFChartBuilder(Workbook workbook, Coordinates coordinates_X, List<Coordinates> coordinates_Y) {
+    public XSSFLineChartBuilder(Workbook workbook, Coordinates coordinates_X, List<Coordinates> coordinates_Y) {
         this.workbook = workbook;
         this.coordinates_X = coordinates_X;
         this.coordinates_Y = coordinates_Y;
     }
 
-    public int buildChart(int startCell){
-        int endCell = createChart(startCell);
+    public int buildChart(int startRow){
+        int endRow = createChart(startRow);
         addData();
         plotChart();
-        return endCell;
+        return endRow;
     }
 
-    private int createChart(int startCell){
-        /* Create a drawing canvas on the worksheet */
+    private int createChart(int startRow){
         sourceSheet = workbook.getSheetAt(0);
         workbook.createSheet();
         chartSheet = workbook.getSheetAt(1);
         workbook.setSheetName(1, "Charts");
         Drawing drawing = chartSheet.createDrawingPatriarch();
-        Coordinates coordinates = calculatePlotCoordinates(startCell);
+        Coordinates coordinates = calculatePlotCoordinates(startRow);
         int leftTopCell = coordinates.getStartColumn();
         int leftTopRow = coordinates.getStartRow();
         int rightBottomCell = coordinates.getEndColumn();
@@ -72,7 +71,7 @@ public class XSSFChartBuilder implements ChartBuilder {
             startRow = aCoordinates_Y.getStartRow();
             endRow = aCoordinates_Y.getEndRow();
             ys = DataSources.fromNumericCellRange(sourceSheet, new CellRangeAddress(startRow, endRow, startCol, endCol));
-            title = sourceSheet.getRow(startRow - 1).getCell(startCol).toString();
+            title = sourceSheet.getRow(startRow).getCell(startCol-1).toString();
             data.addSeries(xs, ys).setTitle(title);
         }
     }
@@ -81,11 +80,12 @@ public class XSSFChartBuilder implements ChartBuilder {
         lineChart.plot(data, bottomAxis, leftAxis);
     }
 
-    private Coordinates calculatePlotCoordinates(int startCol){
-        int modifier = 2 + coordinates_X.getEndRow() - coordinates_X.getStartRow();
-        int startRow = 0;
+    private Coordinates calculatePlotCoordinates(int startRow){
+        int modifier = 2 + (coordinates_X.getEndColumn() - coordinates_X.getStartColumn())
+                *coordinates_Y.size();
+        int startCol = 0;
         int endCol = startCol + modifier;
-        int endRow = startRow + 15;
+        int endRow = startRow + 15 + coordinates_Y.size();
         return new Coordinates(startCol,startRow,endCol,endRow);
     }
 }

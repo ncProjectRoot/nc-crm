@@ -1,6 +1,7 @@
 package com.netcracker.crm.excel.impl;
 
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.excel.additional.AdditionalData;
 import com.netcracker.crm.excel.additional.DateSelection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,11 +12,9 @@ import java.util.*;
  * Created by AN on 03.05.2017.
  */
 public class OrderConverter {
-    private LinkedHashMap<String, List<?>> lastAdditionalData;
-    private String  lastAdditionalDataName;
-    private List<String> lastAdditionalData_firstColumns;
 
     Map<String, List<?>> convertAllOrdersOfCustomerBetweenDatesOfCSR(List<Order> orders){
+        List<String> customer_fullName = new ArrayList<>();
         List<Long> order_id = new ArrayList<>();
         List<LocalDateTime> order_date = new ArrayList<>();
         List<LocalDateTime> order_preffered_date = new ArrayList<>();
@@ -25,6 +24,10 @@ public class OrderConverter {
         List<Double> product_discount = new ArrayList<>();
 
         for (Order order: orders) {
+            String fullName = order.getCustomer().getFirstName();
+            fullName +=" " + order.getCustomer().getMiddleName();
+            fullName +=" " + order.getCustomer().getLastName();
+            customer_fullName.add(fullName);
             order_id.add(order.getId());
             order_date.add(order.getDate());
             order_preffered_date.add(order.getPreferedDate());
@@ -38,6 +41,7 @@ public class OrderConverter {
 
         LinkedHashMap<String, List<?>> data = new LinkedHashMap<>();
 
+        data.put("Full_name", customer_fullName);
         data.put("Order_id", order_id);
         data.put("Order_date", order_date);
         data.put("Order_preffered", order_preffered_date);
@@ -49,35 +53,22 @@ public class OrderConverter {
     }
 
     public Map<String, List<?>> convertAllOrdersOfManyCustomersBetweenDatesOfCSR(List<Order> orders){
-        LinkedHashMap<String, List<?>> data = new LinkedHashMap<>();
-
-        List<String> customer_fullName = new ArrayList<>();
-
-        for (Order order: orders) {
-            String fullName = order.getCustomer().getFirstName();
-            fullName +=" " + order.getCustomer().getMiddleName();
-            fullName +=" " + order.getCustomer().getLastName();
-            customer_fullName.add(fullName);
-        }
-        data.put("Full_name", customer_fullName);
-
-        data.putAll(convertAllOrdersOfCustomerBetweenDatesOfCSR(orders));
-        return data;
+        return convertAllOrdersOfCustomerBetweenDatesOfCSR(orders);
     }
 
-    public LinkedHashMap<String, List<?>> numberOfOrdersInDates(List<Order> orders, LocalDateTime date_start, LocalDateTime date_finish) {
+    public AdditionalData numberOfOrdersInDates(List<Order> orders, LocalDateTime date_start, LocalDateTime date_finish) {
         Period difference = Period.between(date_start.toLocalDate(), date_finish.toLocalDate());
         DateSelection dateSelection;
         if (difference.getYears() > 0) dateSelection = DateSelection.YEAR;
         else if(difference.getMonths() > 0) dateSelection = DateSelection.MONTH;
         else dateSelection = DateSelection.DAY;
-        countByDate_addData(orders, dateSelection);
-        setLastAdditionalDataName("Number of orders made in dates");
-        return getLastAdditionalData();
+        AdditionalData additionalData = countByDate_addData(orders, dateSelection);
+        additionalData.setDataName("Number of orders made in dates");
+        return additionalData;
     }
 
-    private void countByDate_addData(List<Order> orders, DateSelection dateSelection){
-        Map<String, List<?>> additinonalData = new LinkedHashMap<>();
+    private AdditionalData countByDate_addData(List<Order> orders, DateSelection dateSelection){
+        LinkedHashMap<String, List<?>> data = new LinkedHashMap<>();
         String cutomer_name_title = "Full name";
         List<String> customer_names = new ArrayList<>();
         Map<String, List<Integer>> monthYearValues = new LinkedHashMap();
@@ -120,34 +111,8 @@ public class OrderConverter {
             value +=1;
             monthYearValues.get(certainDate).set(index, value);
         }
-        additinonalData.put(cutomer_name_title, customer_names);
-        additinonalData.putAll(monthYearValues);
-        setLastAdditionalData((LinkedHashMap<String, List<?>>) additinonalData);
-        setLastAdditionalData_firstColumns(customer_names);
-    }
-
-    public LinkedHashMap<String, List<?>> getLastAdditionalData() {
-        return lastAdditionalData;
-    }
-
-    public void setLastAdditionalData(LinkedHashMap<String, List<?>> lastAdditionalData) {
-        this.lastAdditionalData = lastAdditionalData;
-    }
-
-    public String getLastAdditionalDataName() {
-        return lastAdditionalDataName;
-    }
-
-
-    public void setLastAdditionalDataName(String lastAdditionalDataName) {
-        this.lastAdditionalDataName = lastAdditionalDataName;
-    }
-
-    public List<String> getLastAdditionalData_firstColumns() {
-        return lastAdditionalData_firstColumns;
-    }
-
-    public void setLastAdditionalData_firstColumns(List<String> lastAdditionalData_firstColumns) {
-        this.lastAdditionalData_firstColumns = lastAdditionalData_firstColumns;
+        data.put(cutomer_name_title, customer_names);
+        data.putAll(monthYearValues);
+        return new AdditionalData(data);
     }
 }

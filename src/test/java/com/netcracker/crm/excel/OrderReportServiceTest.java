@@ -75,30 +75,22 @@ public class OrderReportServiceTest {
         fileName = FOLDER_PATH+reportService.getLastReportFileName();
         fos = new FileOutputStream(fileName);
         workbook.write(fos);
+        fos.close();
         file = new File(fileName);
         assertTrue(file.exists());
-        fos.close();
     }
 
     @Test
     public void createOrdersBetweenDatesOfCustomer_ReportGraphic() throws IOException {
         reportService = new ReportServiceImpl(orderDao);
-        reportService.createOrdersBetweenDatesOfCustomer_ReportChart(ExcelFormat.XLSX,csr_id,customer_id,firstDate,lastDate);
+        reportService.createOrdersBetweenDatesOfCustomer_ReportChart(csr_id,customer_id,firstDate,lastDate);
         Workbook workbook = reportService.getLastReportWorkbook();
         String fileName = FOLDER_PATH+reportService.getLastReportFileName();
         FileOutputStream fos = new FileOutputStream(fileName);
         workbook.write(fos);
+        fos.close();
         File file = new File(fileName);
         assertTrue(file.exists());
-
-        reportService.createOrdersBetweenDatesOfCustomer_ReportChart(ExcelFormat.XLS,csr_id,customer_id,firstDate,lastDate);
-        workbook = reportService.getLastReportWorkbook();
-        fileName = FOLDER_PATH+reportService.getLastReportFileName();
-        fos = new FileOutputStream(fileName);
-        workbook.write(fos);
-        file = new File(fileName);
-        assertTrue(file.exists());
-        fos.close();
     }
 
     @Test
@@ -117,30 +109,22 @@ public class OrderReportServiceTest {
         fileName = FOLDER_PATH+reportService.getLastReportFileName();
         fos = new FileOutputStream(fileName);
         workbook.write(fos);
+        fos.close();
         file = new File(fileName);
         assertTrue(file.exists());
-        fos.close();
     }
 
     @Test
     public void createOrdersBetweenDatesOfArrayCustomer_ReportGraphic() throws IOException {
         reportService = new ReportServiceImpl(orderDao);
-        reportService.createOrdersBetweenDatesOfArrayCustomer_ReportChart(ExcelFormat.XLSX,csr_id,customer_id_list,firstDate,lastDate);
+        reportService.createOrdersBetweenDatesOfArrayCustomer_ReportChart(csr_id,customer_id_list,firstDate,lastDate);
         Workbook workbook = reportService.getLastReportWorkbook();
         String fileName = FOLDER_PATH+reportService.getLastReportFileName();
         FileOutputStream fos = new FileOutputStream(fileName);
         workbook.write(fos);
+        fos.close();
         File file = new File(fileName);
         assertTrue(file.exists());
-
-        reportService.createOrdersBetweenDatesOfArrayCustomer_ReportChart(ExcelFormat.XLS,csr_id,customer_id_list,firstDate,lastDate);
-        workbook = reportService.getLastReportWorkbook();
-        fileName = FOLDER_PATH+reportService.getLastReportFileName();
-        fos = new FileOutputStream(fileName);
-        workbook.write(fos);
-        file = new File(fileName);
-        assertTrue(file.exists());
-        fos.close();
     }
 
     @After

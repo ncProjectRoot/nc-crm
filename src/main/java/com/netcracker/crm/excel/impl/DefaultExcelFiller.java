@@ -14,7 +14,6 @@ import java.util.*;
 public class DefaultExcelFiller implements ExcelFiller{
     private Workbook workbook;
     private Sheet sheet;
-    private String sheetName;
 
     private Map<String, List<?>> table;
     private Map<String, Coordinates> coordinatesOfTableColumns;
@@ -30,10 +29,9 @@ public class DefaultExcelFiller implements ExcelFiller{
     public DefaultExcelFiller(Workbook workbook, Map<String, List<?>> table, String sheetName) {
         this.workbook = workbook;
         this.table = table;
-        this.sheetName = sheetName;
         titles = new ArrayList<>(table.keySet());
         this.workbook.createSheet(sheetName);
-        sheet = workbook.getSheet(sheetName);
+        sheet = workbook.getSheetAt(0);
     }
 
     public DefaultExcelFiller
@@ -82,8 +80,8 @@ public class DefaultExcelFiller implements ExcelFiller{
 
     private void setTitles(List<String> titles,int rowStart, int cellStart, String outerTitle){
         sheet.createRow(rowStart-1).createCell(cellStart);
+        setTitleCellStyle(sheet.getRow(rowStart-1).getCell(cellStart));
         mergeColumnsAndSetTitle(rowStart-1,cellStart, cellStart+titles.size(), outerTitle);
-        setTitleCellStyle(sheet.getRow(0).getCell(0));
         if(sheet.getRow(rowStart) == null){
             sheet.createRow(rowStart);
         }
@@ -225,6 +223,5 @@ public class DefaultExcelFiller implements ExcelFiller{
     public Workbook getWorkbook() {
         return workbook;
     }
-
 
 }
