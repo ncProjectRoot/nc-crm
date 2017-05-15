@@ -3,7 +3,6 @@ package com.netcracker.crm.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -33,21 +32,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationProvider authenticationProvider;
     @Autowired
-    private Environment env;
-    @Autowired
     private PersistentTokenRepository tokenRepository;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        if (env.acceptsProfiles("production")) {
-            auth.inMemoryAuthentication().withUser("admin@gmail.com").password("123456").roles("ADMIN");
-            auth.inMemoryAuthentication().withUser("csr@gmail.com").password("123456").roles("CSR");
-            auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
-            auth.inMemoryAuthentication().withUser("customer@gmail.com").password("123456").roles("CUSTOMER");
-        } else {
-            auth.authenticationProvider(authenticationProvider).userDetailsService(userDetailsService);
-        }
-
+        auth.authenticationProvider(authenticationProvider).userDetailsService(userDetailsService);
     }
 
     @Override

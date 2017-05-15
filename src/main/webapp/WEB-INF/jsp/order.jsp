@@ -10,22 +10,33 @@
         justify-content: center;
         align-items: center;
     }
-
-    .welcome-h1 {
-        font-size: 3.2rem;
-    }
-
     ul li span{
         color: darkblue;
     }
-    .welcome-h2 {
-        font-size: 2.8rem;
+    .title{
+        color: green;
+    }
+    .name{
+        color: darkblue;
     }
 </style>
 <div class="content-body" data-page-name="Product #${order.id}">
     <a class="waves-effect waves-light btn-large" id="status">${order.status.name.replaceAll("_", " ")}</a>
-    <h1 class="welcome-h1">${order.product.title}</h1>
-    <h2 class="welcome-h2">${order.customer.firstName} ${order.customer.lastName}</h2>
+    <div class="section">
+        <h5>Product title : <span class="title">${order.product.title}</span></h5>
+    </div>
+    <div class="section">
+        <h5>Customer : <span class="name">${order.customer.firstName} ${order.customer.lastName}</span></h5>
+    </div>
+    <div class="section">
+        <h5>Date order : <span>${order.date}</span></h5>
+    </div>
+    <c:if test="${order.status == 'PROCESSING'}">
+        <div class="section">
+            <h5>Prefered date : <span>${order.preferedDate}</span></h5>
+        </div>
+    </c:if>
+
     <div class="row">
         <div class="section">
             <sec:authentication var="user" property="principal"/>
@@ -78,11 +89,9 @@
     <ul class="collection" id="history">
     </ul>
 </div>
-<script>
-    $(document).ready(function () {
-        fetchHistory();
-    });
 
+<script>
+    fetchHistory();
     function fetchHistory() {
         var orderId = ${order.id};
         $.get("/orders/" + orderId + "/history").success(function (data) {
