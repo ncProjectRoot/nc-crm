@@ -194,13 +194,13 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: "",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
+        defaultValue: "",
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
