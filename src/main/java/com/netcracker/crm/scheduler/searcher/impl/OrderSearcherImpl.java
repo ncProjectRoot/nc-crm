@@ -43,6 +43,33 @@ public class OrderSearcherImpl implements OrderSearcher {
     }
 
     @Override
+    public List<Order> searchForPause() {
+        List<User> csr = getOnlineCsrs();
+        if (csr.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return orderDao.findAllByStatus(sqlGenerator, csr, OrderStatus.REQUEST_TO_PAUSE);
+    }
+
+    @Override
+    public List<Order> searchForResume() {
+        List<User> csr = getOnlineCsrs();
+        if (csr.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return orderDao.findAllByStatus(sqlGenerator, csr, OrderStatus.REQUEST_TO_RESUME);
+    }
+
+    @Override
+    public List<Order> searchForDisable() {
+        List<User> csr = getOnlineCsrs();
+        if (csr.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return orderDao.findAllByStatus(sqlGenerator, csr, OrderStatus.REQUEST_TO_DISABLE);
+    }
+
+    @Override
     public List<Order> searchCsrOrder(Long csrId) {
         LocalDateTime toDate = getSerchTime();
         return orderDao.findAllByCsrId(toDate, OrderStatus.PROCESSING, csrId);

@@ -41,9 +41,9 @@ public class OrderCache extends Cache<Order> {
 
     public void fillCache() {
         cacheFiller(activateCache, searcher.searchForActivate());
-        cacheFiller(pauseCache, searcher.searchForActivate());
-        cacheFiller(resumeCache, searcher.searchForActivate());
-        cacheFiller(disableCache, searcher.searchForActivate());
+        cacheFiller(pauseCache, searcher.searchForPause());
+        cacheFiller(resumeCache, searcher.searchForResume());
+        cacheFiller(disableCache, searcher.searchForDisable());
     }
 
     public Map<Long, Order> getActivateElement(Long key) {

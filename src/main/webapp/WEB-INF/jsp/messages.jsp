@@ -65,7 +65,7 @@
             $.each(data, function (i, item) {
                 var div = $("<div>").addClass("row");
 
-                var button_to_order = $('<a class="waves-effect waves-light btn right" href="#order?id=' + item.id + '">Move to order</a>');
+                var button_to_order = $('<a class="waves-effect waves-light btn right" href="#order/' + item.id + '">Move to order</a>');
                 var button = $('<a class="waves-effect waves-light btn right green" id="' + getStatus(item.status) + item.id + '" >' + getStatus(item.status) + '</a>');
                 button.click(function () {
                     submitOrder(item.id, item.status);

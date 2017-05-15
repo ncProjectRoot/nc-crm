@@ -10,6 +10,9 @@ import java.util.List;
  */
 public interface OrderSearcher {
     List<Order> searchForActivate();
+    List<Order> searchForPause();
+    List<Order> searchForResume();
+    List<Order> searchForDisable();
 
     List<Order> searchCsrOrder(Long csrId);
 

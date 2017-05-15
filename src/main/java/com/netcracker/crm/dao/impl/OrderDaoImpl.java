@@ -130,6 +130,18 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
+    public List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                                  OrderStatus orderStatus) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
+        String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_STATUS, PARAM_CSR_ID, csrs.size());
+        for (int i = 0; i < csrs.size(); i++) {
+            params.addValue(generator.getField() + i, csrs.get(i).getId());
+        }
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
     public List<Order> findAllByCsrId(LocalDateTime to, OrderStatus orderStatus, Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_PREFERRED_DATE, to)

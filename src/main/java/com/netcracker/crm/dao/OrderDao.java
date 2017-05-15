@@ -20,6 +20,8 @@ public interface OrderDao extends CrudDao<Order> {
 
     List<Order> findAllByPrefDateAndStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
                                            LocalDateTime to, OrderStatus orderStatus);
+    List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                           OrderStatus orderStatus);
 
     List<Order> findAllByProductId(Long id);
 

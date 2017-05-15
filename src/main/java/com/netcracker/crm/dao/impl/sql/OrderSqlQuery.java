@@ -36,6 +36,11 @@ public final class OrderSqlQuery {
             "WHERE o.status_id = :status_id " +
             "AND o.preferred_date < :preferred_date";
 
+    public static final String SQL_FIND_ALL_ORDER_BY_STATUS = "SELECT id," +
+            "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "WHERE o.status_id = :status_id";
+
     public static final String SQL_FIND_ALL_ORDER_BY_CSR = "SELECT id," +
             "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
             "FROM orders o " +
