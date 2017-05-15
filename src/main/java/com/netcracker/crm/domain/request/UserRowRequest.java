@@ -20,9 +20,15 @@ public class UserRowRequest extends RowRequest {
             "LEFT JOIN organization o ON u.org_id = o.id " +
             "LEFT JOIN address a ON u.address_id = a.id " +
             "LEFT JOIN region r ON a.region_id = r.id ";
+
+    private static final String ORG_USERS_WHERE_SQL = "" +
+            " org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :id)";
     private Long roleId;
     private Boolean accountNonLocked;
     private Boolean contactPerson;
+    private Long customerId;
 
     UserRowRequest() {
         super(new String[]{
@@ -68,6 +74,10 @@ public class UserRowRequest extends RowRequest {
 
     @Override
     protected StringBuilder appendWhereParam(StringBuilder sql) {
+        if (customerId!=null) {
+            appendWhere(sql);
+            sql.append(ORG_USERS_WHERE_SQL);
+        }
         return sql;
     }
 
@@ -93,5 +103,13 @@ public class UserRowRequest extends RowRequest {
 
     public void setContactPerson(Boolean contactPerson) {
         this.contactPerson = contactPerson;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }

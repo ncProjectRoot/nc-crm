@@ -100,7 +100,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getUsers(UserRowRequest userRowRequest) {
+    public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
+        UserRole role = principal.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
+            userRowRequest.setCustomerId(principal.getId());
+        }
         Map<String, Object> response = new HashMap<>();
         Long length = userDao.getUserRowsCount(userRowRequest);
         response.put("length", length);
@@ -114,9 +118,15 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<String> getUserLastNamesByPattern(String pattern) {
-        return userDao.findUserLastNamesByPattern(pattern);
+    public List<String> getUserLastNamesByPattern(String pattern, User principal) {
+        UserRole role = principal.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+            return userDao.findOrgUserLastNamesByPattern(pattern, principal);
+        } else {
+            return userDao.findUserLastNamesByPattern(pattern);
+        }
     }
 
     private String createUserRegistrationToken(User user) {

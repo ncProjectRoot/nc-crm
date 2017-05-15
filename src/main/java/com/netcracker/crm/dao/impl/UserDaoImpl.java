@@ -219,6 +219,10 @@ public class UserDaoImpl implements UserDao {
 
         String sql = rowRequest.getSqlCount();
 
+        if (rowRequest.getCustomerId() != null) {
+            params.addValue(PARAM_USER_ID, rowRequest.getCustomerId());
+        }
+
         if (rowRequest.getKeywordsArray() != null) {
             int i = 0;
             for (String keyword : rowRequest.getKeywordsArray()) {
@@ -239,6 +243,10 @@ public class UserDaoImpl implements UserDao {
                 .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
         String sql = rowRequest.getSql();
 
+        if (rowRequest.getCustomerId() != null) {
+            params.addValue(PARAM_USER_ID, rowRequest.getCustomerId());
+        }
+
         if (rowRequest.getKeywordsArray() != null) {
             int i = 0;
             for (String keyword : rowRequest.getKeywordsArray()) {
@@ -254,6 +262,15 @@ public class UserDaoImpl implements UserDao {
                 .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%");
 
         return namedJdbcTemplate.queryForList(SQL_FIND_USER_LAST_NAMES_BY_PATTERN, params, String.class);
+    }
+
+    @Override
+    public List<String> findOrgUserLastNamesByPattern(String pattern, User user) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%")
+                .addValue(PARAM_USER_ID, user.getId());
+
+        return namedJdbcTemplate.queryForList(SQL_FIND_ORG_USER_LAST_NAMES_BY_PATTERN, params, String.class);
     }
 
     @Autowired
