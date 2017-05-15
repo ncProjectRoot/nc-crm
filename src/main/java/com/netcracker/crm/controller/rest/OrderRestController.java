@@ -96,12 +96,10 @@ public class OrderRestController {
     }
 
 
-    @GetMapping("/orders/{id}/history")
+    @GetMapping("/{id}/history")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_ADMIN')")
     public Set<OrderHistoryDto> orderHistory(@PathVariable Long id){
-        Set<OrderHistoryDto> set = orderService.getOrderHistory(id);
-        System.out.println(set);
-        return set;
+        return orderService.getOrderHistory(id);
     }
 
 }

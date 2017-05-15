@@ -91,10 +91,12 @@
 </div>
 
 <script>
+
     fetchHistory();
+
     function fetchHistory() {
         var orderId = ${order.id};
-        $.get("/orders/" + orderId + "/history").success(function (data) {
+        $.get('/orders/' + orderId + '/history').success(function (data) {
             var historyUL = $('#history');
             historyUL.children().remove();
             $.each(data, function (i, item) {
@@ -105,39 +107,32 @@
             });
         });
     }
-
     //            CSR
     $('#csr_accept').on('click', function () {
         $('#csr_accept').remove();
         sendPut("/orders/" + ${order.id} +"/accept");
         $('#status').text('PROCESSING');
     });
-
     $('#csr_activate').on('click', function () {
         $('#csr_activate').remove();
         sendPut("/orders/" + ${order.id} +"/activate");
         $('#status').text('ACTIVE');
     });
-
     $('#csr_resume').on('click', function () {
         $('#csr_resume').remove();
         sendPut("/orders/" + ${order.id} +"/resume");
         $('#status').text('ACTIVE');
     });
-
     $('#csr_pause').on('click', function () {
         $('#csr_pause').remove();
         sendPut("/orders/" + ${order.id} +"/pause");
         $('#status').text('PAUSE');
     });
-
     $('#csr_disable').on('click', function () {
         $('#csr_disable').remove();
         sendPut("/orders/" + ${order.id} +"/disable");
         $('#status').text('DISABLE');
     });
-
-
     //    CUSTOMER
     $('#customer_pause').on('click', function () {
         $('#customer_pause').remove();
@@ -145,7 +140,6 @@
         sendPut("/orders/" + ${order.id} +"/request-pause");
         $('#status').text('REQUEST TO PAUSE');
     });
-
     $('#customer_disable').on('click', function () {
         $('#customer_disable').remove();
         $('#customer_resume').remove();
@@ -153,19 +147,16 @@
         sendPut("/orders/" + ${order.id} +"/request-disable");
         $('#status').text('REQUEST TO DISABLE');
     });
-
     $('#customer_resume').on('click', function () {
         $('#customer_resume').remove();
         $('#customer_disable').remove();
         sendPut("/orders/" + ${order.id} +"/request-resume");
         $('#status').text('REQUEST TO RESUME');
     });
-
     //    PUT FUNCTION
     function sendPut(url) {
         var token = $('#csrfToken').val();
         var header = $('#csrfHeader').val();
-
         var xhr = $.ajax({
             type: 'PUT',
             url: url,
@@ -185,6 +176,7 @@
         });
         return xhr;
     }
+
 
 
 </script>
