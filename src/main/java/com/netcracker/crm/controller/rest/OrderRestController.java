@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
@@ -17,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -37,21 +35,25 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_ORDE
  * Created by Pasha on 07.05.2017.
  */
 @RestController
+@RequestMapping(value = "/orders")
 public class OrderRestController {
-
+    private final ResponseGenerator<Order> generator;
+    private final OrderService orderService;
+    private final OrderValidator orderValidator;
+    private final BindingResultHandler bindingResultHandler;
 
     @Autowired
-    private ResponseGenerator<Order> generator;
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private OrderValidator orderValidator;
-    @Autowired
-    private BindingResultHandler bindingResultHandler;
+    public OrderRestController(OrderService orderService, OrderValidator orderValidator,
+                               ResponseGenerator<Order> generator, BindingResultHandler bindingResultHandler) {
+        this.orderService = orderService;
+        this.orderValidator = orderValidator;
+        this.generator = generator;
+        this.bindingResultHandler = bindingResultHandler;
+    }
 
-
-    @PostMapping("/customer/put/order")
-    public ResponseEntity<?> createOrder(@Valid OrderDto orderDto, BindingResult bindingResult
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    public ResponseEntity<?> create(@Valid OrderDto orderDto, BindingResult bindingResult
             , Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
@@ -60,30 +62,28 @@ public class OrderRestController {
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        Order order = orderService.persist(orderDto);
+        Order order = orderService.create(orderDto);
         if (order.getId() > 0) {
             return generator.getHttpResponse(order.getId(), SUCCESS_MESSAGE, SUCCESS_ORDER_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/csr/load/orders")
-    public Map<String, Object> ordersCsr(OrderRowRequest orderRowRequest) throws IOException {
-        return orderService.getOrdersRow(orderRowRequest);
-    }
-
-    @GetMapping("/customer/load/orders")
-    public Map<String, Object> ordersCustomer(OrderRowRequest orderRowRequest, Authentication authentication) throws IOException {
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getOrderRows(OrderRowRequest orderRowRequest, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            orderRowRequest.setCustomerId(customer.getId());
+        User user = (UserDetailsImpl) principal;
+        Map<String, Object> result;
+        if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
+            orderRowRequest.setCustomerId(user.getId());
+            result = orderService.getOrdersRow(orderRowRequest);
+        } else {
+            result = orderService.getOrdersRow(orderRowRequest);
         }
-        return orderService.getOrdersRow(orderRowRequest);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/orders/users/{userId}")
+    @GetMapping("/users/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER')")
     public List<AutocompleteDto> getAutocompleteDto(String pattern, Authentication authentication,
                                                      @PathVariable(value = "userId") Long userId) throws IOException {

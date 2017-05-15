@@ -5,6 +5,8 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.OrderProxy;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -168,7 +170,6 @@ public class OrderDaoImpl implements OrderDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ID, id);
         List<Order> allOrder = namedJdbcTemplate.query(SQL_FIND_ORDER_BY_ID, params, orderWithDetailExtractor);
-        System.out.println("Order");
         Order order = null;
         if (allOrder.size() != 0) {
             order = allOrder.get(0);
@@ -289,7 +290,7 @@ public class OrderDaoImpl implements OrderDao {
         public List<Order> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Order> allOrder = new ArrayList<>();
             while (rs.next()) {
-                Order order = new Order();
+                OrderProxy order = new OrderProxy(userDao, productDao);
                 order.setId(rs.getLong(PARAM_ORDER_ID));
 
                 Timestamp dateFinish = rs.getTimestamp(PARAM_ORDER_DATE_FINISH);
@@ -300,7 +301,6 @@ public class OrderDaoImpl implements OrderDao {
                 Timestamp datePreferred = rs.getTimestamp(PARAM_ORDER_PREFERRED_DATE);
                 if (datePreferred != null) {
                     order.setPreferedDate(datePreferred.toLocalDateTime());
-
                 }
 
                 long statusId = rs.getLong(PARAM_ORDER_STATUS);
@@ -310,20 +310,9 @@ public class OrderDaoImpl implements OrderDao {
                     OrderState.setStateForOrder((OrderStatus) status, order);
                 }
 
-                Long customerId = rs.getLong(PARAM_CUSTOMER_ID);
-                if (customerId > 0) {
-                    order.setCustomer(userDao.findById(customerId));
-                }
-
-                Long productId = rs.getLong(PARAM_PRODUCT_ID);
-                if (productId > 0) {
-                    order.setProduct(productDao.findById(productId));
-                }
-
-                Long csrId = rs.getLong(PARAM_CSR_ID);
-                if (csrId > 0) {
-                    order.setCsr(userDao.findById(csrId));
-                }
+                order.setCustomerId(rs.getLong(PARAM_CUSTOMER_ID));
+                order.setProductId(rs.getLong(PARAM_PRODUCT_ID));
+                order.setCsrId(rs.getLong(PARAM_CSR_ID));
 
                 allOrder.add(order);
             }

@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.ComplaintProxy;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -307,7 +308,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
         public List<Complaint> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Complaint> allComplaint = new ArrayList<>();
             while (rs.next()) {
-                Complaint complaint = new Complaint();
+                ComplaintProxy complaint = new ComplaintProxy(userDao, orderDao);
                 complaint.setId(rs.getLong(PARAM_COMPLAINT_ID));
                 complaint.setTitle(rs.getString(PARAM_COMPLAINT_TITLE));
                 complaint.setMessage(rs.getString(PARAM_COMPLAINT_MESSAGE));
@@ -320,21 +321,10 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 }
 
                 complaint.setDate(rs.getTimestamp(PARAM_COMPLAINT_DATE).toLocalDateTime());
+                complaint.setCustomerId(rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID));
+                complaint.setPmgId(rs.getLong(PARAM_COMPLAINT_PMG_ID));
+                complaint.setOrderId(rs.getLong(PARAM_COMPLAINT_ORDER_ID));
 
-                Long customerId = rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID);
-                if (customerId > 0) {
-                    complaint.setCustomer(userDao.findById(customerId));
-                }
-
-                Long pmgId = rs.getLong(PARAM_COMPLAINT_PMG_ID);
-                if (pmgId > 0) {
-                    complaint.setPmg(userDao.findById(pmgId));
-                }
-
-                Long orderId = rs.getLong(PARAM_COMPLAINT_ORDER_ID);
-                if (orderId > 0) {
-                    complaint.setOrder(orderDao.findById(orderId));
-                }
                 allComplaint.add(complaint);
             }
             return allComplaint;

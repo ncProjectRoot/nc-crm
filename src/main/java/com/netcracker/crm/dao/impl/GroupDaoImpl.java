@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.domain.proxy.GroupProxy;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.dto.GroupTableDto;
@@ -207,13 +208,10 @@ public class GroupDaoImpl implements GroupDao {
             log.debug("Start extracting data");
             List<Group> groups = new ArrayList<>();
             while (rs.next()) {
-                Group group = new Group();
+                GroupProxy group = new GroupProxy(discountDao);
                 group.setId(rs.getLong(PARAM_GROUP_ID));
                 group.setName(rs.getString(PARAM_GROUP_NAME));
-                Long discountId = rs.getLong(PARAM_GROUP_DISCOUNT_ID);
-                if (discountId > 0) {
-                    group.setDiscount(discountDao.findById(discountId));
-                }
+                group.setDiscountId(rs.getLong(PARAM_GROUP_DISCOUNT_ID));
                 groups.add(group);
             }
             log.debug("End extracting data");

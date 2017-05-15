@@ -2,6 +2,7 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.HistoryProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -32,20 +32,16 @@ public class HistoryDaoImpl implements HistoryDao {
 
     private static final Logger log = LoggerFactory.getLogger(HistoryDaoImpl.class);
 
-    private final ComplaintDao complaintDao;
-    private final OrderDao orderDao;
-    private final ProductDao productDao;
+    @Autowired
+    private ComplaintDao complaintDao;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private ProductDao productDao;
 
     private SimpleJdbcInsert historyInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private HistoryWithDetailExtractor historyWithDetailExtractor;
-
-    @Autowired
-    public HistoryDaoImpl(ComplaintDao complaintDao, OrderDao orderDao, ProductDao productDao) {
-        this.complaintDao = complaintDao;
-        this.orderDao = orderDao;
-        this.productDao = productDao;
-    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -227,7 +223,7 @@ public class HistoryDaoImpl implements HistoryDao {
         public List<History> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<History> allHistory = new ArrayList<>();
             while (rs.next()) {
-                History history = new History();
+                HistoryProxy history = new HistoryProxy(orderDao, complaintDao, productDao);
                 history.setId(rs.getLong(PARAM_HISTORY_ID));
                 history.setDateChangeStatus(rs.getTimestamp(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDateTime());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
@@ -236,17 +232,10 @@ public class HistoryDaoImpl implements HistoryDao {
                 if (statusId > 0) {
                     history.setOldStatus(Status.getStatusByID(statusId));
                 }
-                           
-                Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
-                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
-                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
-                if (orderId > 0) {
-                    history.setOrder(orderDao.findById(orderId));
-                }else if (complaintId > 0) {
-                    history.setComplaint(complaintDao.findById(complaintId));
-                }else if (productId > 0) {
-                    history.setProduct(productDao.findById(productId));
-                }
+
+                history.setOrderId(rs.getLong(PARAM_HISTORY_ORDER_ID));
+                history.setComplaintId(rs.getLong(PARAM_HISTORY_COMPLAINT_ID));
+                history.setProductId(rs.getLong(PARAM_HISTORY_PRODUCT_ID));
                 allHistory.add(history);
             }
             return allHistory;
