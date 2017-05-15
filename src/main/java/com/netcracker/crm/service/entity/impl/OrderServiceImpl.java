@@ -9,6 +9,7 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
@@ -96,6 +97,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
+    @Override
+    public GraphDto getStatisticalGraph(GraphDto graphDto) {
+        return null;
     }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {

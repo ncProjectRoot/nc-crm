@@ -279,7 +279,7 @@
         e.preventDefault();
         lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal();
         $(this).siblings(".card-title").trigger("click");
-        updateGraph("/histories", this, '#orders-graph', chartistLineOrders);
+        updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders);
     });
 
 
@@ -326,7 +326,7 @@
         e.preventDefault();
         lineLabelsForComplaints = $produtsForComplaintsMultiSelect.getSelectedVal();
         $(this).siblings(".card-title").trigger("click");
-        updateGraph("/histories", this, '#complaints-graph', chartistLineComplaints);
+        updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints);
     });
 
     </sec:authorize>

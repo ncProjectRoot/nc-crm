@@ -4,6 +4,7 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 
 import java.util.List;
@@ -25,4 +26,5 @@ public interface OrderService {
     boolean hasCustomerProduct(Long productId, Long customerId);
     List<Order> findByCustomer(User customer);
 
+    GraphDto getStatisticalGraph(GraphDto graphDto);
 }

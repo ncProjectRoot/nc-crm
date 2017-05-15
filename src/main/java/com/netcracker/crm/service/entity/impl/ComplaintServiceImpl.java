@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
 import com.netcracker.crm.listener.ChangeStatusComplaintEvent;
@@ -164,6 +165,11 @@ public class ComplaintServiceImpl implements ComplaintService {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public GraphDto getStatisticalGraph(GraphDto graphDto) {
+        return null;
     }
 
     private List<AutocompleteDto> convertToAutocompleteDto(List<String> complaints) {
