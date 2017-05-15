@@ -9,6 +9,7 @@ public final class MessageProperty {
     public static final String ERROR_CODE_USER_ALREADY_EXIST = "validation.user-already-exist";
     public static final String ERROR_CODE_WRONG_FORMAT = "validation.wrong-format";
     public static final String REPLACE_WILD_CARD = "%wild_card%";
+
     //Success Keys
     public static final String SUCCESS_USER_CREATED = "success.user-create";
     public static final String SUCCESS_PRODUCT_CREATED = "success.product-create";
@@ -24,14 +25,15 @@ public final class MessageProperty {
 
     //Error Keys
     public static final String ERROR_SERVER_ERROR = "error.server-error";
+    public static final String ERROR_LIFECYCLE_ORDER = "error.order.transition-not-allowed";
 
     public static final String SUCCESS_ORDER_ACCEPT = "success.order-accept";
-    public static final String SUCCESS_ORDER_ACTIVATE= "success.order-activate";
-    public static final String SUCCESS_ORDER_RESUME= "success.order-resume";
-    public static final String SUCCESS_ORDER_PAUSE= "success.order-pause";
-    public static final String SUCCESS_ORDER_REQUEST_DISABLE= "success.order-request-disable";
-    public static final String SUCCESS_ORDER_REQUEST_PAUSE= "success.order-request-pause";
-    public static final String SUCCESS_ORDER_REQUEST_RESUME= "success.order-request-resume";
+    public static final String SUCCESS_ORDER_ACTIVATE = "success.order-activate";
+    public static final String SUCCESS_ORDER_RESUME = "success.order-resume";
+    public static final String SUCCESS_ORDER_PAUSE = "success.order-pause";
+    public static final String SUCCESS_ORDER_REQUEST_DISABLE = "success.order-request-disable";
+    public static final String SUCCESS_ORDER_REQUEST_PAUSE = "success.order-request-pause";
+    public static final String SUCCESS_ORDER_REQUEST_RESUME = "success.order-request-resume";
 
 
     public static final String SUCCESS_ORDER_NOT_ACCEPT = "success.order-not-accept";
@@ -41,7 +43,6 @@ public final class MessageProperty {
     public static final String SUCCESS_ORDER_ERROR_REQUEST_DISABLE = "success.order-error-request-disable";
     public static final String SUCCESS_ORDER_ERROR_REQUEST_PAUSE = "success.order-error-request-pause";
     public static final String SUCCESS_ORDER_ERROR_REQUEST_RESUME = "success.order-error-request-resume";
-
 
 
     private MessageProperty() {
