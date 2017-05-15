@@ -41,8 +41,8 @@
                 <h1 id="current-page"></h1>
             </div>
             <ul class="menu-right">
-                <%--<a href="#messages" class="menu-left-item message-menu-item" data-new-message="${newMessage}"><i--%>
-                <%--class="black-text material-icons">email</i></a>--%>
+                <a href="#messages" class="menu-left-item message-menu-item"><i
+                        class="black-text material-icons">email</i></a>
                 <li class="hide-on-med-and-up">
                     <a href="." class="a-logout a-dummy menu-left-item">
                         <i class="black-text material-icons">settings_power</i>
@@ -112,6 +112,20 @@
 <%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 sensor=false&--%>
 <script src="${springMainScript}"></script>
 <script src="${springLocationPickerScript}"></script>
+<script>
+    var begin = "You have ";
+    var end = " messages";
+    setInterval(function () {
+        $.get("/messages/count").success(function (data) {
+           var count = data;
+           if (count > 0 && location.hash.substr(1) != 'messages'){
+               Materialize.toast(begin + count + end, 5000, 'rounded');
+           }
+        });
+    }, 60000);
+
+
+</script>
 </div>
 </body>
 </html>

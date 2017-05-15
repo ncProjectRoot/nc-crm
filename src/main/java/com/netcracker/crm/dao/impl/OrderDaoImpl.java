@@ -9,6 +9,7 @@ import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.proxy.OrderProxy;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
+import com.netcracker.crm.scheduler.OrderSchedulerSqlGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +41,20 @@ public class OrderDaoImpl implements OrderDao {
 
     private static final Logger log = LoggerFactory.getLogger(OrderDaoImpl.class);
 
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private ProductDao productDao;
+    private final UserDao userDao;
+    private final ProductDao productDao;
 
 
     private SimpleJdbcInsert orderInsert;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
+
+    @Autowired
+    public OrderDaoImpl(UserDao userDao, ProductDao productDao) {
+        this.userDao = userDao;
+        this.productDao = productDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -108,6 +114,48 @@ public class OrderDaoImpl implements OrderDao {
             return productId;
         }
         return null;
+    }
+
+    @Override
+    public List<Order> findAllByPrefDateAndStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                                  LocalDateTime to, OrderStatus orderStatus) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_PREFERRED_DATE, to)
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
+        String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_DATE_LESS, PARAM_CSR_ID, csrs.size());
+        for (int i = 0; i < csrs.size(); i++) {
+            params.addValue(generator.getField() + i, csrs.get(i).getId());
+        }
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                                  OrderStatus orderStatus) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
+        String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_STATUS, PARAM_CSR_ID, csrs.size());
+        for (int i = 0; i < csrs.size(); i++) {
+            params.addValue(generator.getField() + i, csrs.get(i).getId());
+        }
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrId(LocalDateTime to, OrderStatus orderStatus, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_PREFERRED_DATE, to)
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
+                .addValue(PARAM_CSR_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_AND_DATE, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrId(OrderStatus orderStatus, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
+                .addValue(PARAM_CSR_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR, params, orderWithDetailExtractor);
     }
 
     @Override
