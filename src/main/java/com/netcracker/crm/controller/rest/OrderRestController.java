@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
@@ -93,5 +95,11 @@ public class OrderRestController {
         return orderService.getAutocompleteOrder(pattern, customer);
     }
 
+
+    @GetMapping("/{id}/history")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_ADMIN')")
+    public Set<OrderHistoryDto> orderHistory(@PathVariable Long id){
+        return orderService.getOrderHistory(id);
+    }
 
 }
