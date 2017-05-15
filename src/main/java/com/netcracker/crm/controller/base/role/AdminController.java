@@ -55,6 +55,11 @@ public class AdminController {
         return "groups";
     }
 
+    @GetMapping("/complaints")
+    public String complaints(Map<String, Object> model) {
+        return "complaints";
+    }
+
 
 
 }

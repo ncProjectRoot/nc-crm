@@ -74,12 +74,12 @@ function downloadContent() {
     });
 }
 
-function sendPost(form, url) {
+function send(form, url, type) {
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     var xhr = $.ajax({
         url: url,
-        type: "POST",
+        type: type,
         data: $(form).serialize(),
         beforeSend: function (xhr) {
             xhr.setRequestHeader(header, token);
@@ -131,8 +131,6 @@ jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
     var dataAutocomplete = {"null":null};
     var deleter;
-    console.log(params.defaultValue)
-    console.log(!!params.defaultValue)
     if (params.defaultValue.length > 1) {
         var defaultObject = convert(params.defaultValue);
         $(params.label).text("#" + params.defaultValue);
@@ -187,32 +185,3 @@ jQuery.fn.karpo_autocomplete = function (params) {
         }
     }
 };
-
-function sendPut(form, url) {
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    var xhr = $.ajax({
-        url: url,
-        type: "PUT",
-        data: $(form).serialize(),
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(header, token);
-        },
-        statusCode: {
-            200: function (data) {
-                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
-            },
-            417: function (data) {
-                Materialize.toast(xhr.getResponseHeader("validationMessage"), 10000);
-            },
-            500: function (data) {
-                Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
-            }
-        }
-    })
-}
-
-function doSmth() {
-
-
-}

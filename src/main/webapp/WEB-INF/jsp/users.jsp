@@ -278,19 +278,19 @@
         event.preventDefault();
         var userForm = "#form-user-create";
         var url = "/users/registration";
-        sendPost(userForm, url);
+        send(userForm, url, "POST");
     });
 
     //////// all ////////
 
     $("#table-all-users").karpo_table({
-        urlSearch: "/users/lastNames",
+        urlSearch: "/users/autocomplete",
         urlTable: "/users",
         mapper: function (object) {
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#user?id=" + object.id
+                href: "#user/" + object.id
             })));
             tr.append($("<td>", {text: object.firstName}));
             tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));

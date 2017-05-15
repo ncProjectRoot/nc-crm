@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,17 +34,30 @@ public class DiscountServiceImpl implements DiscountService {
         this.discountDao = discountDao;
     }
 
-
     @Override
     @Transactional
-    public Discount persist(DiscountDto discountDto) {
+    public Discount create(DiscountDto discountDto) {
         Discount discount = convertToEntity(discountDto);
         discountDao.create(discount);
         return discount;
     }
 
     @Override
-    public List<AutocompleteDto> getAutocompleteDiscount(String pattern) {
+    @Transactional
+    public boolean update(DiscountDto discountDto) {
+        Discount discount = convertToEntity(discountDto);
+        Long updateId = discountDao.update(discount);
+        return updateId > 0;
+    }
+
+    @Override
+    public Discount getDiscountById(Long id) {
+        return discountDao.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AutocompleteDto> getAutocompleteDto(String pattern) {
         List<Discount> discounts = discountDao.findByIdOrTitle(pattern);
         List<AutocompleteDto> result = new ArrayList<>();
         for (Discount discount: discounts) {
@@ -56,7 +68,7 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getDiscounts(DiscountRowRequest rowRequest) {
+    public Map<String, Object> getDiscountRows(DiscountRowRequest rowRequest) {
         Map<String, Object> response = new HashMap<>();
         Long length = discountDao.getDiscountRowsCount(rowRequest);
         response.put("length", length);
@@ -68,27 +80,6 @@ public class DiscountServiceImpl implements DiscountService {
         }
         response.put("rows", dtoRows);
         return response;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Discount> getDiscountByTitle(String title) {
-        return discountDao.findByTitle(title);
-    }
-
-    @Override
-    public Discount getDiscountById(Long id) {
-        return discountDao.findById(id);
-    }
-
-    @Override
-    public boolean updateDiscount(DiscountDto discountDto) {
-        Discount discount = convertToEntity(discountDto);
-        Long updateId = discountDao.update(discount);
-        if (updateId > 0) {
-            return true;
-        }
-        return false;
     }
 
     private DiscountRowDto convertToRowDto(Discount discount) {
@@ -117,7 +108,6 @@ public class DiscountServiceImpl implements DiscountService {
         }
         return discount;
     }
-
 
     private ModelMapper configureMapper() {
         ModelMapper modelMapper = new ModelMapper();

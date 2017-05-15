@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
 import com.netcracker.crm.security.UserDetailsImpl;
@@ -43,7 +44,7 @@ public class UserRestController {
 
     @Autowired
     public UserRestController(UserService userService, UserValidator userValidator,
-                              BindingResultHandler bindingResultHandler, ResponseGenerator generator) {
+                              BindingResultHandler bindingResultHandler, ResponseGenerator<User> generator) {
         this.userService = userService;
         this.userValidator = userValidator;
         this.bindingResultHandler = bindingResultHandler;
@@ -79,12 +80,12 @@ public class UserRestController {
         return new ResponseEntity<>(userService.getUsers(userRowRequest, user, individual), HttpStatus.OK);
     }
 
-    @GetMapping("/lastNames")
+    @GetMapping("/autocomplete")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
-    public ResponseEntity<List<String>> getLastNames(String likeTitle, Authentication authentication) {
+    public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user  = (UserDetailsImpl) principal;
-        return new ResponseEntity<>(userService.getUserLastNamesByPattern(likeTitle, user), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
 
 }

@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ProductRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
@@ -49,55 +50,44 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product persist(ProductDto productDto) {
+    public Product create(ProductDto productDto) {
         Product product = convertToEntity(productDto);
         productDao.create(product);
         return product;
     }
 
     @Override
-    public Product update(ProductDto productDto) {
+    public boolean update(ProductDto productDto) {
         Product product = convertToEntity(productDto);
-        productDao.update(product);
-        return product;
-    }
-
-    @Override
-    public List<ProductGroupDto> getProductsWithoutGroup() {
-        List<Product> products = productDao.findAllWithoutGroup();
-        return convertToDto(products);
+        return productDao.update(product) > 0;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getTitlesLikeTitle(String likeTitle) {
-        return productDao.findProductsTitleLikeTitle(likeTitle);
+    public List<AutocompleteDto> getAutocompleteDto(String pattern) {
+        List<Product> products = productDao.findAllByPattern(pattern);
+        return convertToAutocompletesDto(products);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
-        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    public List<AutocompleteDto> getAutocompleteDtoWithoutGroup(String pattern) {
+        List<Product> products = productDao.findWithoutGroupByPattern(pattern);
+        return convertToAutocompletesDto(products);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId) {
-        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId);
-    }
-
-    @Override
-    public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
-        return productDao.hasCustomerAccessToProduct(productId, customerId);
+    public List<AutocompleteDto> getActualProductsAutocompleteDtoByCustomer(String pattern, User customer) {
+        List<Product> products = productDao.findActualByPatternAndCustomerId(pattern, customer.getId());
+        return convertToAutocompletesDto(products);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address) {
-        if (address.getRegion() != null) {
-            return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, address.getRegion().getId());
-        }
-        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, null);
+    public List<AutocompleteDto> getPossibleProductsAutocompleteDtoByCustomer(String pattern, User customer) {
+        List<Product> products = productDao.findByPatternAndCustomerIdAndRegionId(pattern, customer.getId(), customer.getAddress().getRegion().getId());
+        return convertToAutocompletesDto(products);
     }
 
     @Override
@@ -114,6 +104,22 @@ public class ProductServiceImpl implements ProductService {
         }
         response.put("rows", productsRowDto);
         return response;
+    }
+
+    @Override
+    public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
+        return productDao.hasCustomerAccessToProduct(productId, customerId);
+    }
+
+    private List<AutocompleteDto> convertToAutocompletesDto(List<Product> products) {
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Product product: products) {
+            AutocompleteDto autocompleteDto = new AutocompleteDto();
+            autocompleteDto.setId(product.getId());
+            autocompleteDto.setValue(product.getTitle());
+            result.add(autocompleteDto);
+        }
+        return result;
     }
 
     private ProductRowDto convertToRowDto(Product product) {

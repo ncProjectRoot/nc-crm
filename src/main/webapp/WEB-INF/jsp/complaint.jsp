@@ -1,3 +1,4 @@
+<%@ page import="com.netcracker.crm.domain.model.UserRole" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -75,8 +76,8 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <h5>Order: <a href="/#order?id=${complaint.order.id}"> #${complaint.order.id}</a></h5>
-            <h5>Product: <a href="/#product?id=${complaint.order.product.id}"> ${complaint.order.product.title}</a>
+            <h5>Order: <a href="/#order/${complaint.order.id}"> #${complaint.order.id}</a></h5>
+            <h5>Product: <a href="/#product/${complaint.order.product.id}"> ${complaint.order.product.title}</a>
             </h5>
         </div>
         <div class="divider"></div>
@@ -86,12 +87,12 @@
                 <h5> #${complaint.customer.id} ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
-                <h5><a href="/#user?id=${complaint.customer.id}">
+                <h5><a href="/#user/${complaint.customer.id}">
                     #${complaint.customer.id} </a> ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <h5>email: <a href="mailto:${complaint.customer.email}">${complaint.customer.email}</a></h5>
         </div>
-        <sec:authorize access="hasRole('ROLE_PMG')">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
             <c:if test="${complaint.pmg!=null}">
                 <div class="divider"></div>
                 <div class="section">
@@ -113,14 +114,14 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <sec:authorize access="hasRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
                 <c:if test="${complaint.status=='OPEN'}">
                     <div class="button-pmg">
                         <a class="waves-effect waves-light btn" id="acceptBtn">accept</a>
                     </div>
                 </c:if>
                 <c:if test="${complaint.status=='SOLVING'}">
-                    <c:if test="${user.id==complaint.pmg.id}">
+                    <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
                         <div class="button-pmg">
                             <a class="waves-effect waves-light btn" id="closeBtn">close</a>
                         </div>
@@ -132,7 +133,7 @@
 </div>
 <script>
     $('.collapsible').collapsible();
-    <sec:authorize access="hasRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
 
     $.ajaxSetup({
         complete: $(function () {

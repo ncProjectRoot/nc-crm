@@ -1,8 +1,8 @@
 package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
 
@@ -19,5 +19,5 @@ public interface UserService {
 
     Map<String, Object> getUsers(UserRowRequest userRowRequest, User user, boolean individual);
 
-    List<String> getUserLastNamesByPattern(String lastName, User user);
+    List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
 }
