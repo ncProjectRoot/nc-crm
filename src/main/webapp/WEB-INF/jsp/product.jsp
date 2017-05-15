@@ -148,9 +148,9 @@
                     <div class="input-field col s7">
                         <i class="material-icons prefix">cached</i>
                         <select name="statusName" id="select_product_status">
-                            <option value="PLANNED" data-value="10" data-after-disabled="11">PLANNED</option>
-                            <option value="ACTUAL" data-value="11" data-after-disabled="12">ACTUAL</option>
-                            <option value="OUTDATED" data-value="12">OUTDATED</option>
+                            <option value="PLANNED" data-value="12" data-after-disabled="13">PLANNED</option>
+                            <option value="ACTUAL" data-value="13" data-after-disabled="14">ACTUAL</option>
+                            <option value="OUTDATED" data-value="14">OUTDATED</option>
                         </select>
                         <label for="select_product_status">Choose product status</label>
                     </div>
@@ -275,11 +275,11 @@
 
     $('#order-form').on("submit", function (e) {
         e.preventDefault();
-        var url = "/customer/put/order";
+        var url = "/orders";
         var form = "#order-form";
-        sendPost(form, url).done(function (orderId) {
+        send(form, url, "POST").done(function (orderId) {
             if (orderId) {
-                location.hash = '#order?id=' + orderId;
+                location.hash = '#order/' + orderId;
             }
             $('.modal').modal('close');
         })
@@ -301,13 +301,13 @@
     $(".modal-content input[name='defaultPrice']").val("${product.defaultPrice}");
     $('#select_product_status').karpo_status(${product.status.id});
     $('#discount-input').karpo_autocomplete({
-        url: "/discounts/csr/discountByTitle/",
+        url: "/discounts/autocomplete",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
-        url: "/csr/groupByName/",
+        url: "/groups/autocomplete/",
         label: "#selected-group",
         defaultValue: "${product.group.id} ${product.group.name}",
         hideInput: "#group-hidden-input"
@@ -318,7 +318,7 @@
 
     $("#change-form").on("submit", function (e) {
         e.preventDefault();
-        sendPost("#change-form", "/csr/post/product").done(function (orderId) {
+        send("#change-form", "/products", "PUT").done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })

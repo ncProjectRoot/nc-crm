@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.proxy.AddressProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,17 +134,15 @@ public class AddressDaoImpl implements AddressDao {
 
         @Override
         public Address extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Address address = null;
+            AddressProxy address = null;
             if (rs.next()) {
-                address = new Address();
+                address = new AddressProxy(regionDao);
                 address.setId(rs.getLong(PARAM_ADDRESS_ID));
                 address.setLatitude(rs.getDouble(PARAM_ADDRESS_LATITUDE));
                 address.setLongitude(rs.getDouble(PARAM_ADDRESS_LONGITUDE));
                 address.setFormattedAddress(rs.getString(PARAM_ADDRESS_FORMATTED_ADDRESS));
                 address.setDetails(rs.getString(PARAM_ADDRESS_DETAILS));
-
-                long regionId = rs.getLong(PARAM_ADDRESS_REGION_ID);
-                address.setRegion(regionDao.findById(regionId));
+                address.setRegionId(rs.getLong(PARAM_ADDRESS_REGION_ID));
             }
             return address;
         }
