@@ -33,7 +33,7 @@ public class ResponseGenerator<T> {
         }
         return getHttpResponse(httpStatus);
     }
-
+    
     public ResponseEntity<T> getHttpResponse(T obj, MessageHeader header, String messageProperty, HttpStatus httpStatus) {
         if (env.containsProperty(messageProperty)) {
             HttpHeaders headers = new HttpHeaders();

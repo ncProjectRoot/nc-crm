@@ -125,21 +125,25 @@
             } else if (percentage < 0 || percentage > 100) {
                 Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
             } else {
-                $.post("/discounts", $("#addDiscount").serialize(), function (data) {
-                    $("#addDiscount")[0].reset();
-                    Materialize.toast(data, 10000, 'rounded');
-                });
+                
+                var url = "/discounts";
+                var form = "#addDiscount";
+                sendPost(form, url).done(function (discountId) {
+                    if (discountId) {
+                        location.hash = '#discount?id=' + discountId;                    
+                    }     
+                })                
             }
         }
     );
 
-    $(document).on("click", "#submit-discount", function (e) {
+    /*$(document).on("click", "#submit-discount", function (e) {
         event.preventDefault();
         var url = "/discounts";
         var form = "#addDiscount";
         sendPost(form, url);
         $(form)[0].reset();
-    });
+    });*/
 
     //////// all ////////
 

@@ -242,13 +242,24 @@
         $('#submit-user-create').css("display", "block");
         $('#submit-user-create').html('Create ' + $('#user_role option:selected').text());
     });
+    
+    $('#form-user-create').on("submit", function (e) {
+        e.preventDefault();
+        var url = "/users/registration";
+        var form = "#form-user-create";
+        sendPost(form, url).done(function (userId) {
+            if (userId) {
+                location.hash = '#user?id=' + userId;
+            }            
+        })
+    });
 
-    $(document).on("click", "#submit-user-create", function () {
+    /*$(document).on("click", "#submit-user-create", function () {
         event.preventDefault();
         var userForm = "#form-user-create";
         var url = "/users/registration";
-        sendPost(userForm, url);
-    });
+        sendPost(userForm, url);             
+    });*/
 
     //////// all ////////
 

@@ -165,12 +165,16 @@
 
         if (grpName.length < 5) {
             Materialize.toast("Please enter group name at least 5 characters", 10000, 'rounded');
-        } else {
-            $.post("/csr/addGroup", $("#addGroup").serialize(), function (data) {
-                $("#addGroup")[0].reset();
-                Materialize.toast(data, 10000, 'rounded');
+        } else {            
+            var url = "/csr/addGroup";
+            var form = "#addGroup";
+            sendPost(form, url).done(function (groupId) {
+                if (groupId) {                    
+                    location.hash = '#group?id=' + groupId;                    
+                }   
+                //$("#addGroup")[0].reset();
                 loadProductsWithoutGroup();
-            });
+            });     
         }
     });
 
@@ -190,14 +194,13 @@
         });
     }
 
-    $(document).on("click","#submit-group", function (e) {
+    /*$(document).on("click","#submit-group", function (e) {
         event.preventDefault();
         var url = "/csr/addGroup";
         var form = "#addGroup";
         sendPost(form, url);
-        $(form)[0].reset();
-    });
-
+        //$(form)[0].reset();
+    });*/
     //////// all ////////
 
 

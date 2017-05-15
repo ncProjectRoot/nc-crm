@@ -58,7 +58,7 @@ public class GroupRestController {
         Group group = groupService.persist(groupDto);
 
         if (group.getId() > 0){
-            return generator.getHttpResponse(SUCCESS_MESSAGE,SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE,SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(SUCCESS_MESSAGE,ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }

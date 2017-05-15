@@ -53,7 +53,7 @@ public class DiscountRestController {
         }
         Discount disc = discountService.persist(discountDto);
         if (disc.getId() > 0) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(disc.getId(), SUCCESS_MESSAGE, SUCCESS_DISCOUNT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }

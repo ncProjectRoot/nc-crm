@@ -239,22 +239,26 @@
         } else if (price < 1) {
             Materialize.toast("Please enter price more 0", 10000, 'rounded');
         } else {
-            $.post("/csr/addProduct", $("#addProduct").serialize(), function (data) {
-//                $("#addProduct")[0].reset();
-                Materialize.toast(data, 10000, 'rounded');
-            });
-            loadProductsWithoutGroup();
+            
+            var url = "/csr/addProduct";
+            var form = "#addProduct";
+            sendPost(form, url).done(function (productId) {
+                if (productId) {
+                    location.hash = '#product?id=' + productId;                    
+                }     
+            })
+            loadProductsWithoutGroup(); 
         }
     });
 
-    $("#submit-product").on("click", function () {
+    /*$("#submit-product").on("click", function () {
         event.preventDefault();
         var url = "/csr/addProduct";
         var form = "#addProduct";
         sendPost(form, url);
         $(form)[0].reset();
         loadProductsWithoutGroup();
-    });
+    });*/
 
 
     //////// all ////////

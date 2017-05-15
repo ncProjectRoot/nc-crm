@@ -58,7 +58,7 @@ public class ProductRestController {
 
         Product product = productService.persist(productDto);
         if (product.getId() > 0) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(product.getId(), SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
