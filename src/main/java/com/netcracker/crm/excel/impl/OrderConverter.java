@@ -31,7 +31,9 @@ public class OrderConverter {
             order_status.add(order.getStatus().getName());
             product_title.add(order.getProduct().getTitle());
             product_default_price.add(order.getProduct().getDefaultPrice());
+            if(order.getProduct().getDiscount() != null)
             product_discount.add(order.getProduct().getDiscount().getPercentage());
+            else product_discount.add(null);
         }
 
         LinkedHashMap<String, List<?>> data = new LinkedHashMap<>();
@@ -95,14 +97,17 @@ public class OrderConverter {
             LocalDate localDateTime = order.getDate().toLocalDate();
             String certainDate;
             switch (dateSelection){
-                case DAY: certainDate = localDateTime.toString();
+                case DAY: {
+                    certainDate = localDateTime.toString();
+                    break;
+                }
                 case MONTH: {
-                    certainDate = localDateTime.toString().substring(3,
-                            localDateTime.toString().length());
+                    certainDate = localDateTime.toString().substring(0, 7);
+                    break;
                 }
                 case YEAR: {
-                    certainDate = localDateTime.toString().substring(6,
-                            localDateTime.toString().length());
+                    certainDate = localDateTime.toString().substring(0, 4);
+                    break;
                 }
                 default: certainDate = localDateTime.toString();
             }

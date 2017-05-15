@@ -22,6 +22,6 @@ public class NcCrmApplicationTests {
 
 	@Test
 	public void generateTestDataForDB() throws SQLException {
-		generator.generateDataForDB(1);
+		generator.generateDataForDB(2);
 	}
 }

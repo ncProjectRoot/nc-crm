@@ -65,7 +65,7 @@ public class DefaultExcelBuilder {
 
         ExcelFiller defaultExcelFiller = getExcelFiller(fileFormat, table, sheetName, additionalDataTables, additionalDataTitles);
         Workbook workbook = defaultExcelFiller.fillExcel();
-       // addChartsAdditionalData(fileFormat,defaultExcelFiller,xColumns_yColumns);
+        addChartsAdditionalData(fileFormat,defaultExcelFiller,xColumns_yColumns);
         return workbook;
     }
 

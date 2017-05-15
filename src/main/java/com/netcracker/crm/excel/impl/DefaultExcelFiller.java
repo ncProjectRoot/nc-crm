@@ -129,6 +129,9 @@ public class DefaultExcelFiller implements ExcelFiller{
         else if(currentValue instanceof Long){
             row.getCell(cellIndex).setCellValue((Long) currentValue);
         }
+        else if(currentValue instanceof Integer){
+            row.getCell(cellIndex).setCellValue((Integer) currentValue);
+        }
         else if(currentValue instanceof Double){
             row.getCell(cellIndex).setCellValue((Double) currentValue);
         }

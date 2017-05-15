@@ -80,16 +80,7 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
         Cell cellEnd = sourceSheet.getRow(coordinates_X.getEndRow()).getCell(coordinates_X.getEndColumn());
         String cellStartAdress = cellStart.getAddress().toString();
         String cellEndAdress = cellEnd.getAddress().toString();
-        StringBuilder headerReference = new StringBuilder(sourceSheet.getSheetName()+"!$");
-        headerReference.append(cellStartAdress.substring(0, 1));
-        headerReference.append('$');
-        int index1 = headerReference.length();
-        headerReference.append(cellStartAdress.substring(1, cellStartAdress.length()));
-        headerReference.append(":$");
-        headerReference.append(cellEndAdress.substring(0, 1));
-        headerReference.append('$');
-        int index2 = headerReference.length();
-        headerReference.append(cellEndAdress.substring(1, cellEndAdress.length()));
+        String headerReference = makeReference(cellStartAdress,cellEndAdress);
 
         for (int r = valuesStartRow; r < coordinates_Y.size() + valuesStartRow ; r++) {
             CTBarSer ctBarSer = ctBarChart.addNewSer();
@@ -99,18 +90,33 @@ public class XSSFHistogramChartBuilder implements ChartBuilder {
             ctBarSer.addNewIdx().setVal(r-valuesStartRow);
             CTAxDataSource cttAxDataSource = ctBarSer.addNewCat();
             ctStrRef = cttAxDataSource.addNewStrRef();
-            ctStrRef.setF(headerReference.toString());
+            ctStrRef.setF(headerReference);
             CTNumDataSource ctNumDataSource = ctBarSer.addNewVal();
             CTNumRef ctNumRef = ctNumDataSource.addNewNumRef();
-            StringBuilder valueReference = new StringBuilder(headerReference.toString());
-            valueReference.replace(index1, index1+cellStartAdress.substring(1, cellStartAdress.length()).length(), String.valueOf(r));
-            valueReference.replace(index2, index2+cellEndAdress.substring(1, cellEndAdress.length()).length(), String.valueOf(r));
-            ctNumRef.setF(valueReference.toString());
+            String cellAdress1 = cellStartAdress.substring(0, 1)
+                    + String.valueOf(r);
+            String cellAdress2 = cellEndAdress.substring(0, 1)
+                    + String.valueOf(r);
+            ctNumRef.setF(makeReference(cellAdress1, cellAdress2));
 
             //at least the border lines in Libreoffice Calc ;-)
             ctBarSer.addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {0,0,0});
 
         }
+    }
+
+    private String makeReference(String cellAddess1, String cellAdress2){
+        StringBuilder reference = new StringBuilder(sourceSheet.getSheetName()+"!$");
+        reference.append(cellAddess1.substring(0, 1));
+        reference.append('$');
+        int index1 = reference.length();
+        reference.append(cellAddess1.substring(1, cellAddess1.length()));
+        reference.append(":$");
+        reference.append(cellAdress2.substring(0, 1));
+        reference.append('$');
+        int index2 = reference.length();
+        reference.append(cellAdress2.substring(1, cellAdress2.length()));
+        return reference.toString();
     }
 
     private void tempMethod(){
