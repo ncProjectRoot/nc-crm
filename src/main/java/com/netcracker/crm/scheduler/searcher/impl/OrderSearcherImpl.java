@@ -33,9 +33,9 @@ public class OrderSearcherImpl implements OrderSearcher {
         this.sqlGenerator = sqlGenerator;
     }
 
-    public List<Order> searchForActivate(){
+    public List<Order> searchForActivate() {
         List<User> csr = getOnlineCsrs();
-        if (csr.isEmpty()){
+        if (csr.isEmpty()) {
             return new ArrayList<>();
         }
         LocalDateTime toDate = getSerchTime();
@@ -49,17 +49,32 @@ public class OrderSearcherImpl implements OrderSearcher {
     }
 
 
+    @Override
+    public List<Order> searchCsrPauseOrder(Long csrId) {
+        return orderDao.findAllByCsrId(OrderStatus.REQUEST_TO_PAUSE, csrId);
+    }
 
-    private LocalDateTime getSerchTime(){
+    @Override
+    public List<Order> searchCsrResumeOrder(Long csrId) {
+        return orderDao.findAllByCsrId(OrderStatus.REQUEST_TO_RESUME, csrId);
+    }
+
+    @Override
+    public List<Order> searchCsrDisableOrder(Long csrId) {
+        return orderDao.findAllByCsrId(OrderStatus.REQUEST_TO_DISABLE, csrId);
+    }
+
+    private LocalDateTime getSerchTime() {
         return LocalDateTime.now().plusDays(1);
     }
-    public List<User> getOnlineCsrs(){
+
+    public List<User> getOnlineCsrs() {
         List principals = sessionRegistry.getAllPrincipals();
         List<User> csrList = new ArrayList<>();
-        for (Object o : principals){
-            if (o instanceof UserDetailsImpl){
+        for (Object o : principals) {
+            if (o instanceof UserDetailsImpl) {
                 User user = (User) o;
-                if (user.getUserRole() == UserRole.ROLE_CSR){
+                if (user.getUserRole() == UserRole.ROLE_CSR) {
                     csrList.add(user);
                 }
             }

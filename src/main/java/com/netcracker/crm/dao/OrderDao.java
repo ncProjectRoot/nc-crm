@@ -26,7 +26,10 @@ public interface OrderDao extends CrudDao<Order> {
     List<Order> findAllByCustomerId(Long id);
 
     List<Order> findAllByCsrId(Long id);
+
     List<Order> findAllByCsrId(LocalDateTime to, OrderStatus orderStatus, Long id);
+
+    List<Order> findAllByCsrId(OrderStatus orderStatus, Long id);
 
     List<Order> findOrderRows(OrderRowRequest orderRowRequest);
 

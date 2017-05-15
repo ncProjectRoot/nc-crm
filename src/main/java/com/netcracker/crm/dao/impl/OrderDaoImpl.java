@@ -39,16 +39,20 @@ public class OrderDaoImpl implements OrderDao {
 
     private static final Logger log = LoggerFactory.getLogger(OrderDaoImpl.class);
 
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private ProductDao productDao;
+    private final UserDao userDao;
+    private final ProductDao productDao;
 
 
     private SimpleJdbcInsert orderInsert;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
+
+    @Autowired
+    public OrderDaoImpl(UserDao userDao, ProductDao productDao) {
+        this.userDao = userDao;
+        this.productDao = productDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -130,6 +134,14 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
                 .addValue(PARAM_CSR_ID, id);
         return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_AND_DATE, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrId(OrderStatus orderStatus, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
+                .addValue(PARAM_CSR_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR, params, orderWithDetailExtractor);
     }
 
     @Override

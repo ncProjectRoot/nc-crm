@@ -20,72 +20,113 @@ public class OrderCache extends Cache<Order> {
      * Long - csr id
      * {@code Map<Long,Order>} map with csr orders
      */
-    private Map<Long, Map<Long, Order>> csrOrderCache;
+    private Map<Long, Map<Long, Order>> activateCache;
+    private Map<Long, Map<Long, Order>> pauseCache;
+    private Map<Long, Map<Long, Order>> resumeCache;
+    private Map<Long, Map<Long, Order>> disableCache;
     private static final int INITIAL_CACHE_CAPACITY = 1000;
 
+    private final OrderSearcher searcher;
+
+
     @Autowired
-    private OrderSearcher searcher;
-
-
-    public OrderCache() {
-        this.csrOrderCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
+    public OrderCache(OrderSearcher searcher) {
+        this.activateCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
+        this.pauseCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
+        this.resumeCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
+        this.disableCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
+        this.searcher = searcher;
     }
 
 
     public void fillCache() {
-        for (Order order : searcher.searchForActivate()) {
+        cacheFiller(activateCache, searcher.searchForActivate());
+        cacheFiller(pauseCache, searcher.searchForActivate());
+        cacheFiller(resumeCache, searcher.searchForActivate());
+        cacheFiller(disableCache, searcher.searchForActivate());
+    }
+
+    public Map<Long, Order> getActivateElement(Long key) {
+        checkActivateId(key);
+        return activateCache.get(key);
+    }
+
+    public Map<Long, Order> getPauseElement(Long key) {
+        checkPauseId(key);
+        return pauseCache.get(key);
+    }
+
+    public Map<Long, Order> getResumeElement(Long key) {
+        checkResumeId(key);
+        return resumeCache.get(key);
+    }
+
+    public Map<Long, Order> getDisableElement(Long key) {
+        checkDisableId(key);
+        return disableCache.get(key);
+    }
+
+    private void cacheFiller(Map<Long, Map<Long, Order>> cache, List<Order> orderList) {
+        for (Order order : orderList) {
             Map<Long, Order> orders;
-            if (csrOrderCache.get(order.getCsr().getId()) == null
-                    || csrOrderCache.get(order.getCsr().getId()).isEmpty()) {
+            if (cache.get(order.getCsr().getId()) == null
+                    || cache.get(order.getCsr().getId()).isEmpty()) {
                 orders = new HashMap<>();
             } else {
-                orders = csrOrderCache.get(order.getCsr().getId());
+                orders = cache.get(order.getCsr().getId());
             }
             orders.put(order.getId(), order);
-            csrOrderCache.put(order.getCsr().getId(), orders);
+            cache.put(order.getCsr().getId(), orders);
         }
     }
 
-    @Override
-    public void putElement(Long key, Order element) {
-        Map<Long, Order> orders;
-        if (csrOrderCache.get(key) != null) {
-            orders = csrOrderCache.get(key);
-        } else {
-            orders = new HashMap<>();
-        }
-        orders.put(element.getId(), element);
-        csrOrderCache.put(key, orders);
-    }
 
     public Integer getCountElements(Long csrId) {
-        checkByCsrId(csrId);
-        return csrOrderCache.get(csrId).keySet().size();
+        checkActivateId(csrId);
+        checkPauseId(csrId);
+        checkResumeId(csrId);
+        checkDisableId(csrId);
+        return activateCache.get(csrId).keySet().size() + pauseCache.get(csrId).keySet().size() +
+                resumeCache.get(csrId).keySet().size() + disableCache.get(csrId).keySet().size();
     }
 
-    public Map<Long, Order> getElement(Long csrId) {
-        checkByCsrId(csrId);
-        return csrOrderCache.get(csrId);
+
+    private void checkResumeId(Long csrId) {
+        resumeCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrResumeOrder(csrId)));
     }
 
-    private void checkByCsrId(Long csrId) {
-        csrOrderCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrOrder(csrId)));
+    private void checkDisableId(Long csrId) {
+        disableCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrDisableOrder(csrId)));
     }
 
-    public void removeOrderFromCache(Long csrId, Long orderId) {
-        if(csrOrderCache.get(csrId) != null) {
-            csrOrderCache.get(csrId).remove(orderId);
+    private void checkActivateId(Long csrId) {
+        activateCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrOrder(csrId)));
+    }
+
+    private void checkPauseId(Long csrId) {
+        pauseCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrPauseOrder(csrId)));
+    }
+
+    public void removeFromActivateCache(Long csrId, Long orderId) {
+        removerFromCache(csrId, orderId, activateCache);
+    }
+
+    public void removeFromPauseCache(Long csrId, Long orderId) {
+        removerFromCache(csrId, orderId, pauseCache);
+    }
+
+    public void removeFromDisableCache(Long csrId, Long orderId) {
+        removerFromCache(csrId, orderId, disableCache);
+    }
+
+    public void removeFromResumeCache(Long csrId, Long orderId) {
+        removerFromCache(csrId, orderId, resumeCache);
+    }
+
+    private void removerFromCache(Long csrId, Long orderId, Map<Long, Map<Long, Order>> cache) {
+        if (cache.get(csrId) != null) {
+            cache.get(csrId).remove(orderId);
         }
-    }
-
-    @Override
-    public void removeElement(Long key) {
-        csrOrderCache.remove(key);
-    }
-
-    @Override
-    public void removeElement(Long key, Order element) {
-        removeOrderFromCache(key, element.getId());
     }
 
 
@@ -93,12 +134,19 @@ public class OrderCache extends Cache<Order> {
      * Take a list of online csr-s and take set of all cached csr-s
      * after remove from set all csr that is online, after clean
      * all that remained
-     * */
+     */
     public void cleanCache() {
         List<User> csrOnline = searcher.getOnlineCsrs();
-        Set<Long> csrCache = new HashSet<>(csrOrderCache.keySet());
+        cacheCleaner(activateCache, csrOnline);
+        cacheCleaner(pauseCache, csrOnline);
+        cacheCleaner(disableCache, csrOnline);
+        cacheCleaner(resumeCache, csrOnline);
+    }
+
+    private void cacheCleaner(Map<Long, Map<Long, Order>> cache, List<User> csrOnline) {
+        Set<Long> csrCache = new HashSet<>(cache.keySet());
         stayOfflineCsr(csrCache, csrOnline);
-        cleanOfflineCsr(csrCache);
+        cleanOfflineCsr(csrCache, cache);
     }
 
     /**
@@ -111,9 +159,9 @@ public class OrderCache extends Cache<Order> {
         }
     }
 
-    private void cleanOfflineCsr(Set<Long> cacheCsr) {
+    private void cleanOfflineCsr(Set<Long> cacheCsr, Map<Long, Map<Long, Order>> cache) {
         for (Long id : cacheCsr) {
-            csrOrderCache.remove(id);
+            cache.remove(id);
         }
     }
 

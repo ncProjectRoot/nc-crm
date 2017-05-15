@@ -19,17 +19,52 @@ import java.util.Map;
  */
 @Service
 public class OrderSchedulerServiceImpl implements OrderSchedulerService {
-    @Autowired
-    private OrderCache orderCache;
+    private final OrderCache orderCache;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    @Autowired
+    public OrderSchedulerServiceImpl(OrderCache orderCache) {
+        this.orderCache = orderCache;
+    }
 
 
     @Override
     public List<OrderViewDto> getCsrOrder(Authentication authentication) {
         Object o = authentication.getPrincipal();
-        if (o instanceof UserDetailsImpl){
+        if (o instanceof UserDetailsImpl) {
             Long csrId = ((UserDetailsImpl) o).getId();
-            return convertMapToList(orderCache.getElement(csrId));
+            return convertMapToList(orderCache.getActivateElement(csrId));
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<OrderViewDto> getCsrPauseOrder(Authentication authentication) {
+        Object o = authentication.getPrincipal();
+        if (o instanceof UserDetailsImpl) {
+            Long csrId = ((UserDetailsImpl) o).getId();
+            return convertMapToList(orderCache.getPauseElement(csrId));
+        }
+        return null;
+    }
+
+    @Override
+    public List<OrderViewDto> getCsrResumeOrder(Authentication authentication) {
+        Object o = authentication.getPrincipal();
+        if (o instanceof UserDetailsImpl) {
+            Long csrId = ((UserDetailsImpl) o).getId();
+            return convertMapToList(orderCache.getResumeElement(csrId));
+        }
+        return null;
+    }
+
+    @Override
+    public List<OrderViewDto> getCsrDisableOrder(Authentication authentication) {
+        Object o = authentication.getPrincipal();
+        if (o instanceof UserDetailsImpl) {
+            Long csrId = ((UserDetailsImpl) o).getId();
+            return convertMapToList(orderCache.getDisableElement(csrId));
         }
         return null;
     }
@@ -37,7 +72,7 @@ public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     @Override
     public Integer getCsrOrderCount(Authentication authentication) {
         Object o = authentication.getPrincipal();
-        if (o instanceof UserDetailsImpl){
+        if (o instanceof UserDetailsImpl) {
             Long csrId = ((UserDetailsImpl) o).getId();
             return orderCache.getCountElements(csrId);
         }
@@ -45,9 +80,9 @@ public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     }
 
 
-    private List<OrderViewDto> convertMapToList(Map<Long, Order> map){
+    private List<OrderViewDto> convertMapToList(Map<Long, Order> map) {
         List<OrderViewDto> orders = new ArrayList<>();
-        for (Map.Entry<Long, Order> m : map.entrySet()){
+        for (Map.Entry<Long, Order> m : map.entrySet()) {
             orders.add(new OrderViewDto(m.getValue(), formatter));
         }
         return orders;

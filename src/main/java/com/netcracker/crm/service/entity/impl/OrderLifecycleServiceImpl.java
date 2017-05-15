@@ -66,7 +66,7 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().activateOrder();
-            orderCache.removeOrderFromCache(order.getCsr().getId(), orderId);
+            orderCache.removeFromActivateCache(order.getCsr().getId(), orderId);
             return saveCondition(order, history);
         }
         return false;
@@ -80,6 +80,7 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().pauseOrder();
+            orderCache.removeFromPauseCache(order.getCsr().getId(), orderId);
             return saveCondition(order, history);
         }
         return false;
@@ -93,6 +94,7 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().resumeOrder();
+            orderCache.removeFromResumeCache(order.getCsr().getId(), orderId);
             return saveCondition(order, history);
         }
         return false;
@@ -106,6 +108,7 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().disableOrder();
+            orderCache.removeFromDisableCache(order.getCsr().getId(), orderId);
             return saveCondition(order, history);
         }
         return false;

@@ -10,5 +10,12 @@ import java.util.List;
  */
 public interface OrderSchedulerService {
     List<OrderViewDto> getCsrOrder(Authentication authentication);
+
+    List<OrderViewDto> getCsrPauseOrder(Authentication authentication);
+
+    List<OrderViewDto> getCsrResumeOrder(Authentication authentication);
+
+    List<OrderViewDto> getCsrDisableOrder(Authentication authentication);
+
     Integer getCsrOrderCount(Authentication authentication);
 }
