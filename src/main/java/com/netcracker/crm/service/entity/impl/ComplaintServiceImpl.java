@@ -9,6 +9,7 @@ import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
+import com.netcracker.crm.listener.ChangeStatusComplaintEvent;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,21 +43,21 @@ import java.util.Map;
 public class ComplaintServiceImpl implements ComplaintService {
     private static final Logger log = LoggerFactory.getLogger(ComplaintServiceImpl.class);
 
+    private ApplicationEventPublisher publisher;
     private ComplaintDao complaintDao;
     private OrderDao orderDao;
     private UserDao userDao;
-    private HistoryDao historyDao;
     private AbstractEmailSender emailSender;
 
     @Autowired
     public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
                                 @Qualifier("complaintSender") AbstractEmailSender emailSender,
-                                HistoryDao historyDao) {
+                                ApplicationEventPublisher publisher) {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.emailSender = emailSender;
-        this.historyDao = historyDao;
+        this.publisher = publisher;
     }
 
     @Transactional
@@ -173,14 +175,8 @@ public class ComplaintServiceImpl implements ComplaintService {
             return false;
         }
         complaint.setPmg(user);
-        complaint.setStatus(ComplaintStatus.SOLVING);
+        publisher.publishEvent(new ChangeStatusComplaintEvent(complaint));
         complaintDao.update(complaint);
-        History history = new History();
-        history.setComplaint(complaint);
-        history.setDateChangeStatus(LocalDateTime.now());
-        history.setDescChangeStatus(user.getUserRole().getName() + " with id " + user.getId() + " accepted complaint");
-        history.setOldStatus(ComplaintStatus.OPEN);
-        historyDao.create(history);
         sendEmail(complaint);
         return true;
     }
@@ -195,14 +191,8 @@ public class ComplaintServiceImpl implements ComplaintService {
         if (isRoleAdmin) {
             complaint.setPmg(user);
         }
-        complaint.setStatus(ComplaintStatus.CLOSED);
+        publisher.publishEvent(new ChangeStatusComplaintEvent(complaint));
         complaintDao.update(complaint);
-        History history = new History();
-        history.setComplaint(complaint);
-        history.setDateChangeStatus(LocalDateTime.now());
-        history.setDescChangeStatus(user.getUserRole().getName() + " with id " + user.getId() + " solved complaint");
-        history.setOldStatus(ComplaintStatus.SOLVING);
-        historyDao.create(history);
         sendEmail(complaint);
         return true;
     }

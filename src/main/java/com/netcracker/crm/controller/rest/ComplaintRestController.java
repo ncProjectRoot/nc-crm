@@ -92,7 +92,7 @@ public class ComplaintRestController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')")
-    public ResponseEntity<Boolean> acceptOrCloseComplaint(Map<String, Object> model, Authentication authentication,
+    public ResponseEntity<Boolean> acceptOrCloseComplaint(Authentication authentication,
                                                    @RequestParam(value = "type") String type,
                                                    @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
