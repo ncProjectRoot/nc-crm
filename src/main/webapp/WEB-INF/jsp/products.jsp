@@ -192,13 +192,13 @@
 
     $('#select_product_status').karpo_status(12).disabled(14);
     $('#discount-input').karpo_autocomplete({
-        url: "/discounts/csr/discountByTitle/",
+        url: "/discounts/autocomplete",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
-        url: "/csr/groupByName/",
+        url: "/groups/autocomplete",
         label: "#selected-group",
         defaultValue: "${product.group.id} ${product.group.name}",
         hideInput: "#group-hidden-input"
@@ -233,7 +233,7 @@
 
 
     $("#table-all-products").karpo_table({
-        urlSearch: "/products/names",
+        urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         mapper: function (object) {
             var tr = $("<tr>");
@@ -256,7 +256,7 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-products").karpo_table({
-        urlSearch: "/products/names?type=actual",
+        urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",
         mapper: function (object) {
             var tr = $("<tr>");

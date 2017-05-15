@@ -185,34 +185,3 @@ jQuery.fn.karpo_autocomplete = function (params) {
         }
     }
 };
-
-function sendPut(form, url) {
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    var xhr = $.ajax({
-        url: url,
-        type: "PUT",
-        data: $(form).serialize(),
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(header, token);
-        },
-        statusCode: {
-            200: function (data) {
-                console.log(data)
-                console.log(xhr)
-                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
-            },
-            417: function (data) {
-                Materialize.toast(xhr.getResponseHeader("validationMessage"), 10000);
-            },
-            500: function (data) {
-                Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
-            }
-        }
-    })
-}
-
-function doSmth() {
-
-
-}

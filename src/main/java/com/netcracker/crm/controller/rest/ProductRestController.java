@@ -6,8 +6,8 @@ import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.ProductRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
-import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ProductService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -57,7 +57,7 @@ public class ProductRestController {
             return bindingResultHandler.handle(bindingResult);
         }
 
-        Product product = productService.persist(productDto);
+        Product product = productService.create(productDto);
         if (product.getId() > 0) {
             return generator.getHttpResponse(product.getId(), SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
         }
@@ -71,39 +71,35 @@ public class ProductRestController {
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-
-        Product product = productService.update(productDto);
-        if (product.getId() > 0) {
+        if (productService.update(productDto)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/withoutGroup")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
-    public ResponseEntity<List<ProductGroupDto>> productsWithoutGroup() {
-        return new ResponseEntity<>(productService.getProductsWithoutGroup(), HttpStatus.OK);
-    }
-
-    @GetMapping("/names")
+    @GetMapping("/autocomplete")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
-    public ResponseEntity<List<String>> productNames(String likeTitle, String type, Authentication authentication) {
+    public ResponseEntity<List<AutocompleteDto>> productNames(String pattern, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
-        List<String> result;
+        List<AutocompleteDto> result = null;
         if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
             switch (type) {
                 case "actual":
-                    result = productService.getActualNamesByCustomerId(likeTitle, user.getId());
+                    result = productService.getActualProductsAutocompleteDtoByCustomer(pattern, user);
                     break;
                 case "possible":
-                    result = productService.getActualNamesByCustomerId(likeTitle, user.getId(), user.getAddress());
+                    result = productService.getPossibleProductsAutocompleteDtoByCustomer(pattern, user);
                     break;
-                default:
-                    result = productService.getNamesByCustomerId(likeTitle, user.getId());
             }
         } else {
-            result = productService.getTitlesLikeTitle(likeTitle);
+            switch (type) {
+                case "withoutGroup":
+                    result = productService.getAutocompleteDtoWithoutGroup(pattern);
+                    break;
+                case "all":
+                    result = productService.getAutocompleteDto(pattern);
+            }
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -113,7 +109,7 @@ public class ProductRestController {
     public ResponseEntity<Map<String, Object>> productRows(ProductRowRequest productRowRequest, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
-        Map<String, Object> result;
+        Map<String, Object> result = null;
         if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
             productRowRequest.setCustomerId(user.getId());
             productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
@@ -122,7 +118,7 @@ public class ProductRestController {
                     productRowRequest.setAddress(user.getAddress());
                     result = productService.getProductsRow(productRowRequest);
                     break;
-                default:
+                case "actual":
                     result = productService.getProductsRow(productRowRequest);
             }
         } else {

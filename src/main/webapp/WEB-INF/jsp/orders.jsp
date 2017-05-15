@@ -226,14 +226,11 @@ td.discount .percentage.show{
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
-    $('ul#tabs').tabs({
-        onShow: function (tab) {
-        }
-    });
+    $('ul#tabs').tabs();
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     $("#table-all-orders").karpo_table({
-        urlSearch: "/products/names",
+        urlSearch: "/products/autocomplete?type=all",
         urlTable: "/orders",
         mapper: function (object) {
             var tr = $("<tr>");
@@ -259,7 +256,7 @@ td.discount .percentage.show{
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-orders").karpo_table({
-        urlSearch: "/products/names",
+        urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/orders",
         mapper: function (object) {
             var tr = $("<tr>");
@@ -282,7 +279,7 @@ td.discount .percentage.show{
     });
 
     $("#table-create-orders").karpo_table({
-        urlSearch: "/products/names?type=possible",
+        urlSearch: "/products/autocomplete?type=possible",
         urlTable: "/products?type=possible",
         countTr: 5,
         mapper: function (object) {

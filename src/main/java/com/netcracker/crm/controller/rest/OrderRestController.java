@@ -32,23 +32,26 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_ORDE
 /**
  * Created by Pasha on 07.05.2017.
  */
-@RequestMapping(value = "/orders")
 @RestController
+@RequestMapping(value = "/orders")
 public class OrderRestController {
+    private final ResponseGenerator<Order> generator;
+    private final OrderService orderService;
+    private final OrderValidator orderValidator;
+    private final BindingResultHandler bindingResultHandler;
 
     @Autowired
-    private ResponseGenerator<Order> generator;
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private OrderValidator orderValidator;
-    @Autowired
-    private BindingResultHandler bindingResultHandler;
-
+    public OrderRestController(OrderService orderService, OrderValidator orderValidator,
+                               ResponseGenerator<Order> generator, BindingResultHandler bindingResultHandler) {
+        this.orderService = orderService;
+        this.orderValidator = orderValidator;
+        this.generator = generator;
+        this.bindingResultHandler = bindingResultHandler;
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
-    public ResponseEntity<?> createOrder(@Valid OrderDto orderDto, BindingResult bindingResult
+    public ResponseEntity<?> create(@Valid OrderDto orderDto, BindingResult bindingResult
             , Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
@@ -57,7 +60,7 @@ public class OrderRestController {
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        Order order = orderService.persist(orderDto);
+        Order order = orderService.create(orderDto);
         if (order.getId() > 0) {
             return generator.getHttpResponse(order.getId(), SUCCESS_MESSAGE, SUCCESS_ORDER_CREATED, HttpStatus.CREATED);
         }
@@ -65,7 +68,7 @@ public class OrderRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> orderRows(OrderRowRequest orderRowRequest, Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> getOrderRows(OrderRowRequest orderRowRequest, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
         Map<String, Object> result;

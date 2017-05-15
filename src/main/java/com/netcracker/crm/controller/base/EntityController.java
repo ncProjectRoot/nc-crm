@@ -23,15 +23,19 @@ import java.util.Map;
 
 @Controller
 public class EntityController {
+    private final ComplaintService complaintService;
+    private final ProductService productService;
+    private final OrderService orderService;
+    private final DiscountService discountService;
 
     @Autowired
-    private ComplaintService complaintService;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private DiscountService discountService;
+    public EntityController(ComplaintService complaintService, ProductService productService,
+                               OrderService orderService, DiscountService discountService) {
+        this.complaintService = complaintService;
+        this.productService = productService;
+        this.orderService = orderService;
+        this.discountService = discountService;
+    }
 
     @GetMapping("/*/complaints/{id}")
     public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
