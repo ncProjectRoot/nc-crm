@@ -15,16 +15,14 @@ import java.util.Map;
  */
 public interface OrderService {
 
-    List<Order> findByCustomer(User customer);
-
-    Order persist(OrderDto orderDto);
-
-    Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest);
+    Order create(OrderDto orderDto);
 
     Order getOrderById(Long id);
 
-    boolean hasCustomerProduct(Long productId, Long customerId);
-
+    Map<String, Object> getOrdersRow(OrderRowRequest orderRowRequest);
     List<AutocompleteDto> getAutocompleteOrder(String pattern, User user);
+
+    boolean hasCustomerProduct(Long productId, Long customerId);
+    List<Order> findByCustomer(User customer);
 
 }

@@ -23,15 +23,19 @@ import java.util.Map;
 
 @Controller
 public class EntityController {
+    private final ComplaintService complaintService;
+    private final ProductService productService;
+    private final OrderService orderService;
+    private final DiscountService discountService;
 
     @Autowired
-    private ComplaintService complaintService;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private DiscountService discountService;
+    public EntityController(ComplaintService complaintService, ProductService productService,
+                               OrderService orderService, DiscountService discountService) {
+        this.complaintService = complaintService;
+        this.productService = productService;
+        this.orderService = orderService;
+        this.discountService = discountService;
+    }
 
     @GetMapping("/*/complaint/{id}")
     public String complaint(Map<String, Object> model, @PathVariable("id") Long id,
@@ -51,9 +55,8 @@ public class EntityController {
         }
     }
 
-    @RequestMapping(value = "/*/product", method = {RequestMethod.GET})
-    public String product(Map<String, Object> model, Authentication authentication,
-                          @RequestParam Long id) {
+    @GetMapping("/*/product/{id}")
+    public String product(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         User user;
         if (principal instanceof UserDetailsImpl) {
@@ -69,9 +72,8 @@ public class EntityController {
         return "product";
     }
 
-    @RequestMapping(value = "/*/order", method = {RequestMethod.GET})
-    public String order(Map<String, Object> model, Authentication authentication,
-                        @RequestParam Long id) {
+    @GetMapping("/*/order/{id}")
+    public String order(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         Order order = orderService.getOrderById(id);
         User user;
@@ -85,15 +87,13 @@ public class EntityController {
         return "order";
     }
 
-    @RequestMapping(value = "/*/discount", method = {RequestMethod.GET})
-    public String discount(Map<String, Object> model, Authentication authentication,
-                        @RequestParam Long id) {
+    @RequestMapping("/*/discount/{id}")
+    public String discount(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         User user;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
         }
-//        model.put("user", user);
         model.put("discount", discountService.getDiscountById(id));
         return "discount";
     }

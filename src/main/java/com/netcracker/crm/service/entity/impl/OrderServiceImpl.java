@@ -45,16 +45,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order persist(OrderDto orderDto) {
+    public Order create(OrderDto orderDto) {
         Order order = convertFromDtoToEntity(orderDto);
         orderDao.create(order);
         return order;
     }
 
-
     @Override
-    public List<Order> findByCustomer(User customer) {
-        return orderDao.findAllByCustomerId(customer.getId());
+    public Order getOrderById(Long id) {
+        return orderDao.findById(id);
+    }
+
+    @Transactional
+    @Override
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
+        List<Order> orders;
+        if (user.isContactPerson()) {
+            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
+        } else {
+            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
+        }
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            result.add(convertToAutocompleteDto(order));
+        }
+        return result;
     }
 
     @Override
@@ -74,10 +89,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return orderDao.findById(id);
+    public List<Order> findByCustomer(User customer) {
+        return orderDao.findAllByCustomerId(customer.getId());
     }
-
 
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
@@ -126,22 +140,6 @@ public class OrderServiceImpl implements OrderService {
             orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
         return orderRowDto;
-    }
-
-    @Transactional
-    @Override
-    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
-        List<Order> orders;
-        if (user.isContactPerson()) {
-            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
-        } else {
-            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
-        }
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (Order order : orders) {
-            result.add(convertToAutocompleteDto(order));
-        }
-        return result;
     }
 
     private AutocompleteDto convertToAutocompleteDto(Order order) {

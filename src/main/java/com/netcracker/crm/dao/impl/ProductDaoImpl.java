@@ -153,15 +153,38 @@ public class ProductDaoImpl implements ProductDao {
     public List<Product> findAllByGroupId(Long groupId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_GROUP_ID, groupId);
-
         return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_GROUP_ID, params, productWithDetailExtractor);
     }
 
     @Override
-    public List<String> findProductsTitleLikeTitle(String likeTitle) {
+    public List<Product> findAllByPattern(String pattern) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%");
-        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_LIKE_TITLE, params, String.class);
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_BY_ID_OR_TITLE, params, productWithDetailExtractor);
+    }
+
+    @Override
+    public List<Product> findWithoutGroupByPattern(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCT_WITHOUT_GROUP_BY_ID_OR_TITLE, params, productWithDetailExtractor);
+    }
+
+    @Override
+    public List<Product> findActualByPatternAndCustomerId(String pattern, Long customerId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_ACTUAL_PRODUCT_BY_ID_OR_TITLE_AND_CUSTOMER_ID, params, productWithDetailExtractor);
+    }
+
+    @Override
+    public List<Product> findByPatternAndCustomerIdAndRegionId(String pattern, Long customerId, Long regionId) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId)
+                .addValue(PARAM_PRODUCT_REGION_ID, regionId);
+        return namedJdbcTemplate.query(SQL_FIND_POSSIBLE_PRODUCT_BY_ID_OR_TITLE_AND_CUSTOMER_ID, params, productWithDetailExtractor);
     }
 
     @Override
@@ -213,42 +236,12 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<String> findProductsTitleByCustomerId(String likeTitle, Long customerId) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
-                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
-        return namedJdbcTemplate.queryForList(SQL_FIND_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
-    }
-
-    @Override
-    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId, Long regionId) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
-                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId)
-                .addValue(PARAM_PRODUCT_REGION_ID, regionId);
-        return namedJdbcTemplate.queryForList(SQL_FIND_POSSIBLE_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
-    }
-
-    @Override
-    public List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_PRODUCT_TITLE, "%" + likeTitle + "%")
-                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
-        return namedJdbcTemplate.queryForList(SQL_FIND_ACTUAL_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE, params, String.class);
-    }
-
-    @Override
     public Boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
         return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_ACCESS_TO_PRODUCT, params, Boolean.class);
 
-    }
-
-    @Override
-    public List<Product> findAllWithoutGroup() {
-        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
     }
 
     private Long getDiscountId(Discount discount) {

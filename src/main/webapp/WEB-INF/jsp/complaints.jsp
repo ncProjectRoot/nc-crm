@@ -298,7 +298,7 @@
                 Materialize.toast("Order can't be empty", 5000, 'rounded');
             } else {
                 $(".progress").addClass("progress-active");
-                sendPost('#createComplaintForm', '/complaints' ).done(function (id) {
+                send('#createComplaintForm', '/complaints', "POST").done(function (id) {
                     $("#createComplaintForm")[0].reset();
                     $(".progress").removeClass("progress-active");
                         window.location.href = "/#/complaint/" + id;
