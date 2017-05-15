@@ -21,18 +21,7 @@ public class MainController {
     @GetMapping("/")
     public String main(Map<String, Object> model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        } else {
-            //!production
-            user = new User();
-            user.setFirstName("Tom");
-            user.setLastName("Cat");
-            for (GrantedAuthority authority : authentication.getAuthorities()) {
-                user.setUserRole(UserRole.valueOf(authority.getAuthority()));
-            }
-        }
+        User user = (UserDetailsImpl) principal;
         model.put("user", user);
         return "main";
     }
