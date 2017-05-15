@@ -277,13 +277,13 @@
     $('select').material_select();
     $('input#title, textarea#message').characterCounter();
 
+
     $('#order-input').karpo_autocomplete({
         url: "/orders/users/${user.id}",
         label: "#selected-order",
-        defaultValue: "",
+        defaultValue: " ",
         hideInput: "#order-hidden-input"
     });
-
 
     $("#createComplaintForm").on("submit", function (e) {
             e.preventDefault();

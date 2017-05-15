@@ -4,6 +4,7 @@ import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ComplaintService;
@@ -83,11 +84,11 @@ public class ComplaintRestController {
 
     @GetMapping("/autocomplete")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
-    public ResponseEntity<List<String>> complaintsTitles(String likeTitle, Authentication authentication,
-                                                         @RequestParam(required = false) boolean individual) {
+    public ResponseEntity<List<AutocompleteDto>> complaintsTitles(String pattern, Authentication authentication,
+                                                                  @RequestParam(required = false) boolean individual) {
         Object principal = authentication.getPrincipal();
         User user  = (UserDetailsImpl) principal;
-        return new ResponseEntity<>(complaintService.getTitles(likeTitle, user, individual), HttpStatus.OK);
+        return new ResponseEntity<>(complaintService.getAutocompleteDto(pattern, user, individual), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

@@ -3,6 +3,7 @@ package com.netcracker.crm.service.entity;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
 
 import java.io.IOException;
@@ -29,9 +30,9 @@ public interface ComplaintService {
 
     boolean checkAccessToComplaint(User customer, Long id);
 
-    List<String> getTitles(String likeTitle, User user, boolean individual);
-
     boolean changeStatusComplaint(Long id, String type, User pmg);
 
     Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual);
+
+    List<AutocompleteDto> getAutocompleteDto(String pattern, User user, boolean individual);
 }

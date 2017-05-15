@@ -1,11 +1,11 @@
 package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
-import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
@@ -92,43 +92,23 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Transactional
-    @Override
-    public List<String> getTitles(String likeTitle, User user, boolean individual) {
-        UserRole role = user.getUserRole();
-        if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
-            if (individual) {
-                return getTitlesByPmg(likeTitle, user);
-            } else {
-                return getAllTitles(likeTitle);
-            }
-        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
-            if (user.isContactPerson()) {
-                return getTitlesForContactPerson(likeTitle, user.getId());
-            } else {
-                return getTitlesForNotContactPerson(likeTitle, user.getId());
-            }
-        }
-        return new ArrayList<>();
+    private List<AutocompleteDto> getTitlesByPmg(String likeTitle, User pmg) {
+        return convertToAutocompleteDto(complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId()));
     }
 
     @Transactional
-    private List<String> getTitlesByPmg(String likeTitle, User pmg) {
-        return complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
+    private List<AutocompleteDto> getAllTitles(String likeTitle) {
+        return convertToAutocompleteDto(complaintDao.findComplaintsTitleLikeTitle(likeTitle));
     }
 
     @Transactional
-    private List<String> getAllTitles(String likeTitle) {
-        return complaintDao.findComplaintsTitleLikeTitle(likeTitle);
+    private List<AutocompleteDto> getTitlesForContactPerson(String likeTitle, Long custId) {
+        return convertToAutocompleteDto(complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId));
     }
 
     @Transactional
-    private List<String> getTitlesForContactPerson(String likeTitle, Long custId) {
-        return complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
-    }
-
-    @Transactional
-    private List<String> getTitlesForNotContactPerson(String likeTitle, Long custId) {
-        return complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
+    private List<AutocompleteDto> getTitlesForNotContactPerson(String likeTitle, Long custId) {
+        return convertToAutocompleteDto(complaintDao.findComplaintsTitleByCustId(likeTitle, custId));
     }
 
     @Transactional
@@ -166,6 +146,35 @@ public class ComplaintServiceImpl implements ComplaintService {
         return response;
     }
 
+    @Transactional
+    @Override
+    public List<AutocompleteDto> getAutocompleteDto(String pattern, User user, boolean individual) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
+            if (individual) {
+                return getTitlesByPmg(pattern, user) ;
+            } else {
+                return getAllTitles(pattern);
+            }
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            if (user.isContactPerson()) {
+                return getTitlesForContactPerson(pattern, user.getId());
+            } else {
+                return getTitlesForNotContactPerson(pattern, user.getId());
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private List<AutocompleteDto> convertToAutocompleteDto(List<String> complaints) {
+        List<AutocompleteDto> autocompleteDtos = new ArrayList<>();
+        for (String title : complaints) {
+            AutocompleteDto autocompleteDto = new AutocompleteDto();
+            autocompleteDto.setValue(title);
+            autocompleteDtos.add(autocompleteDto);
+        }
+        return autocompleteDtos;
+    }
 
     @Transactional
     private boolean acceptComplaint(Long complaintId, User user) {
