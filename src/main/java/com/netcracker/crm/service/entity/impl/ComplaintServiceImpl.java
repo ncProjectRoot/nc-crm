@@ -1,9 +1,11 @@
 package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.HistoryProxy;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
@@ -48,15 +50,17 @@ public class ComplaintServiceImpl implements ComplaintService {
     private ComplaintDao complaintDao;
     private OrderDao orderDao;
     private UserDao userDao;
+    private HistoryDao historyDao;
     private AbstractEmailSender emailSender;
 
     @Autowired
-    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
+    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao, HistoryDao historyDao,
                                 @Qualifier("complaintSender") AbstractEmailSender emailSender,
                                 ApplicationEventPublisher publisher) {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.userDao = userDao;
+        this.historyDao = historyDao;
         this.emailSender = emailSender;
         this.publisher = publisher;
     }
@@ -169,7 +173,10 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Override
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
-        return null;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+        LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+        return historyDao.findComplaintHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
     }
 
     private List<AutocompleteDto> convertToAutocompleteDto(List<String> complaints) {

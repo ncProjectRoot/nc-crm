@@ -8,18 +8,18 @@ import java.util.List;
  */
 public class GraphDto {
 
-    private Long[] elements;
+    private List<Long> elementIds;
     private String fromDate;
     private String toDate;
     private List<String> labels;
     private List<List<Long>> series;
 
-    public Long[] getElements() {
-        return elements;
+    public List<Long> getElementIds() {
+        return elementIds;
     }
 
-    public void setElements(Long[] elements) {
-        this.elements = elements;
+    public void setElementIds(List<Long> elementIds) {
+        this.elementIds = elementIds;
     }
 
     public String getFromDate() {

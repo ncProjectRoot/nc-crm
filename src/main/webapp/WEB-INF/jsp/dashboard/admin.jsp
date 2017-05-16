@@ -26,17 +26,9 @@
         margin-top: 25px;
     }
 
-    .content-element {
-        margin: 15px auto 0;
-        background-color: #fff;
-    }
-
-    .element6 {
-        width: calc(50% - 30px);
-    }
-
-    .element12 {
-        width: calc(100% - 30px);
+    .graph .ct-horizontal {
+        margin-left: -38px;
+        white-space: nowrap;
     }
 
     .ct-label {
@@ -44,10 +36,6 @@
         color: #fff;
         font-size: 0.75rem;
         line-height: 1;
-    }
-
-    .region-profit-chart {
-        margin-top: 50px;
     }
 
     .graph span {
@@ -73,7 +61,7 @@
                         <div class="input-field col s10 m4">
                             <i class="material-icons prefix">view_list</i>
                             <input type="text" id="product-input-for-orders" class="autocomplete">
-                            <input type="hidden" id="product-hidden-input-for-orders" name="products"/>
+                            <input type="hidden" id="product-hidden-input-for-orders" name="elementIds"/>
                             <label for="product-input-for-orders">Select products</label>
                         </div>
                         <div class="input-field col s10 m3 date-wrapper">
@@ -116,7 +104,7 @@
                         <div class="input-field col s10 m4">
                             <i class="material-icons prefix">view_list</i>
                             <input type="text" id="product-input-for-complaints" class="autocomplete">
-                            <input type="hidden" id="product-hidden-input-for-complaints" name="products"/>
+                            <input type="hidden" id="product-hidden-input-for-complaints" name="elementIds"/>
                             <label for="product-input-for-complaints">Select products</label>
                         </div>
                         <div class="input-field col s10 m3 date-wrapper">
@@ -220,6 +208,7 @@
 
     function updateGraph(url, form, graphId, chartistLine) {
         $.get(url, $(form).serialize(), function (dashboardData) {
+            console.log(dashboardData)
             if (chartistLine) {
                 chartistLine.update(dashboardData);
 //               {
@@ -274,7 +263,9 @@
         hideInput: "#product-hidden-input-for-orders"
     });
 
-    var chartistLineOrders;
+    var chartistLineOrders = new Chartist.Line('#orders-graph', {}, lineOption).on('created', function () {
+        seq = 0;
+    }).on('draw', animateLine);
     $("#show-orders-graph").on("submit", function (e) {
         e.preventDefault();
         lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal();
@@ -321,7 +312,9 @@
         hideInput: "#product-hidden-input-for-complaints"
     });
 
-    var chartistLineComplaints;
+    var chartistLineComplaints = new Chartist.Line('#complaints-graph', {}, lineOption).on('created', function () {
+        seq = 0;
+    }).on('draw', animateLine);
     $("#show-complaints-graph").on("submit", function (e) {
         e.preventDefault();
         lineLabelsForComplaints = $produtsForComplaintsMultiSelect.getSelectedVal();

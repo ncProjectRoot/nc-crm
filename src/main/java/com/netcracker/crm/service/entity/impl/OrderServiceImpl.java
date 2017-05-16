@@ -1,5 +1,6 @@
 package com.netcracker.crm.service.entity.impl;
 
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,12 +38,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final UserDao userDao;
     private final ProductDao productDao;
+    private final HistoryDao historyDao;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao) {
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.productDao = productDao;
+        this.historyDao = historyDao;
     }
 
     @Override
@@ -101,7 +105,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
-        return null;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+        LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+        return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
     }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {
