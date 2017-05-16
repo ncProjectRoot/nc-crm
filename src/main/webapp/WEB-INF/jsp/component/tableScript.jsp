@@ -55,7 +55,7 @@
             placeholder: 'Type and enter',
             secondaryPlaceholder: 'Search',
             autocompleteOptions: {
-                data: dataAutocomplete,
+                table: dataAutocomplete,
                 limit: Infinity,
                 minLength: 1
             }
@@ -81,16 +81,14 @@
 
         tableContainer.find(".chips-search input").on("input", function (event) {
             var typedText = tableContainer.find(".chips-search input").val();
-            if (typedText.length > 1) {
-                $.get(params.urlSearch, {likeTitle: typedText}, function (productNames) {
-                    for (key in dataAutocomplete) {
-                        delete dataAutocomplete[key];
-                    }
-                    productNames.forEach(function (element) {
-                        dataAutocomplete[element] = null;
-                    });
+            $.get(params.urlSearch, {pattern: typedText}, function (autocompleteObjects) {
+                for (key in dataAutocomplete) {
+                    delete dataAutocomplete[key];
+                }
+                autocompleteObjects.forEach(function (element) {
+                    dataAutocomplete[element.value] = null;
                 });
-            }
+            });
         })
 
         downloadTable();
@@ -98,10 +96,10 @@
             ajaxParametersForTable.rowOffset = (currentPage - 1) * countTr;
             tableContainer.find("tbody").empty();
             tableContainer.find(".preloader-wrapper").addClass("active");
-            $.get(params.urlTable, ajaxParametersForTable, function (data) {
+            $.get(params.urlTable, ajaxParametersForTable, function (table) {
                 tableContainer.find(".preloader-wrapper").removeClass("active");
                 tableContainer.find("tbody").empty();
-                fillTable(data);
+                fillTable(table);
                 if (params.complete) {
                     params.complete();
                 }
@@ -109,18 +107,18 @@
             });
         }
 
-        function fillTable(data) {
+        function fillTable(table) {
             try {
-                if (data.length == 0) {
+                if (table.length == 0) {
                     tableContainer.find(".message").show();
                     countTablePages = 0;
                 } else {
                     tableContainer.find(".message").hide();
 
-                    countTablePages = Math.ceil(data.length / countTr);
+                    countTablePages = Math.ceil(table.length / countTr);
 
 
-                    data.rows.forEach(function (element) {
+                    table.rows.forEach(function (element) {
                         tableContainer.find("tbody").append(params.mapper(element));
                     });
                 }
@@ -227,7 +225,7 @@
             var th = $(this).closest(".th-dropdown");
             th.find(".dropdown-button").text(aValue.text());
             th.find(".deleter").show();
-            ajaxParametersForTable[th.data("field")] = aValue.data("value");
+            ajaxParametersForTable[th.table("field")] = aValue.table("value");
             currentPage = 1;
             downloadTable();
         });
@@ -235,8 +233,8 @@
         tableContainer.find(".deleter").on("click", function () {
             var th = $(this).closest(".th-dropdown");
             var dropdownButton = th.find(".dropdown-button");
-            dropdownButton.text(dropdownButton.data("default-name"));
-            ajaxParametersForTable[th.data("field")] = null;
+            dropdownButton.text(dropdownButton.table("default-name"));
+            ajaxParametersForTable[th.table("field")] = null;
             th.find(".deleter").hide();
             currentPage = 1;
             downloadTable();
@@ -258,7 +256,7 @@
                 oldSortedElement.find("span.sorter").remove();
                 newSortedElement.append($("<span>", {html: "&#9660;", class: "sorter"}));
                 ajaxParametersForTable.desc = true;
-                ajaxParametersForTable.orderBy = parseInt(newSortedElement.closest("th").data("field"));
+                ajaxParametersForTable.orderBy = parseInt(newSortedElement.closest("th").table("field"));
                 oldSortedElement = newSortedElement;
             }
             currentPage = 1;
@@ -268,7 +266,7 @@
         tableContainer.find(".sorted-element:not(.passive-single-sort)").before(iSearch);
 
         tableContainer.find(".search-element").on("click", function () {
-            var dataField = $(this).closest("th").data("field")
+            var dataField = $(this).closest("th").table("field")
             tableContainer.find(".chips-search input").val(dataField + ":");
             tableContainer.find(".chips-search input").focus();
         });

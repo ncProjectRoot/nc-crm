@@ -1,15 +1,14 @@
 package com.netcracker.crm.service.entity.impl;
 
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Melnyk_Dmytro
@@ -35,25 +31,43 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final UserDao userDao;
     private final ProductDao productDao;
+    private final HistoryDao historyDao;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao,HistoryDao historyDao) {
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.productDao = productDao;
+        this.historyDao = historyDao;
     }
 
     @Override
     @Transactional
-    public Order persist(OrderDto orderDto) {
+    public Order create(OrderDto orderDto) {
         Order order = convertFromDtoToEntity(orderDto);
         orderDao.create(order);
         return order;
     }
 
     @Override
-    public List<Order> findByCustomer(User customer) {
-        return orderDao.findAllByCustomerId(customer.getId());
+    public Order getOrderById(Long id) {
+        return orderDao.findById(id);
+    }
+
+    @Transactional
+    @Override
+    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
+        List<Order> orders;
+        if (user.isContactPerson()) {
+            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
+        } else {
+            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
+        }
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            result.add(convertToAutocompleteDto(order));
+        }
+        return result;
     }
 
     @Override
@@ -73,15 +87,38 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return orderDao.findById(id);
+    public List<Order> findByCustomer(User customer) {
+        return orderDao.findAllByCustomerId(customer.getId());
     }
-
 
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<OrderHistoryDto> getOrderHistory(Long id) {
+        return convertToOrderHistory(historyDao.findAllByOrderId(id));
+    }
+
+
+
+    private Set<OrderHistoryDto> convertToOrderHistory(List<History> list){
+        Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
+        for (History history : list){
+            OrderHistoryDto historyDto = new OrderHistoryDto();
+            historyDto.setId(history.getId());
+            historyDto.setDateChangeStatus(history.getDateChangeStatus().toString());
+            historyDto.setDescChangeStatus(history.getDescChangeStatus());
+            historyDto.setOldStatus(history.getOldStatus().getName());
+            orders.add(historyDto);
+        }
+        return orders;
+    }
+
+
+    private Comparator<OrderHistoryDto> orderHistoryDtoComparator = (o1, o2) -> o1.getId() > o2.getId()? -1 : 1;
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
@@ -125,22 +162,6 @@ public class OrderServiceImpl implements OrderService {
             orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
         return orderRowDto;
-    }
-
-    @Transactional
-    @Override
-    public List<AutocompleteDto> getAutocompleteOrder(String pattern, User user) {
-        List<Order> orders;
-        if (user.isContactPerson()) {
-            orders = orderDao.findOrgOrdersByIdOrTitle(pattern, user.getId());
-        } else {
-            orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
-        }
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (Order order : orders) {
-            result.add(convertToAutocompleteDto(order));
-        }
-        return result;
     }
 
     private AutocompleteDto convertToAutocompleteDto(Order order) {

@@ -58,7 +58,7 @@ public class ComplaintSetter extends AbstractSetter<Complaint> {
 
 
     private ComplaintStatus getStatus(){
-        return ComplaintStatus.values()[random.nextInt(3)];
+        return ComplaintStatus.values()[random.nextInt(ComplaintStatus.values().length)];
     }
 
     private User getPmg(){

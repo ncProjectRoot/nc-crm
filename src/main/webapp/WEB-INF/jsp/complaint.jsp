@@ -1,3 +1,4 @@
+<%@ page import="com.netcracker.crm.domain.model.UserRole" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -62,7 +63,7 @@
     }
 
 </style>
-<div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
+<div class="content-body z-depth-1" table-page-name="Complaint #${complaint.id}">
     <div class="container">
         <h4 class="title">${complaint.title}</h4>
         <div class="divider"></div>
@@ -75,8 +76,8 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <h5>Order: <a href="/#order?id=${complaint.order.id}"> #${complaint.order.id}</a></h5>
-            <h5>Product: <a href="/#product?id=${complaint.order.product.id}"> ${complaint.order.product.title}</a>
+            <h5>Order: <a href="/#order/${complaint.order.id}"> #${complaint.order.id}</a></h5>
+            <h5>Product: <a href="/#product/${complaint.order.product.id}"> ${complaint.order.product.title}</a>
             </h5>
         </div>
         <div class="divider"></div>
@@ -86,12 +87,12 @@
                 <h5> #${complaint.customer.id} ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
-                <h5><a href="/#user?id=${complaint.customer.id}">
+                <h5><a href="/#user/${complaint.customer.id}">
                     #${complaint.customer.id} </a> ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <h5>email: <a href="mailto:${complaint.customer.email}">${complaint.customer.email}</a></h5>
         </div>
-        <sec:authorize access="hasRole('ROLE_PMG')">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
             <c:if test="${complaint.pmg!=null}">
                 <div class="divider"></div>
                 <div class="section">
@@ -102,7 +103,7 @@
         </sec:authorize>
         <div class="divider"></div>
         <div class="section">
-            <ul class="collapsible" data-collapsible="expandable" id="message_popup">
+            <ul class="collapsible" table-collapsible="expandable" id="message_popup">
                 <li>
                     <div class="collapsible-header"><h5>Message</h5></div>
                     <div class="collapsible-body">
@@ -113,14 +114,14 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <sec:authorize access="hasRole('ROLE_PMG')">
+            <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
                 <c:if test="${complaint.status=='OPEN'}">
                     <div class="button-pmg">
                         <a class="waves-effect waves-light btn" id="acceptBtn">accept</a>
                     </div>
                 </c:if>
                 <c:if test="${complaint.status=='SOLVING'}">
-                    <c:if test="${user.id==complaint.pmg.id}">
+                    <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
                         <div class="button-pmg">
                             <a class="waves-effect waves-light btn" id="closeBtn">close</a>
                         </div>
@@ -132,7 +133,7 @@
 </div>
 <script>
     $('.collapsible').collapsible();
-    <sec:authorize access="hasRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
 
     $.ajaxSetup({
         complete: $(function () {
@@ -149,16 +150,16 @@
         $.ajax({
             url: "/complaints/${complaint.id}",
             type: 'PUT',
-            data: {
+            table: {
                 type: 'ACCEPT'
             },
-            success: function (data) {
-                if (data === true) {
+            success: function (table) {
+                if (table === true) {
                     $('#acceptBtn').remove();
                     $('#status').replaceWith('SOLVING');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                } else if (table === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
@@ -174,16 +175,16 @@
         $.ajax({
             url: "/complaints/${complaint.id}",
             type: 'PUT',
-            data: {
+            table: {
                 type: 'CLOSE'
             },
-            success: function (data) {
-                if (data === true) {
+            success: function (table) {
+                if (table === true) {
                     $('#closeBtn').remove();
                     $('#status').replaceWith('CLOSED');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have closed the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                } else if (table === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {

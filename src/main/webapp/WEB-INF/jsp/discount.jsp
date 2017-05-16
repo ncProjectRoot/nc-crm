@@ -48,7 +48,7 @@
     }
 
 </style>
-<div class="content-body z-depth-1" data-page-name="Discount #${discount.id}">
+<div class="content-body z-depth-1" table-page-name="Discount #${discount.id}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
         <a class="modal-trigger brown-text change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>
         <div id="update" class="modal modal-fixed-footer">
@@ -129,7 +129,7 @@
 
     $("#update-discount-form").on("submit", function (e) {
         e.preventDefault();
-        sendPut("#update-discount-form", "/discounts").done(function () {
+        send("#update-discount-form", "/discounts", "PUT").done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })

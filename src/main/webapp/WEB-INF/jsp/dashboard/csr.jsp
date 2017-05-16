@@ -56,7 +56,7 @@
         width: 100%
     }
 </style>
-<div class="content-body" data-page-name="Dashboard">
+<div class="content-body" table-page-name="Dashboard">
 
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
@@ -122,10 +122,10 @@
         showLabel: true
     };
 
-    var animatePie = function (data) {
-        if (data.type === 'slice') {
+    var animatePie = function (table) {
+        if (table.type === 'slice') {
             seq++;
-            data.element.animate({
+            table.element.animate({
                 opacity: {
                     begin: seq * durations,
                     dur: durations,
@@ -137,13 +137,13 @@
         }
     };
 
-    var animateBar = function (data) {
-        if (data.type === 'bar') {
-            data.element.attr({
+    var animateBar = function (table) {
+        if (table.type === 'bar') {
+            table.element.attr({
                 style: 'stroke-width: 30px'
             });
             seq++;
-            data.element.animate({
+            table.element.animate({
                 opacity: {
                     begin: seq * durations,
                     dur: durations,
@@ -172,10 +172,10 @@
     };
 
 
-    var animateLine = function (data) {
+    var animateLine = function (table) {
         seq++;
-        if (data.type === 'line' || data.type === 'area') {
-            data.element.animate({
+        if (table.type === 'line' || table.type === 'area') {
+            table.element.animate({
                 opacity: {
                     begin: seq * delays + 1000,
                     dur: durations,
@@ -183,20 +183,20 @@
                     to: 1
                 }
             });
-        } else if (data.type === 'point') {
-            data.element.animate({
+        } else if (table.type === 'point') {
+            table.element.animate({
                 x1: {
                     begin: seq * delays,
                     dur: durations,
-                    from: data.x - 10,
-                    to: data.x,
+                    from: table.x - 10,
+                    to: table.x,
                     easing: 'easeOutQuart'
                 },
                 x2: {
                     begin: seq * delays,
                     dur: durations,
-                    from: data.x - 10,
-                    to: data.x,
+                    from: table.x - 10,
+                    to: table.x,
                     easing: 'easeOutQuart'
                 },
                 opacity: {
