@@ -77,7 +77,7 @@
         width: 100%
     }
 </style>
-<div class="content-body" data-page-name="Dashboard">
+<div class="content-body" table-page-name="Dashboard">
 
     <div class="content-element z-depth-1 element12 card">
         <div class="card-content">

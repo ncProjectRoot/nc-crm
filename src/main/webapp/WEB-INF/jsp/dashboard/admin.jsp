@@ -65,7 +65,7 @@
         width: 100%
     }
 </style>
-<div class="content-body" data-page-name="Dashboard">
+<div class="content-body" table-page-name="Dashboard">
     <div class="content-element z-depth-1 element6 card">
         <div class="card-content">
             <span class="card-title activator">Region Errors<i class="material-icons right">more_vert</i></span>
@@ -128,10 +128,10 @@
         showLabel: true
     };
 
-    var animatePie = function (data) {
-        if (data.type === 'slice') {
+    var animatePie = function (table) {
+        if (table.type === 'slice') {
             seq++;
-            data.element.animate({
+            table.element.animate({
                 opacity: {
                     begin: seq * durations,
                     dur: durations,
@@ -154,23 +154,23 @@
     };
 
 
-    var animateLine = function (data) {
+    var animateLine = function (table) {
         seq++;
-        if (data.type === 'line' || data.type === 'area') {
-            if (data.type === 'line') {
-                var obj = $(data.element._node);
+        if (table.type === 'line' || table.type === 'area') {
+            if (table.type === 'line') {
+                var obj = $(table.element._node);
                 var index = "a";
                 lineLabels.forEach(function (element, i, array) {
                     if (obj.is(".ct-series-" + index + " .ct-line")) {
                         obj.tooltip({
                             delay: 0
                         });
-                        obj.attr("data-tooltip", element);
+                        obj.attr("table-tooltip", element);
                     }
                     index = String.fromCharCode(index.charCodeAt(0) + 1);
                 });
             }
-            data.element.animate({
+            table.element.animate({
                 opacity: {
                     begin: seq * delays + 1000,
                     dur: durations,
@@ -178,20 +178,20 @@
                     to: 1
                 }
             });
-        } else if (data.type === 'point') {
-            data.element.animate({
+        } else if (table.type === 'point') {
+            table.element.animate({
                 x1: {
                     begin: seq * delays,
                     dur: durations,
-                    from: data.x - 10,
-                    to: data.x,
+                    from: table.x - 10,
+                    to: table.x,
                     easing: 'easeOutQuart'
                 },
                 x2: {
                     begin: seq * delays,
                     dur: durations,
-                    from: data.x - 10,
-                    to: data.x,
+                    from: table.x - 10,
+                    to: table.x,
                     easing: 'easeOutQuart'
                 },
                 opacity: {

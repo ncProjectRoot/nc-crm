@@ -7,7 +7,7 @@
     }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-body" data-page-name="Users">
+<div class="content-body" table-page-name="Users">
     <div id="content-body" class="row">
 
         <div class="col s12">
@@ -28,52 +28,52 @@
                         <table class="striped responsive-table centered ">
                             <thead>
                             <tr>
-                                <th data-field="1">
+                                <th table-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
-                                <th data-field="2">
+                                <th table-field="2">
                                     <a href="#!" class="sorted-element a-dummy">First Name</a>
                                 </th>
-                                <th data-field="3">
+                                <th table-field="3">
                                     <a href="#!" class="sorted-element a-dummy">Middle Name</a>
                                 </th>
-                                <th data-field="4">
+                                <th table-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Last Name</a>
                                 </th>
-                                <th data-field="5">
+                                <th table-field="5">
                                     <a href="#!" class="sorted-element a-dummy">E-mail</a>
                                 </th>
-                                <th data-field="6">
+                                <th table-field="6">
                                     <a href="#!" class="sorted-element a-dummy">Phone</a>
                                 </th>
-                                <th class="th-dropdown" data-field="roleId">
+                                <th class="th-dropdown" table-field="roleId">
                                     <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-user-role' data-default-name="User Role">
+                                       table-activates='dropdown-all-user-role' table-default-name="User Role">
                                         User Role
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-user-role" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="1">Admin</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="2">Customer</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="3">CSR</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="4">PMG</a></li>
                                     </ul>
                                 </th>
-                                <th class="th-dropdown" data-field="contactPerson">
+                                <th class="th-dropdown" table-field="contactPerson">
                                     <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
+                                       table-activates='dropdown-all-contact-person' table-default-name="Contact Person">
                                         Contact Person
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-contact-person" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" table-value="false">No</a></li>
                                     </ul>
                                 </th>
-                                <th data-field="7">
+                                <th table-field="7">
                                     <a href="#!" class="sorted-element a-dummy">Address</a>
                                 </th>
-                                <th data-field="8">
+                                <th table-field="8">
                                     <a href="#!" class="sorted-element a-dummy">Organization</a>
                                 </th>
                             </tr>
@@ -195,13 +195,13 @@
     $('#user_role option[value="ROLE_CUSTOMER"]').attr("selected", true);
 
     var organizationData = {};
-    $.get("/organizations", function (data) {
-        data.forEach(function (item) {
+    $.get("/organizations", function (table) {
+        table.forEach(function (item) {
             organizationData[item.name] = null;
         });
 
         $('#customer_organization_name').autocomplete({
-            data: organizationData,
+            table: organizationData,
             limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
             onAutocomplete: function (val) {
                 $('#customer_organization_name').val(val);

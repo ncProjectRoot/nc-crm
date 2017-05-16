@@ -17,7 +17,7 @@
         font-size: 2.8rem;
     }
 </style>
-<div class="content-body z-depth-1" data-page-name="Home">
+<div class="content-body z-depth-1" table-page-name="Home">
     <h1 class="welcome-h1">Welcome, <span class="user-name">!</span></h1>
     <h2 class="welcome-h2">Use toolbar for navigation. Good luck!</h2>
 </div>

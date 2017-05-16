@@ -63,7 +63,7 @@
     }
 
 </style>
-<div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
+<div class="content-body z-depth-1" table-page-name="Complaint #${complaint.id}">
     <div class="container">
         <h4 class="title">${complaint.title}</h4>
         <div class="divider"></div>
@@ -103,7 +103,7 @@
         </sec:authorize>
         <div class="divider"></div>
         <div class="section">
-            <ul class="collapsible" data-collapsible="expandable" id="message_popup">
+            <ul class="collapsible" table-collapsible="expandable" id="message_popup">
                 <li>
                     <div class="collapsible-header"><h5>Message</h5></div>
                     <div class="collapsible-body">
@@ -150,16 +150,16 @@
         $.ajax({
             url: "/complaints/${complaint.id}",
             type: 'PUT',
-            data: {
+            table: {
                 type: 'ACCEPT'
             },
-            success: function (data) {
-                if (data === true) {
+            success: function (table) {
+                if (table === true) {
                     $('#acceptBtn').remove();
                     $('#status').replaceWith('SOLVING');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                } else if (table === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
@@ -175,16 +175,16 @@
         $.ajax({
             url: "/complaints/${complaint.id}",
             type: 'PUT',
-            data: {
+            table: {
                 type: 'CLOSE'
             },
-            success: function (data) {
-                if (data === true) {
+            success: function (table) {
+                if (table === true) {
                     $('#closeBtn').remove();
                     $('#status').replaceWith('CLOSED');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have closed the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                } else if (table === false) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
