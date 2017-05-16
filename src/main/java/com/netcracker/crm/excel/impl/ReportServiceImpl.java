@@ -36,7 +36,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of customer ( id=" +customer_id+" )"
                 + getSelectedDatesFileNameEnding(date_finish_first, date_finish_last)
@@ -44,7 +44,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersBetweenDatesOfCustomer_ReportChart(Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of customer ( id=" +customer_id+" )"
                 + getSelectedDatesFileNameEnding(date_finish_first, date_finish_last)
@@ -53,7 +53,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of group of customers"
                 + getSelectedDatesFileNameEnding(date_finish_first, date_finish_last)
@@ -61,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersBetweenDatesOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of group of customers"
                 + getSelectedDatesFileNameEnding(date_finish_first, date_finish_last)
@@ -70,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long csr_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         lastReportWorkbook = org.generateOrdersBetweenDatesAllCustomers_Report(fileFormat, csr_id, date_finish_first, date_finish_last);
         lastReportFileName = "Orders of all customers"
                 + getSelectedDatesFileNameEnding(date_finish_first, date_finish_last)
@@ -82,7 +82,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     public void createOrdersOfCurrentWeekOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusWeeks(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -92,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentWeekOfCustomer_ReportChart(Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusWeeks(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -103,7 +103,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentWeekOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusWeeks(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -113,7 +113,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentWeekOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusWeeks(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -124,7 +124,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentWeekAllCustomers_Report(ExcelFormat fileFormat, Long csr_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusWeeks(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesAllCustomers_Report(fileFormat, csr_id, date_finish_first, date_finish_last);
@@ -138,7 +138,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     public void createOrdersOfCurrentMonthOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusMonths(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -148,7 +148,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentMonthOfCustomer_ReportChart(Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusMonths(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -159,7 +159,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentMonthOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusMonths(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -169,7 +169,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentMonthOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusMonths(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -180,7 +180,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentMonthAllCustomers_Report(ExcelFormat fileFormat, Long csr_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusMonths(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesAllCustomers_Report(fileFormat, csr_id, date_finish_first, date_finish_last);
@@ -193,7 +193,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     public void createOrdersOfCurrentYearOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusYears(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -203,7 +203,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentYearOfCustomer_ReportChart(Long csr_id, Long customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusYears(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -214,7 +214,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentYearOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusYears(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_Report(fileFormat, csr_id, customer_id, date_finish_first, date_finish_last);
@@ -224,7 +224,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentYearOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusYears(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(csr_id, customer_id, date_finish_first, date_finish_last);
@@ -235,7 +235,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public void createOrdersOfCurrentYearAllCustomers_Report(ExcelFormat fileFormat, Long csr_id){
-        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        OrderReportConfigurator org = new OrderReportConfigurator(orderDao);
         LocalDateTime date_finish_first = LocalDateTime.now();
         LocalDateTime date_finish_last = date_finish_first.minusYears(1L);
         lastReportWorkbook = org.generateOrdersBetweenDatesAllCustomers_Report(fileFormat, csr_id, date_finish_first, date_finish_last);

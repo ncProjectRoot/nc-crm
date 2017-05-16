@@ -15,12 +15,12 @@ import java.util.*;
  * Created by AN on 04.05.2017.
  */
 @Component
-public class OrderReportGenerator {
+public class OrderReportConfigurator {
 
     private final OrderDao orderDao;
 
     @Autowired
-    public OrderReportGenerator(OrderDao orderDao) {
+    public OrderReportConfigurator(OrderDao orderDao) {
         this.orderDao = orderDao;
     }
 
