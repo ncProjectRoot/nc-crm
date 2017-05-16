@@ -1,4 +1,4 @@
-package com.netcracker.crm.listener;
+package com.netcracker.crm.listener.event;
 
 import com.netcracker.crm.domain.model.Complaint;
 import org.springframework.context.ApplicationEvent;
@@ -11,15 +11,17 @@ import org.springframework.context.ApplicationEvent;
 public class ChangeStatusComplaintEvent extends ApplicationEvent {
 
     private Complaint complaint;
+    private boolean isDone;
+
 
     /**
      * Create a new ApplicationEvent.
      *
      * @param source the object on which the event initially occurred (never {@code null})
      */
-    public ChangeStatusComplaintEvent(Object source) {
+    public ChangeStatusComplaintEvent(Object source, Complaint complaint) {
         super(source);
-        this.complaint = (Complaint) source;
+        this.complaint = complaint;
     }
 
     public Complaint getComplaint() {
@@ -28,5 +30,13 @@ public class ChangeStatusComplaintEvent extends ApplicationEvent {
 
     public void setComplaint(Complaint complaint) {
         this.complaint = complaint;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 }

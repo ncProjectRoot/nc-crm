@@ -82,8 +82,13 @@ public class OrderSetter extends AbstractSetter<Order> {
         productList.addAll(products.get(customerRegion.getName()));
         Product product;
         while (true) {
+            if (productList.size() == 0) {
+                customer = getCustomer();
+                customerRegion = customer.getAddress().getRegion();
+                productList.addAll(products.get(customerRegion.getName()));
+            }
             int num = random.nextInt(productList.size());
-            if (num >= 0) {
+            if (num > 0) {
                 product = productList.remove(num);
             } else {
                 continue;
@@ -91,11 +96,7 @@ public class OrderSetter extends AbstractSetter<Order> {
             if (product.getStatus() != ProductStatus.PLANNED) {
                 break;
             }
-            if (productList.size() == 0) {
-                customer = getCustomer();
-                customerRegion = customer.getAddress().getRegion();
-                productList.addAll(products.get(customerRegion.getName()));
-            }
+
         }
         order.setCustomer(customer);
         order.setProduct(product);

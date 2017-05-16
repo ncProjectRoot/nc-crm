@@ -24,7 +24,7 @@ public class GeneratorDbData {
     private static final int INDEX_CSR = 20;
     private static final int INDEX_PMG = 20;
     private static final int INDEX_CUSTOMER = 5000;
-    private static final int INDEX_ORDER = 20_000;
+    private static final int INDEX_ORDER = 10_000;
     private static final int INDEX_COMPLAINT = 500;
     private static final int INDEX_ADDRESSES = 5000;
     private static final int INDEX_REGION = 20;
@@ -55,6 +55,8 @@ public class GeneratorDbData {
     private AddressSetter addressSetter;
     @Autowired
     private RegionGroupsSetter regionGroupsSetter;
+    @Autowired
+    private HistorySetter historySetter;
 
     public void generateDataForDB(int number){
         List<Discount> discounts = discountSetter.generate(number * INDEX_DISCOUNT);
@@ -97,5 +99,10 @@ public class GeneratorDbData {
         complaintSetter.setPmgs(pmgs);
 
         List<Complaint> complaints = complaintSetter.generate(number * INDEX_COMPLAINT);
+
+        historySetter.setOrders(orders);
+        historySetter.setProducts(products);
+        historySetter.setComplaints(complaints);
+        historySetter.generate(number);
     }
 }
