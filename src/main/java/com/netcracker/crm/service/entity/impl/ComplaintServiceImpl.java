@@ -9,22 +9,17 @@ import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
-import com.netcracker.crm.listener.ChangeStatusComplaintEvent;
-import com.netcracker.crm.service.email.AbstractEmailSender;
-import com.netcracker.crm.service.email.EmailParam;
-import com.netcracker.crm.service.email.EmailParamKeys;
-import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
+import com.netcracker.crm.listener.event.CreateComplaintEvent;
 import com.netcracker.crm.service.entity.ComplaintService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,16 +42,13 @@ public class ComplaintServiceImpl implements ComplaintService {
     private ComplaintDao complaintDao;
     private OrderDao orderDao;
     private UserDao userDao;
-    private AbstractEmailSender emailSender;
 
     @Autowired
     public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
-                                @Qualifier("complaintSender") AbstractEmailSender emailSender,
                                 ApplicationEventPublisher publisher) {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.userDao = userDao;
-        this.emailSender = emailSender;
         this.publisher = publisher;
     }
 
@@ -67,7 +59,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setStatus(ComplaintStatus.OPEN);
         Long id = complaintDao.create(complaint);
         complaint.setId(id);
-        sendEmail(complaint);
+        publisher.publishEvent(new CreateComplaintEvent(this, complaint));
         return complaint;
     }
 
@@ -184,9 +176,7 @@ public class ComplaintServiceImpl implements ComplaintService {
             return false;
         }
         complaint.setPmg(user);
-        publisher.publishEvent(new ChangeStatusComplaintEvent(complaint));
-        complaintDao.update(complaint);
-        sendEmail(complaint);
+        publisher.publishEvent(new ChangeStatusComplaintEvent(this, complaint));
         return true;
     }
 
@@ -200,9 +190,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         if (isRoleAdmin) {
             complaint.setPmg(user);
         }
-        publisher.publishEvent(new ChangeStatusComplaintEvent(complaint));
-        complaintDao.update(complaint);
-        sendEmail(complaint);
+        publisher.publishEvent(new ChangeStatusComplaintEvent(this, complaint));
         return true;
     }
 
@@ -242,16 +230,6 @@ public class ComplaintServiceImpl implements ComplaintService {
             complaintRowDto.setPmg(complaint.getPmg().getId());
         }
         return complaintRowDto;
-    }
-
-    private void sendEmail(Complaint complaint) {
-        EmailParam emailMap = new EmailParam(EmailType.COMPLAINT);
-        emailMap.put(EmailParamKeys.COMPLAINT, complaint);
-        try {
-            emailSender.send(emailMap);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
     }
 
     private Complaint convertToModel(ComplaintDto dto) {
