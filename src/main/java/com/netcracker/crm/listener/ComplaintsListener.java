@@ -46,7 +46,7 @@ public class ComplaintsListener {
         ComplaintStatus status = complaint.getStatus();
         History history = new History();
         history.setDateChangeStatus(LocalDateTime.now());
-        history.setOldStatus(status);
+        history.setNewStatus(status);
         String role = complaint.getCustomer().getUserRole().getName();
         role = role.substring(role.indexOf("_") + 1);
 
@@ -64,7 +64,7 @@ public class ComplaintsListener {
         complaint.setStatus(ComplaintStatus.SOLVING);
         History history = new History();
         history.setDateChangeStatus(LocalDateTime.now());
-        history.setOldStatus(complaint.getStatus());
+        history.setNewStatus(complaint.getStatus());
         String role = complaint.getPmg().getUserRole().getName();
         role = role.substring(role.indexOf("_") + 1);
 
@@ -84,7 +84,7 @@ public class ComplaintsListener {
         complaint.setStatus(ComplaintStatus.CLOSED);
         History history = new History();
         history.setDateChangeStatus(LocalDateTime.now());
-        history.setOldStatus(complaint.getStatus());
+        history.setNewStatus(complaint.getStatus());
         String role = complaint.getPmg().getUserRole().getName();
         role = role.substring(role.indexOf("_") + 1);
 
