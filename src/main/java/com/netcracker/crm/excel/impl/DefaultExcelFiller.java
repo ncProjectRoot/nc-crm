@@ -26,12 +26,17 @@ public class DefaultExcelFiller implements ExcelFiller{
     private List<List<String>> additionalDataInnerTitles;
     private List<String> additionalDataOuterTitles;
 
+    private CellStyle titleCellStyle;
+    private CellStyle valueCellStyle;
+
     public DefaultExcelFiller(Workbook workbook, Map<String, List<?>> table, String sheetName) {
         this.workbook = workbook;
         this.table = table;
         titles = new ArrayList<>(table.keySet());
         this.workbook.createSheet(sheetName);
         sheet = workbook.getSheetAt(0);
+        createTitleCellStyle();
+        createValueCellStyle();
     }
 
     public DefaultExcelFiller
@@ -46,6 +51,8 @@ public class DefaultExcelFiller implements ExcelFiller{
             List<String> localTitles = new ArrayList<>(additionalDataTables.get(i).keySet());
             additionalDataInnerTitles.add(localTitles);
         }
+        createTitleCellStyle();
+        createValueCellStyle();
     }
 
      public Workbook fillExcel(){
@@ -191,25 +198,31 @@ public class DefaultExcelFiller implements ExcelFiller{
     }
 
     private void setTitleCellStyle(Cell cell){
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
-        cellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
-        cellStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
-        cellStyle.setBorderTop(CellStyle.BORDER_MEDIUM);
-        cellStyle.setFillForegroundColor(IndexedColors.SKY_BLUE.getIndex());
-        cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        cell.setCellStyle(cellStyle);
+        cell.setCellStyle(titleCellStyle);
     }
 
     private void setValueCellStyle(Cell cell){
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-        cellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-        cellStyle.setBorderRight(CellStyle.BORDER_THIN);
-        cellStyle.setBorderTop(CellStyle.BORDER_THIN);
-        cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        cell.setCellStyle(cellStyle);
+        cell.setCellStyle(valueCellStyle);
+    }
+
+    private void createTitleCellStyle(){
+        titleCellStyle = workbook.createCellStyle();
+        titleCellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
+        titleCellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
+        titleCellStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
+        titleCellStyle.setBorderTop(CellStyle.BORDER_MEDIUM);
+        titleCellStyle.setFillForegroundColor(IndexedColors.SKY_BLUE.getIndex());
+        titleCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+    }
+
+    private void createValueCellStyle(){
+        valueCellStyle = workbook.createCellStyle();
+        valueCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+        valueCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+        valueCellStyle.setBorderRight(CellStyle.BORDER_THIN);
+        valueCellStyle.setBorderTop(CellStyle.BORDER_THIN);
+        valueCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        valueCellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
     }
 
     public Map<String, Coordinates> getCoordinatesOfTableColumns() {

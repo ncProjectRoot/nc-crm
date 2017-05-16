@@ -69,6 +69,14 @@ public class ReportServiceImpl implements ReportService {
                 +"."+ExcelFormat.XLSX;
     }
 
+    public void createOrdersBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long csr_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last){
+        OrderReportGenerator org = new OrderReportGenerator(orderDao);
+        lastReportWorkbook = org.generateOrdersBetweenDatesAllCustomers_Report(fileFormat, csr_id, date_finish_first, date_finish_last);
+        lastReportFileName = "Orders of all customers"
+                +getOrderFileNameEnding(date_finish_first, date_finish_last)
+                +"."+fileFormat;
+    }
+
     private String getOrderFileNameEnding(LocalDateTime date_finish_first, LocalDateTime date_finish_last){
         return " between "
                 +date_finish_first.getDayOfMonth()+"-"

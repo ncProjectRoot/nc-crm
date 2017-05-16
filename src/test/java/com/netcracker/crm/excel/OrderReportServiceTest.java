@@ -127,6 +127,27 @@ public class OrderReportServiceTest {
         assertTrue(file.exists());
     }
 
+    @Test
+    public void createOrdersBetweenDatesOfAllCustomers_Report() throws IOException {
+        reportService = new ReportServiceImpl(orderDao);
+        reportService.createOrdersBetweenDatesAllCustomers_Report(ExcelFormat.XLSX,csr_id,firstDate,lastDate);
+        Workbook workbook = reportService.getLastReportWorkbook();
+        String fileName = FOLDER_PATH+reportService.getLastReportFileName();
+        FileOutputStream fos = new FileOutputStream(fileName);
+        workbook.write(fos);
+        File file = new File(fileName);
+        assertTrue(file.exists());
+
+        reportService.createOrdersBetweenDatesAllCustomers_Report(ExcelFormat.XLS,csr_id,firstDate,lastDate);
+        workbook = reportService.getLastReportWorkbook();
+        fileName = FOLDER_PATH+reportService.getLastReportFileName();
+        fos = new FileOutputStream(fileName);
+        workbook.write(fos);
+        fos.close();
+        file = new File(fileName);
+        assertTrue(file.exists());
+    }
+
     @After
     public void clearFolder(){
      /*   for (File myFile : new File(FOLDER_PATH).listFiles())
