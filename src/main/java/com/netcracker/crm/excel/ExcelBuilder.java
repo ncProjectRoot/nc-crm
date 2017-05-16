@@ -1,8 +1,10 @@
 package com.netcracker.crm.excel;
 
+import com.netcracker.crm.excel.additional.AdditionalData;
 import com.netcracker.crm.excel.additional.ExcelFormat;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -12,7 +14,13 @@ import java.util.List;
 public interface ExcelBuilder {
     Workbook getWorkbook(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName);
 
-    Workbook getWorkbookChart(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, String xColumnName, List<String> yColumnName);
+    Workbook getWorkbook(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, AdditionalData additionalData);
+
+    Workbook getWorkbook(ExcelFormat fileFormat, LinkedHashMap<String, List<?>> table, String sheetName, List<AdditionalData> additionalDataList);
+
+    Workbook getWorkbookChart(LinkedHashMap<String, List<?>> table, String sheetName, AdditionalData additionalData);
+
+    Workbook getWorkbookChart(LinkedHashMap<String, List<?>> table, String sheetName, List<AdditionalData> additionalDataList);
 
 
 }

@@ -1,6 +1,7 @@
 package com.netcracker.crm.excel.impl;
 
 import com.netcracker.crm.excel.ChartBuilder;
+import com.netcracker.crm.excel.ExcelBuilder;
 import com.netcracker.crm.excel.ExcelFiller;
 import com.netcracker.crm.excel.additional.AdditionalData;
 import com.netcracker.crm.excel.additional.Coordinates;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Created by AN on 24.04.2017.
  */
-public class DefaultExcelBuilder {
+public class DefaultExcelBuilder implements ExcelBuilder{
 
     public DefaultExcelBuilder(){}
 
