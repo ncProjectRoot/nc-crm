@@ -32,7 +32,11 @@ public class OrderReportGenerator {
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfCustomerBetweenDatesOfCSR(orders);
         AdditionalData additionalData = orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
-        return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName,additionalData);
+        AdditionalData additionalData1 = orderConverter.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
+        List<AdditionalData> additionalDataList = new ArrayList<>();
+        additionalDataList.add(additionalData);
+        additionalDataList.add(additionalData1);
+        return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName,additionalDataList);
     }
 
     public Workbook generateOrdersBetweenDatesOfCustomer_ReportGraphic(Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
@@ -43,7 +47,11 @@ public class OrderReportGenerator {
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfCustomerBetweenDatesOfCSR(orders);
         AdditionalData additionalData = orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
-        return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalData);
+        AdditionalData additionalData1 = orderConverter.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
+        List<AdditionalData> additionalDataList = new ArrayList<>();
+        additionalDataList.add(additionalData);
+        additionalDataList.add(additionalData1);
+        return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalDataList);
     }
 
     public Workbook generateOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
@@ -54,7 +62,11 @@ public class OrderReportGenerator {
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
         AdditionalData additionalData = orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
-        return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName, additionalData);
+        AdditionalData additionalData1 = orderConverter.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
+        List<AdditionalData> additionalDataList = new ArrayList<>();
+        additionalDataList.add(additionalData);
+        additionalDataList.add(additionalData1);
+        return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName, additionalDataList);
     }
 
     public Workbook generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
@@ -65,7 +77,11 @@ public class OrderReportGenerator {
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
         AdditionalData additionalData = orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
-        return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalData);
+        AdditionalData additionalData1 = orderConverter.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
+        List<AdditionalData> additionalDataList = new ArrayList<>();
+        additionalDataList.add(additionalData);
+        additionalDataList.add(additionalData1);
+        return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalDataList);
     }
 
     public Workbook generateOrdersBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long csr_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last){
@@ -74,6 +90,10 @@ public class OrderReportGenerator {
         OrderConverter orderConverter = new OrderConverter();
         LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertAllOrdersOfManyCustomersBetweenDatesOfCSR(orders);
         AdditionalData additionalData = orderConverter.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
-        return new DefaultExcelBuilder().getWorkbook(fileFormat, data,reportName, additionalData);
+        AdditionalData additionalData1 = orderConverter.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
+        List<AdditionalData> additionalDataList = new ArrayList<>();
+        additionalDataList.add(additionalData);
+        additionalDataList.add(additionalData1);
+        return new DefaultExcelBuilder().getWorkbook(fileFormat, data,reportName, additionalDataList);
     }
 }

@@ -109,13 +109,13 @@ public final class OrderSqlQuery {
             + "csr_id FROM orders WHERE csr_id = :csr_id AND customer_id = :customer_id AND date_finish BETWEEN "
             + ":date_finish_first AND :date_finish_last";
 
-    public static final String SQL_FIND_ALL_ORDERS_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID = "SELECT id, "
+    public static final String SQL_FIND_ALL_ORDERS_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID_BETWEEN_DATES = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE csr_id = :csr_id AND customer_id IN (:customer_id_list)"
             +" AND date_trunc('day',date_finish) BETWEEN :date_finish_first AND :date_finish_last"
             +" ORDER BY customer_id";
 
-    public static final String SQL_FIND_ALL_ORDERS_BY_CSR_ID = "SELECT id, "
+    public static final String SQL_FIND_ALL_ORDERS_BY_CSR_ID_BETWEEN_DATES = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE csr_id = :csr_id"
             +" AND date_trunc('day',date_finish) BETWEEN :date_finish_first AND :date_finish_last"

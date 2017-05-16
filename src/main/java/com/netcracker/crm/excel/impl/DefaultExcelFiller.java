@@ -86,7 +86,10 @@ public class DefaultExcelFiller implements ExcelFiller{
     }
 
     private void setTitles(List<String> titles,int rowStart, int cellStart, String outerTitle){
-        sheet.createRow(rowStart-1).createCell(cellStart);
+        if(sheet.getRow(rowStart-1) == null){
+            sheet.createRow(rowStart-1);
+        }
+        sheet.getRow(rowStart-1).createCell(cellStart);
         setTitleCellStyle(sheet.getRow(rowStart-1).getCell(cellStart));
         mergeColumnsAndSetTitle(rowStart-1,cellStart, cellStart+titles.size(), outerTitle);
         if(sheet.getRow(rowStart) == null){

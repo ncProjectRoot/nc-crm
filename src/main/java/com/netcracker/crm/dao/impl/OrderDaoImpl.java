@@ -5,7 +5,6 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.model.state.order.OrderState;
-import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.proxy.OrderProxy;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static com.netcracker.crm.dao.impl.sql.OrderSqlQuery.*;
@@ -345,7 +343,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_CUSTOMER_ID_LIST, customer_id_list)
                 .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
                 .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID, params, orderWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_CSR_ID_AND_ARRAY_OF_CUSTOMER_ID_BETWEEN_DATES, params, orderWithDetailExtractor);
     }
 
     public List<Order> findOrdersByCsrIdBetweenDates(Long csr_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
@@ -353,7 +351,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_CSR_ID, csr_id)
                 .addValue(PARAM_ORDER_DATE_FINISH_FIRST, date_finish_first)
                 .addValue(PARAM_ORDER_DATE_FINISH_LAST, date_finish_last);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_CSR_ID, params, orderWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_CSR_ID_BETWEEN_DATES, params, orderWithDetailExtractor);
     }
 
     private static final class OrderWithDetailExtractor implements ResultSetExtractor<List<Order>> {

@@ -47,16 +47,16 @@ public class OrderReportServiceTest {
     @Before
     public void init(){
         csr_id = 10065L;
-        customer_id = 9471L;
+        customer_id = 6588L;
         LocalDate date1 = LocalDate.of(1999, Month.FEBRUARY, 15);
         firstDate = LocalDateTime.of(date1, LocalTime.now());
         LocalDate date2 = LocalDate.of(2017, Month.MARCH, 15);
         lastDate = LocalDateTime.of(date2, LocalTime.now());
         customer_id_list = new ArrayList<>();
-        customer_id_list.add(9471L);
-        customer_id_list.add(298L);
-        customer_id_list.add(4902L);
-        customer_id_list.add(9551L);
+        customer_id_list.add(6588L);
+        customer_id_list.add(6661L);
+        customer_id_list.add(6998L);
+        customer_id_list.add(3148L);
     }
 
     @Test
