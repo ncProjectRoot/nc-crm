@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class OrderConverter {
 
-    Map<String, List<?>> convertAllOrdersOfCustomerBetweenDatesOfCSR(List<Order> orders){
+    Map<String, List<?>> convertOrders(List<Order> orders){
         List<String> customer_fullName = new ArrayList<>();
         List<Long> order_id = new ArrayList<>();
         List<LocalDateTime> order_date_finish = new ArrayList<>();
@@ -52,9 +52,5 @@ public class OrderConverter {
         data.put("Product_default_price", product_default_price);
         data.put("Product_discount_percentage", product_discount);
         return data;
-    }
-
-    public Map<String, List<?>> convertAllOrdersOfManyCustomersBetweenDatesOfCSR(List<Order> orders){
-        return convertAllOrdersOfCustomerBetweenDatesOfCSR(orders);
     }
 }
