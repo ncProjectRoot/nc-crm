@@ -12,11 +12,6 @@ public class CreateComplaintEvent extends ApplicationEvent {
 
     private Complaint complaint;
 
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source the object on which the event initially occurred (never {@code null})
-     */
     public CreateComplaintEvent(Object source, Complaint complaint) {
         super(source);
         this.complaint = complaint;

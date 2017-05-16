@@ -13,12 +13,6 @@ public class ChangeStatusComplaintEvent extends ApplicationEvent {
     private Complaint complaint;
     private boolean isDone;
 
-
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source the object on which the event initially occurred (never {@code null})
-     */
     public ChangeStatusComplaintEvent(Object source, Complaint complaint) {
         super(source);
         this.complaint = complaint;

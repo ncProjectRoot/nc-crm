@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.History;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
 import com.netcracker.crm.listener.event.CreateComplaintEvent;
 import com.netcracker.crm.service.email.AbstractEmailSender;
@@ -43,16 +44,10 @@ public class ComplaintsListener {
     @EventListener
     public void createComplaint(CreateComplaintEvent event) {
         Complaint complaint = event.getComplaint();
-        ComplaintStatus status = complaint.getStatus();
-        History history = new History();
-        history.setDateChangeStatus(LocalDateTime.now());
-        history.setNewStatus(status);
-        String role = complaint.getCustomer().getUserRole().getName();
-        role = role.substring(role.indexOf("_") + 1);
-
-        history.setDescChangeStatus( role + " with id " +
+        History history = generateHistory(complaint);
+        String role = getRole(complaint.getCustomer());
+        history.setDescChangeStatus(role + " with id " +
                 complaint.getCustomer().getId() + " created complaint");
-        history.setComplaint(complaint);
         historyDao.create(history);
         sendMail(complaint);
     }
@@ -62,18 +57,11 @@ public class ComplaintsListener {
     public void acceptComplaint(ChangeStatusComplaintEvent event) {
         Complaint complaint = event.getComplaint();
         complaint.setStatus(ComplaintStatus.SOLVING);
-        History history = new History();
-        history.setDateChangeStatus(LocalDateTime.now());
-        history.setNewStatus(complaint.getStatus());
-        String role = complaint.getPmg().getUserRole().getName();
-        role = role.substring(role.indexOf("_") + 1);
-
+        History history = generateHistory(complaint);
+        String role = getRole(complaint.getPmg());
         history.setDescChangeStatus(role + " with id " +
                 complaint.getPmg().getId() + " accepted complaint");
-        history.setComplaint(complaint);
-        complaintDao.update(complaint);
-        historyDao.create(history);
-        sendMail(complaint);
+        saveStatusAndHistory(complaint, history);
         event.setDone(true);
     }
 
@@ -82,22 +70,16 @@ public class ComplaintsListener {
     public void closeComplaint(ChangeStatusComplaintEvent event) {
         Complaint complaint = event.getComplaint();
         complaint.setStatus(ComplaintStatus.CLOSED);
-        History history = new History();
-        history.setDateChangeStatus(LocalDateTime.now());
-        history.setNewStatus(complaint.getStatus());
-        String role = complaint.getPmg().getUserRole().getName();
-        role = role.substring(role.indexOf("_") + 1);
-
+        History history = generateHistory(complaint);
+        String role = getRole(complaint.getPmg());
         history.setDescChangeStatus(role + " with id " +
                 complaint.getPmg().getId() + " closed complaint");
         history.setComplaint(complaint);
-        complaintDao.update(complaint);
-        historyDao.create(history);
-        sendMail(complaint);
+        saveStatusAndHistory(complaint, history);
         event.setDone(true);
     }
 
-    private void sendMail(Complaint complaint){
+    private void sendMail(Complaint complaint) {
         EmailParam emailMap = new EmailParam(EmailType.COMPLAINT);
         emailMap.put(EmailParamKeys.COMPLAINT, complaint);
         try {
@@ -105,5 +87,24 @@ public class ComplaintsListener {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getRole(User user) {
+        String role = user.getUserRole().getName();
+        return role.substring(role.indexOf("_") + 1);
+    }
+
+    private History generateHistory(Complaint complaint) {
+        History history = new History();
+        history.setDateChangeStatus(LocalDateTime.now());
+        history.setNewStatus(complaint.getStatus());
+        history.setComplaint(complaint);
+        return history;
+    }
+
+    private void saveStatusAndHistory(Complaint complaint, History history) {
+        complaintDao.update(complaint);
+        historyDao.create(history);
+        sendMail(complaint);
     }
 }
