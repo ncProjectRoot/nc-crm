@@ -8,6 +8,7 @@ public final class MessageProperty {
     public static final String ERROR_CODE_REQUIRED = "validation.required";
     public static final String ERROR_CODE_USER_ALREADY_EXIST = "validation.user-already-exist";
     public static final String ERROR_CODE_WRONG_FORMAT = "validation.wrong-format";
+    public static final String ERROR_CODE_DIFFERENT_STATUS = "validation.bulk.different-status";
     public static final String REPLACE_WILD_CARD = "%wild_card%";
     //Success Keys
     public static final String SUCCESS_USER_CREATED = "success.user-create";
@@ -17,7 +18,7 @@ public final class MessageProperty {
     public static final String SUCCESS_GROUP_CREATED = "success.group-create";
     public static final String SUCCESS_COMPLAINT_CREATED = "success.complaint-create";
     public static final String SUCCESS_ORDER_CREATED = "success.order-create";
-
+    public static final String SUCCESS_PRODUCT_BULK_UPDATED = "success.product-bulk-updated";
 
     public static final String SUCCESS_PRODUCT_UPDATE = "success.product-update";
 

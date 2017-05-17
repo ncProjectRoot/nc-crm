@@ -1,6 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
+    .modal.modal-fixed-footer {
+        max-height: 85%;
+        height: 98%;
+    }
+
+    .modal .modal-footer .btn {
+        float: none;
+    }
+
+    .modal-content h4 {
+        margin-top: 20px;
+    }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
 <div class="content-body" data-page-name="Products">
@@ -182,15 +194,123 @@
                 </div>
             </div>
 
+            <div id="bulk-change-modal" class="modal bottom-sheet">
+                <div class="modal-content">
+                    <div class="row">
+                        <div class="col s3 offset-s2">
+                            <h4>Edit Selected Items</h4>
+                            <p>Choose field to edit it for each selected item.</p>
+                        </div>
+                        <div class="col s7">
+                            <div class="row">
+                                <div class="col s12">
+                                    <ul class="tabs">
+                                        <li class="tab col s2"><a class="active" href="#test1">Status</a></li>
+                                        <li class="tab col s2"><a href="#test2">Price</a></li>
+                                        <li class="tab col s3"><a href="#test3">Discount</a></li>
+                                        <li class="tab col s2"><a href="#test4">Group</a></li>
+                                        <li class="tab col s3"><a href="#test5">Description</a></li>
+                                    </ul>
+                                </div>
+                                <form id="bulk-change-form">
+                                    <div class="row col s12">
+                                        <div class="col s8">
+                                            <div id="test1" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <i class="material-icons prefix">cached</i>
+                                                        <input type="hidden" class="is-changed-checkbox" name="isStatusNameChanged">
+                                                        <select class="bulk-field-change" name="statusName" id="bulk-select-product-status">
+                                                            <option value="PLANNED" data-value="10"
+                                                                    data-after-disabled="11">
+                                                                PLANNED
+                                                            </option>
+                                                            <option value="ACTUAL" data-value="11"
+                                                                    data-after-disabled="12">
+                                                                ACTUAL
+                                                            </option>
+                                                            <option value="OUTDATED" data-value="12">OUTDATED</option>
+                                                        </select>
+                                                        <label for="bulk-select-product-status">Choose product
+                                                            status</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test2" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <i class="material-icons prefix">attach_money</i>
+                                                        <input type="hidden" class="is-changed-checkbox" name="isDefaultPriceChanged">
+                                                        <input class='bulk-field-change validate' type='number' name='defaultPrice'
+                                                               id='bulk-price'/>
+                                                        <label for="bulk-price">Price</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test3" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <i class="material-icons prefix">loyalty</i>
+                                                        <input type="hidden" class="is-changed-checkbox" name="isDiscountIdChanged">
+                                                        <input type="text" id="bulk-discount-input"
+                                                               class="bulk-field-change autocomplete">
+                                                        <input type="hidden" id="bulk-discount-hidden-input"
+                                                               name="discountId"/>
+                                                        <label for="discount-input">Selected discount: <span
+                                                                id="bulk-selected-discount"></span></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test4" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <i class="material-icons prefix">bubble_chart</i>
+                                                        <input type="hidden" class="is-changed-checkbox" name="isGroupIdChanged">
+                                                        <input type="text" id="bulk-group-input" class="bulk-field-change autocomplete">
+                                                        <input type="hidden" id="bulk-group-hidden-input"
+                                                               name="groupId"/>
+                                                        <label for="group-input">Selected group: <span
+                                                                id="bulk-selected-group"></span></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test5" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <input type="hidden" class="is-changed-checkbox" name="isDescriptionChanged">
+                                                        <i class="material-icons prefix">description</i>
+                                                        <textarea id="bulk-desc-product" name="description"
+                                                                  class="bulk-field-change materialize-textarea"></textarea>
+                                                        <label for="bulk-desc-product">Description</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col s4">
+                                            <input type="hidden" name="itemIds" id="bulk-item-ids">
+                                            <button id="bulk-submit" type="submit" name="action"
+                                                    class="btn waves-effect waves-light">Edit
+                                                <i class="material-icons right">replay</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <div id="bulk-card" class="row">
                 <div class="col s12 m6">
                     <div class="card">
                         <div class="card-content center-align">
-                            <span class="card-title">Items Selected </span>
+                            <span class="card-title">Items Selected</span>
                             <h5 class="selected-items">0</h5>
                         </div>
                         <div class="card-action center-align">
-                            <a id="bulk-change-btn" class="a-dummy" href="#!">Change</a>
+                            <a id="bulk-change-btn" class="a-dummy" href="#!">Edit</a>
                             <a id="bulk-cancel-btn" class="a-dummy" href="#!">Cancel</a>
                         </div>
                     </div>
@@ -284,7 +404,7 @@
     $("#table-all-products").karpo_table({
         urlSearch: "/csr/load/productNames",
         urlTable: "/csr/load/products",
-        cardTitle: "Selected products",
+        bulkUrl: "/products/bulk",
         mapper: function (object) {
             var tr = $("<tr>");
             tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
@@ -303,9 +423,19 @@
         }
     });
 
-    //    $("#table-all-products").bulk_table({
-    //        url: "/products/bulk"
-    //    });
+    $('#bulk-select-product-status').karpo_status(10).disabled(12);
+    $('#bulk-discount-input').karpo_autocomplete({
+        url: "/discounts/csr/discountByTitle/",
+        label: "#bulk-selected-discount",
+        defaultValue: "${product.discount.id} ${product.discount.title}",
+        hideInput: "#bulk-discount-hidden-input"
+    });
+    $('#bulk-group-input').karpo_autocomplete({
+        url: "/csr/groupByName/",
+        label: "#bulk-selected-group",
+        defaultValue: "${product.group.id} ${product.group.name}",
+        hideInput: "#bulk-group-hidden-input"
+    });
 
     </sec:authorize>
 

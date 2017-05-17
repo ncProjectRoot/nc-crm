@@ -104,4 +104,13 @@
         width: 50%;
     }
 
+    .edit-selected-items {
+        margin-bottom: 0;
+        margin-top: 15%;
+    }
+
+    #bulk-submit {
+        margin-top: 40%;
+    }
+
 </style>

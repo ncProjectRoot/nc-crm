@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.bulk.ProductBulkDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
 import com.netcracker.crm.dto.row.ProductRowDto;
@@ -18,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 30.04.2017.
@@ -92,6 +90,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
+    public boolean bulkUpdate(ProductBulkDto bulkDto) {
+        Product productTemplate = getBulkProduct(bulkDto);
+        Set<Long> productIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) productIDs.addAll(bulkDto.getItemIds());
+
+        return productDao.bulkUpdate(productIDs, productTemplate);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address) {
         if (address.getRegion() != null) {
@@ -114,6 +122,24 @@ public class ProductServiceImpl implements ProductService {
         }
         response.put("rows", productsRowDto);
         return response;
+    }
+
+    private Product getBulkProduct(ProductBulkDto bulkDto) {
+        Product productTemplate = new Product();
+        if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
+        if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
+        if (bulkDto.isGroupIdChanged()) {
+            Group group = new Group();
+            group.setId(bulkDto.getGroupId());
+            productTemplate.setGroup(group);
+        }
+        if (bulkDto.isDiscountIdChanged()) {
+            Discount discount = new Discount();
+            discount.setId(bulkDto.getDiscountId());
+            productTemplate.setDiscount(discount);
+        }
+        return productTemplate;
     }
 
     private ProductRowDto convertToRowDto(Product product) {

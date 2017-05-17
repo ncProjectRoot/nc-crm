@@ -279,9 +279,8 @@
         const checkBoxIdPrefix = "bulk-table-";
 
         var card = $(document).find('#bulk-card');
+        var itemIDsInput = $(document).find('#bulk-item-ids');
         var itemIDs = [];
-
-        console.log("jQuery.fn.bulk_table");
 
         $(document).on('change', '.bulk-checkbox', function () {
             if (this.checked) {
@@ -296,7 +295,7 @@
                 if (index != -1) {
                     itemIDs.splice(index, 1);
                 }
-                unselectRow.call(this);
+                deselectRow.call(this);
                 setItemsCountOnCard();
             }
             if (itemIDs.length == 0) {
@@ -305,11 +304,27 @@
         });
 
         $(document).on('click', '#bulk-change-btn', function () {
+            $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
+            $('ul.tabs').tabs();
+            $('#bulk-change-modal').modal('open');
+        });
 
+        $(document).on('click', '#bulk-submit', function (e) {
+            e.preventDefault();
+            $(itemIDsInput).val(itemIDs);
+            sendPut('#bulk-change-form', params.bulkUrl);
+
+            $('#bulk-change-modal').modal('close');
+            deselectRows();
+            setDefaultTableStyle();
+        });
+
+        $(document).on('change', '.bulk-field-change', function () {
+            $(this).parent().find('.is-changed-checkbox').val(true);
         });
 
         $(document).on('click', '#bulk-cancel-btn', function () {
-            unselectRows();
+            deselectRows();
             setDefaultTableStyle();
         });
 
@@ -318,11 +333,11 @@
             $(this).parents("tr").addClass("highlighted-row");
         }
 
-        function unselectRow() {
+        function deselectRow() {
             $(this).parents("tr").removeClass("highlighted-row");
         }
 
-        function unselectRows() {
+        function deselectRows() {
             tableContainer.find("tr").removeClass("highlighted-row");
             tableContainer.find(".bulk-checkbox").prop('checked', false);
         }

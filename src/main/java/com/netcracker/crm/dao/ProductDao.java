@@ -4,11 +4,12 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author YARUS
  */
-public interface ProductDao extends CrudDao<Product> {
+public interface ProductDao extends CrudDao<Product>, BulkDao<Product> {
     Product findByTitle(String title);
 
     List<Product> findAllByGroupId(Long id);
@@ -28,4 +29,6 @@ public interface ProductDao extends CrudDao<Product> {
     List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId);
 
     Boolean hasCustomerAccessToProduct(Long productId, Long customerId);
+
+    boolean hasSameStatus(Set<Long> productIDs);
 }

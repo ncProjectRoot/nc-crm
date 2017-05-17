@@ -5,6 +5,7 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.bulk.ProductBulkDto;
 
 import java.util.List;
 import java.util.Map;
@@ -32,4 +33,6 @@ public interface ProductService {
     List<String> getActualNamesByCustomerId(String likeTitle, Long customerId);
 
     boolean hasCustomerAccessToProduct(Long productId, Long customerId);
+
+    boolean bulkUpdate(ProductBulkDto bulkDto);
 }
