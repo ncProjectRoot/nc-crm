@@ -148,17 +148,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">cached</i>
-                                <select name="statusName" id="select_product_status">
-                                    <option value="PLANNED" data-value="12" data-after-disabled="13">PLANNED</option>
-                                    <option value="ACTUAL" data-value="13" data-after-disabled="14">ACTUAL</option>
-                                    <option value="OUTDATED" data-value="14">OUTDATED</option>
-                                </select>
-                                <label for="select_product_status">Choose product status</label>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
                                 <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>

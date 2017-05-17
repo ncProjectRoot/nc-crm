@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Karpunets
@@ -72,7 +73,7 @@ public class HistoryDaoImplTest {
         complaintCreated.setOrder(orderCreated);
 
         historyCreated = new History();
-        historyCreated.setOldStatus(OrderStatus.PAUSED);
+        historyCreated.setNewStatus(OrderStatus.PAUSED);
         historyCreated.setDateChangeStatus(LocalDateTime.now());
         historyCreated.setDescChangeStatus("test History desc change status");
         historyCreated.setOrder(orderCreated);
@@ -85,7 +86,7 @@ public class HistoryDaoImplTest {
     @Test
     public void findAndUpdate() throws Exception {
         History historyFoundById = historyDao.findById(historyCreated.getId());
-        assertEquals(historyCreated.getOldStatus(), historyFoundById.getOldStatus());
+        assertEquals(historyCreated.getNewStatus(), historyFoundById.getNewStatus());
 
         List<History> historyFoundByProductId = historyDao.findAllByProductId(productCreated.getId());
         assertEquals(historyCreated.getId(), historyFoundByProductId.get(0).getId());
@@ -99,7 +100,7 @@ public class HistoryDaoImplTest {
         List<History> historyFoundByDate = historyDao.findAllByDate(historyCreated.getDateChangeStatus().toLocalDate());
         assertEquals(historyCreated.getId(), historyFoundByDate.get(0).getId());
 
-        historyCreated.setOldStatus(OrderStatus.ACTIVE);
+        historyCreated.setNewStatus(OrderStatus.ACTIVE);
         assertEquals(historyDao.update(historyCreated), historyCreated.getId());
     }
 

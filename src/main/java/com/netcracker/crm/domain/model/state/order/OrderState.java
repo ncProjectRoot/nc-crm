@@ -97,7 +97,7 @@ public class OrderState {
         history.setOrder(this.order);
         history.setDateChangeStatus(LocalDateTime.now());
         history.setDescChangeStatus(description);
-        history.setOldStatus(order.getStatus());
+        history.setNewStatus(order.getStatus());
 
         return history;
     }

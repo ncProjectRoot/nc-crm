@@ -51,13 +51,16 @@ public class ProductRestController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
-    public ResponseEntity<?> create(@Valid ProductDto productDto, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@Valid ProductDto productDto, BindingResult bindingResult,
+                                    Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user = (UserDetailsImpl) principal;
         productValidator.validate(productDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
 
-        Product product = productService.create(productDto);
+        Product product = productService.create(productDto, user);
         if (product.getId() > 0) {
             return generator.getHttpResponse(product.getId(), SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
         }
@@ -66,15 +69,28 @@ public class ProductRestController {
 
     @PutMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
-    public ResponseEntity<?> update(@Valid ProductDto productDto, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@Valid ProductDto productDto, BindingResult bindingResult,
+                                    Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user = (UserDetailsImpl) principal;
         productValidator.validate(productDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        if (productService.update(productDto)) {
+        if (productService.update(productDto, user)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping(value = "/status")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity<?> changeStatus(@RequestParam Long productId, @RequestParam Long statusId,
+                                          Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user = (UserDetailsImpl) principal;
+        boolean result = productService.changeStatus(productId, statusId, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/autocomplete")
