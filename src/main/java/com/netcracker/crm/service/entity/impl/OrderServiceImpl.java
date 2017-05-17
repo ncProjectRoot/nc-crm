@@ -111,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
             historyDto.setId(history.getId());
             historyDto.setDateChangeStatus(history.getDateChangeStatus().toString());
             historyDto.setDescChangeStatus(history.getDescChangeStatus());
-            historyDto.setOldStatus(history.getOldStatus().getName());
+            historyDto.setOldStatus(history.getNewStatus().getName());
             orders.add(historyDto);
         }
         return orders;
