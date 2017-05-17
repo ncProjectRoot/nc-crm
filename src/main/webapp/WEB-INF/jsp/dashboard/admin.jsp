@@ -13,6 +13,21 @@
         background-color: #fff;
     }
 
+    .labels-wrapper, .date-title-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .labels-wrapper span, .date-title-wrapper span {
+        margin: 10px;
+    }
+
+    .date-title-wrapper .arrow i {
+        margin-top: 5px;
+    }
+
     .content-body .selected-products {
         margin: 0 auto;
         float: none;
@@ -44,6 +59,12 @@
         <div class="card-wrapper z-depth-1 card">
             <div class="card-content">
                 <span class="card-title activator">Product Orders<i class="material-icons right">more_vert</i></span>
+                <div class="date-title-wrapper">
+                    <span id="orders-date-from-title"></span>
+                    <span class="arrow"><i class="material-icons">trending_flat</i></span>
+                    <span id="orders-date-to-title"></span>
+                </div>
+                <div id="orders-labels" class="labels-wrapper"></div>
                 <div id="orders-graph-wrapper">
                     <div id="orders-graph" class="graph"></div>
                 </div>
@@ -95,6 +116,12 @@
             <div class="card-content">
                 <span class="card-title activator">Product Complaints<i
                         class="material-icons right">more_vert</i></span>
+                <div class="date-title-wrapper">
+                    <span id="complaints-date-from-title"></span>
+                    <span class="arrow"><i class="material-icons">trending_flat</i></span>
+                    <span id="complaints-date-to-title"></span>
+                </div>
+                <div id="complaints-labels" class="labels-wrapper"></div>
                 <div id="complaints-graph-wrapper">
                     <div id="complaints-graph" class="graph"></div>
                 </div>
@@ -217,7 +244,7 @@
         }
     };
 
-    function updateGraph(url, form, graphId, chartistLine) {
+    function updateGraph(url, form, graphId, chartistLine, lineLabels, labelsId) {
         $(".progress").addClass("progress-active");
         $.get(url, $(form).serialize(), function (dashboardData) {
             if (chartistLine) {
@@ -225,6 +252,14 @@
             } else {
                 chartistLine = new Chartist.Line(graphId, dashboardData, lineOption).on('created', function () {
                     seq = 0;
+                    var $labels = $(labelsId);
+                    $labels.empty();
+                    lineLabels.forEach(function (element, index) {
+                        var i = String.fromCharCode('a'.charCodeAt(0) + index);
+                        var color = $(".ct-series-" + i + " .ct-line").css("stroke");
+                        $labels.append($("<span>", {text: element}).css("color", color));
+                        console.log();
+                    });
                 }).on('draw', animateLine);
             }
             $(".progress").removeClass("progress-active");
@@ -257,7 +292,7 @@
 
     $('#orders-date-type').on('change', function(e) {
         switch ($(this).val()) {
-            case "DAYS":
+            case "YEARS":
                 $ordersFromDate.stop();
                 $('#orders-from-date').attr("type", "text");
                 $('#orders-from-date').val(lastWeek.getFullYear());
@@ -302,9 +337,14 @@
     var chartistLineOrders;
     $("#show-orders-graph").on("submit", function (e) {
         e.preventDefault();
-        lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal();
+        lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal().slice(0);
+        if($productsForOrdersMultiSelect.getSelectedVal().length == 0) {
+            lineLabelsForOrders.push("All products")
+        }
         $(this).siblings(".card-title").trigger("click");
-        updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders);
+        updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders, lineLabelsForOrders ,"#orders-labels");
+        $('#orders-date-from-title').text($('#orders-from-date').val());
+        $('#orders-date-to-title').text($('#orders-to-date').val());
     });
     $("#show-orders-graph").trigger("submit");
 
@@ -335,7 +375,7 @@
 
     $('#complaints-date-type').on('change', function(e) {
         switch ($(this).val()) {
-            case "DAYS":
+            case "YEARS":
                 $complaintsFromDate.stop();
                 $('#complaints-from-date').attr("type", "text");
                 $('#complaints-from-date').val(lastWeek.getFullYear());
@@ -371,7 +411,7 @@
         }
     });
 
-    var $produtsForComplaintsMultiSelect = $("#product-input-for-complaints").karpo_multi_select({
+    var $productsForComplaintsMultiSelect = $("#product-input-for-complaints").karpo_multi_select({
         url: "/products/autocomplete?type=all",
         collection: "#selected-products-for-complaints",
         hideInput: "#product-hidden-input-for-complaints"
@@ -380,9 +420,14 @@
     var chartistLineComplaints;
     $("#show-complaints-graph").on("submit", function (e) {
         e.preventDefault();
-        lineLabelsForComplaints = $produtsForComplaintsMultiSelect.getSelectedVal();
+        lineLabelsForComplaints = $productsForComplaintsMultiSelect.getSelectedVal().slice(0);
+        if($productsForComplaintsMultiSelect.getSelectedVal().length == 0) {
+            lineLabelsForComplaints.push("All products")
+        }
         $(this).siblings(".card-title").trigger("click");
-        updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints);
+        updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints, lineLabelsForComplaints ,"#complaints-labels");
+        $('#complaints-date-from-title').text($('#complaints-from-date').val());
+        $('#complaints-date-to-title').text($('#complaints-to-date').val());
     });
     $("#show-complaints-graph").trigger("submit");
 
