@@ -110,4 +110,17 @@ public class EntityController {
         return "user";
     }
 
+    @RequestMapping(value = "/{role}/profile", method = {RequestMethod.GET})
+    public String profile(Map<String, Object> model, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+//        model.put("user", user);
+        User user1 = (User) authentication.getPrincipal();
+        long id = user1.getId();
+        model.put("profile", userService.getUserById(id));
+        return "profile";
+    }
 }
