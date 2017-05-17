@@ -101,23 +101,23 @@ public final class ComplaintSqlQuery {
             +"SELECT id, title, message, status_id, date, "
             +"customer_id, pmg_id, order_id FROM complaint "
             +"WHERE pmg_id = :pmg_id "
-            +"AND customer_id = :customer_id AND date BETWEEN "
-            +":date_first AND :date_last"
+            +"AND customer_id = :customer_id AND date_trunc('day',date) BETWEEN "
+            +":date_first AND :date_last "
             +"ORDER BY date desc;";
 
     public static final String SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_ARRAY_OF_CUSTOMER_ID_BETWEEN_DATES = ""
             +"SELECT id, title, message, status_id, date, "
             +"customer_id, pmg_id, order_id FROM complaint "
             +"WHERE pmg_id = :pmg_id "
-            +"AND customer_id IN (:customer_id_list) AND date BETWEEN "
-            +":date_first AND :date_last"
+            +"AND customer_id IN (:customer_id_list) AND date_trunc('day',date) BETWEEN "
+            +":date_first AND :date_last "
             +"ORDER BY date desc;";
 
     public static final String SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_BETWEEN_DATES = ""
             +"SELECT id, title, message, status_id, date, "
             +"customer_id, pmg_id, order_id FROM complaint "
             +"WHERE pmg_id = :pmg_id "
-            +"AND date BETWEEN :date_first AND :date_last"
+            +"AND date_trunc('day',date) BETWEEN :date_first AND :date_last "
             +"ORDER BY date desc;";
 
 }

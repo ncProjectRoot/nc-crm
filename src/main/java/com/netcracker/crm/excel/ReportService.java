@@ -16,53 +16,53 @@ public interface ReportService {
 
     String getLastReportFileName();
 
-    void createOrdersBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
+    void createReport(ExcelFormat fileFormat, Long user_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
-    void createOrdersBetweenDatesOfCustomer_ReportChart(Long csr_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
+    void createReportChart(Long user_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
-    void createOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
+    void createReport(ExcelFormat fileFormat, Long user_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
-    void createOrdersBetweenDatesOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
+    void createReportChart(Long user_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
-    void createOrdersBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long csr_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
-
-
-
-
-    void createOrdersOfCurrentWeekOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id);
-
-    void createOrdersOfCurrentWeekOfCustomer_ReportChart(Long csr_id, Long customer_id);
-
-    void createOrdersOfCurrentWeekOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id);
-
-    void createOrdersOfCurrentWeekOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id);
-
-    void createOrdersOfCurrentWeekAllCustomers_Report(ExcelFormat fileFormat, Long csr_id);
+    void createReport(ExcelFormat fileFormat, Long user_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last);
 
 
 
 
-    void createOrdersOfCurrentMonthOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id);
+    void createReportOfCurrentWeek(ExcelFormat fileFormat, Long user_id, Long customer_id);
 
-    void createOrdersOfCurrentMonthOfCustomer_ReportChart(Long csr_id, Long customer_id);
+    void createReportChartOfCurrentWeek(Long user_id, Long customer_id);
 
-    void createOrdersOfCurrentMonthOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id);
+    void createReportOfCurrentWeek(ExcelFormat fileFormat, Long user_id, List<Long> customer_id);
 
-    void createOrdersOfCurrentMonthOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id);
+    void createReportChartOfCurrentWeek(Long user_id, List<Long> customer_id);
 
-    void createOrdersOfCurrentMonthAllCustomers_Report(ExcelFormat fileFormat, Long csr_id);
+    void createReportOfCurrentWeek(ExcelFormat fileFormat, Long user_id);
 
 
 
-    void createOrdersOfCurrentYearOfCustomer_Report(ExcelFormat fileFormat, Long csr_id, Long customer_id);
 
-    void createOrdersOfCurrentYearOfCustomer_ReportChart(Long csr_id, Long customer_id);
+    void createReportOfCurrentMonth(ExcelFormat fileFormat, Long user_id, Long customer_id);
 
-    void createOrdersOfCurrentYearOfArrayCustomer_Report(ExcelFormat fileFormat, Long csr_id, List<Long> customer_id);
+    void createReportChartOfCurrentMonth(Long user_id, Long customer_id);
 
-    void createOrdersOfCurrentYearOfArrayCustomer_ReportChart(Long csr_id, List<Long> customer_id);
+    void createReportOfCurrentMonth(ExcelFormat fileFormat, Long user_id, List<Long> customer_id);
 
-    void createOrdersOfCurrentYearAllCustomers_Report(ExcelFormat fileFormat, Long csr_id);
+    void createReportChartOfCurrentMonth(Long user_id, List<Long> customer_id);
+
+    void createReportOfCurrentMonth(ExcelFormat fileFormat, Long user_id);
+
+
+
+    void createReportOfCurrentYear(ExcelFormat fileFormat, Long user_id, Long customer_id);
+
+    void createReportChartOfCurrentYear(Long user_id, Long customer_id);
+
+    void createReportOfCurrentYear(ExcelFormat fileFormat, Long user_id, List<Long> customer_id);
+
+    void createReportChartOfCurrentYear(Long user_id, List<Long> customer_id);
+
+    void createReportOfCurrentYear(ExcelFormat fileFormat, Long user_id);
 
 
 }

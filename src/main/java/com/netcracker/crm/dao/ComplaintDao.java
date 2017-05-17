@@ -31,9 +31,9 @@ public interface ComplaintDao extends CrudDao<Complaint> {
 
     List<String> findComplaintsTitleForContactPerson(String likeTitle, Long custId);
 
-    List<Complaint> findComplaintsByPmgIdAndArrayOfCustomerIdBetweenDates(Long pmg_id, List<Long> customer_id_list, LocalDateTime date_first, LocalDateTime date_last);
+    List<Complaint> findByPmgIdAndListOfCustomerIdBetweenDates(Long pmg_id, List<Long> customer_id_list, LocalDateTime date_first, LocalDateTime date_last);
 
-    List<Complaint> findComplaintsByPmgIdAndCustomerIdBetweenDates(Long pmg_id, Long customer_id, LocalDateTime date_first, LocalDateTime date_last);
+    List<Complaint> findByPmgIdAndCustomerIdBetweenDates(Long pmg_id, Long customer_id, LocalDateTime date_first, LocalDateTime date_last);
 
-    List<Complaint> findComplaintsByPmgIdBetweenDates(Long pmg_id, LocalDateTime date_first, LocalDateTime date_last);
+    List<Complaint> findByPmgIdBetweenDates(Long pmg_id, LocalDateTime date_first, LocalDateTime date_last);
 }

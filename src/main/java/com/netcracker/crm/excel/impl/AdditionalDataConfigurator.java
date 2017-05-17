@@ -19,7 +19,7 @@ public class AdditionalDataConfigurator {
         DateSelection dateSelection = getDateSelection(date_start, date_finish);
         List<Object> objects = new ArrayList<>(orders);
         AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Full_customer_name);
-        additionalData.setDataName("Number of orders made in dates");
+        additionalData.setDataName("Number of order made in dates");
         return additionalData;
     }
 

@@ -278,7 +278,7 @@ td.discount .percentage.show{
         }
     });
 
-    $("#table-create-orders").karpo_table({
+    $("#table-create-order").karpo_table({
         urlSearch: "/products/autocomplete?type=possible",
         urlTable: "/products?type=possible",
         countTr: 5,

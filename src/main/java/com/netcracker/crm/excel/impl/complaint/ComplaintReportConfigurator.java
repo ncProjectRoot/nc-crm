@@ -1,10 +1,11 @@
-package com.netcracker.crm.excel.impl;
+package com.netcracker.crm.excel.impl.complaint;
 
 import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.excel.additional.AdditionalData;
 import com.netcracker.crm.excel.additional.ExcelFormat;
+import com.netcracker.crm.excel.impl.AdditionalDataConfigurator;
+import com.netcracker.crm.excel.impl.DefaultExcelBuilder;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,7 +29,7 @@ public class ComplaintReportConfigurator {
     }
 
     public Workbook generateComplaintsBetweenDatesOfCustomer_Report(ExcelFormat fileFormat, Long pmg_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        List<Complaint> complaints = complaintDao.findComplaintsByPmgIdAndCustomerIdBetweenDates(pmg_id,customer_id,date_finish_first,date_finish_last);
+        List<Complaint> complaints = complaintDao.findByPmgIdAndCustomerIdBetweenDates(pmg_id,customer_id,date_finish_first,date_finish_last);
 
         String reportName = "Complaints_of_customer";
         configurateAllTypes(complaints, date_finish_first, date_finish_last);
@@ -36,32 +37,32 @@ public class ComplaintReportConfigurator {
     }
 
     public Workbook generateComplaintsBetweenDatesOfCustomer_ReportGraphic(Long pmg_id, Long customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        List<Complaint> complaints = complaintDao.findComplaintsByPmgIdAndCustomerIdBetweenDates(pmg_id,customer_id,date_finish_first,date_finish_last);
+        List<Complaint> complaints = complaintDao.findByPmgIdAndCustomerIdBetweenDates(pmg_id,customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders_of_customer";
+        String reportName = "Complaints_of_customer";
         configurateAllTypes(complaints, date_finish_first, date_finish_last);
         return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalDataList);
     }
 
-    public Workbook generateOrdersBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long pmg_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        List<Complaint> complaints = complaintDao.findComplaintsByPmgIdAndArrayOfCustomerIdBetweenDates(pmg_id, customer_id,date_finish_first,date_finish_last);
+    public Workbook generateComplaintsBetweenDatesOfArrayCustomer_Report(ExcelFormat fileFormat, Long pmg_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        List<Complaint> complaints = complaintDao.findByPmgIdAndListOfCustomerIdBetweenDates(pmg_id, customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders_of_several_customers";
+        String reportName = "Complaints_of_several_customers";
         configurateAllTypes(complaints, date_finish_first, date_finish_last);
         return new DefaultExcelBuilder().getWorkbook(fileFormat,data,reportName, additionalDataList);
     }
 
-    public Workbook generateOrdersBetweenDatesOfArrayCustomer_ReportGraphic(Long pmg_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
-        List<Complaint> complaints = complaintDao.findComplaintsByPmgIdAndArrayOfCustomerIdBetweenDates(pmg_id, customer_id,date_finish_first,date_finish_last);
+    public Workbook generateComplaintsBetweenDatesOfArrayCustomer_ReportGraphic(Long pmg_id, List<Long> customer_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last) {
+        List<Complaint> complaints = complaintDao.findByPmgIdAndListOfCustomerIdBetweenDates(pmg_id, customer_id,date_finish_first,date_finish_last);
 
-        String reportName = "Orders_of_several_customers";
+        String reportName = "Complaints_of_several_customers";
         configurateAllTypes(complaints, date_finish_first, date_finish_last);
         return new DefaultExcelBuilder().getWorkbookChart(data,reportName, additionalDataList);
     }
 
-    public Workbook generateOrdersBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long pmg_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last){
-        List<Complaint> complaints = complaintDao.findComplaintsByPmgIdBetweenDates(pmg_id, date_finish_first, date_finish_last);
-        String reportName = "Orders_of_all_customers";
+    public Workbook generateComplaintsBetweenDatesAllCustomers_Report(ExcelFormat fileFormat, Long pmg_id, LocalDateTime date_finish_first, LocalDateTime date_finish_last){
+        List<Complaint> complaints = complaintDao.findByPmgIdBetweenDates(pmg_id, date_finish_first, date_finish_last);
+        String reportName = "Complaints_of_all_customers";
         configurateAllTypes(complaints, date_finish_first, date_finish_last);
         return new DefaultExcelBuilder().getWorkbook(fileFormat, data,reportName, additionalDataList);
     }

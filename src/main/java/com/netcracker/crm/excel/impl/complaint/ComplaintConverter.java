@@ -1,4 +1,4 @@
-package com.netcracker.crm.excel.impl;
+package com.netcracker.crm.excel.impl.complaint;
 
 import com.netcracker.crm.domain.model.Complaint;
 

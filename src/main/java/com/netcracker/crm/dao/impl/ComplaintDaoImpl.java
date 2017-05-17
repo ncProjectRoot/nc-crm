@@ -288,7 +288,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
     }
 
     @Override
-    public List<Complaint> findComplaintsByPmgIdAndArrayOfCustomerIdBetweenDates
+    public List<Complaint> findByPmgIdAndListOfCustomerIdBetweenDates
             (Long pmg_id, List<Long> customer_id_list, LocalDateTime date_first, LocalDateTime date_last) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
@@ -299,18 +299,18 @@ public class ComplaintDaoImpl implements ComplaintDao {
     }
 
     @Override
-    public List<Complaint> findComplaintsByPmgIdAndCustomerIdBetweenDates
+    public List<Complaint> findByPmgIdAndCustomerIdBetweenDates
             (Long pmg_id, Long customer_id, LocalDateTime date_first, LocalDateTime date_last) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
         params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, customer_id);
         params.addValue(PARAM_COMPLAINT_DATE_FIRST, date_first);
         params.addValue(PARAM_COMPLAINT_DATE_LAST, date_last);
-        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_CUSTOMER_ID_BETWEEN_DATES   , params, complaintWithDetailExtractor);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_CUSTOMER_ID_BETWEEN_DATES, params, complaintWithDetailExtractor);
     }
 
     @Override
-    public List<Complaint> findComplaintsByPmgIdBetweenDates
+    public List<Complaint> findByPmgIdBetweenDates
             (Long pmg_id, LocalDateTime date_first, LocalDateTime date_last) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
