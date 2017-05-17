@@ -225,6 +225,7 @@
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -235,7 +236,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
@@ -248,6 +251,7 @@
         urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -257,7 +261,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
