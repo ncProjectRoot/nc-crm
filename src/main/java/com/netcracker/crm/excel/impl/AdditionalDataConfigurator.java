@@ -4,7 +4,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.excel.additional.AdditionalData;
 import com.netcracker.crm.excel.additional.DateSelection;
-import com.netcracker.crm.excel.additional.FirstColumnSelection;
+import com.netcracker.crm.excel.additional.FirstColumnName;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -18,7 +18,7 @@ public class AdditionalDataConfigurator {
     public AdditionalData numberOfOrdersInDates(List<Order> orders, LocalDateTime date_start, LocalDateTime date_finish) {
         DateSelection dateSelection = getDateSelection(date_start, date_finish);
         List<Object> objects = new ArrayList<>(orders);
-        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnSelection.Full_customer_name);
+        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Full_customer_name);
         additionalData.setDataName("Number of orders made in dates");
         return additionalData;
     }
@@ -26,12 +26,36 @@ public class AdditionalDataConfigurator {
     public AdditionalData numberOfOrderStatusesInDates(List<Order> orders, LocalDateTime date_start, LocalDateTime date_finish) {
         DateSelection dateSelection = getDateSelection(date_start, date_finish);
         List<Object> objects = new ArrayList<>(orders);
-        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnSelection.Order_status);
+        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Order_status);
         additionalData.setDataName("Number of order statuses in dates");
         return additionalData;
     }
 
-    private AdditionalData countByDate_addData(List<Object> objects, DateSelection dateSelection, FirstColumnSelection fcs){
+    public AdditionalData numberOfComplaintsInDates(List<Complaint> complaints, LocalDateTime date_start, LocalDateTime date_finish) {
+        DateSelection dateSelection = getDateSelection(date_start, date_finish);
+        List<Object> objects = new ArrayList<>(complaints);
+        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Full_customer_name);
+        additionalData.setDataName("Number of complaints made in dates");
+        return additionalData;
+    }
+
+    public AdditionalData numberOfComplaintStatusesInDates(List<Complaint> complaints, LocalDateTime date_start, LocalDateTime date_finish) {
+        DateSelection dateSelection = getDateSelection(date_start, date_finish);
+        List<Object> objects = new ArrayList<>(complaints);
+        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Complaint_status);
+        additionalData.setDataName("Number of complaint statuses in dates");
+        return additionalData;
+    }
+
+    public AdditionalData numberOfComplaintsOrderStatusesInDates(List<Complaint> complaints, LocalDateTime date_start, LocalDateTime date_finish) {
+        DateSelection dateSelection = getDateSelection(date_start, date_finish);
+        List<Object> objects = new ArrayList<>(complaints);
+        AdditionalData additionalData = countByDate_addData(objects, dateSelection, FirstColumnName.Order_status);
+        additionalData.setDataName("Number of order statuses in dates");
+        return additionalData;
+    }
+
+    private AdditionalData countByDate_addData(List<Object> objects, DateSelection dateSelection, FirstColumnName fcs){
         String first_column_title = fcs.toString();
         List<String> first_column_values = new ArrayList<>();
         Map<String, List<Integer>> monthYearValues = new LinkedHashMap();
@@ -77,7 +101,7 @@ public class AdditionalDataConfigurator {
         }
     }
 
-    private String getStringFirstColValue(Object o, FirstColumnSelection fcs){
+    private String getStringFirstColValue(Object o, FirstColumnName fcs){
         if(o instanceof Order){
             Order order = (Order) o;
             switch (fcs) {
@@ -93,6 +117,19 @@ public class AdditionalDataConfigurator {
         }
         else if(o instanceof Complaint){
             Complaint complaint = (Complaint) o;
+            switch (fcs) {
+                case Full_customer_name: {
+                    return complaint.getCustomer().getFirstName() + " "
+                            + complaint.getCustomer().getMiddleName() + " "
+                            + complaint.getCustomer().getLastName();
+                }
+                case Order_status: {
+                    return complaint.getOrder().getStatus().getName();
+                }
+                case Complaint_status: {
+                    return complaint.getStatus().getName();
+                }
+            }
         }
         return "First_col_value_not_found";
     }

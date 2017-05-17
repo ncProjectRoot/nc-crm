@@ -1,13 +1,8 @@
 package com.netcracker.crm.excel.impl;
 
 import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.excel.additional.AdditionalData;
-import com.netcracker.crm.excel.additional.DateSelection;
-import com.netcracker.crm.excel.additional.FirstColumnSelection;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.*;
 
 /**
@@ -15,7 +10,7 @@ import java.util.*;
  */
 public class OrderConverter {
 
-    Map<String, List<?>> convertOrders(List<Order> orders){
+    LinkedHashMap<String, List<?>> convertOrders(List<Order> orders){
         List<String> customer_fullName = new ArrayList<>();
         List<Long> order_id = new ArrayList<>();
         List<LocalDateTime> order_date_finish = new ArrayList<>();
@@ -26,9 +21,7 @@ public class OrderConverter {
         List<Double> product_discount = new ArrayList<>();
 
         for (Order order: orders) {
-            String fullName = order.getCustomer().getFirstName();
-            fullName +=" " + order.getCustomer().getMiddleName();
-            fullName +=" " + order.getCustomer().getLastName();
+            String fullName = getFullName(order);
             customer_fullName.add(fullName);
             order_id.add(order.getId());
             order_date_finish.add(order.getDate());
@@ -52,5 +45,11 @@ public class OrderConverter {
         data.put("Product_default_price", product_default_price);
         data.put("Product_discount_percentage", product_discount);
         return data;
+    }
+
+    private String getFullName(Order order){
+        return order.getCustomer().getFirstName()
+                +" " + order.getCustomer().getMiddleName()
+                +" " + order.getCustomer().getLastName();
     }
 }

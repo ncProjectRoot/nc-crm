@@ -31,7 +31,7 @@ public class OrderReportConfigurator {
 
         OrderConverter orderConverter = new OrderConverter();
         AdditionalDataConfigurator adc = new AdditionalDataConfigurator();
-        LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertOrders(orders);
+        LinkedHashMap<String, List<?>> data = orderConverter.convertOrders(orders);
         AdditionalData additionalData = adc.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
         AdditionalData additionalData1 = adc.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
         List<AdditionalData> additionalDataList = new ArrayList<>();
@@ -47,7 +47,7 @@ public class OrderReportConfigurator {
 
         OrderConverter orderConverter = new OrderConverter();
         AdditionalDataConfigurator adc = new AdditionalDataConfigurator();
-        LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertOrders(orders);
+        LinkedHashMap<String, List<?>> data = orderConverter.convertOrders(orders);
         AdditionalData additionalData = adc.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
         AdditionalData additionalData1 = adc.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
         List<AdditionalData> additionalDataList = new ArrayList<>();
@@ -63,7 +63,7 @@ public class OrderReportConfigurator {
         String reportName = "Orders_of_several_customers";
         OrderConverter orderConverter = new OrderConverter();
         AdditionalDataConfigurator adc = new AdditionalDataConfigurator();
-        LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertOrders(orders);
+        LinkedHashMap<String, List<?>> data = orderConverter.convertOrders(orders);
         AdditionalData additionalData = adc.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
         AdditionalData additionalData1 = adc.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
         List<AdditionalData> additionalDataList = new ArrayList<>();
@@ -77,9 +77,10 @@ public class OrderReportConfigurator {
                 (csr_id, customer_id,date_finish_first,date_finish_last);
 
         String reportName = "Orders_of_several_customers";
+
         OrderConverter orderConverter = new OrderConverter();
         AdditionalDataConfigurator adc = new AdditionalDataConfigurator();
-        LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertOrders(orders);
+        LinkedHashMap<String, List<?>> data = orderConverter.convertOrders(orders);
         AdditionalData additionalData = adc.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
         AdditionalData additionalData1 = adc.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
         List<AdditionalData> additionalDataList = new ArrayList<>();
@@ -93,7 +94,7 @@ public class OrderReportConfigurator {
         String reportName = "Orders_of_all_customers";
         OrderConverter orderConverter = new OrderConverter();
         AdditionalDataConfigurator adc = new AdditionalDataConfigurator();
-        LinkedHashMap<String, List<?>> data = (LinkedHashMap<String, List<?>>) orderConverter.convertOrders(orders);
+        LinkedHashMap<String, List<?>> data = orderConverter.convertOrders(orders);
         AdditionalData additionalData = adc.numberOfOrdersInDates(orders, date_finish_first, date_finish_last);
         AdditionalData additionalData1 = adc.numberOfOrderStatusesInDates(orders, date_finish_first, date_finish_last);
         List<AdditionalData> additionalDataList = new ArrayList<>();

@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -284,6 +285,38 @@ public class ComplaintDaoImpl implements ComplaintDao {
         params.addValue(PARAM_COMPLAINT_TITLE, "%" + likeTitle + "%");
         params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, custId);
         return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_FOR_CONTACT_PERSON, params, String.class);
+    }
+
+    @Override
+    public List<Complaint> findComplaintsByPmgIdAndArrayOfCustomerIdBetweenDates
+            (Long pmg_id, List<Long> customer_id_list, LocalDateTime date_first, LocalDateTime date_last) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID_LIST, customer_id_list);
+        params.addValue(PARAM_COMPLAINT_DATE_FIRST, date_first);
+        params.addValue(PARAM_COMPLAINT_DATE_LAST, date_last);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_ARRAY_OF_CUSTOMER_ID_BETWEEN_DATES, params, complaintWithDetailExtractor);
+    }
+
+    @Override
+    public List<Complaint> findComplaintsByPmgIdAndCustomerIdBetweenDates
+            (Long pmg_id, Long customer_id, LocalDateTime date_first, LocalDateTime date_last) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
+        params.addValue(PARAM_COMPLAINT_CUSTOMER_ID, customer_id);
+        params.addValue(PARAM_COMPLAINT_DATE_FIRST, date_first);
+        params.addValue(PARAM_COMPLAINT_DATE_LAST, date_last);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_CUSTOMER_ID_BETWEEN_DATES   , params, complaintWithDetailExtractor);
+    }
+
+    @Override
+    public List<Complaint> findComplaintsByPmgIdBetweenDates
+            (Long pmg_id, LocalDateTime date_first, LocalDateTime date_last) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PARAM_COMPLAINT_PMG_ID, pmg_id);
+        params.addValue(PARAM_COMPLAINT_DATE_FIRST, date_first);
+        params.addValue(PARAM_COMPLAINT_DATE_LAST, date_last);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_BETWEEN_DATES, params, complaintWithDetailExtractor);
     }
 
     @Autowired

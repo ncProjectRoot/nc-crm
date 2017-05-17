@@ -21,6 +21,10 @@ public final class ComplaintSqlQuery {
     public static final String PARAM_COMPLAINT_ROW_PRODUCT_STATUS = "product_status_id";
     public static final String PARAM_COMPLAINT_ROW_ORDER_STATUS = "order_status_id";
 
+    public static final String PARAM_COMPLAINT_DATE_FIRST = "date_first";
+    public static final String PARAM_COMPLAINT_DATE_LAST = "date_last";
+    public static final String PARAM_COMPLAINT_CUSTOMER_ID_LIST = "customer_id_list";
+
     public static final String SQL_FIND_COMPLAINT_BY_ID = "" +
             "SELECT * FROM complaint " +
             "WHERE id = :id;";
@@ -88,5 +92,32 @@ public final class ComplaintSqlQuery {
 
 
     public static final String SQL_DELETE_COMPLAINT = "DELETE FROM complaint WHERE id = :id;";
+
+
+
+
+
+    public static final String SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_CUSTOMER_ID_BETWEEN_DATES =  ""
+            +"SELECT id, title, message, status_id, date, "
+            +"customer_id, pmg_id, order_id FROM complaint "
+            +"WHERE pmg_id = :pmg_id "
+            +"AND customer_id = :customer_id AND date BETWEEN "
+            +":date_first AND :date_last"
+            +"ORDER BY date desc;";
+
+    public static final String SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_AND_ARRAY_OF_CUSTOMER_ID_BETWEEN_DATES = ""
+            +"SELECT id, title, message, status_id, date, "
+            +"customer_id, pmg_id, order_id FROM complaint "
+            +"WHERE pmg_id = :pmg_id "
+            +"AND customer_id IN (:customer_id_list) AND date BETWEEN "
+            +":date_first AND :date_last"
+            +"ORDER BY date desc;";
+
+    public static final String SQL_FIND_ALL_COMPLAINTS_BY_PMG_ID_BETWEEN_DATES = ""
+            +"SELECT id, title, message, status_id, date, "
+            +"customer_id, pmg_id, order_id FROM complaint "
+            +"WHERE pmg_id = :pmg_id "
+            +"AND date BETWEEN :date_first AND :date_last"
+            +"ORDER BY date desc;";
 
 }
