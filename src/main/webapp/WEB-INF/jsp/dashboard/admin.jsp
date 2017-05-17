@@ -140,7 +140,6 @@
     var lineOption = {
         low: 0,
         height: 300,
-        // showArea: true,
         showPoint: true,
         fullWidth: true,
         chartPadding: 20,
@@ -150,8 +149,8 @@
     var lineLabelsForOrders = [];
     var lineLabelsForComplaints = [];
     var animateLine = function (data) {
-        seq++;
         if (data.type === 'line' || data.type === 'area') {
+            seq++;
             if (data.type === 'line') {
                 var obj = $(data.element._node);
                 var index = "a";
@@ -180,6 +179,7 @@
                 }
             });
         } else if (data.type === 'point') {
+            seq++;
             data.element.animate({
                 x1: {
                     begin: seq * delays,
