@@ -186,6 +186,7 @@
                 </div>
             </form>
         </div>
+        <c:if test="${product.status.name!='OUTDATED'}">
         <a class="modal-trigger brown-text change-status-trigger" href="#change-status"><i class='material-icons medium'>cached</i></a>
         <div id="change-status" class="modal modal-fixed-footer status-modal">
             <form id="change-status-form">
@@ -209,6 +210,7 @@
                 </div>
             </form>
         </div>
+        </c:if>
     </sec:authorize>
     <c:if test="${product.discount.active}">
         <img class="discount-img" src="${discountUrl}"/>
