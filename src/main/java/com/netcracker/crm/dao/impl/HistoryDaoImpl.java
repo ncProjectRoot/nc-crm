@@ -64,7 +64,7 @@ public class HistoryDaoImpl implements HistoryDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_NEW_STATUS_ID, history.getNewStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_HISTORY_PRODUCT_ID, productId);
@@ -125,7 +125,7 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_HISTORY_ID, historyId)
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_NEW_STATUS_ID, history.getNewStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_HISTORY_PRODUCT_ID, productId);
@@ -228,9 +228,9 @@ public class HistoryDaoImpl implements HistoryDao {
                 history.setDateChangeStatus(rs.getTimestamp(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDateTime());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
 
-                long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
+                long statusId = rs.getLong(PARAM_HISTORY_NEW_STATUS_ID);
                 if (statusId > 0) {
-                    history.setOldStatus(Status.getStatusByID(statusId));
+                    history.setNewStatus(Status.getStatusByID(statusId));
                 }
 
                 history.setOrderId(rs.getLong(PARAM_HISTORY_ORDER_ID));
