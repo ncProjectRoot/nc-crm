@@ -101,7 +101,7 @@
             historyUL.children().remove();
             $.each(data, function (i, item) {
                 var li = $("<li>").addClass("collection-item")
-                    .append("Old status - <span>" + item.oldStatus + "</span>, time - " + item.dateChangeStatus
+                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - " + item.dateChangeStatus
                         + ", message - " + item.descChangeStatus);
                 historyUL.append(li);
             });
