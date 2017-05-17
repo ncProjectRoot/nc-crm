@@ -13,10 +13,6 @@
         background-color: #fff;
     }
 
-    .date-wrapper {
-        position: relative;
-    }
-
     .content-body .selected-products {
         margin: 0 auto;
         float: none;
@@ -27,8 +23,7 @@
     }
 
     .graph .ct-horizontal {
-        margin-left: -38px;
-        white-space: nowrap;
+        margin-left: -7px;
     }
 
     .ct-label {
@@ -64,13 +59,21 @@
                             <input type="hidden" id="product-hidden-input-for-orders" name="elementIds"/>
                             <label for="product-input-for-orders">Select products</label>
                         </div>
-                        <div class="input-field col s10 m3 date-wrapper">
+                        <div class="input-field col s10 m2">
                             <input name="fromDate" id="orders-from-date" type="date" class="orders-datepicker">
                             <label for="orders-from-date">From</label>
                         </div>
-                        <div class="input-field col s10 m3">
+                        <div class="input-field col s10 m2">
                             <input name="toDate" id="orders-to-date" type="date" class="orders-datepicker">
                             <label for="orders-to-date">To</label>
+                        </div>
+                        <div class="input-field col s10 m2">
+                            <select name="dateType" id="orders-date-type">
+                                <option value="DAYS" selected>Day</option>
+                                <option value="MONTHS">Month</option>
+                                <option value="YEARS">Year</option>
+                            </select>
+                            <label>Type</label>
                         </div>
                         <div class="col s10 m2 col-submit">
                             <button class="waves-effect waves-light btn" type="submit" name="action">Update</button>
@@ -107,13 +110,21 @@
                             <input type="hidden" id="product-hidden-input-for-complaints" name="elementIds"/>
                             <label for="product-input-for-complaints">Select products</label>
                         </div>
-                        <div class="input-field col s10 m3 date-wrapper">
+                        <div class="input-field col s10 m2">
                             <input name="fromDate" id="complaints-from-date" type="date" class="complaints-datepicker">
                             <label for="complaints-from-date">From</label>
                         </div>
-                        <div class="input-field col s10 m3">
+                        <div class="input-field col s10 m2">
                             <input name="toDate" id="complaints-to-date" type="date" class="complaints-datepicker">
                             <label for="complaints-to-date">To</label>
+                        </div>
+                        <div class="input-field col s10 m2">
+                            <select name="dateType" id="complaints-date-type">
+                                <option value="DAYS" selected>Day</option>
+                                <option value="MONTHS">Month</option>
+                                <option value="YEARS">Year</option>
+                            </select>
+                            <label>Type</label>
                         </div>
                         <div class="col s10 m2 col-submit">
                             <button class="waves-effect waves-light btn" type="submit" name="action">Update</button>
@@ -220,9 +231,11 @@
         });
     }
 
+    $('select').material_select();
+
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
-    $('#orders-from-date').pickadate({
+    var $ordersFromDate = $('#orders-from-date').pickadate({
         selectMonths: true,
         format: 'yyyy-mm-dd',
         max: today,
@@ -231,7 +244,7 @@
         select: lastWeek
     }).pickadate('picker').set('select', lastWeek);
 
-    $('#orders-to-date').pickadate({
+    var $ordersToDate = $('#orders-to-date').pickadate({
         selectMonths: true,
         format: 'yyyy-mm-dd',
         max: today,
@@ -241,12 +254,42 @@
         select: today
     }).pickadate('picker').set('select', today);
 
-    $('.orders-datepicker').on('change', function () {
-        if ($(this).attr('id') === 'orders-from-date') {
-            $('#orders-to-date').pickadate('picker').set('min', $(this).val());
+
+    $('#orders-date-type').on('change', function(e) {
+        switch ($(this).val()) {
+            case "DAYS":
+                $ordersFromDate.stop();
+                $('#orders-from-date').attr("type", "text");
+                $('#orders-from-date').val(lastWeek.getFullYear());
+                $ordersToDate.stop();
+                $('#orders-to-date').attr("type", "text");
+                $('#orders-to-date').val(today.getFullYear());
+                break;
+            case "MONTHS":
+                $ordersFromDate.stop();
+                $('#orders-from-date').attr("type", "text");
+                $('#orders-from-date').val(lastWeek.getFullYear() + "-" + (lastWeek.getMonth() < 10 ? '0' : '') + lastWeek.getMonth());
+                $ordersToDate.stop();
+                $('#orders-to-date').attr("type", "text");
+                $('#orders-to-date').val(today.getFullYear() + "-" + (today.getMonth() < 10 ? '0' : '') + today.getMonth());
+                break;
+            case "DAYS":
+                $ordersFromDate.start();
+                $ordersFromDate.set('select', lastWeek);
+                $ordersToDate.start();
+                $ordersToDate.set('select', today);
+                break;
         }
-        if ($(this).attr('id') === 'orders-to-date') {
-            $('#orders-from-date').pickadate('picker').set('max', $(this).val());
+    });
+
+    $('.orders-datepicker').on('change', function () {
+        if ($('#orders-date-type').val() == "DAYS") {
+            if ($(this).attr('id') === 'orders-from-date') {
+                $ordersToDate.set('min', $(this).val());
+            }
+            if ($(this).attr('id') === 'orders-to-date') {
+                $ordersFromDate.set('max', $(this).val());
+            }
         }
     });
 
@@ -271,7 +314,7 @@
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_PMG')">
 
-    $('#complaints-from-date').pickadate({
+    var $complaintsFromDate = $('#complaints-from-date').pickadate({
         selectMonths: true,
         format: 'yyyy-mm-dd',
         max: today,
@@ -280,7 +323,7 @@
         select: lastWeek
     }).pickadate('picker').set('select', lastWeek);
 
-    $('#complaints-to-date').pickadate({
+    var $complaintsToDate = $('#complaints-to-date').pickadate({
         selectMonths: true,
         format: 'yyyy-mm-dd',
         max: today,
@@ -290,12 +333,41 @@
         select: today
     }).pickadate('picker').set('select', today);
 
-    $('.complaints-datepicker').on('change', function () {
-        if ($(this).attr('id') === 'complaints-from-date') {
-            $('#complaints-to-date').pickadate('picker').set('min', $(this).val());
+    $('#complaints-date-type').on('change', function(e) {
+        switch ($(this).val()) {
+            case "DAYS":
+                $complaintsFromDate.stop();
+                $('#complaints-from-date').attr("type", "text");
+                $('#complaints-from-date').val(lastWeek.getFullYear());
+                $complaintsToDate.stop();
+                $('#complaints-to-date').attr("type", "text");
+                $('#complaints-to-date').val(today.getFullYear());
+                break;
+            case "MONTHS":
+                $complaintsFromDate.stop();
+                $('#complaints-from-date').attr("type", "text");
+                $('#complaints-from-date').val(lastWeek.getFullYear() + "-" + (lastWeek.getMonth() < 10 ? '0' : '') + lastWeek.getMonth());
+                $complaintsToDate.stop();
+                $('#complaints-to-date').attr("type", "text");
+                $('#complaints-to-date').val(today.getFullYear() + "-" + (today.getMonth() < 10 ? '0' : '') + today.getMonth());
+                break;
+            case "DAYS":
+                $complaintsFromDate.start();
+                $complaintsFromDate.set('select', lastWeek);
+                $complaintsToDate.start();
+                $complaintsToDate.set('select', today);
+                break;
         }
-        if ($(this).attr('id') === 'complaints-to-date') {
-            $('#complaints-from-date').pickadate('picker').set('max', $(this).val());
+    });
+
+    $('.complaints-datepicker').on('change', function () {
+        if ($('#complaints-date-type').val() == "DAYS") {
+            if ($(this).attr('id') === 'complaints-from-date') {
+                $complaintsToDate.set('min', $(this).val());
+            }
+            if ($(this).attr('id') === 'complaints-to-date') {
+                $complaintsFromDate.set('max', $(this).val());
+            }
         }
     });
 

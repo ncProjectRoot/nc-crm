@@ -25,10 +25,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
- *
  * @author YARUS
  */
 @Repository
@@ -222,7 +220,7 @@ public class HistoryDaoImpl implements HistoryDao {
             beginSql = BEGIN_SQL_GRAPH_FOR_COMPLAINTS_FOR_ALL_PRODUCTS;
         }
 
-        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto.getElementIds(), ComplaintStatus.OPEN.getId());
+        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto, ComplaintStatus.OPEN.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
@@ -237,20 +235,22 @@ public class HistoryDaoImpl implements HistoryDao {
             beginSql = BEGIN_SQL_GRAPH_FOR_ORDER_FOR_ALL_PRODUCTS;
         }
 
-        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto.getElementIds(), OrderStatus.NEW.getId());
+        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto, OrderStatus.NEW.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
-    private String createSqlBetweenDateChangeAndProductIds(String beginSgl, List<Long> elementIds, Long statusId) {
+    private String createSqlBetweenDateChangeAndProductIds(String beginSgl, GraphDto graphDto, Long statusId) {
         StringBuilder stringBuilder = new StringBuilder();
+        beginSgl = beginSgl.replace(PARAM_GRAPH_TYPE_DATE_CHANGE, graphDto.getTypeDateChange());
         stringBuilder.append(beginSgl);
-        for (int i = 0; i < elementIds.size(); i++) {
+
+        for (int i = 0; i < graphDto.getElementIds().size(); i++) {
             if (i == 0) {
                 stringBuilder.append(" AND ( ");
             }
             stringBuilder.append(" o.product_id = ");
-            stringBuilder.append(elementIds.get(i));
-            if (i == elementIds.size() - 1) {
+            stringBuilder.append(graphDto.getElementIds().get(i));
+            if (i == graphDto.getElementIds().size() - 1) {
                 stringBuilder.append(" ) ");
             } else {
                 stringBuilder.append(" OR ");
@@ -258,7 +258,7 @@ public class HistoryDaoImpl implements HistoryDao {
         }
         stringBuilder.append(" AND h.new_status_id = ");
         stringBuilder.append(statusId);
-        if (elementIds.isEmpty()) {
+        if (graphDto.getElementIds().isEmpty()) {
             stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY_FOR_ALL_PRODUCTS);
         } else {
             stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY);
@@ -315,13 +315,13 @@ public class HistoryDaoImpl implements HistoryDao {
             this.fromDate = fromDate;
             this.toDate = toDate;
 
-            long daysBetweenFromTo = DAYS.between(fromDate, toDate) + 1;
+            long betweenFromTo = graphDto.getBetweenDates(fromDate, toDate) + 1;
             int lengthSeries = 1;
             if (!graphDto.getElementIds().isEmpty()) {
                 lengthSeries = graphDto.getElementIds().size();
             }
             for (int i = 0; i < lengthSeries; i++) {
-                series.add(new ArrayList<>(Collections.nCopies((int) daysBetweenFromTo, 0L)));
+                series.add(new ArrayList<>(Collections.nCopies((int) betweenFromTo, 0L)));
             }
         }
 
@@ -346,7 +346,7 @@ public class HistoryDaoImpl implements HistoryDao {
             if (!fromDate.equals(toDate)) {
                 checkDate(toDate);
             }
-            labels.add(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            addLabels();
 
             graphDto.setLabels(labels);
             graphDto.setSeries(series);
@@ -357,10 +357,26 @@ public class HistoryDaoImpl implements HistoryDao {
             if (dataChange.equals(fromDate)) {
                 return;
             } else {
-                labels.add(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                fromDate = fromDate.plusDays(1);
+                addLabels();
             }
             checkDate(dataChange);
+        }
+
+        private void addLabels() {
+            switch (graphDto.getDateType()) {
+                case YEARS:
+                    labels.add(fromDate.format(DateTimeFormatter.ofPattern("yyyy")));
+                    fromDate = fromDate.plusYears(1);
+                    break;
+                case MONTHS:
+                    labels.add(fromDate.format(DateTimeFormatter.ofPattern("MM")));
+                    fromDate = fromDate.plusMonths(1);
+                    break;
+                case DAYS:
+                    labels.add(fromDate.format(DateTimeFormatter.ofPattern("dd")));
+                    fromDate = fromDate.plusDays(1);
+                    break;
+            }
         }
     }
 }

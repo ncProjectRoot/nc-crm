@@ -164,7 +164,7 @@ public class ComplaintServiceImpl implements ComplaintService {
 
     @Override
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
         LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
         LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
         return historyDao.findComplaintHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
