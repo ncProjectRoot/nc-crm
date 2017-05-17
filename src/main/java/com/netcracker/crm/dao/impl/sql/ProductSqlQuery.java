@@ -22,6 +22,8 @@ public final class ProductSqlQuery {
     //BULK
     public static final String PARAM_PRODUCT_IDS = "product_ids";
 
+    public static final String PARAM_PATTERN = "pattern";
+
     public static final String SQL_UPDATE_PRODUCT = "UPDATE product "
             + "SET title = :title, default_price = :default_price, "
             + "status_id = :status_id, description = :description, "
@@ -44,39 +46,35 @@ public final class ProductSqlQuery {
             + "status_id, description, discount_id, group_id "
             + "FROM product "
             + "WHERE group_id = :group_id;";
-    public static final String SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP = ""
+
+    public static final String SQL_FIND_PRODUCT_WITHOUT_GROUP_BY_ID_OR_TITLE = ""
             + "SELECT id, title, default_price,"
             + "status_id, description, discount_id, group_id "
             + "FROM product "
-            + "WHERE group_id IS null;";
+            + "WHERE group_id IS null AND concat(id, ' ', title) ILIKE :pattern;";
 
-    public static final String SQL_FIND_PRODUCT_TITLES_LIKE_TITLE = ""
-            + "SELECT title "
+    public static final String SQL_FIND_ALL_PRODUCT_BY_ID_OR_TITLE = ""
+            + "SELECT id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
             + "FROM product "
-            + "WHERE title ILIKE :title;";
+            + "WHERE concat(id, ' ', title) ILIKE :pattern;";
 
-    public static final String SQL_FIND_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
-            + "SELECT title "
-            + "FROM product p "
-            + "WHERE id IN ( "
-            + " SELECT product_id "
-            + " FROM orders"
-            + " WHERE customer_id = :customer_id "
-            + ") AND title ILIKE :title;";
 
-    public static final String SQL_FIND_ACTUAL_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
-            + "SELECT title "
+    public static final String SQL_FIND_ACTUAL_PRODUCT_BY_ID_OR_TITLE_AND_CUSTOMER_ID = ""
+            + "SELECT p.id, title, default_price,"
+            + "status_id, description, discount_id, group_id "
             + "FROM product p "
             + "INNER JOIN statuses s ON p.status_id = s.id "
             + "WHERE p.id IN ( "
             + " SELECT product_id "
             + " FROM orders"
             + " WHERE customer_id = :customer_id "
-            + ") AND title ILIKE :title "
+            + ") AND concat(p.id, ' ', title) ILIKE :pattern "
             + "AND s.name = 'ACTUAL';";
 
-    public static final String SQL_FIND_POSSIBLE_PRODUCT_TITLES_BY_CUSTOMER_ID_LIKE_TITLE = ""
-            + "SELECT p.title "
+    public static final String SQL_FIND_POSSIBLE_PRODUCT_BY_ID_OR_TITLE_AND_CUSTOMER_ID = ""
+            + "SELECT p.id, title, default_price,"
+            + "status_id, description, p.discount_id, group_id "
             + "FROM product p "
             + "INNER JOIN statuses s ON p.status_id = s.id "
             + "LEFT JOIN groups g ON p.group_id = g.id "
@@ -89,7 +87,7 @@ public final class ProductSqlQuery {
             + " SELECT product_id "
             + " FROM orders "
             + " WHERE customer_id = :customer_id"
-            + ");";
+            + ") AND concat(p.id, ' ', title) ILIKE :pattern;";
 
     public static final String SQL_HAS_CUSTOMER_ACCESS_TO_PRODUCT = ""
             + "SELECT CAST(COUNT(p.id) AS BIT) "

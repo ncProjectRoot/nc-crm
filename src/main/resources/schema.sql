@@ -81,7 +81,7 @@ ALTER TABLE groups
 CREATE TABLE history
 (
   id                 BIGSERIAL    NOT NULL,
-  old_status_id      INTEGER      NOT NULL,
+  new_status_id      INTEGER      NOT NULL,
   date_change_status TIMESTAMP(0) NOT NULL,
   desc_change_status VARCHAR(100) NOT NULL,
   order_id           INTEGER,
@@ -365,15 +365,16 @@ ON DELETE CASCADE;
 
 
 ALTER TABLE history
-  ADD CONSTRAINT history_statuses_FK FOREIGN KEY
-  (
-    old_status_id
-  )
-REFERENCES statuses
-  (
-    id
-  )
-ON DELETE CASCADE;
+    ADD CONSTRAINT history_statuses_FK FOREIGN KEY
+    (
+     new_status_id
+    )
+    REFERENCES statuses
+    (
+     id
+    )
+    ON DELETE CASCADE
+;
 
 
 ALTER TABLE orders

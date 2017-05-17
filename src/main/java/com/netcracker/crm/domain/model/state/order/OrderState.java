@@ -27,7 +27,7 @@ import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.state.order.states.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.netcracker.crm.exception.lifecycle.order.UnsupportedTransitionException;
 
 import java.time.LocalDateTime;
 
@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
  * OrderState interface.
  */
 public class OrderState {
-
+    protected static final String DESC_ORDER_NEW = "New order was created.";
     protected static final String DESC_ORDER_PAUSED = "Order was paused.";
     protected static final String DESC_ORDER_ACTIVATED = "Order was successful activated and ready to use.";
     protected static final String DESC_ORDER_PROCESSING = "Order is assigned to CSR. Processing is started.";
@@ -44,6 +44,7 @@ public class OrderState {
     protected static final String DESC_REQUEST_TO_PAUSE_ORDER = "Request to pause order.";
     protected static final String DESC_REQUEST_TO_DISABLE_ORDER = "Request to disable order.";
 
+    protected String stateName;
     protected Order order;
 
     public OrderState(Order order) {
@@ -51,39 +52,39 @@ public class OrderState {
     }
 
     public History newOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History processOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History activateOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History pauseOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History resumeOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History disableOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History requestToResumeOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History requestToPauseOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     public History requestToDisableOrder() {
-        throw new NotImplementedException();
+        throw new UnsupportedTransitionException(stateName);
     }
 
     protected Order getOrder() {
@@ -96,7 +97,7 @@ public class OrderState {
         history.setOrder(this.order);
         history.setDateChangeStatus(LocalDateTime.now());
         history.setDescChangeStatus(description);
-        history.setOldStatus(order.getStatus());
+        history.setNewStatus(order.getStatus());
 
         return history;
     }
@@ -107,7 +108,6 @@ public class OrderState {
      *
      * @param status - order status
      * @param order  - restored object
-     * @return - appropriate order state
      */
     public static void setStateForOrder(OrderStatus status, Order order) {
         switch (status) {

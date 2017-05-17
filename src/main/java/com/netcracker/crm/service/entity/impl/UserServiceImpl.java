@@ -7,6 +7,7 @@ import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.dto.mapper.UserMap;
 import com.netcracker.crm.dto.row.UserRowDto;
@@ -115,8 +116,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<String> getUserLastNamesByPattern(String pattern) {
-        return userDao.findUserLastNamesByPattern(pattern);
+    public List<AutocompleteDto> getUserLastNamesByPattern(String pattern) {
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (String userLastName: userDao.findUserLastNamesByPattern(pattern)) {
+            AutocompleteDto autocompleteDto = new AutocompleteDto();
+            autocompleteDto.setValue(userLastName);
+            result.add(autocompleteDto);
+        }
+        return result;
     }
 
     private String createUserRegistrationToken(User user) {

@@ -3,6 +3,7 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
 import com.netcracker.crm.service.entity.UserService;
@@ -44,7 +45,7 @@ public class UserRestController {
 
     @Autowired
     public UserRestController(UserService userService, UserValidator userValidator,
-                              BindingResultHandler bindingResultHandler, ResponseGenerator generator) {
+                              BindingResultHandler bindingResultHandler, ResponseGenerator<User> generator) {
         this.userService = userService;
         this.userValidator = userValidator;
         this.bindingResultHandler = bindingResultHandler;
@@ -64,7 +65,7 @@ public class UserRestController {
 
         if (userId > 0) {
             log.info("User with id: " + userId + " successful created.");
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(userId, SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
         }
 
         log.error("User was not created.");
@@ -77,9 +78,9 @@ public class UserRestController {
         return new ResponseEntity<>(userService.getUsers(userRowRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/lastNames")
+    @GetMapping("/autocomplete")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<String>> getLastNames(String pattern) {
+    public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern) {
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern), HttpStatus.OK);
     }
 

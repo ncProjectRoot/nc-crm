@@ -2,6 +2,7 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.HistoryProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class HistoryDaoImpl implements HistoryDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_NEW_STATUS_ID, history.getNewStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_HISTORY_PRODUCT_ID, productId);
@@ -124,7 +125,7 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_HISTORY_ID, historyId)
                 .addValue(PARAM_HISTORY_DATE_CHANGE_STATUS, history.getDateChangeStatus())
                 .addValue(PARAM_HISTORY_DESC_CHANGE_STATUS, history.getDescChangeStatus())
-                .addValue(PARAM_HISTORY_OLD_STATUS_ID, history.getOldStatus().getId())
+                .addValue(PARAM_HISTORY_NEW_STATUS_ID, history.getNewStatus().getId())
                 .addValue(PARAM_HISTORY_ORDER_ID, orderId)
                 .addValue(PARAM_HISTORY_COMPLAINT_ID, complaintId)
                 .addValue(PARAM_HISTORY_PRODUCT_ID, productId);
@@ -222,30 +223,19 @@ public class HistoryDaoImpl implements HistoryDao {
         public List<History> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<History> allHistory = new ArrayList<>();
             while (rs.next()) {
-                History history = new History();
+                HistoryProxy history = new HistoryProxy(orderDao, complaintDao, productDao);
                 history.setId(rs.getLong(PARAM_HISTORY_ID));
                 history.setDateChangeStatus(rs.getTimestamp(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDateTime());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
 
-                long statusId = rs.getLong(PARAM_HISTORY_OLD_STATUS_ID);
+                long statusId = rs.getLong(PARAM_HISTORY_NEW_STATUS_ID);
                 if (statusId > 0) {
-                    history.setOldStatus(Status.getStatusByID(statusId));
-                }
-                           
-                Long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
-                if (orderId > 0) {
-                    history.setOrder(orderDao.findById(orderId));
+                    history.setNewStatus(Status.getStatusByID(statusId));
                 }
 
-                Long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
-                if (complaintId > 0) {
-                    history.setComplaint(complaintDao.findById(complaintId));
-                }
-
-                Long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
-                if (productId > 0) {
-                    history.setProduct(productDao.findById(productId));
-                }
+                history.setOrderId(rs.getLong(PARAM_HISTORY_ORDER_ID));
+                history.setComplaintId(rs.getLong(PARAM_HISTORY_COMPLAINT_ID));
+                history.setProductId(rs.getLong(PARAM_HISTORY_PRODUCT_ID));
                 allHistory.add(history);
             }
             return allHistory;
