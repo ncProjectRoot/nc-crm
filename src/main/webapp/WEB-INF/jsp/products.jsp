@@ -197,19 +197,24 @@
             <div id="bulk-change-modal" class="modal bottom-sheet">
                 <div class="modal-content">
                     <div class="row">
-                        <div class="col s3 offset-s2">
+                        <div id="bulk-change-modal-title" class="col s3 offset-s2">
                             <h4>Edit Selected Items</h4>
                             <p>Choose field to edit it for each selected item.</p>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-status">Status<i class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-price">Price<i class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-discount">Discount<i class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-group">Group<i class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-description">Description<i class="chip-close material-icons">close</i></div>
                         </div>
                         <div class="col s7">
                             <div class="row">
                                 <div class="col s12">
                                     <ul class="tabs">
-                                        <li class="tab col s2"><a class="active" href="#test1">Status</a></li>
-                                        <li class="tab col s2"><a href="#test2">Price</a></li>
-                                        <li class="tab col s3"><a href="#test3">Discount</a></li>
-                                        <li class="tab col s2"><a href="#test4">Group</a></li>
-                                        <li class="tab col s3"><a href="#test5">Description</a></li>
+                                        <li class="tab col s2 bulk-modal-tab"><a class="active" href="#test1">Status</a></li>
+                                        <li class="tab col s2 bulk-modal-tab"><a href="#test2">Price</a></li>
+                                        <li class="tab col s3 bulk-modal-tab"><a href="#test3">Discount</a></li>
+                                        <li class="tab col s2 bulk-modal-tab"><a href="#test4">Group</a></li>
+                                        <li class="tab col s3 bulk-modal-tab"><a href="#test5">Description</a></li>
                                     </ul>
                                 </div>
                                 <form id="bulk-change-form">
@@ -219,7 +224,7 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">cached</i>
-                                                        <input type="hidden" class="is-changed-checkbox" name="isStatusNameChanged">
+                                                        <input id="checkbox-status" type="hidden" class="is-changed-checkbox" name="isStatusNameChanged">
                                                         <select class="bulk-field-change" name="statusName" id="bulk-select-product-status">
                                                             <option value="PLANNED" data-value="10"
                                                                     data-after-disabled="11">
@@ -240,7 +245,7 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">attach_money</i>
-                                                        <input type="hidden" class="is-changed-checkbox" name="isDefaultPriceChanged">
+                                                        <input id="checkbox-price" type="hidden" class="is-changed-checkbox" name="isDefaultPriceChanged">
                                                         <input class='bulk-field-change validate' type='number' name='defaultPrice'
                                                                id='bulk-price'/>
                                                         <label for="bulk-price">Price</label>
@@ -251,7 +256,7 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">loyalty</i>
-                                                        <input type="hidden" class="is-changed-checkbox" name="isDiscountIdChanged">
+                                                        <input id="checkbox-discount" type="hidden" class="is-changed-checkbox" name="isDiscountIdChanged">
                                                         <input type="text" id="bulk-discount-input"
                                                                class="bulk-field-change autocomplete">
                                                         <input type="hidden" id="bulk-discount-hidden-input"
@@ -265,7 +270,7 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">bubble_chart</i>
-                                                        <input type="hidden" class="is-changed-checkbox" name="isGroupIdChanged">
+                                                        <input id="checkbox-group" type="hidden" class="is-changed-checkbox" name="isGroupIdChanged">
                                                         <input type="text" id="bulk-group-input" class="bulk-field-change autocomplete">
                                                         <input type="hidden" id="bulk-group-hidden-input"
                                                                name="groupId"/>
@@ -277,7 +282,7 @@
                                             <div id="test5" class="col s12">
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
-                                                        <input type="hidden" class="is-changed-checkbox" name="isDescriptionChanged">
+                                                        <input id="checkbox-description" type="hidden" class="is-changed-checkbox" name="isDescriptionChanged">
                                                         <i class="material-icons prefix">description</i>
                                                         <textarea id="bulk-desc-product" name="description"
                                                                   class="bulk-field-change materialize-textarea"></textarea>

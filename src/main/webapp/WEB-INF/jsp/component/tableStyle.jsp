@@ -113,4 +113,13 @@
         margin-top: 40%;
     }
 
+    .bulk-chip {
+        display: none;
+        cursor: pointer;
+        float: right;
+        font-size: 16px;
+        line-height: 32px;
+        padding-left: 8px;
+    }
+
 </style>

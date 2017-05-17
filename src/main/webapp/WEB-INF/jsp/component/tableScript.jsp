@@ -279,6 +279,7 @@
         const checkBoxIdPrefix = "bulk-table-";
 
         var card = $(document).find('#bulk-card');
+        var modal = $(document).find('#bulk-change-modal');
         var itemIDsInput = $(document).find('#bulk-item-ids');
         var itemIDs = [];
 
@@ -304,23 +305,32 @@
         });
 
         $(document).on('click', '#bulk-change-btn', function () {
-            $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
-            $('ul.tabs').tabs();
-            $('#bulk-change-modal').modal('open');
+            initMaterializeComponents();
+            $(modal).modal('open');
         });
 
         $(document).on('click', '#bulk-submit', function (e) {
             e.preventDefault();
             $(itemIDsInput).val(itemIDs);
             sendPut('#bulk-change-form', params.bulkUrl);
-
             $('#bulk-change-modal').modal('close');
             deselectRows();
             setDefaultTableStyle();
         });
 
         $(document).on('change', '.bulk-field-change', function () {
-            $(this).parent().find('.is-changed-checkbox').val(true);
+            var checkbox = $(this).parent().find('.is-changed-checkbox');
+            checkbox.val(true);
+            $('div[checkbox-id=' + checkbox.attr('id') + ']').css("display", "block");
+
+        });
+
+        $(document).on('click', '.chip-close', function () {
+            console.log("'click', '.chip-close',");
+            var chip = $(this).parent('.bulk-chip');
+            var checkboxId = chip.attr('checkbox-id');
+            $(modal).find('#' + checkboxId).val(false);
+            $(chip).css("display", "none");
         });
 
         $(document).on('click', '#bulk-cancel-btn', function () {
@@ -367,6 +377,12 @@
                     $(checkBox).parents("tr").addClass("highlighted-row");
                 }
             }
+        }
+
+        function initMaterializeComponents() {
+            $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
+            $('ul.tabs').tabs();
+            $('.chips').material_chip();
         }
     };
 </script>
