@@ -4,9 +4,10 @@ import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.ProductRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
-import com.netcracker.crm.dto.ProductGroupDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ProductService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -14,12 +15,10 @@ import com.netcracker.crm.validation.impl.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,6 +31,7 @@ import static com.netcracker.crm.controller.message.MessageProperty.*;
 /**
  * Created by Pasha on 29.04.2017.
  */
+@RequestMapping(value = "/products")
 @RestController
 public class ProductRestController {
     private final ProductService productService;
@@ -49,106 +49,98 @@ public class ProductRestController {
         this.generator = generator;
     }
 
-    @RequestMapping(value = "/csr/addProduct", method = RequestMethod.POST)
-    public ResponseEntity<?> addProduct(@Valid ProductDto productDto, BindingResult bindingResult) {
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity<?> create(@Valid ProductDto productDto, BindingResult bindingResult,
+                                    Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user = (UserDetailsImpl) principal;
         productValidator.validate(productDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
 
-        Product product = productService.persist(productDto);
+        Product product = productService.create(productDto, user);
         if (product.getId() > 0) {
             return generator.getHttpResponse(product.getId(), SUCCESS_MESSAGE, SUCCESS_PRODUCT_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @RequestMapping(value = "/csr/post/product", method = RequestMethod.POST)
-    public ResponseEntity<?> updateProduct(@Valid ProductDto productDto, BindingResult bindingResult) {
+    @PutMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity<?> update(@Valid ProductDto productDto, BindingResult bindingResult,
+                                    Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user = (UserDetailsImpl) principal;
         productValidator.validate(productDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-
-        Product product = productService.update(productDto);
-        if (product.getId() > 0) {
+        if (productService.update(productDto, user)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/csr/load/productWithoutGroup")
-    public List<ProductGroupDto> productsWithoutGroup() {
-        return productService.getProductsWithoutGroup();
-    }
-
-    @GetMapping("/csr/load/productNames")
-    public List<String> productNamesForCsr(String likeTitle) {
-        return productService.getTitlesLikeTitle(likeTitle);
-    }
-
-    @GetMapping("/customer/load/productNames")
-    public List<String> productNamesForCustomer(String likeTitle, Authentication authentication) {
+    @PutMapping(value = "/status")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity<?> changeStatus(@RequestParam Long productId, @RequestParam Long statusId,
+                                          Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            return productService.getNamesByCustomerId(likeTitle, customer.getId());
-        }
-        return productService.getTitlesLikeTitle(likeTitle);
+        User user = (UserDetailsImpl) principal;
+        boolean result = productService.changeStatus(productId, statusId, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/customer/load/actualProductNames")
-    public List<String> actualProductNamesForCustomer(String likeTitle, Authentication authentication) {
+    @GetMapping("/autocomplete")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    public ResponseEntity<List<AutocompleteDto>> productNames(String pattern, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            return productService.getActualNamesByCustomerId(likeTitle, customer.getId());
+        User user = (UserDetailsImpl) principal;
+        List<AutocompleteDto> result = null;
+        if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
+            switch (type) {
+                case "actual":
+                    result = productService.getActualProductsAutocompleteDtoByCustomer(pattern, user);
+                    break;
+                case "possible":
+                    result = productService.getPossibleProductsAutocompleteDtoByCustomer(pattern, user);
+                    break;
+            }
+        } else {
+            switch (type) {
+                case "withoutGroup":
+                    result = productService.getAutocompleteDtoWithoutGroup(pattern);
+                    break;
+                case "all":
+                    result = productService.getAutocompleteDto(pattern);
+            }
         }
-        return productService.getTitlesLikeTitle(likeTitle);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/customer/load/possibleProductNames")
-    public List<String> possibleProductNamesForCustomer(String likeTitle, Authentication authentication) {
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    public ResponseEntity<Map<String, Object>> productRows(ProductRowRequest productRowRequest, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            return productService.getActualNamesByCustomerId(likeTitle, customer.getId(), customer.getAddress());
+        User user = (UserDetailsImpl) principal;
+        Map<String, Object> result = null;
+        if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
+            productRowRequest.setCustomerId(user.getId());
+            productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
+            switch (type) {
+                case "possible":
+                    productRowRequest.setAddress(user.getAddress());
+                    result = productService.getProductsRow(productRowRequest);
+                    break;
+                case "actual":
+                    result = productService.getProductsRow(productRowRequest);
+            }
+        } else {
+            result = productService.getProductsRow(productRowRequest);
         }
-        return productService.getTitlesLikeTitle(likeTitle);
-    }
-
-
-    @GetMapping("/csr/load/products")
-    public Map<String, Object> allProductsForCsr(ProductRowRequest orderRowRequest) {
-        return productService.getProductsRow(orderRowRequest);
-    }
-
-    @GetMapping("/customer/load/products")
-    public Map<String, Object> customerProducts(ProductRowRequest orderRowRequest, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            orderRowRequest.setCustomerId(customer.getId());
-        }
-        orderRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
-        return productService.getProductsRow(orderRowRequest);
-    }
-
-    @GetMapping("/customer/load/possibleProducts")
-    public Map<String, Object> possibleProductForCustomer(ProductRowRequest productRowRequest, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User customer;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-            productRowRequest.setCustomerId(customer.getId());
-            productRowRequest.setAddress(customer.getAddress());
-        }
-        productRowRequest.setStatusId(ProductStatus.ACTUAL.getId());
-        return productService.getProductsRow(productRowRequest);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 

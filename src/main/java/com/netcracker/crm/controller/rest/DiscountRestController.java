@@ -11,6 +11,7 @@ import com.netcracker.crm.validation.impl.DiscountValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,14 +45,14 @@ public class DiscountRestController {
         this.bindingResultHandler = bindingResultHandler;
     }
 
-
     @PostMapping
-    public ResponseEntity<?> createDiscount(@Valid DiscountDto discountDto, BindingResult bindingResult) {
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<?> create(@Valid DiscountDto discountDto, BindingResult bindingResult) {
         discountValidator.validate(discountDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        Discount disc = discountService.persist(discountDto);
+        Discount disc = discountService.create(discountDto);
         if (disc.getId() > 0) {
             return generator.getHttpResponse(disc.getId(), SUCCESS_MESSAGE, SUCCESS_DISCOUNT_CREATED, HttpStatus.CREATED);
         }
@@ -59,30 +60,28 @@ public class DiscountRestController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateDiscount(@Valid DiscountDto discountDto, BindingResult bindingResult) {
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<?> update(@Valid DiscountDto discountDto, BindingResult bindingResult) {
         discountValidator.validate(discountDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        boolean isUpdated = discountService.updateDiscount(discountDto);
-        if (isUpdated) {
+        if (discountService.update(discountDto)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @RequestMapping(value = "/csr/discountByTitle/", method = RequestMethod.GET)
-    public List<AutocompleteDto> discountByPattern(String pattern) {
-        return discountService.getAutocompleteDiscount(pattern);
+    @GetMapping("/autocomplete")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern) {
+        return new ResponseEntity<>(discountService.getAutocompleteDto(pattern), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getDiscounts(DiscountRowRequest rowRequest) {
-        return new ResponseEntity<>(discountService.getDiscounts(rowRequest), HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Object>> getDiscountRows(DiscountRowRequest rowRequest) {
+        return new ResponseEntity<>(discountService.getDiscountRows(rowRequest), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{title}")
-    public ResponseEntity<List<Discount>> getDiscountByTitle(@PathVariable String title) {
-        return new ResponseEntity<>(discountService.getDiscountByTitle(title), HttpStatus.OK);
-    }
 }

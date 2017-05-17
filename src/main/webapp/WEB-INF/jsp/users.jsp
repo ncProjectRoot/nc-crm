@@ -247,31 +247,24 @@
         e.preventDefault();
         var url = "/users/registration";
         var form = "#form-user-create";
-        sendPost(form, url).done(function (userId) {
-            if (userId) {
-                location.hash = '#user?id=' + userId;
-            }            
+        send(form, url, "POST").done(function (id) {
+            if (id) {
+                location.hash = '#user?id=' + id;
+            }
         })
     });
-
-    /*$(document).on("click", "#submit-user-create", function () {
-        event.preventDefault();
-        var userForm = "#form-user-create";
-        var url = "/users/registration";
-        sendPost(userForm, url);             
-    });*/
 
     //////// all ////////
 
     $("#table-all-users").karpo_table({
-        urlSearch: "/users/lastNames",
+        urlSearch: "/users/autocomplete",
         urlTable: "/users",
         mapper: function (object) {
             var contactPerson = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#user?id=" + object.id
+                href: "#user/" + object.id
             })));
             tr.append($("<td>", {text: object.firstName}));
             tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));
@@ -288,28 +281,6 @@
         }
     });
 
-    </sec:authorize>
-
-    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
-    $("#table-my-products").karpo_table({
-        urlSearch: "/customer/load/actualProductNames",
-        urlTable: "/customer/load/products",
-        mapper: function (object) {
-            var tr = $("<tr>");
-            tr.append($("<td>").append($("<a>", {
-                text: object.id,
-                href: "#product?id=" + object.id
-            })));
-            tr.append($("<td>", {text: object.title}));
-            tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.price}));
-            tr.append($("<td>", {text: object.discountTitle}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
-            tr.append($("<td>", {text: object.discountActive}));
-            tr.append($("<td>", {text: object.groupName}));
-            return tr;
-        }
-    });
     </sec:authorize>
 
 </script>

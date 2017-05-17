@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.proxy.RegionProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,13 +168,10 @@ public class RegionDaoImpl implements RegionDao {
             log.debug("Start extracting data");
             List<Region> regions = new ArrayList<>();
             while (rs.next()) {
-                Region region = new Region();
+                RegionProxy region = new RegionProxy(discountDao);
                 region.setId(rs.getLong(PARAM_REGION_ID));
                 region.setName(rs.getString(PARAM_REGION_NAME));
-                Long discountId = rs.getLong(PARAM_REGION_ID);
-                if (discountId > 0) {
-                    region.setDiscount(discountDao.findById(discountId));
-                }
+                region.setDiscountId(rs.getLong(PARAM_REGION_ID));
                 regions.add(region);
             }
             log.debug("End extracting data");

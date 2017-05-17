@@ -81,16 +81,14 @@
 
         tableContainer.find(".chips-search input").on("input", function (event) {
             var typedText = tableContainer.find(".chips-search input").val();
-            if (typedText.length > 1) {
-                $.get(params.urlSearch, {likeTitle: typedText}, function (productNames) {
-                    for (key in dataAutocomplete) {
-                        delete dataAutocomplete[key];
-                    }
-                    productNames.forEach(function (element) {
-                        dataAutocomplete[element] = null;
-                    });
+            $.get(params.urlSearch, {pattern: typedText}, function (autocompleteObjects) {
+                for (key in dataAutocomplete) {
+                    delete dataAutocomplete[key];
+                }
+                autocompleteObjects.forEach(function (element) {
+                    dataAutocomplete[element.value] = null;
                 });
-            }
+            });
         })
 
         downloadTable();

@@ -1,3 +1,4 @@
+<%@ page import="com.netcracker.crm.domain.model.UserRole" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -55,15 +56,28 @@
     }
 
     .button-pmg {
-        position: fixed;
-        right: 5%;
-        top: 90%;
-        z-index: 99999;
+        position: relative;
+        left: -120px;
+        top: -20px;
     }
 
 </style>
 <div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
     <div class="container">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
+            <c:if test="${complaint.status=='OPEN'}">
+                <div class="button-pmg">
+                    <a class="waves-effect waves-light btn-large" id="acceptBtn"><i class="material-icons right">done</i>accept</a>
+                </div>
+            </c:if>
+            <c:if test="${complaint.status=='SOLVING'}">
+                <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
+                    <div class="button-pmg">
+                        <a class="waves-effect waves-light btn-large" id="closeBtn"><i class="material-icons right">done_all</i>close</a>
+                    </div>
+                </c:if>
+            </c:if>
+        </sec:authorize>
         <h4 class="title">${complaint.title}</h4>
         <div class="divider"></div>
         <div class="section">
@@ -75,8 +89,8 @@
         </div>
         <div class="divider"></div>
         <div class="section">
-            <h5>Order: <a href="/#order?id=${complaint.order.id}"> #${complaint.order.id}</a></h5>
-            <h5>Product: <a href="/#product?id=${complaint.order.product.id}"> ${complaint.order.product.title}</a>
+            <h5>Order: <a href="/#order/${complaint.order.id}"> #${complaint.order.id}</a></h5>
+            <h5>Product: <a href="/#product/${complaint.order.product.id}"> ${complaint.order.product.title}</a>
             </h5>
         </div>
         <div class="divider"></div>
@@ -86,12 +100,12 @@
                 <h5> #${complaint.customer.id} ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
-                <h5><a href="/#user?id=${complaint.customer.id}">
+                <h5><a href="/#user/${complaint.customer.id}">
                     #${complaint.customer.id} </a> ${complaint.customer.firstName} ${complaint.customer.lastName}</h5>
             </sec:authorize>
             <h5>email: <a href="mailto:${complaint.customer.email}">${complaint.customer.email}</a></h5>
         </div>
-        <sec:authorize access="hasRole('ROLE_PMG')">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
             <c:if test="${complaint.pmg!=null}">
                 <div class="divider"></div>
                 <div class="section">
@@ -112,27 +126,11 @@
             </ul>
         </div>
         <div class="divider"></div>
-        <div class="section">
-            <sec:authorize access="hasRole('ROLE_PMG')">
-                <c:if test="${complaint.status=='OPEN'}">
-                    <div class="button-pmg">
-                        <a class="waves-effect waves-light btn" id="acceptBtn">accept</a>
-                    </div>
-                </c:if>
-                <c:if test="${complaint.status=='SOLVING'}">
-                    <c:if test="${user.id==complaint.pmg.id}">
-                        <div class="button-pmg">
-                            <a class="waves-effect waves-light btn" id="closeBtn">close</a>
-                        </div>
-                    </c:if>
-                </c:if>
-            </sec:authorize>
-        </div>
     </div>
 </div>
 <script>
     $('.collapsible').collapsible();
-    <sec:authorize access="hasRole('ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
 
     $.ajaxSetup({
         complete: $(function () {
@@ -154,8 +152,7 @@
             },
             success: function (data) {
                 if (data === true) {
-                    $('#acceptBtn').remove();
-                    $('#status').replaceWith('SOLVING');
+                    $(window).trigger('hashchange')
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
                 } else if (data === false) {
@@ -179,16 +176,15 @@
             },
             success: function (data) {
                 if (data === true) {
-                    $('#closeBtn').remove();
-                    $('#status').replaceWith('CLOSED');
+                    $(window).trigger('hashchange')
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have closed the complaint!", 5000, 'rounded');
                 } else if (data === false) {
                     $(".progress").removeClass("progress-active");
-                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                    Materialize.toast("Something wrong!", 2000, 'rounded');
                     setTimeout(function () {
                         window.location.reload();
-                    }, 3000);
+                    }, 2000);
                 }
             }
         });

@@ -13,19 +13,13 @@ public interface ProductDao extends CrudDao<Product> {
 
     List<Product> findAllByGroupId(Long id);
 
-    List<Product> findAllWithoutGroup();
-
-    List<String> findProductsTitleLikeTitle(String likeTitle);
+    List<Product> findAllByPattern(String pattern);
+    List<Product> findWithoutGroupByPattern(String pattern);
+    List<Product> findActualByPatternAndCustomerId(String pattern, Long customerId);
+    List<Product> findByPatternAndCustomerIdAndRegionId(String pattern, Long customerId, Long regionId);
 
     Long getProductRowsCount(ProductRowRequest orderRowRequest);
-
     List<Product> findProductRows(ProductRowRequest orderRowRequest);
-
-    List<String> findProductsTitleByCustomerId(String likeTitle, Long customerId);
-
-    List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId, Long regionId);
-
-    List<String> findActualProductsTitleByCustomerId(String likeTitle, Long customerId);
 
     Boolean hasCustomerAccessToProduct(Long productId, Long customerId);
 }

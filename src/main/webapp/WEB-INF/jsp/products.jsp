@@ -148,17 +148,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">cached</i>
-                                <select name="statusName" id="select_product_status">
-                                    <option value="PLANNED" data-value="11" data-after-disabled="12">PLANNED</option>
-                                    <option value="ACTUAL" data-value="12" data-after-disabled="13">ACTUAL</option>
-                                    <option value="OUTDATED" data-value="14">OUTDATED</option>
-                                </select>
-                                <label for="select_product_status">Choose product status</label>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
                                 <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>
@@ -184,47 +173,27 @@
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
-    $('ul#tabs').tabs({
-        onShow: function (tab) {
-        }
-    });
+    $('ul#tabs').tabs();
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     //////// create product ////////
 
-    $('#select_product_status').karpo_status(10).disabled(12);
+    $('#select_product_status').karpo_status(12).disabled(14);
     $('#discount-input').karpo_autocomplete({
-        url: "/discounts/csr/discountByTitle/",
+        url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: "",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
-        url: "/csr/groupByName/",
+        url: "/groups/autocomplete",
         label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
+        defaultValue: "",
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
 
-    function fetchDiscounts() {
-        var title = $('#search_title').val();
-        if (title.length > 1) {
-            $('#select_disc').children().remove();
-            $.get("/discounts/" + title).success(function (data) {
-                $('#select_disc').append($('<option value="0">Default</option>'));
-                $.each(data, function (i, item) {
-                    $('#select_disc').append($('<option/>', {
-                        value: item.id,
-                        text: item.title + ' - ' + item.percentage + '%'
-                    }));
-                });
-                $('#select_disc').material_select('updating');
-                $('#discount_numbers').html(", results " + data.length);
-            });
-        }
-    }
 
     $('.materialize-textarea').trigger('autoresize');
     Materialize.updateTextFields();
@@ -239,40 +208,28 @@
         } else if (price < 1) {
             Materialize.toast("Please enter price more 0", 10000, 'rounded');
         } else {
-            
-            var url = "/csr/addProduct";
+            var url = "/products";
             var form = "#addProduct";
-            sendPost(form, url).done(function (productId) {
-                if (productId) {
-                    location.hash = '#product?id=' + productId;                    
-                }     
+            send(form, url, "POST").done(function (id) {
+                if (id) {
+                    location.hash = '#product/' + id;
+                }
             })
-            loadProductsWithoutGroup(); 
         }
     });
-
-    /*$("#submit-product").on("click", function () {
-        event.preventDefault();
-        var url = "/csr/addProduct";
-        var form = "#addProduct";
-        sendPost(form, url);
-        $(form)[0].reset();
-        loadProductsWithoutGroup();
-    });*/
-
 
     //////// all ////////
 
 
     $("#table-all-products").karpo_table({
-        urlSearch: "/csr/load/productNames",
-        urlTable: "/csr/load/products",
+        urlSearch: "/products/autocomplete?type=all",
+        urlTable: "/products",
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#product?id=" + object.id
+                href: "#product/" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
@@ -291,14 +248,14 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
     $("#table-my-products").karpo_table({
-        urlSearch: "/customer/load/actualProductNames",
-        urlTable: "/customer/load/products",
+        urlSearch: "/products/autocomplete?type=actual",
+        urlTable: "/products?type=actual",
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#product?id=" + object.id
+                href: "#product/" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.price}));

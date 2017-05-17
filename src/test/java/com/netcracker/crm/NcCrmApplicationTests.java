@@ -16,6 +16,7 @@ public class NcCrmApplicationTests {
 
 	@Autowired
 	private GeneratorDbData generator;
+
 	@Test
 	public void contextLoads() throws SQLException {
 	}

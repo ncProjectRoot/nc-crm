@@ -129,7 +129,7 @@
 
     $("#update-discount-form").on("submit", function (e) {
         e.preventDefault();
-        sendPut("#update-discount-form", "/discounts").done(function () {
+        send("#update-discount-form", "/discounts", "PUT").done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })

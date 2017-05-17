@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Organization;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.proxy.UserProxy;
 import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import org.slf4j.Logger;
@@ -279,7 +280,7 @@ public class UserDaoImpl implements UserDao {
         public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
             List<User> users = new LinkedList<>();
             while (rs.next()) {
-                User user = new User();
+                UserProxy user = new UserProxy(addressDao, organizationDao);
                 user.setId(rs.getLong(PARAM_USER_ID));
                 user.setEmail(rs.getString(PARAM_USER_EMAIL));
                 user.setPassword(rs.getString(PARAM_USER_PASSWORD));
@@ -291,16 +292,8 @@ public class UserDaoImpl implements UserDao {
                 user.setAccountNonLocked(rs.getBoolean(PARAM_USER_ACCOUNT_NON_LOCKED));
                 user.setUserRole(UserRole.valueOf(rs.getString(PARAM_USER_ROLE_NAME)));
                 user.setContactPerson(rs.getBoolean(PARAM_USER_CONTACT_PERSON));
-
-                Long orgId = rs.getLong(PARAM_USER_ORG_ID);
-                if (orgId > 0) {
-                    user.setOrganization(organizationDao.findById(orgId));
-                }
-
-                Long addressId = rs.getLong(PARAM_USER_ADDRESS_ID);
-                if (addressId > 0) {
-                    user.setAddress(addressDao.findById(addressId));
-                }
+                user.setOrganizationId(rs.getLong(PARAM_USER_ORG_ID));
+                user.setAddressId(rs.getLong(PARAM_USER_ADDRESS_ID));
 
                 users.add(user);
             }

@@ -87,7 +87,7 @@ ALTER TABLE groups
 CREATE TABLE history
     (
      id BIGSERIAL  NOT NULL ,
-     old_status_id INTEGER  NOT NULL ,
+     new_status_id INTEGER  NOT NULL ,
      date_change_status TIMESTAMP(0)  NOT NULL ,
      desc_change_status VARCHAR (100)  NOT NULL ,
      order_id INTEGER ,
@@ -405,7 +405,7 @@ ALTER TABLE history
 ALTER TABLE history
     ADD CONSTRAINT history_statuses_FK FOREIGN KEY
     (
-     old_status_id
+     new_status_id
     )
     REFERENCES statuses
     (
@@ -670,7 +670,7 @@ INSERT INTO public.statuses(id, name) VALUES (14, 'OUTDATED');
 -- -- INSERT INTO orders(date_finish, status_id, customer_id, product_id, csr_id)
 -- -- VALUES ('1994-10-10', 5, 2, 2, 2);
 -- --
--- -- INSERT INTO history (old_status_id, date_change_status, desc_change_status, order_id)
+-- -- INSERT INTO history (new_status_id, date_change_status, desc_change_status, order_id)
 -- -- VALUES ( 5, '10-10-1994', 'For test', 1);
 -- --
 -- -- INSERT INTO public.complaint(id, title, message, status_id, date, customer_id, pmg_id, order_id)
@@ -679,13 +679,13 @@ INSERT INTO public.statuses(id, name) VALUES (14, 'OUTDATED');
 -- -- commit;
 -- --
 -- --
--- -- INSERT INTO history (old_status_id, date_change_status, desc_change_status, product_id, complaint_id)
+-- -- INSERT INTO history (new_status_id, date_change_status, desc_change_status, product_id, complaint_id)
 -- -- VALUES ( 5, '10-10-1994', 'For test3232', 1, 1);
 -- --
--- -- INSERT INTO history (old_status_id, date_change_status, desc_change_status)
+-- -- INSERT INTO history (new_status_id, date_change_status, desc_change_status)
 -- -- VALUES (5, '10-10-1994', 'For test76');
 -- --
--- -- INSERT INTO history (old_status_id, date_change_status, desc_change_status)
+-- -- INSERT INTO history (new_status_id, date_change_status, desc_change_status)
 -- -- VALUES (5, '10-10-1994', 'For test76');
 -- --
 --

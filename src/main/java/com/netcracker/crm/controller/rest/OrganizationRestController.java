@@ -22,8 +22,12 @@ import java.util.Set;
 public class OrganizationRestController {
     private static final Logger log = LoggerFactory.getLogger(OrganizationRestController.class);
 
+    private final OrganizationService organizationService;
+
     @Autowired
-    private OrganizationService organizationService;
+    public OrganizationRestController(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
 
     @GetMapping
     public ResponseEntity<Set<Organization>> registerUser() throws RegistrationException {
