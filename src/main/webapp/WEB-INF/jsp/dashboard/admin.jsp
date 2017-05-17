@@ -207,23 +207,17 @@
     };
 
     function updateGraph(url, form, graphId, chartistLine) {
+        $(".progress").addClass("progress-active");
         $.get(url, $(form).serialize(), function (dashboardData) {
             console.log(dashboardData)
             if (chartistLine) {
                 chartistLine.update(dashboardData);
-//               {
-//                   labels: [1, 2, 3, 4, 5, 6, 7],
-//                       series: [
-//                   [12, 9, 7, 8, 5, 5, 7],
-//                   [2, 1, 3.5, 7, 3, 4, 5],
-//                   [1, 3, 4, 5, 6, 6, 5]
-//               ]
-//               }
             } else {
                 chartistLine = new Chartist.Line(graphId, dashboardData, lineOption).on('created', function () {
                     seq = 0;
                 }).on('draw', animateLine);
             }
+            $(".progress").removeClass("progress-active");
         });
     }
 

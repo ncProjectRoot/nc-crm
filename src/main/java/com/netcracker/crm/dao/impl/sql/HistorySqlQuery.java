@@ -47,9 +47,17 @@ public final class HistorySqlQuery {
             + "new_status_id, date_change_status, desc_change_status, order_id, "
             + "complaint_id, product_id FROM history WHERE product_id = :product_id;";
 
-    public static final String SQL_GRAPH_BETWEEN_DATES = ""
-            + "SELECT CAST(date_change_status AS DATE) date_change, :element_id element_id, COUNT(:element_id) count "
-            + "FROM history "
+    public static final String BEGIN_SQL_GRAPH_FOR_ORDER = ""
+            + "SELECT CAST(date_change_status AS DATE) date_change, o.product_id element_id, COUNT(o.product_id) count "
+            + "FROM history h "
+            + "INNER JOIN orders o ON h.order_id = o.id "
+            + "WHERE CAST(date_change_status AS DATE) BETWEEN :from_date AND :to_date ";
+
+    public static final String BEGIN_SQL_GRAPH_FOR_COMPLAINTS = ""
+            + "SELECT CAST(date_change_status AS DATE) date_change, o.product_id element_id, COUNT(o.product_id) count "
+            + "FROM history h "
+            + "INNER JOIN complaint c ON h.complaint_id = c.id "
+            + "INNER JOIN orders o ON c.order_id = o.id "
             + "WHERE CAST(date_change_status AS DATE) BETWEEN :from_date AND :to_date ";
 
     public static final String SQL_GRAPH_GROUP_BY_AND_ORDER_BY = " "

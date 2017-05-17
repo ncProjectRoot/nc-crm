@@ -217,7 +217,7 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_GRAPH_FROM_DATE, fromDate)
                 .addValue(PARAM_GRAPH_TO_DATE, toDate);
 
-        String sql = createSqlBetweenDateChangeAndProductIds(PARAM_HISTORY_COMPLAINT_ID, graphDto.getElementIds(), ComplaintStatus.OPEN.getId());
+        String sql = createSqlBetweenDateChangeAndProductIds(BEGIN_SQL_GRAPH_FOR_COMPLAINTS, graphDto.getElementIds(), ComplaintStatus.OPEN.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
@@ -227,19 +227,18 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_GRAPH_FROM_DATE, fromDate)
                 .addValue(PARAM_GRAPH_TO_DATE, toDate);
 
-        String sql = createSqlBetweenDateChangeAndProductIds(PARAM_HISTORY_ORDER_ID, graphDto.getElementIds(), OrderStatus.NEW.getId());
+        String sql = createSqlBetweenDateChangeAndProductIds(BEGIN_SQL_GRAPH_FOR_ORDER, graphDto.getElementIds(), OrderStatus.NEW.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
-    private String createSqlBetweenDateChangeAndProductIds(String element_field, List<Long> elementIds, Long statusId) {
+    private String createSqlBetweenDateChangeAndProductIds(String beginSgl, List<Long> elementIds, Long statusId) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(SQL_GRAPH_BETWEEN_DATES.replace(":" + PARAM_GRAPH_ELEMENT_ID, element_field));
+        stringBuilder.append(beginSgl);
         for (int i = 0; i < elementIds.size(); i++) {
             if (i == 0) {
                 stringBuilder.append(" AND ( ");
             }
-            stringBuilder.append(element_field);
-            stringBuilder.append(" = ");
+            stringBuilder.append(" o.product_id = ");
             stringBuilder.append(elementIds.get(i));
             if (i == elementIds.size() - 1) {
                 stringBuilder.append(" ) ");
@@ -247,7 +246,7 @@ public class HistoryDaoImpl implements HistoryDao {
                 stringBuilder.append(" OR ");
             }
         }
-        stringBuilder.append(" AND old_status_id = ");
+        stringBuilder.append(" AND h.new_status_id = ");
         stringBuilder.append(statusId);
         stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY);
         return stringBuilder.toString();
@@ -302,7 +301,7 @@ public class HistoryDaoImpl implements HistoryDao {
             this.fromDate = fromDate;
             this.toDate = toDate;
 
-            long daysBetweenFromTo = DAYS.between(fromDate, toDate);
+            long daysBetweenFromTo = DAYS.between(fromDate, toDate) + 1;
             for (int i = 0; i < graphDto.getElementIds().size(); i++) {
                 series.add(new ArrayList<>(Collections.nCopies((int) daysBetweenFromTo, 0L)));
             }
@@ -328,11 +327,13 @@ public class HistoryDaoImpl implements HistoryDao {
                 checkDate(dataChange);
 
                 int seriesIndex = graphDto.getElementIds().indexOf(elementId);
-                series.get(seriesIndex).add(labels.size(), count);
+                series.get(seriesIndex).set(labels.size(), count);
             }
             if (!fromDate.equals(toDate)) {
                 checkDate(toDate);
             }
+            labels.add(fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
             graphDto.setLabels(labels);
             graphDto.setSeries(series);
             return graphDto;
