@@ -56,15 +56,28 @@
     }
 
     .button-pmg {
-        position: fixed;
-        right: 5%;
-        top: 90%;
-        z-index: 99999;
+        position: relative;
+        left: -120px;
+        top: -20px;
     }
 
 </style>
 <div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
     <div class="container">
+        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
+            <c:if test="${complaint.status=='OPEN'}">
+                <div class="button-pmg">
+                    <a class="waves-effect waves-light btn-large" id="acceptBtn"><i class="material-icons right">done</i>accept</a>
+                </div>
+            </c:if>
+            <c:if test="${complaint.status=='SOLVING'}">
+                <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
+                    <div class="button-pmg">
+                        <a class="waves-effect waves-light btn-large" id="closeBtn"><i class="material-icons right">done_all</i>close</a>
+                    </div>
+                </c:if>
+            </c:if>
+        </sec:authorize>
         <h4 class="title">${complaint.title}</h4>
         <div class="divider"></div>
         <div class="section">
@@ -113,22 +126,6 @@
             </ul>
         </div>
         <div class="divider"></div>
-        <div class="section">
-            <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
-                <c:if test="${complaint.status=='OPEN'}">
-                    <div class="button-pmg">
-                        <a class="waves-effect waves-light btn" id="acceptBtn">accept</a>
-                    </div>
-                </c:if>
-                <c:if test="${complaint.status=='SOLVING'}">
-                    <c:if test="${user.id==complaint.pmg.id || user.userRole.name.equals(UserRole.ROLE_ADMIN.name)}">
-                        <div class="button-pmg">
-                            <a class="waves-effect waves-light btn" id="closeBtn">close</a>
-                        </div>
-                    </c:if>
-                </c:if>
-            </sec:authorize>
-        </div>
     </div>
 </div>
 <script>
@@ -155,8 +152,7 @@
             },
             success: function (data) {
                 if (data === true) {
-                    $('#acceptBtn').remove();
-                    $('#status').replaceWith('SOLVING');
+                    $(window).trigger('hashchange')
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
                 } else if (data === false) {
@@ -180,16 +176,15 @@
             },
             success: function (data) {
                 if (data === true) {
-                    $('#closeBtn').remove();
-                    $('#status').replaceWith('CLOSED');
+                    $(window).trigger('hashchange')
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have closed the complaint!", 5000, 'rounded');
                 } else if (data === false) {
                     $(".progress").removeClass("progress-active");
-                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                    Materialize.toast("Something wrong!", 2000, 'rounded');
                     setTimeout(function () {
                         window.location.reload();
-                    }, 3000);
+                    }, 2000);
                 }
             }
         });

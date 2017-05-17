@@ -176,8 +176,9 @@ public class ComplaintServiceImpl implements ComplaintService {
             return false;
         }
         complaint.setPmg(user);
-        publisher.publishEvent(new ChangeStatusComplaintEvent(this, complaint));
-        return true;
+        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint);
+        publisher.publishEvent(event);
+        return event.isDone();
     }
 
     @Transactional
@@ -190,8 +191,9 @@ public class ComplaintServiceImpl implements ComplaintService {
         if (isRoleAdmin) {
             complaint.setPmg(user);
         }
-        publisher.publishEvent(new ChangeStatusComplaintEvent(this, complaint));
-        return true;
+        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint);
+        publisher.publishEvent(event);
+        return event.isDone();
     }
 
     @Transactional
