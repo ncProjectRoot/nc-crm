@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ComplaintReportServiceImplTest {
+public class ComplaintReportServiceTest {
     @Qualifier("complaintReportServiceImpl")
     @Autowired
     private ReportService reportService;
