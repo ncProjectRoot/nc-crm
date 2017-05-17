@@ -217,7 +217,12 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_GRAPH_FROM_DATE, fromDate)
                 .addValue(PARAM_GRAPH_TO_DATE, toDate);
 
-        String sql = createSqlBetweenDateChangeAndProductIds(BEGIN_SQL_GRAPH_FOR_COMPLAINTS, graphDto.getElementIds(), ComplaintStatus.OPEN.getId());
+        String beginSql = BEGIN_SQL_GRAPH_FOR_COMPLAINTS;
+        if (graphDto.getElementIds().isEmpty()) {
+            beginSql = BEGIN_SQL_GRAPH_FOR_COMPLAINTS_FOR_ALL_PRODUCTS;
+        }
+
+        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto.getElementIds(), ComplaintStatus.OPEN.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
@@ -227,7 +232,12 @@ public class HistoryDaoImpl implements HistoryDao {
                 .addValue(PARAM_GRAPH_FROM_DATE, fromDate)
                 .addValue(PARAM_GRAPH_TO_DATE, toDate);
 
-        String sql = createSqlBetweenDateChangeAndProductIds(BEGIN_SQL_GRAPH_FOR_ORDER, graphDto.getElementIds(), OrderStatus.NEW.getId());
+        String beginSql = BEGIN_SQL_GRAPH_FOR_ORDER;
+        if (graphDto.getElementIds().isEmpty()) {
+            beginSql = BEGIN_SQL_GRAPH_FOR_ORDER_FOR_ALL_PRODUCTS;
+        }
+
+        String sql = createSqlBetweenDateChangeAndProductIds(beginSql, graphDto.getElementIds(), OrderStatus.NEW.getId());
         return namedJdbcTemplate.query(sql, params, new GraphExtractor(graphDto, fromDate, toDate));
     }
 
@@ -248,7 +258,11 @@ public class HistoryDaoImpl implements HistoryDao {
         }
         stringBuilder.append(" AND h.new_status_id = ");
         stringBuilder.append(statusId);
-        stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY);
+        if (elementIds.isEmpty()) {
+            stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY_FOR_ALL_PRODUCTS);
+        } else {
+            stringBuilder.append(SQL_GRAPH_GROUP_BY_AND_ORDER_BY);
+        }
         return stringBuilder.toString();
     }
 
@@ -302,31 +316,31 @@ public class HistoryDaoImpl implements HistoryDao {
             this.toDate = toDate;
 
             long daysBetweenFromTo = DAYS.between(fromDate, toDate) + 1;
-            for (int i = 0; i < graphDto.getElementIds().size(); i++) {
+            int lengthSeries = 1;
+            if (!graphDto.getElementIds().isEmpty()) {
+                lengthSeries = graphDto.getElementIds().size();
+            }
+            for (int i = 0; i < lengthSeries; i++) {
                 series.add(new ArrayList<>(Collections.nCopies((int) daysBetweenFromTo, 0L)));
             }
         }
 
         @Override
         public GraphDto extractData(ResultSet rs) throws SQLException, DataAccessException {
-//            graphDto.getElementIds(); // 2003, 2002
-
-//            {
-//               labels: [2017-05-13, 2017-05-14, 2017-05-15, 2017-05-16],
-//               series: [
-//2003                [0, 2, 1, 0],
-//2002                [0, 1, 0, 0]
-//               ]
-//            }
+            int seriesIndex;
 
             while (rs.next()) {
                 LocalDate dataChange = rs.getTimestamp(PARAM_GRAPH_DATE_CHANGE).toLocalDateTime().toLocalDate();
-                long elementId = rs.getLong(PARAM_GRAPH_ELEMENT_ID);
                 long count = rs.getLong(PARAM_GRAPH_COUNT);
 
                 checkDate(dataChange);
 
-                int seriesIndex = graphDto.getElementIds().indexOf(elementId);
+                if (graphDto.getElementIds().isEmpty()) {
+                    seriesIndex = 0;
+                } else {
+                    long elementId = rs.getLong(PARAM_GRAPH_ELEMENT_ID);
+                    seriesIndex = graphDto.getElementIds().indexOf(elementId);
+                }
                 series.get(seriesIndex).set(labels.size(), count);
             }
             if (!fromDate.equals(toDate)) {

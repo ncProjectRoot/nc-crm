@@ -209,7 +209,6 @@
     function updateGraph(url, form, graphId, chartistLine) {
         $(".progress").addClass("progress-active");
         $.get(url, $(form).serialize(), function (dashboardData) {
-            console.log(dashboardData)
             if (chartistLine) {
                 chartistLine.update(dashboardData);
             } else {
@@ -257,15 +256,15 @@
         hideInput: "#product-hidden-input-for-orders"
     });
 
-    var chartistLineOrders = new Chartist.Line('#orders-graph', {}, lineOption).on('created', function () {
-        seq = 0;
-    }).on('draw', animateLine);
+    var chartistLineOrders;
     $("#show-orders-graph").on("submit", function (e) {
         e.preventDefault();
         lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal();
         $(this).siblings(".card-title").trigger("click");
         updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders);
     });
+    $("#show-orders-graph").trigger("submit");
+
 
 
     </sec:authorize>
@@ -306,15 +305,14 @@
         hideInput: "#product-hidden-input-for-complaints"
     });
 
-    var chartistLineComplaints = new Chartist.Line('#complaints-graph', {}, lineOption).on('created', function () {
-        seq = 0;
-    }).on('draw', animateLine);
+    var chartistLineComplaints;
     $("#show-complaints-graph").on("submit", function (e) {
         e.preventDefault();
         lineLabelsForComplaints = $produtsForComplaintsMultiSelect.getSelectedVal();
         $(this).siblings(".card-title").trigger("click");
         updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints);
     });
+    $("#show-complaints-graph").trigger("submit");
 
     </sec:authorize>
 </script>
