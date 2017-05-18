@@ -107,15 +107,14 @@ public class EntityController {
         model.put("products", productService.getProductsByGroupId(id));
         return "group";
     }
-    @RequestMapping(value = "/*/user", method = {RequestMethod.GET})
+    @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
     public String user(Map<String, Object> model, Authentication authentication,
-                           @RequestParam Long id) {
+                           @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
         User user;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
         }
-//        model.put("user", user);
         model.put("user", userService.getUserById(id));
         return "user";
     }
@@ -127,7 +126,7 @@ public class EntityController {
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
         }
-//        model.put("user", user);
+
         User user1 = (User) authentication.getPrincipal();
         long id = user1.getId();
         model.put("profile", userService.getUserById(id));
