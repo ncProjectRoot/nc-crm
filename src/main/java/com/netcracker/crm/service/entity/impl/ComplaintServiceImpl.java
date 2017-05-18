@@ -1,12 +1,14 @@
 package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.mapper.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
 import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
@@ -42,13 +44,15 @@ public class ComplaintServiceImpl implements ComplaintService {
     private ComplaintDao complaintDao;
     private OrderDao orderDao;
     private UserDao userDao;
+    private HistoryDao historyDao;
 
     @Autowired
-    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao,
+    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao, HistoryDao historyDao,
                                 ApplicationEventPublisher publisher) {
         this.complaintDao = complaintDao;
         this.orderDao = orderDao;
         this.userDao = userDao;
+        this.historyDao = historyDao;
         this.publisher = publisher;
     }
 
@@ -156,6 +160,14 @@ public class ComplaintServiceImpl implements ComplaintService {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public GraphDto getStatisticalGraph(GraphDto graphDto) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
+        LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+        LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+        return historyDao.findComplaintHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
     }
 
     private List<AutocompleteDto> convertToAutocompleteDto(List<String> complaints) {

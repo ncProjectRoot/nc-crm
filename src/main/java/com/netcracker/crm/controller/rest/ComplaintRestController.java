@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ComplaintService;
 import com.netcracker.crm.validation.BindingResultHandler;
@@ -100,4 +101,11 @@ public class ComplaintRestController {
         User pmg = (UserDetailsImpl) principal;
         return new ResponseEntity<>(complaintService.changeStatusComplaint(id, type, pmg), HttpStatus.OK);
     }
+
+    @GetMapping("/graph")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PMG')")
+    public GraphDto getGraph(GraphDto graphDto) {
+        return complaintService.getStatisticalGraph(graphDto);
+    }
+
 }

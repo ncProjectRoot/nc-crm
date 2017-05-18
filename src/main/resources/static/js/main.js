@@ -189,6 +189,7 @@ jQuery.fn.karpo_multi_select = function (params) {
     var autocomplete = $(this[0]);
     var dataAutocomplete = {"null": null};
     var selected = [];
+    var selectedVal = [];
 
     autocomplete.on("input", function (event) {
         var typedText = autocomplete.val();
@@ -207,6 +208,7 @@ jQuery.fn.karpo_multi_select = function (params) {
             var id = parseFloat(val.substring(0, val.indexOf(" ")));
             if (selected.indexOf(id) == -1) {
                 selected.push(id);
+                selectedVal.push(val)
                 var $deleter = $('<a href="#!" class="secondary-content a-dummy"><i class="material-icons">delete_forever</i></a>');
                 var $div = $('<div>', {text: val}).append($deleter);
                 $(params.collection).append($('<li class="collection-item"></li>').append($div));
@@ -214,7 +216,9 @@ jQuery.fn.karpo_multi_select = function (params) {
                 $(params.hideInput).val(selected);
                 $deleter.on("click", function () {
                     $(this).closest(".collection-item").remove();
-                    selected.splice(selected.indexOf(parseFloat($(this).data("id"))), 1);
+                    var index = selected.indexOf(parseFloat($(this).data("id")));
+                    selected.splice(index, 1);
+                    selectedVal.splice(index, 1);
                     $(params.hideInput).val(selected);
                 })
             }
@@ -223,4 +227,13 @@ jQuery.fn.karpo_multi_select = function (params) {
         limit: Infinity,
         minLength: 1
     });
+
+    return {
+        getSelected: function () {
+            return selected;
+        },
+        getSelectedVal: function () {
+            return selectedVal;
+        }
+    };
 };
