@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.*;

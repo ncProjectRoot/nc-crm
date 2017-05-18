@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
 
@@ -244,6 +245,38 @@ public class ProductDaoImpl implements ProductDao {
         return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_ACCESS_TO_PRODUCT, params, Boolean.class);
 
     }
+
+    @Override
+    public boolean hasSameStatus(Set<Long> productIDs) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_IDS, productIDs);
+
+        boolean isSame = namedJdbcTemplate.queryForObject(SQL_GROUP_PRODUCTS_BY_STATUS, params, Integer.class) == 1;
+        return isSame;
+    }
+
+    @Override
+    public boolean bulkUpdate(Set<Long> productIDs, Product product) {
+        Long groupId = null;
+        Long discountId = null;
+        if (product.getGroup() != null) groupId = product.getGroup().getId();
+        if (product.getDiscount() != null) discountId = product.getDiscount().getId();
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_IDS, productIDs)
+                .addValue(PARAM_PRODUCT_GROUP_ID, groupId)
+                .addValue(PARAM_PRODUCT_DISCOUNT_ID, discountId)
+                .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
+                .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription());
+
+        boolean isSame = namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
+        return isSame;
+    }
+
+//    @Override
+//    public List<Product> findAllWithoutGroup() {
+//        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
+//    }
 
     private Long getDiscountId(Discount discount) {
         if (discount != null) {

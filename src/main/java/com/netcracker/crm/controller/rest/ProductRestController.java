@@ -8,9 +8,12 @@ import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
+import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.bulk.ProductBulkDto;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.ProductService;
 import com.netcracker.crm.validation.BindingResultHandler;
+import com.netcracker.crm.validation.impl.BulkProductValidator;
 import com.netcracker.crm.validation.impl.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,15 +40,17 @@ public class ProductRestController {
     private final ProductService productService;
     private final BindingResultHandler bindingResultHandler;
     private final ProductValidator productValidator;
+    private final BulkProductValidator bulkProductValidator;
     private final ResponseGenerator<Product> generator;
 
     @Autowired
     public ProductRestController(ProductService productService,
                                  BindingResultHandler bindingResultHandler, ProductValidator productValidator,
-                                 ResponseGenerator<Product> generator) {
+                                 BulkProductValidator bulkProductValidator, ResponseGenerator<Product> generator) {
         this.productService = productService;
         this.bindingResultHandler = bindingResultHandler;
         this.productValidator = productValidator;
+        this.bulkProductValidator = bulkProductValidator;
         this.generator = generator;
     }
 
@@ -143,5 +148,19 @@ public class ProductRestController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PutMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity productBulkUpdate(@Valid ProductBulkDto bulkDto, BindingResult bindingResult, Authentication authentication) {
+        bulkProductValidator.validate(bulkDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
 
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (productService.bulkUpdate(bulkDto, user)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_BULK_UPDATED, HttpStatus.OK);
+        }
+
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

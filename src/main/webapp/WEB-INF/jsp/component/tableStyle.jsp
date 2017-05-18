@@ -92,4 +92,34 @@
         max-height: 250px;
     }
 
+    .highlighted-row {
+        background-color: #f2f2f2;
+    }
+
+    #bulk-card {
+        position: fixed;
+        display: none;
+        top: 15%;
+        right: -20%;
+        width: 50%;
+    }
+
+    .edit-selected-items {
+        margin-bottom: 0;
+        margin-top: 15%;
+    }
+
+    #bulk-submit {
+        margin-top: 40%;
+    }
+
+    .bulk-chip {
+        display: none;
+        cursor: pointer;
+        float: right;
+        font-size: 16px;
+        line-height: 32px;
+        padding-left: 8px;
+    }
+
 </style>
