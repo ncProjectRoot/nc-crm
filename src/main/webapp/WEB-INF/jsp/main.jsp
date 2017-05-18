@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,8 +42,10 @@
                 <h1 id="current-page"></h1>
             </div>
             <ul class="menu-right">
-                <a href="#messages" class="menu-left-item message-menu-item"><i
-                        class="black-text material-icons">email</i></a>
+                <sec:authorize access="hasAnyRole('ROLE_CSR')">
+                    <a href="#messages" class="menu-left-item message-menu-item"><i
+                            class="black-text material-icons">email</i></a>
+                </sec:authorize>
                 <li class="hide-on-med-and-up">
                     <a href="." class="a-logout a-dummy menu-left-item">
                         <i class="black-text material-icons">settings_power</i>
@@ -113,18 +116,10 @@
 <script src="${springMainScript}"></script>
 <script src="${springLocationPickerScript}"></script>
 <script>
-    var begin = "You have ";
-    var end = " messages";
     setInterval(function () {
-        $.get("/messages/count").success(function (data) {
-           var count = data;
-           if (count > 0 && location.hash.substr(1) != 'messages'){
-               Materialize.toast(begin + count + end, 5000, 'rounded');
-           }
-        });
+        countMessage()
     }, 60000);
-
-
+    countMessage();
 </script>
 </div>
 </body>
