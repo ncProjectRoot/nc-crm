@@ -11,6 +11,7 @@ import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
+import com.netcracker.crm.service.entity.OrderLifecycleService;
 import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,20 +35,22 @@ public class OrderServiceImpl implements OrderService {
     private final UserDao userDao;
     private final ProductDao productDao;
     private final HistoryDao historyDao;
+    private final OrderLifecycleService lifecycleService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao, OrderLifecycleService lifecycleService) {
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.productDao = productDao;
         this.historyDao = historyDao;
+        this.lifecycleService = lifecycleService;
     }
 
     @Override
     @Transactional
     public Order create(OrderDto orderDto) {
         Order order = convertFromDtoToEntity(orderDto);
-        orderDao.create(order);
+        lifecycleService.createOrder(order);
         return order;
     }
 

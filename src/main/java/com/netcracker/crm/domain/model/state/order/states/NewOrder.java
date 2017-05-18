@@ -26,7 +26,6 @@ public class NewOrder extends OrderState {
     @Override
     public History processOrder() {
         order.setState(new ProcessingOrder(order));
-        History history = getOrderHistory(DESC_ORDER_PROCESSING);
-        return history;
+        return getOrderHistory(DESC_ORDER_PROCESSING);
     }
 }

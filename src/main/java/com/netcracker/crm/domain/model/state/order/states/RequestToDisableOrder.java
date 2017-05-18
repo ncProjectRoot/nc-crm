@@ -22,8 +22,7 @@ public class RequestToDisableOrder extends OrderState {
     @Override
     public History disableOrder() {
         order.setState(new DisabledOrder(order));
-        History history = getOrderHistory("Order disabled.");
 
-        return history;
+        return getOrderHistory("Order disabled.");
     }
 }
