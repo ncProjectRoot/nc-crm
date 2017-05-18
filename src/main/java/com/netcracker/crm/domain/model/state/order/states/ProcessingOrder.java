@@ -20,9 +20,8 @@ public class ProcessingOrder extends OrderState {
 
     @Override
     public History activateOrder() {
-        History history = getOrderHistory(DESC_ORDER_ACTIVATED);
         order.setState(new ActiveOrder(order));
 
-        return history;
+        return getOrderHistory(DESC_ORDER_ACTIVATED);
     }
 }

@@ -1,5 +1,6 @@
 package com.netcracker.crm.service.entity;
 
+import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.dto.OrderDto;
 
 /**
@@ -7,7 +8,7 @@ import com.netcracker.crm.dto.OrderDto;
  */
 public interface OrderLifecycleService {
 
-    boolean createOrder(OrderDto orderDto);
+    boolean createOrder(Order order);
 
     boolean processOrder(Long orderId, Long csrId);
 

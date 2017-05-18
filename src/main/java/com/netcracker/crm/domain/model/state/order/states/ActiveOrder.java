@@ -20,17 +20,15 @@ public class ActiveOrder extends OrderState {
 
     @Override
     public History requestToPauseOrder() {
-        History history = getOrderHistory(DESC_REQUEST_TO_PAUSE_ORDER);
         order.setState(new RequestToPauseOrder(order));
 
-        return history;
+        return getOrderHistory(DESC_REQUEST_TO_PAUSE_ORDER);
     }
 
     @Override
     public History requestToDisableOrder() {
-        History history = getOrderHistory(DESC_REQUEST_TO_DISABLE_ORDER);
         order.setState(new RequestToDisableOrder(order));
 
-        return history;
+        return getOrderHistory(DESC_REQUEST_TO_DISABLE_ORDER);
     }
 }

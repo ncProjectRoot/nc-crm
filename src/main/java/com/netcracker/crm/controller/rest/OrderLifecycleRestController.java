@@ -87,7 +87,7 @@ public class OrderLifecycleRestController {
     }
 
     @PutMapping("/orders/{id}/request-disable")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_CUSTOMER')")
     public ResponseEntity<String> requestDisableOrder(@PathVariable Long id) {
 
         boolean success = lifecycleService.requestToDisableOrder(id);
@@ -98,7 +98,7 @@ public class OrderLifecycleRestController {
     }
 
     @PutMapping("/orders/{id}/request-pause")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_CUSTOMER')")
     public ResponseEntity<String> requestPauseOrder(@PathVariable Long id) {
 
         boolean success = lifecycleService.requestToPauseOrder(id);
@@ -109,7 +109,7 @@ public class OrderLifecycleRestController {
     }
 
     @PutMapping("/orders/{id}/request-resume")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_CUSTOMER')")
     public ResponseEntity<String> requestActivateOrder(@PathVariable Long id) {
 
         boolean success = lifecycleService.requestToResumeOrder(id);

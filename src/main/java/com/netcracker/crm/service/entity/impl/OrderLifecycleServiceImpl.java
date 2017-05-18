@@ -36,8 +36,7 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
     }
 
     @Override
-    public boolean createOrder(OrderDto orderDto) {
-        Order order = convertFromDtoToEntity(orderDto);
+    public boolean createOrder(Order order) {
         History history = order.getState().newOrder();
 
         return saveCondition(order, history);
