@@ -1,7 +1,7 @@
 package com.netcracker.crm.domain.model;
 
 import com.netcracker.crm.domain.model.state.order.OrderState;
-import com.netcracker.crm.domain.model.state.order.states.*;
+import com.netcracker.crm.domain.model.state.order.states.NewOrder;
 
 import java.time.LocalDateTime;
 
@@ -87,5 +87,4 @@ public class Order {
     public void setState(OrderState state) {
         this.state = state;
     }
-
 }

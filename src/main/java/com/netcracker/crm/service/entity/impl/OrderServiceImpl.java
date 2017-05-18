@@ -1,27 +1,25 @@
 package com.netcracker.crm.service.entity.impl;
 
+import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.service.entity.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Melnyk_Dmytro
@@ -35,12 +33,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final UserDao userDao;
     private final ProductDao productDao;
+    private final HistoryDao historyDao;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao) {
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.productDao = productDao;
+        this.historyDao = historyDao;
     }
 
     @Override
@@ -96,6 +96,45 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<OrderHistoryDto> getOrderHistory(Long id) {
+        return convertToOrderHistory(historyDao.findAllByOrderId(id));
+    }
+
+
+
+    private Set<OrderHistoryDto> convertToOrderHistory(List<History> list){
+        Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
+        for (History history : list){
+            OrderHistoryDto historyDto = new OrderHistoryDto();
+            historyDto.setId(history.getId());
+            historyDto.setDateChangeStatus(history.getDateChangeStatus().toString());
+            historyDto.setDescChangeStatus(history.getDescChangeStatus());
+            historyDto.setOldStatus(history.getNewStatus().getName());
+            orders.add(historyDto);
+        }
+        return orders;
+    }
+
+
+    private Comparator<OrderHistoryDto> orderHistoryDtoComparator = (o1, o2) -> o1.getId() > o2.getId()? -1 : 1;
+
+    @Override
+    public GraphDto getStatisticalGraph(GraphDto graphDto) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
+        try {
+            LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+            LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+            if (toDate.compareTo(fromDate) < 0) {
+                throw new Exception("toDate is less then fromDate");
+            }
+            return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {

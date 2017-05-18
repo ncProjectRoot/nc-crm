@@ -65,7 +65,7 @@ public class UserRestController {
 
         if (userId > 0) {
             log.info("User with id: " + userId + " successful created.");
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(userId, SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
         }
 
         log.error("User was not created.");

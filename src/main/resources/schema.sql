@@ -1,4 +1,4 @@
-DROP SCHEMA IF EXISTS public CASCADE;
+/*DROP SCHEMA IF EXISTS public CASCADE;
 commit;
 CREATE SCHEMA public;
 commit;
@@ -690,4 +690,4 @@ INSERT INTO public.statuses(id, name) VALUES (14, 'OUTDATED');
 -- --
 --
 --
-commit;
+commit;*/

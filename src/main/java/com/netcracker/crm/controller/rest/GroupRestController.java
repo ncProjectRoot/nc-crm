@@ -23,6 +23,7 @@ import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_CREATED;
+import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_UPDATE;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -53,7 +54,7 @@ public class GroupRestController {
         }
         Group group = groupService.create(groupDto);
         if (group.getId() > 0){
-            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE, SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE,SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -68,6 +69,19 @@ public class GroupRestController {
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> getGroupRows(GroupRowRequest request){
         return new ResponseEntity<>(groupService.getGroupPage(request), HttpStatus.OK);
+    }
+
+    @PutMapping
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<?> update(@Valid GroupDto groupDto, BindingResult bindingResult) {
+        groupValidator.validate(groupDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
+        if (groupService.update(groupDto)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_GROUP_UPDATE, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

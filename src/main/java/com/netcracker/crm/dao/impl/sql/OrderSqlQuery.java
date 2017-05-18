@@ -30,6 +30,44 @@ public final class OrderSqlQuery {
             + "preferred_date, status_id, customer_id, product_id, csr_id "
             + "FROM orders WHERE id = :id;";
 
+    public static final String SQL_FIND_ALL_ORDER_BY_DATE_LESS = "SELECT " +
+            "  o.id," +
+            "  date_finish," +
+            "  preferred_date," +
+            "  status_id," +
+            "  customer_id," +
+            "  o.product_id," +
+            "  csr_id " +
+            "FROM orders o " +
+            "INNER JOIN history h ON h.new_status_id = o.status_id and h.order_id = o.id " +
+            "WHERE o.status_id = :status_id " +
+            "AND o.preferred_date < :preferred_date ";
+
+    public static final String SQL_FIND_ALL_ORDER_BY_STATUS = "SELECT " +
+            "  o.id," +
+            "  date_finish," +
+            "  preferred_date," +
+            "  status_id," +
+            "  customer_id," +
+            "  o.product_id," +
+            "csr_id " +
+            "FROM orders o " +
+            "INNER JOIN history h ON h.new_status_id = o.status_id and h.order_id = o.id " +
+            "WHERE o.status_id = :status_id ";
+
+    public static final String SQL_FIND_ALL_ORDER_BY_CSR = "SELECT id," +
+            "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "WHERE o.status_id = :status_id " +
+            "AND o.csr_id = :csr_id";
+
+    public static final String SQL_FIND_ALL_ORDER_BY_CSR_AND_DATE = "SELECT id," +
+            "date_finish, preferred_date, status_id, customer_id, product_id, csr_id " +
+            "FROM orders o " +
+            "WHERE o.status_id = :status_id " +
+            "AND o.preferred_date < :preferred_date " +
+            "AND o.csr_id = :csr_id";
+
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE date_trunc('day', date_finish) = :date_finish;";

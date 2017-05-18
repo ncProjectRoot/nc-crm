@@ -183,13 +183,13 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: "",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
+        defaultValue: "",
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
@@ -225,6 +225,7 @@
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -235,7 +236,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
@@ -248,6 +251,7 @@
         urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -257,7 +261,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }

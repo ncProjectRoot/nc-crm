@@ -5,10 +5,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
-import com.netcracker.crm.service.entity.DiscountService;
-import com.netcracker.crm.service.entity.ComplaintService;
-import com.netcracker.crm.service.entity.OrderService;
-import com.netcracker.crm.service.entity.ProductService;
+import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,14 +24,16 @@ public class EntityController {
     private final ProductService productService;
     private final OrderService orderService;
     private final DiscountService discountService;
+    private final GroupService groupService;
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
-                               OrderService orderService, DiscountService discountService) {
+                            OrderService orderService, DiscountService discountService, GroupService groupService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
         this.discountService = discountService;
+        this.groupService = groupService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -98,4 +97,11 @@ public class EntityController {
         return "discount";
     }
 
+
+    @RequestMapping("/*/group/{id}")
+    public String group(Map<String, Object> model,  @PathVariable Long id) {
+        model.put("group", groupService.getGroupById(id));
+        model.put("products", productService.getProductsByGroupId(id));
+        return "group";
+    }
 }

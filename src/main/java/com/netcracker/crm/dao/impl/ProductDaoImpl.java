@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.ProductProxy;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -263,9 +264,6 @@ public class ProductDaoImpl implements ProductDao {
             if (groupId != null) {
                 return groupId;
             }
-            groupId = groupDao.create(group);
-
-            return groupId;
         }
         return null;
     }
@@ -293,7 +291,7 @@ public class ProductDaoImpl implements ProductDao {
         public List<Product> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Product> allProduct = new ArrayList<>();
             while (rs.next()) {
-                Product product = new Product();
+                ProductProxy product = new ProductProxy(discountDao, groupDao);
                 product.setId(rs.getLong(PARAM_PRODUCT_ID));
                 product.setTitle(rs.getString(PARAM_PRODUCT_TITLE));
                 product.setDefaultPrice(rs.getDouble(PARAM_PRODUCT_DEFAULT_PRICE));
@@ -304,15 +302,8 @@ public class ProductDaoImpl implements ProductDao {
                     product.setStatus((ProductStatus) status);
                 }
 
-                Long discountId = rs.getLong(PARAM_PRODUCT_DISCOUNT_ID);
-                if (discountId > 0) {
-                    product.setDiscount(discountDao.findById(discountId));
-                }
-
-                Long groupId = rs.getLong(PARAM_PRODUCT_GROUP_ID);
-                if (groupId > 0) {
-                    product.setGroup(groupDao.findById(groupId));
-                }
+                product.setDiscountId(rs.getLong(PARAM_PRODUCT_DISCOUNT_ID));
+                product.setGroupId(rs.getLong(PARAM_PRODUCT_GROUP_ID));
 
                 allProduct.add(product);
             }

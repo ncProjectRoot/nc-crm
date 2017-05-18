@@ -18,6 +18,7 @@ public interface ProductService {
     boolean update(ProductDto productDto, User user);
 
     Product getProductsById(Long id);
+    List<Product> getProductsByGroupId(Long id);
 
     List<AutocompleteDto> getAutocompleteDto(String pattern);
     List<AutocompleteDto> getAutocompleteDtoWithoutGroup(String pattern);
