@@ -54,6 +54,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByGroupId(Long id) {
+        return productDao.findAllByGroupId(id);
+    }
+
+    @Override
     @Transactional
     public Product create(ProductDto productDto, User user) {
         Product product = convertToEntity(productDto);
