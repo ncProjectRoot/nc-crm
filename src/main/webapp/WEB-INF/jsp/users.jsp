@@ -274,11 +274,15 @@
         $('#submit-user-create').html('Create ' + $('#user_role option:selected').text());
     });
 
-    $(document).on("click", "#submit-user-create", function () {
-        event.preventDefault();
-        var userForm = "#form-user-create";
+    $('#form-user-create').on("submit", function (e) {
+        e.preventDefault();
         var url = "/users/registration";
-        send(userForm, url, "POST");
+        var form = "#form-user-create";
+        send(form, url, "POST").done(function (id) {
+            if (id) {
+                location.hash = '#user?id=' + id;
+            }
+        })
     });
 
     //////// all ////////
@@ -287,6 +291,7 @@
         urlSearch: "/users/autocomplete",
         urlTable: "/users",
         mapper: function (object) {
+            var contactPerson = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -298,7 +303,9 @@
             tr.append($("<td>", {text: object.email}));
             tr.append($("<td>", {text: object.phone}));
             tr.append($("<td>", {text: object.userRole}));
-            tr.append($("<td>", {text: object.contactPerson}));
+            if(object.contactPerson != null)
+                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            tr.append($("<td>", {html: contactPerson}));
             tr.append($("<td>", {text: object.formattedAddress}));
             tr.append($("<td>", {text: object.organizationName}));
             return tr;

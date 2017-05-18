@@ -139,6 +139,7 @@
         urlSearch: "/discounts/autocomplete",
         urlTable: "/discounts",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -147,7 +148,9 @@
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.description}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             return tr;
         }
     });

@@ -100,13 +100,16 @@
         urlSearch: "/groups/autocomplete",
         urlTable: "/groups",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
             tr.append($("<td>", {text: object.discountValue}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             return tr;
         }
     });
@@ -120,41 +123,10 @@
         hideInput: "#discount-hidden-input"
     });
 
-    var dataAutocomplete = {"null": null};
-    var selected = [];
-
-    $("#product-input").on("input", function (event) {
-        var typedText = $("#product-input").val();
-        $.get("/products/autocomplete?type=withoutGroup", {pattern: typedText}, function (array) {
-            for (key in dataAutocomplete) {
-                delete dataAutocomplete[key];
-            }
-            array.forEach(function (element) {
-                dataAutocomplete[element.id + " " + element.value] = null;
-            });
-        });
-    });
-    $("#product-input").autocomplete({
-        data: dataAutocomplete,
-        onAutocomplete: function (val) {
-            var id = parseFloat(val.substring(0, val.indexOf(" ")));
-            if (selected.indexOf(id) == -1) {
-                selected.push(id);
-                var $deleter = $('<a href="#!" class="secondary-content a-dummy"><i class="material-icons">delete_forever</i></a>');
-                var $div = $('<div>', {text: val}).append($deleter);
-                $("#selected-products").append($('<li class="collection-item"></li>').append($div));
-                $deleter.data("id", id);
-                $("#product-hidden-input").val(selected);
-                $deleter.on("click", function () {
-                    $(this).closest(".collection-item").remove();
-                    selected.splice(selected.indexOf(parseFloat($(this).data("id"))), 1);
-                    $("#product-hidden-input").val(selected);
-                })
-            }
-            $("#product-input").val("");
-        },
-        limit: Infinity,
-        minLength: 1
+    $("#product-input").karpo_multi_select({
+        url: "/products/autocomplete?type=withoutGroup",
+        collection: "#selected-products",
+        hideInput: "#product-hidden-input"
     });
 
     $("#addGroup").on("submit", function (e) {
@@ -172,6 +144,5 @@
             });
         }
     });
-
 
 </script>

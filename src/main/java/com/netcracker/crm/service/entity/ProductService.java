@@ -14,10 +14,11 @@ import java.util.Map;
  */
 public interface ProductService {
 
-    Product create(ProductDto productDto);
-    boolean update(ProductDto productDto);
+    Product create(ProductDto productDto, User user);
+    boolean update(ProductDto productDto, User user);
 
     Product getProductsById(Long id);
+    List<Product> getProductsByGroupId(Long id);
 
     List<AutocompleteDto> getAutocompleteDto(String pattern);
     List<AutocompleteDto> getAutocompleteDtoWithoutGroup(String pattern);
@@ -26,4 +27,6 @@ public interface ProductService {
     Map<String, Object> getProductsRow(ProductRowRequest orderRowRequest);
 
     boolean hasCustomerAccessToProduct(Long productId, Long customerId);
+
+    boolean changeStatus(Long productId, Long statusId, User user);
 }
