@@ -20,11 +20,7 @@ public interface UserService {
     Map<String, Object> getUsers(UserRowRequest userRowRequest, User user, boolean individual);
     User getUserById(Long id);
 
-    //boolean updateUser(UserDto userDto);
-
     User update(UserDto userDto);
-
-    Map<String, Object> getUsers(UserRowRequest userRowRequest);
 
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
 }

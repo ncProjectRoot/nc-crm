@@ -161,7 +161,7 @@
 
     $("#update-user-form").on("submit", function (e) {
         e.preventDefault();
-        sendPut("#update-user-form", "/users").done(function () {
+        send("#update-user-form", "/users", 'PUT').done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })
