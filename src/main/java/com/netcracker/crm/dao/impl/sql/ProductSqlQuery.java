@@ -105,7 +105,7 @@ public final class ProductSqlQuery {
             "FROM " +
             "(SELECT count(p.*) status_count " +
             "FROM product p " +
-            "WHERE p.id IN (:product_ids ) " +
+            "WHERE p.id IN ( :product_ids ) " +
             "GROUP BY p.status_id ) AS result;";
 
     public static final String SQL_PRODUCT_BULK_UPDATE = "" +
