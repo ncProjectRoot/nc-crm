@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
+import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.UserValidator;
@@ -15,11 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -73,15 +72,20 @@ public class UserRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest) {
-        return new ResponseEntity<>(userService.getUsers(userRowRequest), HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
+                                                        @RequestParam(required = false) boolean individual) {
+        Object principal = authentication.getPrincipal();
+        User user  = (UserDetailsImpl) principal;
+        return new ResponseEntity<>(userService.getUsers(userRowRequest, user, individual), HttpStatus.OK);
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern) {
-        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern), HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user  = (UserDetailsImpl) principal;
+        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
 
 }

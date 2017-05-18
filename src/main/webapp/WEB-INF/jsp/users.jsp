@@ -70,10 +70,10 @@
                                         <li><a href="#" class="a-dummy" data-value="false">No</a></li>
                                     </ul>
                                 </th>
-                                <th data-field="7">
+                                <th data-field="9">
                                     <a href="#!" class="sorted-element a-dummy">Address</a>
                                 </th>
-                                <th data-field="8">
+                                <th data-field="10">
                                     <a href="#!" class="sorted-element a-dummy">Organization</a>
                                 </th>
                             </tr>
@@ -174,7 +174,38 @@
         </sec:authorize>
         <sec:authorize access="hasRole('ROLE_CUSTOMER')">
             <div id="my-users-wrapper" class="col s12">
-
+                <div id="table-my-users" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
+                                </th>
+                                <th data-field="9">
+                                    <a href="#!" class="sorted-element a-dummy">Address</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </sec:authorize>
 
@@ -242,7 +273,7 @@
         $('#submit-user-create').css("display", "block");
         $('#submit-user-create').html('Create ' + $('#user_role option:selected').text());
     });
-    
+
     $('#form-user-create').on("submit", function (e) {
         e.preventDefault();
         var url = "/users/registration";
@@ -273,7 +304,7 @@
             tr.append($("<td>", {text: object.phone}));
             tr.append($("<td>", {text: object.userRole}));
             if(object.contactPerson != null)
-                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: contactPerson}));
             tr.append($("<td>", {text: object.formattedAddress}));
             tr.append($("<td>", {text: object.organizationName}));
@@ -281,6 +312,27 @@
         }
     });
 
+    </sec:authorize>
+
+    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+    $("#table-my-users").karpo_table({
+        urlSearch: "/users/autocomplete",
+        urlTable: "/users?individual=true",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#user?id=" + object.id
+            })));
+            tr.append($("<td>", {text: object.firstName}));
+            tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));
+            tr.append($("<td>", {text: object.lastName}));
+            tr.append($("<td>", {text: object.email}));
+            tr.append($("<td>", {text: object.phone}));
+            tr.append($("<td>", {text: object.formattedAddress}));
+            return tr;
+        }
+    });
     </sec:authorize>
 
 </script>
