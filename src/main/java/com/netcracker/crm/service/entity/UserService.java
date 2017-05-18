@@ -1,9 +1,9 @@
 package com.netcracker.crm.service.entity;
 
-import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.UserRowRequest;
-import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.exception.RegistrationException;
 
 import java.util.List;
@@ -18,6 +18,13 @@ public interface UserService {
     boolean activateUser(String userToken);
 
     Map<String, Object> getUsers(UserRowRequest userRowRequest, User user, boolean individual);
+    User getUserById(Long id);
+
+    //boolean updateUser(UserDto userDto);
+
+    User update(UserDto userDto);
+
+    Map<String, Object> getUsers(UserRowRequest userRowRequest);
 
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
 }

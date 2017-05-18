@@ -143,4 +143,6 @@ public class User {
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
+
+
 }

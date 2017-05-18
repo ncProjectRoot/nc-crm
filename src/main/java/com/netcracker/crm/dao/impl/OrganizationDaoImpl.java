@@ -59,13 +59,14 @@ public class OrganizationDaoImpl implements OrganizationDao {
                 .addValue(PARAM_ORG_ID, orgId)
                 .addValue(PARAM_ORG_NAME, org.getName());
 
-        int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
-        if (updatedRows > 0) {
-            log.info("Organization with id: " + orgId + " is successfully updated.");
-            return orgId;
-        } else {
+       // int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
+        long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
+        if (affectedRows == 0) {
             log.error("Organization was not updated.");
             return null;
+        } else {
+            log.info("Organization with id: " + orgId + " is successfully updated.");
+            return orgId;
         }
     }
 

@@ -26,8 +26,7 @@ import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_USER_CREATED;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by bpogo on 4/30/2017.
@@ -68,6 +67,17 @@ public class UserRestController {
         }
 
         log.error("User was not created.");
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
+
+        User user = userService.update(userDto);
+
+        if (user.getId() > 0) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
+        }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

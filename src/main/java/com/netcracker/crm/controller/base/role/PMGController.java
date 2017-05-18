@@ -25,11 +25,6 @@ public class PMGController {
         return "dashboard/statistics";
     }
 
-    @GetMapping("/profile")
-    public String profile(Map<String, Object> model) {
-        return "profile";
-    }
-
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model) {
         return "complaints";

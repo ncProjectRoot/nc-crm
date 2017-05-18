@@ -14,7 +14,7 @@
             <ul id="tabs" class="tabs">
                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a class="active" href="#all-users-wrapper">All Users</a></li>
-                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                    <li class="tab col s3"><a id="link-create-wrapper" href="#create-wrapper">Create</a></li>
                 </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
@@ -116,7 +116,7 @@
                                     <label for="customer_address_details">Address Details</label>
                                 </div>
                                 <div>
-                                    <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                                        <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
                                 </div>
                             </div>
                             <div class="col s6">
@@ -215,7 +215,30 @@
 <script>
 
     $('ul#tabs').tabs({
-        onShow: function (tab) {
+
+        onShow: function() {
+            $('#map').locationpicker({
+                location: {
+                    latitude: 40.7324319,
+                    longitude: -73.82480777777776
+                },
+                locationName: "",
+                radius: 1,
+                inputBinding: {
+                    locationNameInput: $('#customer_address')
+                },
+                enableAutocomplete: true,
+                enableReverseGeocode: true,
+                draggable: true,
+                onchanged: function (currentLocation, radius, isMarkerDropped) {
+                    var mapContext = $(this).locationpicker('map');
+                    $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
+                    $('#customer_address_lat').val(mapContext.location.latitude);
+                    $('#customer_address_long').val(mapContext.location.longitude);
+                    $('#customer_formatted_address').val(mapContext.location.formattedAddress);
+                },
+                addressFormat: 'street_number'
+            });
         }
     });
 
@@ -238,29 +261,6 @@
                 $('#customer_organization_name').val(val);
             }
         });
-    });
-
-    $('#map').locationpicker({
-        location: {
-            latitude: 40.7324319,
-            longitude: -73.82480777777776
-        },
-        locationName: "",
-        radius: 1,
-        inputBinding: {
-            locationNameInput: $('#customer_address')
-        },
-        enableAutocomplete: true,
-        enableReverseGeocode: true,
-        draggable: true,
-        onchanged: function (currentLocation, radius, isMarkerDropped) {
-            var mapContext = $(this).locationpicker('map');
-            $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
-            $('#customer_address_lat').val(mapContext.location.latitude);
-            $('#customer_address_long').val(mapContext.location.longitude);
-            $('#customer_formatted_address').val(mapContext.location.formattedAddress);
-        },
-        addressFormat: 'street_number'
     });
 
     $(document).on("change", "#user_role", function () {
