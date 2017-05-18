@@ -148,17 +148,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">cached</i>
-                                <select name="statusName" id="select_product_status">
-                                    <option value="PLANNED" data-value="12" data-after-disabled="13">PLANNED</option>
-                                    <option value="ACTUAL" data-value="13" data-after-disabled="14">ACTUAL</option>
-                                    <option value="OUTDATED" data-value="14">OUTDATED</option>
-                                </select>
-                                <label for="select_product_status">Choose product status</label>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">description</i>
                                 <textarea id="descProduct" name="description" class="materialize-textarea" data-length="400"></textarea>
@@ -236,6 +225,7 @@
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -246,7 +236,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }
@@ -259,6 +251,7 @@
         urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
@@ -268,7 +261,9 @@
             tr.append($("<td>", {text: object.price}));
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;
         }

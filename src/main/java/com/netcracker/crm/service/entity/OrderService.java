@@ -6,9 +6,11 @@ import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.dto.OrderHistoryDto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Karpunets
@@ -27,4 +29,6 @@ public interface OrderService {
     List<Order> findByCustomer(User customer);
 
     GraphDto getStatisticalGraph(GraphDto graphDto);
+    Set<OrderHistoryDto> getOrderHistory(Long id);
+
 }

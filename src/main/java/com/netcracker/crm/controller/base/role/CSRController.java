@@ -55,4 +55,9 @@ public class CSRController {
         return "groups";
     }
 
+    @GetMapping("/messages")
+    public String message(Map<String, Object> model) {
+        return "messages";
+    }
+
 }
