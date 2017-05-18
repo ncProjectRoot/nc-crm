@@ -21,7 +21,7 @@ public class OrderSchedulerSqlGenerator {
                 builder.append(",");
             }
         }
-        builder.append(")");
+        builder.append(") ORDER BY h.date_change_status ASC");
         return builder.toString();
     }
 

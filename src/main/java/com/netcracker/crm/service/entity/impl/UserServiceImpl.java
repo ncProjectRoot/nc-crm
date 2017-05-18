@@ -101,7 +101,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getUsers(UserRowRequest userRowRequest) {
+    public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
+        UserRole role = principal.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
+            userRowRequest.setCustomerId(principal.getId());
+        }
         Map<String, Object> response = new HashMap<>();
         Long length = userDao.getUserRowsCount(userRowRequest);
         response.put("length", length);
@@ -115,10 +119,18 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<AutocompleteDto> getUserLastNamesByPattern(String pattern) {
+    public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
+        UserRole role = principal.getUserRole();
+        List<String> names;
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+            names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
+        } else {
+            names = userDao.findUserLastNamesByPattern(pattern);
+        }
         List<AutocompleteDto> result = new ArrayList<>();
-        for (String userLastName: userDao.findUserLastNamesByPattern(pattern)) {
+        for (String userLastName: names) {
             AutocompleteDto autocompleteDto = new AutocompleteDto();
             autocompleteDto.setValue(userLastName);
             result.add(autocompleteDto);

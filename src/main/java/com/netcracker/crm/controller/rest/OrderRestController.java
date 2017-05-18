@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.security.UserDetailsImpl;
@@ -21,7 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +86,7 @@ public class OrderRestController {
     @GetMapping("/users/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER')")
     public List<AutocompleteDto> getAutocompleteDto(String pattern, Authentication authentication,
-                                                     @PathVariable(value = "userId") Long userId) throws IOException {
+                                                     @PathVariable(value = "userId") Long userId) {
         Object principal = authentication.getPrincipal();
         User customer = null;
         if (principal instanceof UserDetailsImpl) {
@@ -95,6 +95,11 @@ public class OrderRestController {
         return orderService.getAutocompleteOrder(pattern, customer);
     }
 
+    @GetMapping("/graph")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public GraphDto getGraph(GraphDto graphDto) {
+        return orderService.getStatisticalGraph(graphDto);
+    }
 
     @GetMapping("/{id}/history")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_ADMIN')")

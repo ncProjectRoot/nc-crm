@@ -297,9 +297,6 @@ public class ProductDaoImpl implements ProductDao {
             if (groupId != null) {
                 return groupId;
             }
-            groupId = groupDao.create(group);
-
-            return groupId;
         }
         return null;
     }

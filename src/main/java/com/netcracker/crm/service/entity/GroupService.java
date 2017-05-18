@@ -17,5 +17,7 @@ public interface GroupService {
 
     List<AutocompleteDto> getAutocompleteGroup(String pattern);
     Map<String, Object> getGroupPage(GroupRowRequest request);
+    Group getGroupById(Long id);
+    boolean update(GroupDto groupDto);
 
 }

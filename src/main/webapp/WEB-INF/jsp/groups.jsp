@@ -102,7 +102,7 @@
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
