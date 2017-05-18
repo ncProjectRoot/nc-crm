@@ -7,6 +7,7 @@ import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.OrderHistoryDto;
 import com.netcracker.crm.dto.row.OrderRowDto;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -34,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final HistoryDao historyDao;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao,HistoryDao historyDao) {
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao) {
         this.orderDao = orderDao;
         this.userDao = userDao;
         this.productDao = productDao;
@@ -119,6 +121,21 @@ public class OrderServiceImpl implements OrderService {
 
 
     private Comparator<OrderHistoryDto> orderHistoryDtoComparator = (o1, o2) -> o1.getId() > o2.getId()? -1 : 1;
+
+    @Override
+    public GraphDto getStatisticalGraph(GraphDto graphDto) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
+        try {
+            LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+            LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+            if (toDate.compareTo(fromDate) < 0) {
+                throw new Exception("toDate is less then fromDate");
+            }
+            return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {
         Order order = new Order();
