@@ -18,8 +18,8 @@ public class RequestToResumeOrder extends OrderState {
 
     @Override
     public History resumeOrder() {
-        History history = getOrderHistory(DESC_ORDER_RESUMED);
         order.setState(new ActiveOrder(order));
+        History history = getOrderHistory(DESC_ORDER_RESUMED);
 
         return history;
     }

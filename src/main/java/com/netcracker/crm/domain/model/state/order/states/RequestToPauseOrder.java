@@ -18,8 +18,8 @@ public class RequestToPauseOrder extends OrderState {
 
     @Override
     public History pauseOrder() {
-        History history = getOrderHistory(DESC_ORDER_PAUSED);
         order.setState(new PausedOrder(order));
+        History history = getOrderHistory(DESC_ORDER_PAUSED);
 
         return history;
     }
