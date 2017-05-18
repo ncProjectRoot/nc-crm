@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.dto.mapper.UserMap;
 import com.netcracker.crm.dto.row.UserRowDto;
@@ -19,10 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,8 +39,11 @@ public class UserServiceImpl implements UserService {
 
     private static final int PASSWORD_LENGTH = 10;
     private static final String TOKEN_WILD_CARD = "%token%";
-    //TODO: activation link for production
-    private static final String ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+    private static final String LOCAL_ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+    private static final String PRODUCTION_ACTIVATION_LINK_TEMPLATE = "http://nc-project.tk/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+
+    @Resource
+    private Environment env;
 
     private final UserDao userDao;
     private final UserTokenDao tokenDao;
@@ -106,7 +112,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getUsers(UserRowRequest userRowRequest) {
+    public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
+        UserRole role = principal.getUserRole();
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
+            userRowRequest.setCustomerId(principal.getId());
+        }
         Map<String, Object> response = new HashMap<>();
         Long length = userDao.getUserRowsCount(userRowRequest);
         response.put("length", length);
@@ -120,9 +130,23 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<String> getUserLastNamesByPattern(String pattern) {
-        return userDao.findUserLastNamesByPattern(pattern);
+    public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
+        UserRole role = principal.getUserRole();
+        List<String> names;
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+            names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
+        } else {
+            names = userDao.findUserLastNamesByPattern(pattern);
+        }
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (String userLastName: names) {
+            AutocompleteDto autocompleteDto = new AutocompleteDto();
+            autocompleteDto.setValue(userLastName);
+            result.add(autocompleteDto);
+        }
+        return result;
     }
 
     private String createUserRegistrationToken(User user) {
@@ -144,7 +168,12 @@ public class UserServiceImpl implements UserService {
     private void sendRegistrationEmail(User user, String password, String token) throws RegistrationException {
         EmailParam emailParam = new EmailParam(EmailType.REGISTRATION);
 
-        String activationLink = ACTIVATION_LINK_TEMPLATE.replaceAll(TOKEN_WILD_CARD, token);
+        String activationLink;
+        if (env.acceptsProfiles("production")) {
+            activationLink = PRODUCTION_ACTIVATION_LINK_TEMPLATE.replaceAll(TOKEN_WILD_CARD, token);
+        } else {
+            activationLink = LOCAL_ACTIVATION_LINK_TEMPLATE.replaceAll(TOKEN_WILD_CARD, token);
+        }
         emailParam.put(EmailParamKeys.USER_REFERENCE, activationLink);
         emailParam.put(EmailParamKeys.USER, user);
         emailParam.put(EmailParamKeys.USER_PASSWORD, password);

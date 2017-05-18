@@ -3,7 +3,9 @@ package com.netcracker.crm.service.entity;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
+import com.netcracker.crm.dto.GraphDto;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,15 +29,13 @@ public interface ComplaintService {
 
     Complaint findById(Long id);
 
-    Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest) throws IOException;
-
-    List<String> getTitlesByPmg(String likeTitle, User pmg);
-
-    boolean acceptComplaint(Long complaintId, Long pmgId);
-
-    boolean closeComplaint(Long complaintId, Long pmgId);
-
     boolean checkAccessToComplaint(User customer, Long id);
 
-    List<String> getTitles(String likeTitle, User user);
+    boolean changeStatusComplaint(Long id, String type, User pmg);
+
+    Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual);
+
+    List<AutocompleteDto> getAutocompleteDto(String pattern, User user, boolean individual);
+
+    GraphDto getStatisticalGraph(GraphDto graphDto);
 }

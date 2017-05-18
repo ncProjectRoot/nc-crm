@@ -3,8 +3,10 @@ package com.netcracker.crm.controller.rest;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.UserRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.exception.RegistrationException;
+import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.UserValidator;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,10 +42,10 @@ public class UserRestController {
     private final ResponseGenerator<User> generator;
 
     @Autowired
-    public UserRestController(UserService userService, UserValidator userRowValidator,
-                              BindingResultHandler bindingResultHandler, ResponseGenerator generator) {
+    public UserRestController(UserService userService, UserValidator userValidator,
+                              BindingResultHandler bindingResultHandler, ResponseGenerator<User> generator) {
         this.userService = userService;
-        this.userValidator = userRowValidator;
+        this.userValidator = userValidator;
         this.bindingResultHandler = bindingResultHandler;
         this.generator = generator;
     }
@@ -60,7 +63,7 @@ public class UserRestController {
 
         if (userId > 0) {
             log.info("User with id: " + userId + " successful created.");
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
+            return generator.getHttpResponse(userId, SUCCESS_MESSAGE, SUCCESS_USER_CREATED, HttpStatus.CREATED);
         }
 
         log.error("User was not created.");
@@ -79,15 +82,20 @@ public class UserRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest) {
-        return new ResponseEntity<>(userService.getUsers(userRowRequest), HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
+                                                        @RequestParam(required = false) boolean individual) {
+        Object principal = authentication.getPrincipal();
+        User user  = (UserDetailsImpl) principal;
+        return new ResponseEntity<>(userService.getUsers(userRowRequest, user, individual), HttpStatus.OK);
     }
 
-    @GetMapping("/lastNames")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<String>> getLastNames(String pattern) {
-        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern), HttpStatus.OK);
+    @GetMapping("/autocomplete")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user  = (UserDetailsImpl) principal;
+        return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
 
 }

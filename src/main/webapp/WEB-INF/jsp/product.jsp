@@ -112,10 +112,19 @@
         position: absolute;
         margin: 20px;
     }
+    .change-status-trigger {
+        position: absolute;
+        margin: 20px;
+        top: 70px;
+    }
 
     .modal.modal-fixed-footer {
         max-height: 85%;
         height: 98%;
+    }
+
+    .modal.modal-fixed-footer.status-modal {
+        height: 50%;
     }
 
     .row .col {
@@ -131,6 +140,7 @@
         margin-top: 20px;
     }
 
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Product #${product.id}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
@@ -144,15 +154,6 @@
                         <i class="material-icons prefix">title</i>
                         <label for="title">Title</label>
                         <input class="validate" id="title" type="text" name="title">
-                    </div>
-                    <div class="input-field col s7">
-                        <i class="material-icons prefix">cached</i>
-                        <select name="statusName" id="select_product_status">
-                            <option value="PLANNED" data-value="10" data-after-disabled="11">PLANNED</option>
-                            <option value="ACTUAL" data-value="11" data-after-disabled="12">ACTUAL</option>
-                            <option value="OUTDATED" data-value="12">OUTDATED</option>
-                        </select>
-                        <label for="select_product_status">Choose product status</label>
                     </div>
                     <div class='input-field col s7'>
                         <i class="material-icons prefix">attach_money</i>
@@ -185,6 +186,31 @@
                 </div>
             </form>
         </div>
+        <c:if test="${product.status.name!='OUTDATED'}">
+        <a class="modal-trigger brown-text change-status-trigger" href="#change-status"><i class='material-icons medium'>cached</i></a>
+        <div id="change-status" class="modal modal-fixed-footer status-modal">
+            <form id="change-status-form">
+                <div class="modal-content row">
+                    <h4>Change Product status</h4>
+                    <input type="hidden" name="id" value="${product.id}"/>
+                    <div class="input-field col s7">
+                        <i class="material-icons prefix">cached</i>
+                        <select name="statusName" id="select_product_status">
+                            <option value="12" data-value="12" data-after-disabled="13">PLANNED</option>
+                            <option value="13" data-value="13" data-after-disabled="14">ACTUAL</option>
+                            <option value="14" data-value="14">OUTDATED</option>
+                        </select>
+                        <label for="select_product_status">Choose product status</label>
+                    </div>
+                </div>
+                <div class="modal-footer center-align">
+                    <button class="btn waves-effect waves-light" id="change-product-status" type="submit" name="action">Change
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        </c:if>
     </sec:authorize>
     <c:if test="${product.discount.active}">
         <img class="discount-img" src="${discountUrl}"/>
@@ -275,11 +301,11 @@
 
     $('#order-form').on("submit", function (e) {
         e.preventDefault();
-        var url = "/customer/put/order";
+        var url = "/orders";
         var form = "#order-form";
-        sendPost(form, url).done(function (orderId) {
+        send(form, url, "POST").done(function (orderId) {
             if (orderId) {
-                location.hash = '#order?id=' + orderId;
+                location.hash = '#order/' + orderId;
             }
             $('.modal').modal('close');
         })
@@ -301,13 +327,13 @@
     $(".modal-content input[name='defaultPrice']").val("${product.defaultPrice}");
     $('#select_product_status').karpo_status(${product.status.id});
     $('#discount-input').karpo_autocomplete({
-        url: "/discounts/csr/discountByTitle/",
+        url: "/discounts/autocomplete",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
-        url: "/csr/groupByName/",
+        url: "/groups/autocomplete/",
         label: "#selected-group",
         defaultValue: "${product.group.id} ${product.group.name}",
         hideInput: "#group-hidden-input"
@@ -318,10 +344,44 @@
 
     $("#change-form").on("submit", function (e) {
         e.preventDefault();
-        sendPost("#change-form", "/csr/post/product").done(function (orderId) {
+        send("#change-form", "/products", "PUT").done(function () {
             $('.modal').modal('close');
             $(window).trigger('hashchange')
         })
+    });
+
+    $.ajaxSetup({
+        complete: $(function () {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
+        })
+    });
+
+    $("#change-status-form").on("submit", function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/products/status",
+            type: 'PUT',
+            data: {
+                productId: ${product.id},
+                statusId: $('#select_product_status').val()
+            },
+            success: function (data) {
+                if (data === true) {
+                    Materialize.toast('You have changed status of product!'  , 5000, 'rounded');
+                } else if (data === false) {
+                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
+                }
+                $('.modal').modal('close');
+                $(window).trigger('hashchange')
+            }
+        });
     });
 
     </sec:authorize>

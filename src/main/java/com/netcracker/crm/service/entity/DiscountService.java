@@ -12,15 +12,12 @@ import java.util.Map;
  * Created by Pasha on 01.05.2017.
  */
 public interface DiscountService {
-    List<Discount> getDiscountByTitle(String title);
 
-    Discount persist(DiscountDto discountDto);
-
-    Map<String, Object> getDiscounts(DiscountRowRequest rowRequest);
+    Discount create(DiscountDto discountDto);
+    boolean update(DiscountDto discountDto);
 
     Discount getDiscountById(Long id);
 
-    boolean updateDiscount(DiscountDto discountDto);
-
-    List<AutocompleteDto> getAutocompleteDiscount(String pattern);
+    List<AutocompleteDto> getAutocompleteDto(String pattern);
+    Map<String, Object> getDiscountRows(DiscountRowRequest rowRequest);
 }

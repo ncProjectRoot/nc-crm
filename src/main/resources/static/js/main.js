@@ -74,12 +74,12 @@ function downloadContent() {
     });
 }
 
-function sendPost(form, url) {
+function send(form, url, type) {
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
     var xhr = $.ajax({
         url: url,
-        type: "POST",
+        type: type,
         data: $(form).serialize(),
         beforeSend: function (xhr) {
             xhr.setRequestHeader(header, token);
@@ -131,8 +131,6 @@ jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
     var dataAutocomplete = {"null":null};
     var deleter;
-    console.log(params.defaultValue)
-    console.log(!!params.defaultValue)
     if (params.defaultValue.length > 1) {
         var defaultObject = convert(params.defaultValue);
         $(params.label).text("#" + params.defaultValue);
@@ -187,31 +185,63 @@ jQuery.fn.karpo_autocomplete = function (params) {
         }
     }
 };
+jQuery.fn.karpo_multi_select = function (params) {
+    var autocomplete = $(this[0]);
+    var dataAutocomplete = {"null": null};
+    var selected = [];
+    var selectedVal = [];
 
-function sendPut(form, url) {
-    var token = $("meta[name='_csrf']").attr("content");
-    var header = $("meta[name='_csrf_header']").attr("content");
-    var xhr = $.ajax({
-        url: url,
-        type: "PUT",
-        data: $(form).serialize(),
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(header, token);
-        },
-        statusCode: {
-            200: function (data) {
-                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
-            },
-            201: function (data) {
-                Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
-            },
-            417: function (data) {
-                Materialize.toast(xhr.getResponseHeader("validationMessage"), 10000);
-            },
-            500: function (data) {
-                Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
+    autocomplete.on("input", function (event) {
+        var typedText = autocomplete.val();
+        $.get(params.url, {pattern: typedText}, function (array) {
+            for (key in dataAutocomplete) {
+                delete dataAutocomplete[key];
             }
-        }
+            array.forEach(function (element) {
+                dataAutocomplete[element.id + " " + element.value] = null;
+            });
+        });
     });
-    return xhr;
-}
+
+    this.addSelected =  function (val) {
+        var id = parseFloat(val.substring(0, val.indexOf(" ")));
+        if (selected.indexOf(id) == -1) {
+            selected.push(id);
+            selectedVal.push(val)
+            var $deleter = $('<a href="#!" class="secondary-content a-dummy"><i class="material-icons">delete_forever</i></a>');
+            var $div = $('<div>', {text: val}).append($deleter);
+            $(params.collection).append($('<li class="collection-item"></li>').append($div));
+            $deleter.data("id", id);
+            $(params.hideInput).val(selected);
+            $deleter.on("click", function () {
+                $(this).closest(".collection-item").remove();
+                var index = selected.indexOf(parseFloat($(this).data("id")));
+                selected.splice(index, 1);
+                selectedVal.splice(index, 1);
+                $(params.hideInput).val(selected);
+            })
+        }
+        autocomplete.val("");
+    };
+    autocomplete.autocomplete({
+        data: dataAutocomplete,
+        onAutocomplete: this.addSelected,
+        limit: Infinity,
+        minLength: 1
+    });
+
+
+    this.getSelected = function () {
+        return selected;
+    };
+    this.getSelectedVal = function () {
+        return selectedVal;
+    };
+
+    return this;
+
+
+
+};
+
+

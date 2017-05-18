@@ -106,10 +106,7 @@
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
-    $('ul#tabs').tabs({
-        onShow: function (tab) {
-        }
-    });
+    $('ul#tabs').tabs();
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     //////// create ////////
@@ -125,37 +122,35 @@
             } else if (percentage < 0 || percentage > 100) {
                 Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
             } else {
-                $.post("/discounts", $("#addDiscount").serialize(), function (data) {
-                    $("#addDiscount")[0].reset();
-                    Materialize.toast(data, 10000, 'rounded');
-                });
+                var url = "/discounts";
+                var form = "#addDiscount";
+                send(form, url, "POST").done(function (id) {
+                    if (id) {
+                        location.hash = '#discount/' + id;
+                    }
+                })
             }
         }
     );
 
-    $(document).on("click", "#submit-discount", function (e) {
-        event.preventDefault();
-        var url = "/discounts";
-        var form = "#addDiscount";
-        sendPost(form, url);
-        $(form)[0].reset();
-    });
-
     //////// all ////////
 
     $("#table-all-products").karpo_table({
-        urlSearch: "/discounts/titles",
+        urlSearch: "/discounts/autocomplete",
         urlTable: "/discounts",
         mapper: function (object) {
+            var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#discount?id=" + object.id
+                href: "#discount/" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.description}));
-            tr.append($("<td>", {text: object.discountActive}));
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            tr.append($("<td>", {html: disActive}));
             return tr;
         }
     });

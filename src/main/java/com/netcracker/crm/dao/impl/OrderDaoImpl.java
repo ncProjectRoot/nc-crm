@@ -4,8 +4,12 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.proxy.OrderProxy;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
+import com.netcracker.crm.scheduler.OrderSchedulerSqlGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,18 +41,24 @@ public class OrderDaoImpl implements OrderDao {
 
     private static final Logger log = LoggerFactory.getLogger(OrderDaoImpl.class);
 
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private ProductDao productDao;
+    private final UserDao userDao;
+    private final ProductDao productDao;
 
-    private SimpleJdbcInsert complaintInsert;
+
+    private SimpleJdbcInsert orderInsert;
+
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
 
     @Autowired
+    public OrderDaoImpl(UserDao userDao, ProductDao productDao) {
+        this.userDao = userDao;
+        this.productDao = productDao;
+    }
+
+    @Autowired
     public void setDataSource(DataSource dataSource) {
-        this.complaintInsert = new SimpleJdbcInsert(dataSource)
+        this.orderInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(PARAM_ORDER_TABLE)
                 .usingGeneratedKeyColumns(PARAM_ORDER_ID);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -71,7 +82,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CSR_ID, csrId);
 
-        long newId = complaintInsert.executeAndReturnKey(params)
+        long newId = orderInsert.executeAndReturnKey(params)
                 .longValue();
         order.setId(newId);
 
@@ -103,6 +114,48 @@ public class OrderDaoImpl implements OrderDao {
             return productId;
         }
         return null;
+    }
+
+    @Override
+    public List<Order> findAllByPrefDateAndStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                                  LocalDateTime to, OrderStatus orderStatus) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_PREFERRED_DATE, to)
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
+        String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_DATE_LESS, PARAM_CSR_ID, csrs.size());
+        for (int i = 0; i < csrs.size(); i++) {
+            params.addValue(generator.getField() + i, csrs.get(i).getId());
+        }
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
+                                                  OrderStatus orderStatus) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
+        String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_STATUS, PARAM_CSR_ID, csrs.size());
+        for (int i = 0; i < csrs.size(); i++) {
+            params.addValue(generator.getField() + i, csrs.get(i).getId());
+        }
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrId(LocalDateTime to, OrderStatus orderStatus, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_PREFERRED_DATE, to)
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
+                .addValue(PARAM_CSR_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR_AND_DATE, params, orderWithDetailExtractor);
+    }
+
+    @Override
+    public List<Order> findAllByCsrId(OrderStatus orderStatus, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_STATUS, orderStatus.getId())
+                .addValue(PARAM_CSR_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_ALL_ORDER_BY_CSR, params, orderWithDetailExtractor);
     }
 
     @Override
@@ -285,7 +338,7 @@ public class OrderDaoImpl implements OrderDao {
         public List<Order> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Order> allOrder = new ArrayList<>();
             while (rs.next()) {
-                Order order = new Order();
+                OrderProxy order = new OrderProxy(userDao, productDao);
                 order.setId(rs.getLong(PARAM_ORDER_ID));
 
                 Timestamp dateFinish = rs.getTimestamp(PARAM_ORDER_DATE_FINISH);
@@ -296,29 +349,18 @@ public class OrderDaoImpl implements OrderDao {
                 Timestamp datePreferred = rs.getTimestamp(PARAM_ORDER_PREFERRED_DATE);
                 if (datePreferred != null) {
                     order.setPreferedDate(datePreferred.toLocalDateTime());
-
                 }
 
                 long statusId = rs.getLong(PARAM_ORDER_STATUS);
                 Status status = Status.getStatusByID(statusId);
                 if (status instanceof OrderStatus) {
                     order.setStatus((OrderStatus) status);
+                    OrderState.setStateForOrder((OrderStatus) status, order);
                 }
 
-                Long customerId = rs.getLong(PARAM_CUSTOMER_ID);
-                if (customerId > 0) {
-                    order.setCustomer(userDao.findById(customerId));
-                }
-
-                Long productId = rs.getLong(PARAM_PRODUCT_ID);
-                if (productId > 0) {
-                    order.setProduct(productDao.findById(productId));
-                }
-
-                Long csrId = rs.getLong(PARAM_CSR_ID);
-                if (csrId > 0) {
-                    order.setCsr(userDao.findById(csrId));
-                }
+                order.setCustomerId(rs.getLong(PARAM_CUSTOMER_ID));
+                order.setProductId(rs.getLong(PARAM_PRODUCT_ID));
+                order.setCsrId(rs.getLong(PARAM_CSR_ID));
 
                 allOrder.add(order);
             }

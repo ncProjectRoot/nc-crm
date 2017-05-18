@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -45,7 +42,8 @@ public class GroupServiceImpl implements GroupService{
 
     @Override
     @Transactional
-    public Group persist(GroupDto groupDto) {
+    public Group create(GroupDto groupDto) {
+        System.out.println(groupDto.getDiscountId());
         Group group = convertToEntity(groupDto);
         groupDao.create(group);
         if (groupDto.getProducts() != null) {
@@ -61,6 +59,41 @@ public class GroupServiceImpl implements GroupService{
         }
 
         return group;
+    }
+
+
+    @Override
+    @Transactional
+    public boolean update(GroupDto groupDto) {
+        Group group = groupDao.findById(groupDto.getId());
+        group.setName(groupDto.getName());
+        setGroupDiscount(group, groupDto.getDiscountId());
+        List<Product> products = productDao.findAllByGroupId(group.getId());
+        for (Long id : groupDto.getProducts()){
+            Product product = productDao.findById(id);
+            if (products.contains(product)){
+                products.remove(product);
+            }else {
+                product.setGroup(group);
+                if (productDao.update(product) <= 0){
+                    return false;
+                }
+
+            }
+        }
+        for (Product product : products){
+            product.getGroup().setId(null);
+            productDao.update(product);
+        }
+        return groupDao.update(group) > 0;
+    }
+
+    private void setGroupDiscount(Group group, Long discountId){
+        if (discountId == 0){
+            group.setDiscount(null);
+        }else if (!group.getId().equals(discountId)){
+            group.setDiscount(discountDao.findById(discountId));
+        }
     }
 
     @Override
@@ -84,17 +117,8 @@ public class GroupServiceImpl implements GroupService{
     }
 
     @Override
-    public List<Group> groupsByName(String name) {
-        return groupDao.findByName(name);
-    }
-
-    @Override
-    public List<String> groupByName(String name) {
-        List<String> groupNames = new ArrayList<>();
-        for (Group g : groupDao.findByName(name)){
-            groupNames.add(g.getName());
-        }
-        return groupNames;
+    public Group getGroupById(Long id) {
+        return groupDao.findById(id);
     }
 
     private AutocompleteDto convertToAutocompleteDto(Group group) {

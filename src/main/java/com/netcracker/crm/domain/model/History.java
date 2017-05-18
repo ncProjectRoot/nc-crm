@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  */
 public class History {
     private Long id;
-    private Status oldStatus;
+    private Status newStatus;
     private LocalDateTime dateChangeStatus;
     private String descChangeStatus;
     private Order order;
@@ -27,12 +27,12 @@ public class History {
         this.id = id;
     }
 
-    public Status getOldStatus() {
-        return oldStatus;
+    public Status getNewStatus() {
+        return newStatus;
     }
 
-    public void setOldStatus(Status oldStatus) {
-        this.oldStatus = oldStatus;
+    public void setNewStatus(Status newStatus) {
+        this.newStatus = newStatus;
     }
 
     public LocalDateTime getDateChangeStatus() {

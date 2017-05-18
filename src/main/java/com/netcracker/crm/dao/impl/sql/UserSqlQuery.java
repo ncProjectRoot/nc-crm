@@ -61,5 +61,14 @@ public final class UserSqlQuery {
     public static final String SQL_FIND_USER_LAST_NAMES_BY_PATTERN = "" +
             "SELECT last_name " +
             "FROM users " +
-            "WHERE last_name ILIKE :last_name;";
+            "WHERE last_name ILIKE :last_name " +
+            "LIMIT 20;";
+
+    public static final String SQL_FIND_ORG_USER_LAST_NAMES_BY_PATTERN = "" +
+            "SELECT last_name " +
+            "FROM users " +
+            "WHERE last_name ILIKE :last_name and id in( " +
+            "SELECT id FROM users WHERE org_id = ( " +
+            "SELECT org_id FROM users WHERE id=:id)) " +
+            "LIMIT 20;";
 }

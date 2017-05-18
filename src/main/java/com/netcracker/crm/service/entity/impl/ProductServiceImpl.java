@@ -5,23 +5,25 @@ import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.request.ProductRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.bulk.ProductBulkDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
 import com.netcracker.crm.dto.row.ProductRowDto;
+import com.netcracker.crm.listener.event.ChangeStatusProductEvent;
+import com.netcracker.crm.listener.event.CreateProductEvent;
 import com.netcracker.crm.service.entity.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 30.04.2017.
@@ -33,13 +35,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductDao productDao;
     private final GroupDao groupDao;
     private final DiscountDao discountDao;
+    private ApplicationEventPublisher publisher;
 
 
     @Autowired
-    public ProductServiceImpl(ProductDao productDao, GroupDao groupDao, DiscountDao discountDao) {
+    public ProductServiceImpl(ProductDao productDao, GroupDao groupDao, DiscountDao discountDao, ApplicationEventPublisher publisher) {
         this.productDao = productDao;
         this.groupDao = groupDao;
         this.discountDao = discountDao;
+        this.publisher = publisher;
     }
 
     @Override
@@ -48,56 +52,68 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByGroupId(Long id) {
+        return productDao.findAllByGroupId(id);
+    }
+
+    @Override
     @Transactional
-    public Product persist(ProductDto productDto) {
+    public Product create(ProductDto productDto, User user) {
         Product product = convertToEntity(productDto);
+        product.setStatus(ProductStatus.PLANNED);
         productDao.create(product);
+        publisher.publishEvent(new CreateProductEvent(this, product, user));
         return product;
     }
 
     @Override
-    public Product update(ProductDto productDto) {
+    @Transactional
+    public boolean update(ProductDto productDto, User user) {
         Product product = convertToEntity(productDto);
-        productDao.update(product);
-        return product;
-    }
-
-    @Override
-    public List<ProductGroupDto> getProductsWithoutGroup() {
-        List<Product> products = productDao.findAllWithoutGroup();
-        return convertToDto(products);
+        Product productFromDB = productDao.findById(productDto.getId());
+        product.setStatus(productFromDB.getStatus());
+        return productDao.update(product) > 0;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getTitlesLikeTitle(String likeTitle) {
-        return productDao.findProductsTitleLikeTitle(likeTitle);
+    public List<AutocompleteDto> getAutocompleteDto(String pattern) {
+        List<Product> products = productDao.findAllByPattern(pattern);
+        return convertToAutocompletesDto(products);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getNamesByCustomerId(String likeTitle, Long customerId) {
-        return productDao.findProductsTitleByCustomerId(likeTitle, customerId);
+    public List<AutocompleteDto> getAutocompleteDtoWithoutGroup(String pattern) {
+        List<Product> products = productDao.findWithoutGroupByPattern(pattern);
+        return convertToAutocompletesDto(products);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId) {
-        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId);
+    public List<AutocompleteDto> getActualProductsAutocompleteDtoByCustomer(String pattern, User customer) {
+        List<Product> products = productDao.findActualByPatternAndCustomerId(pattern, customer.getId());
+        return convertToAutocompletesDto(products);
     }
 
     @Override
-    public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
-        return productDao.hasCustomerAccessToProduct(productId, customerId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> getActualNamesByCustomerId(String likeTitle, Long customerId, Address address) {
-        if (address.getRegion() != null) {
-            return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, address.getRegion().getId());
+    @Transactional
+    public boolean bulkUpdate(ProductBulkDto bulkDto, User user) {
+        Product productTemplate = getBulkProduct(bulkDto);
+        Set<Long> productIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) productIDs.addAll(bulkDto.getItemIds());
+        for (Long productID : productIDs) {
+            if (productTemplate.getStatus() != null) changeStatus(productID, productTemplate.getStatus().getId(), user);
         }
-        return productDao.findActualProductsTitleByCustomerId(likeTitle, customerId, null);
+
+        return productDao.bulkUpdate(productIDs, productTemplate);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AutocompleteDto> getPossibleProductsAutocompleteDtoByCustomer(String pattern, User customer) {
+        List<Product> products = productDao.findByPatternAndCustomerIdAndRegionId(pattern, customer.getId(), customer.getAddress().getRegion().getId());
+        return convertToAutocompletesDto(products);
     }
 
     @Override
@@ -114,6 +130,67 @@ public class ProductServiceImpl implements ProductService {
         }
         response.put("rows", productsRowDto);
         return response;
+    }
+
+    private Product getBulkProduct(ProductBulkDto bulkDto) {
+        Product productTemplate = new Product();
+        if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
+        if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
+        if (bulkDto.isGroupIdChanged()) {
+            Group group = new Group();
+            group.setId(bulkDto.getGroupId());
+            productTemplate.setGroup(group);
+        }
+        if (bulkDto.isDiscountIdChanged()) {
+            Discount discount = new Discount();
+            discount.setId(bulkDto.getDiscountId());
+            productTemplate.setDiscount(discount);
+        }
+        return productTemplate;
+    }
+
+    @Override
+    public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
+        return productDao.hasCustomerAccessToProduct(productId, customerId);
+    }
+
+    @Override
+    @Transactional
+    public boolean changeStatus(Long productId, Long statusId, User user) {
+        if (statusId.equals(ProductStatus.ACTUAL.getId())) {
+            return changeStatusToActual(productId, user);
+        } else if (statusId.equals(ProductStatus.OUTDATED.getId())) {
+            return changeStatusToOutdated(productId, user);
+        }
+        return false;
+    }
+
+    @Transactional
+    private boolean changeStatusToOutdated(Long productId, User user) {
+        Product product = productDao.findById(productId);
+        ChangeStatusProductEvent event = new ChangeStatusProductEvent(this, product, user, ProductStatus.OUTDATED);
+        publisher.publishEvent(event);
+        return event.isDone();
+    }
+
+    @Transactional
+    private boolean changeStatusToActual(Long productId, User user) {
+        Product product = productDao.findById(productId);
+        ChangeStatusProductEvent event = new ChangeStatusProductEvent(this, product, user, ProductStatus.ACTUAL);
+        publisher.publishEvent(event);
+        return event.isDone();
+    }
+
+    private List<AutocompleteDto> convertToAutocompletesDto(List<Product> products) {
+        List<AutocompleteDto> result = new ArrayList<>();
+        for (Product product : products) {
+            AutocompleteDto autocompleteDto = new AutocompleteDto();
+            autocompleteDto.setId(product.getId());
+            autocompleteDto.setValue(product.getTitle());
+            result.add(autocompleteDto);
+        }
+        return result;
     }
 
     private ProductRowDto convertToRowDto(Product product) {

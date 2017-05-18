@@ -13,11 +13,11 @@ import java.util.Map;
  */
 public interface GroupService {
 
-    List<Group> groupsByName(String name);
-    List<String> groupByName(String name);
-    Group persist(GroupDto groupDto);
-
-    Map<String, Object> getGroupPage(GroupRowRequest request);
+    Group create(GroupDto groupDto);
 
     List<AutocompleteDto> getAutocompleteGroup(String pattern);
+    Map<String, Object> getGroupPage(GroupRowRequest request);
+    Group getGroupById(Long id);
+    boolean update(GroupDto groupDto);
+
 }

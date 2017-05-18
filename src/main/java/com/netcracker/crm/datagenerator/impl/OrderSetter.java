@@ -20,7 +20,7 @@ public class OrderSetter extends AbstractSetter<Order> {
     private List<User> csrs;
     private Map<String, List<Product>> products;
 
-     private final OrderDao orderDao;
+    private final OrderDao orderDao;
 
     @Autowired
     public OrderSetter(OrderDao orderDao) {
@@ -53,45 +53,52 @@ public class OrderSetter extends AbstractSetter<Order> {
         return order;
     }
 
-    private OrderStatus getStatus(){
-        return OrderStatus.values()[random.nextInt(6)];
+    private OrderStatus getStatus() {
+        return OrderStatus.values()[random.nextInt(OrderStatus.values().length)];
     }
 
-    private User getCsr(){
+    private User getCsr() {
         return csrs.get(random.nextInt(csrs.size()));
     }
 
-    private User getCustomer(){
+    private User getCustomer() {
         return customers.get(random.nextInt(customers.size()));
     }
 
 
-
-    private LocalDateTime getOrderDate(){
+    private LocalDateTime getOrderDate() {
         return LocalDateTime.now().minusDays(random.nextInt(150) + 10);
     }
 
-    private LocalDateTime getPreferDate(){
+    private LocalDateTime getPreferDate() {
         return LocalDateTime.now().plusDays(random.nextInt(30));
     }
 
 
-    public void setProductCustomer(Order order){
+    public void setProductCustomer(Order order) {
         User customer = getCustomer();
         List<Product> productList = new ArrayList<>();
         Region customerRegion = customer.getAddress().getRegion();
         productList.addAll(products.get(customerRegion.getName()));
         Product product;
         while (true) {
-            product = productList.remove(random.nextInt(productList.size()));
-            if (product.getStatus() != ProductStatus.PLANNED){
-                break;
-            }
-            if (productList.size() == 0){
+            if (productList.size() == 0) {
                 customer = getCustomer();
                 customerRegion = customer.getAddress().getRegion();
                 productList.addAll(products.get(customerRegion.getName()));
             }
+            if (productList.size() != 0) {
+                int num = random.nextInt(productList.size());
+                if (num > 0) {
+                    product = productList.remove(num);
+                } else {
+                    continue;
+                }
+                if (product.getStatus() != ProductStatus.PLANNED) {
+                    break;
+                }
+            }
+
         }
         order.setCustomer(customer);
         order.setProduct(product);

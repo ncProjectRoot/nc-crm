@@ -22,7 +22,7 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboard/admin";
+        return "dashboard/statistics";
     }
 
     @GetMapping("/orders")
@@ -48,6 +48,11 @@ public class AdminController {
     @GetMapping("/groups")
     public String groups(Map<String, Object> model) {
         return "groups";
+    }
+
+    @GetMapping("/complaints")
+    public String complaints(Map<String, Object> model) {
+        return "complaints";
     }
 
 
