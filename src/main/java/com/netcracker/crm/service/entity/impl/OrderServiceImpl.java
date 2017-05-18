@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,9 +107,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
-        LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
-        LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
-        return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
+        try {
+            LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
+            LocalDate toDate = LocalDate.parse(graphDto.getToDate(), dtf);
+            if (toDate.compareTo(fromDate) < 0) {
+                throw new Exception("toDate is less then fromDate");
+            }
+            return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {

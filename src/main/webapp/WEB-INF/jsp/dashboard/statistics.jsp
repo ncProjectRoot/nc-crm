@@ -247,6 +247,9 @@
     function updateGraph(url, form, graphId, chartistLine, lineLabels, labelsId) {
         $(".progress").addClass("progress-active");
         $.get(url, $(form).serialize(), function (dashboardData) {
+            if (!dashboardData) {
+                Materialize.toast('Invalid date', 10000);
+            }
             if (chartistLine) {
                 chartistLine.update(dashboardData);
             } else {
@@ -267,6 +270,35 @@
     }
 
     $('select').material_select();
+
+    var patternYears = /^2[0-9]{3}$/;
+    var patternMonths = /^2[0-9]{3}-(0[1-9]|1[0-2])$/;
+    var patternDays = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+    function checkDateValidate(fromDate, toDate, dateType) {
+        switch (dateType) {
+            case "YEARS":
+                if (patternYears.test(fromDate) && patternYears.test(toDate)) {
+                    return true;
+                } else {
+                    Materialize.toast('Invalid date, you have to format as example 2017', 10000);
+                    return false;
+                }
+            case "MONTHS":
+                if (patternMonths.test(fromDate) && patternMonths.test(toDate)) {
+                    return true;
+                } else {
+                    Materialize.toast('Invalid date, you have to format as example 2017-01', 10000);
+                    return false;
+                }
+            case "DAYS":
+                if (patternDays.test(fromDate) && patternDays.test(toDate)) {
+                    return true;
+                } else {
+                    Materialize.toast('Invalid date, you have to format as example 2017-01-21', 10000);
+                    return false;
+                }
+        }
+    }
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
@@ -337,14 +369,18 @@
     var chartistLineOrders;
     $("#show-orders-graph").on("submit", function (e) {
         e.preventDefault();
-        lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal().slice(0);
-        if($productsForOrdersMultiSelect.getSelectedVal().length == 0) {
-            lineLabelsForOrders.push("All products")
+        var fromDate = $('#orders-from-date').val();
+        var toDate = $('#orders-to-date').val();
+        if (checkDateValidate(fromDate, toDate, $('#orders-date-type').val())) {
+            lineLabelsForOrders = $productsForOrdersMultiSelect.getSelectedVal().slice(0);
+            if($productsForOrdersMultiSelect.getSelectedVal().length == 0) {
+                lineLabelsForOrders.push("All products")
+            }
+            $(this).siblings(".card-title").trigger("click");
+            updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders, lineLabelsForOrders ,"#orders-labels");
+            $('#orders-date-from-title').text(fromDate);
+            $('#orders-date-to-title').text(toDate);
         }
-        $(this).siblings(".card-title").trigger("click");
-        updateGraph("/orders/graph", this, '#orders-graph', chartistLineOrders, lineLabelsForOrders ,"#orders-labels");
-        $('#orders-date-from-title').text($('#orders-from-date').val());
-        $('#orders-date-to-title').text($('#orders-to-date').val());
     });
     $("#show-orders-graph").trigger("submit");
 
@@ -420,14 +456,18 @@
     var chartistLineComplaints;
     $("#show-complaints-graph").on("submit", function (e) {
         e.preventDefault();
-        lineLabelsForComplaints = $productsForComplaintsMultiSelect.getSelectedVal().slice(0);
-        if($productsForComplaintsMultiSelect.getSelectedVal().length == 0) {
-            lineLabelsForComplaints.push("All products")
+        var fromDate = $('#complaints-from-date').val();
+        var toDate = $('#complaints-to-date').val();
+        if (checkDateValidate(fromDate, toDate, $('#complaints-date-type').val())) {
+            lineLabelsForComplaints = $productsForComplaintsMultiSelect.getSelectedVal().slice(0);
+            if($productsForComplaintsMultiSelect.getSelectedVal().length == 0) {
+                lineLabelsForComplaints.push("All products")
+            }
+            $(this).siblings(".card-title").trigger("click");
+            updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints, lineLabelsForComplaints ,"#complaints-labels");
+            $('#complaints-date-from-title').text(fromDate);
+            $('#complaints-date-to-title').text(toDate);
         }
-        $(this).siblings(".card-title").trigger("click");
-        updateGraph("/complaints/graph", this, '#complaints-graph', chartistLineComplaints, lineLabelsForComplaints ,"#complaints-labels");
-        $('#complaints-date-from-title').text($('#complaints-from-date').val());
-        $('#complaints-date-to-title').text($('#complaints-to-date').val());
     });
     $("#show-complaints-graph").trigger("submit");
 

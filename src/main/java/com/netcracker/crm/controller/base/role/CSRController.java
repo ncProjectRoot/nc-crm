@@ -22,7 +22,7 @@ public class CSRController {
 
     @GetMapping("/dashboard")
     public String dashboard(Map<String, Object> model) {
-        return "dashboard/csr";
+        return "dashboard/statistics";
     }
 
     @GetMapping("/profile")
