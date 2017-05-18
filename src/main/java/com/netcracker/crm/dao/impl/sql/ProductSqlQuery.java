@@ -105,8 +105,8 @@ public final class ProductSqlQuery {
             "FROM " +
             "(SELECT count(p.*) status_count " +
             "FROM product p " +
-            "WHERE p.id IN (:product_ids) " +
-            "GROUP BY p.status_id) AS result;";
+            "WHERE p.id IN (:product_ids ) " +
+            "GROUP BY p.status_id ) AS result;";
 
     public static final String SQL_PRODUCT_BULK_UPDATE = "" +
             "SELECT update_product(ARRAY [:product_ids ] :: BIGINT[], :discount_id, :group_id, :default_price, :description);";

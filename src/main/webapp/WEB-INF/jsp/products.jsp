@@ -399,7 +399,7 @@
         }
     });
 
-    $('#bulk-select-product-status').karpo_status(12).disabled(14);
+//    $('#bulk-select-product-status').karpo_status(12).disabled(14);
     $('#bulk-discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#bulk-selected-discount",

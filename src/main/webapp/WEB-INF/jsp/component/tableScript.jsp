@@ -310,7 +310,7 @@
         $(document).on('click', '#bulk-submit', function (e) {
             e.preventDefault();
             $(itemIDsInput).val(itemIDs);
-            sendPut('#bulk-change-form', params.bulkUrl);
+            send('#bulk-change-form', params.bulkUrl, 'PUT');
             $('#bulk-change-modal').modal('close');
             deselectRows();
             setDefaultTableStyle();

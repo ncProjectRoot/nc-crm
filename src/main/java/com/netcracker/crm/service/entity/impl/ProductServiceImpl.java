@@ -93,10 +93,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public boolean bulkUpdate(ProductBulkDto bulkDto) {
+    public boolean bulkUpdate(ProductBulkDto bulkDto, User user) {
         Product productTemplate = getBulkProduct(bulkDto);
         Set<Long> productIDs = new HashSet<>();
         if (bulkDto.getItemIds() != null) productIDs.addAll(bulkDto.getItemIds());
+        for (Long productID : productIDs) {
+            if (productTemplate.getStatus() != null) changeStatus(productID, productTemplate.getStatus().getId(), user);
+        }
 
         return productDao.bulkUpdate(productIDs, productTemplate);
     }

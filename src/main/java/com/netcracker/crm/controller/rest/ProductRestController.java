@@ -149,12 +149,15 @@ public class ProductRestController {
     }
 
     @PutMapping("/bulk")
-    public ResponseEntity productBulkUpdate(@Valid ProductBulkDto bulkDto, BindingResult bindingResult) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity productBulkUpdate(@Valid ProductBulkDto bulkDto, BindingResult bindingResult, Authentication authentication) {
         bulkProductValidator.validate(bulkDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        if (productService.bulkUpdate(bulkDto)) {
+
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (productService.bulkUpdate(bulkDto, user)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_BULK_UPDATED, HttpStatus.OK);
         }
 

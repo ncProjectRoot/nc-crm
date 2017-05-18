@@ -273,10 +273,10 @@ public class ProductDaoImpl implements ProductDao {
         return isSame;
     }
 
-    @Override
-    public List<Product> findAllWithoutGroup() {
-        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
-    }
+//    @Override
+//    public List<Product> findAllWithoutGroup() {
+//        return namedJdbcTemplate.query(SQL_FIND_ALL_PRODUCT_WITHOUT_GROUP, productWithDetailExtractor);
+//    }
 
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
