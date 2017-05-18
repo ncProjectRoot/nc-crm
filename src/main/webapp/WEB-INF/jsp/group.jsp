@@ -68,7 +68,7 @@
             </div>
             <div class="row">
                 <div class="section products center">
-                    <ul id="resume" class="collection">
+                    <ul class="collection">
                         <c:forEach items="${products}" var="product">
                             <li class="collection-item"><a href="#product/${product.id}">${product.title}</a>
                                 - ${product.status}</li>

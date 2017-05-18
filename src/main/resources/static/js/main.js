@@ -215,7 +215,7 @@ jQuery.fn.karpo_multi_select = function (params) {
             $(params.hideInput).val(selected);
             $deleter.on("click", function () {
                 $(this).closest(".collection-item").remove();
-                var index = selected.indexOf(parseFloat($(this).data("id")));
+                var index = selected.indexOf(parseFloat(id));
                 selected.splice(index, 1);
                 selectedVal.splice(index, 1);
                 $(params.hideInput).val(selected);
