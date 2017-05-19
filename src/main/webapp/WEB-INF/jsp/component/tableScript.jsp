@@ -310,10 +310,12 @@
         $(document).on('click', '#bulk-submit', function (e) {
             e.preventDefault();
             $(itemIDsInput).val(itemIDs);
-            send('#bulk-change-form', params.bulkUrl, 'PUT');
-            $('#bulk-change-modal').modal('close');
-            deselectRows();
-            setDefaultTableStyle();
+            send('#bulk-change-form', params.bulkUrl, 'PUT').done(function () {
+                $('#bulk-change-modal').modal('close');
+                deselectRows();
+                setDefaultTableStyle();
+                $(window).trigger('hashchange');
+            })
         });
 
         $(document).on('change', '.bulk-field-change', function () {

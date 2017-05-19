@@ -42,22 +42,22 @@ nav .button-collapse i {
     width: 60px;
 }
 
-/*.new-message {*/
-/*position: relative;*/
-/*}*/
+.new-message {
+position: relative;
+}
 
-/*.new-message:before {*/
-/*content: attr(data-new-message);*/
-/*color: #f44336;*/
-/*position: absolute;*/
-/*display: block;*/
-/*left: 30px;*/
-/*top: 10px;*/
-/*}*/
+.new-message:before {
+content: attr(data-new-message);
+color: #f44336;
+position: absolute;
+display: block;
+left: 15px;
+top: 20px;
+}
 
-/*.new-message i {*/
-/*color: blue;*/
-/*}*/
+.new-message i {
+color: blue;
+}
 
 .button-collapse {
     margin-left: 50px;

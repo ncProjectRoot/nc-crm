@@ -116,7 +116,7 @@
             statusCode: {
                 200: function (data) {
                     Materialize.toast(xhr.getResponseHeader("successMessage"), 5000);
-                    console.log('#' + status + id);
+                    countMessage();
                     $('#' + status + id).remove();
                 }
             }

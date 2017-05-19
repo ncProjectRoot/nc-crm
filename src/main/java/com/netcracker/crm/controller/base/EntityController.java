@@ -25,15 +25,18 @@ public class EntityController {
     private final OrderService orderService;
     private final DiscountService discountService;
     private final GroupService groupService;
+    private final UserService userService;
+
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
-                            OrderService orderService, DiscountService discountService, GroupService groupService) {
+                            OrderService orderService, DiscountService discountService, GroupService groupService, UserService userService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
         this.discountService = discountService;
         this.groupService = groupService;
+        this.userService = userService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -103,5 +106,30 @@ public class EntityController {
         model.put("group", groupService.getGroupById(id));
         model.put("products", productService.getProductsByGroupId(id));
         return "group";
+    }
+    @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
+    public String user(Map<String, Object> model, Authentication authentication,
+                           @PathVariable Long id) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+        model.put("user", userService.getUserById(id));
+        return "user";
+    }
+
+    @RequestMapping(value = "/{role}/profile", method = {RequestMethod.GET})
+    public String profile(Map<String, Object> model, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof UserDetailsImpl) {
+            user = (UserDetailsImpl) principal;
+        }
+
+        User user1 = (User) authentication.getPrincipal();
+        long id = user1.getId();
+        model.put("profile", userService.getUserById(id));
+        return "profile";
     }
 }

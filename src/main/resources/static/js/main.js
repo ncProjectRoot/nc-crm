@@ -41,14 +41,24 @@ $(document).ready(function () {
     });
 });
 
-// function checkNewMessage() {
-//     var messageItem = $(".message-menu-item");
-//     if (messageItem.data("new-message") != 0) {
-//         messageItem.addClass("new-message");
-//         messageItem.children().removeClass("black-text");
-//         messageItem.children().addClass("red-text");
-//     }
-// }
+function checkNewMessage() {
+    var messageItem = $(".message-menu-item");
+    if (messageItem.data("new-message") != 0) {
+        messageItem.addClass("new-message");
+        messageItem.children().removeClass("black-text");
+        messageItem.children().addClass("red-text");
+    }
+}
+
+function countMessage() {
+    $.get("/messages/count").success(function (data) {
+        var count = data;
+        if (count > 0){
+            $(".message-menu-item").attr("data-new-message", count);
+            checkNewMessage();
+        }
+    });
+}
 
 function downloadContent() {
     var $contentBody = $(".content-body-wrapper");
@@ -215,7 +225,7 @@ jQuery.fn.karpo_multi_select = function (params) {
             $(params.hideInput).val(selected);
             $deleter.on("click", function () {
                 $(this).closest(".collection-item").remove();
-                var index = selected.indexOf(parseFloat($(this).data("id")));
+                var index = selected.indexOf(parseFloat(id));
                 selected.splice(index, 1);
                 selectedVal.splice(index, 1);
                 $(params.hideInput).val(selected);

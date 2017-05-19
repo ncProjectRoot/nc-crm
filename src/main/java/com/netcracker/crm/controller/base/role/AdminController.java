@@ -25,11 +25,6 @@ public class AdminController {
         return "dashboard/statistics";
     }
 
-    @GetMapping("/profile")
-    public String profile(Map<String, Object> model) {
-        return "profile";
-    }
-
     @GetMapping("/orders")
     public String orders(Map<String, Object> model) {
         return "orders";

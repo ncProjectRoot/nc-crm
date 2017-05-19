@@ -13,6 +13,7 @@ public final class MessageProperty {
 
     //Success Keys
     public static final String SUCCESS_USER_CREATED = "success.user-create";
+    public static final String SUCCESS_USER_UPDATED = "success.user-update";
     public static final String SUCCESS_PRODUCT_CREATED = "success.product-create";
     public static final String SUCCESS_PRODUCT_UPDATE = "success.product-update";
     public static final String SUCCESS_DISCOUNT_CREATED = "success.discount-create";
