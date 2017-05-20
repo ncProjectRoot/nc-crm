@@ -15,6 +15,9 @@
         color: darkblue;
     }
 
+    #date{
+        text-decoration: underline;
+    }
     .title {
         color: green;
     }
@@ -32,11 +35,11 @@
         <h5>Customer : <span class="name">${order.customer.firstName} ${order.customer.lastName}</span></h5>
     </div>
     <div class="section">
-        <h5>Date order : <span>${order.date}</span></h5>
+        <h5>Order date : <span>${order.date.toString().replace("T", " ")}</span></h5>
     </div>
     <c:if test="${order.status == 'PROCESSING'}">
         <div class="section">
-            <h5>Prefered date : <span>${order.preferedDate}</span></h5>
+            <h5>Prefered date : <span>${order.preferedDate.toString().replace("T", " ")}</span></h5>
         </div>
     </c:if>
 
@@ -106,8 +109,8 @@
             historyUL.children().remove();
             $.each(data, function (i, item) {
                 var li = $("<li>").addClass("collection-item")
-                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - " + item.dateChangeStatus
-                        + ", message - " + item.descChangeStatus);
+                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - <span id='date'>" + item.dateChangeStatus
+                        + "</span>, message - " + item.descChangeStatus);
                 historyUL.append(li);
             });
         });

@@ -15,15 +15,44 @@ import java.util.List;
 @Service
 public class RegionSetter extends AbstractSetter<Region> {
 
-    private int counter;
     @Autowired
     private RegionDao regionDao;
+    private String[] regionsName = {
+                    "ARC" ,
+                    "Vinnytsia" ,
+                    "Volyn" ,
+                    "Dnipropetrovsk" ,
+                    "Donetsk" ,
+                    "Zhytomyr" ,
+                    "Zakarpattya" ,
+                    "Zaporizhia" ,
+                    "Ivano-Frankivsk" ,
+                    "Kiev" ,
+                    "Kirovohrad" ,
+                    "Lugansk" ,
+                    "Lviv" ,
+                    "Mykolaiv" ,
+                    "Odessa" ,
+                    "Poltava" ,
+                    "Rivne" ,
+                    "Sums" ,
+                    "Ternopil" ,
+                    "Kharkov" ,
+                    "Herson" ,
+                    "Khmelnytsky" ,
+                    "Cherkassy" ,
+                    "Chernivtsi" ,
+                    "Chernihiv" ,
+                    "Sevastopol"
+    };
+
     @Override
     public List<Region> generate(int numbers) {
         List<Region> regions = new ArrayList<>();
 
-        for (int i = 0; i < numbers; i++) {
+        for (String aRegionsName : regionsName) {
             Region region = generateObject();
+            region.setName(aRegionsName);
             regionDao.create(region);
             regions.add(region);
         }
@@ -32,8 +61,6 @@ public class RegionSetter extends AbstractSetter<Region> {
 
     @Override
     public Region generateObject() {
-        Region region = new Region();
-        region.setName("Region " + counter++);
-        return region;
+        return new Region();
     }
 }

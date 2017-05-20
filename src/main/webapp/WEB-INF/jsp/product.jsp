@@ -255,7 +255,7 @@
                 <h5 class="price">${product.defaultPrice}$</h5>
                 <c:if test="${product.discount.active}">
                     <h5 class="new-price"></h5>
-                    <a class="percentage" href="#discount?id=${product.discount.id}">${product.discount.percentage}%</a>
+                    <a class="percentage" href="#discount/${product.discount.id}">${product.discount.percentage}%</a>
                 </c:if>
             </div>
         </div>

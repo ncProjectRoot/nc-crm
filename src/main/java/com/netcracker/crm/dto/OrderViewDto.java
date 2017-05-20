@@ -1,7 +1,9 @@
-package com.netcracker.crm.scheduler;
+package com.netcracker.crm.dto;
 
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -12,6 +14,7 @@ public class OrderViewDto {
     private String status;
     private String title;
     private String date;
+    private boolean timeOver;
 
 
     public OrderViewDto(Order order,DateTimeFormatter formatter) {
@@ -19,6 +22,9 @@ public class OrderViewDto {
         this.status = order.getStatus().getName();
         this.title = order.getProduct().getTitle();
         this.date = formatter.format(order.getPreferedDate());
+        if (order.getStatus() == OrderStatus.PROCESSING) {
+            this.timeOver = LocalDateTime.now().isAfter(order.getPreferedDate());
+        }
     }
 
     public Long getId() {
@@ -51,5 +57,13 @@ public class OrderViewDto {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public boolean isTimeOver() {
+        return timeOver;
+    }
+
+    public void setTimeOver(boolean timeOver) {
+        this.timeOver = timeOver;
     }
 }

@@ -66,7 +66,8 @@ public final class OrderSqlQuery {
             "FROM orders o " +
             "WHERE o.status_id = :status_id " +
             "AND o.preferred_date < :preferred_date " +
-            "AND o.csr_id = :csr_id";
+            "AND o.csr_id = :csr_id " +
+            "ORDER BY o.preferred_date ASC";
 
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "

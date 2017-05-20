@@ -6,9 +6,15 @@ import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +29,16 @@ public class ProductSetter extends AbstractSetter<Product> {
 
     @Autowired
     private ProductDao productDao;
+    private List<String> prodName = new ArrayList<>();
     private List<Discount> discounts;
     private List<Group> groups;
     private int counter;
+    @Value(value = "classpath:testdata/products.json")
+    private Resource resource;
+
     @Override
     public List<Product> generate(int numbers) {
+        fillProducts();
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < numbers; i++) {
             Product product = generateObject();
@@ -37,14 +48,29 @@ public class ProductSetter extends AbstractSetter<Product> {
         return products;
     }
 
+    private void fillProducts(){
+        JSONArray a = null;
+        try {
+            a = (JSONArray) parser.parse(resource.getInputStream());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object o : a) {
+            JSONObject person = (JSONObject) o;
+            String service = (String) person.get("service");
+            prodName.add(service);
+        }
+    }
+
     @Override
     public Product generateObject() {
         Product product = new Product();
         product.setDiscount(getDiscount());
         product.setGroup(getGroup());
         product.setDefaultPrice((double) random.nextInt(defaultPrice));
-        product.setTitle("Product " + counter++);
-        product.setDescription(randomString.nextString());
+        product.setTitle(prodName.get(counter++));
+        product.setDescription("Products description");
         product.setStatus(ProductStatus.values()[random.nextInt(ProductStatus.values().length)]);
         return product;
     }

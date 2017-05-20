@@ -3,22 +3,32 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.OrganizationDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Organization;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Pasha on 05.05.2017.
  */
 @Service
 public class OrganizationSetter extends AbstractSetter<Organization> {
-    private int counter;
     @Autowired
     private OrganizationDao organizationDao;
+    private Set<String> orgNames = new HashSet<>();
+    private Iterator<String> iterator;
+    @Value(value = "classpath:testdata/organization.json")
+    private Resource resource;
+
     @Override
     public List<Organization> generate(int numbers) {
+        fillOrganizations();
         List<Organization> organizations = new ArrayList<>();
 
         for (int i = 0; i < numbers; i++) {
@@ -32,7 +42,24 @@ public class OrganizationSetter extends AbstractSetter<Organization> {
     @Override
     public Organization generateObject() {
         Organization organization = new Organization();
-        organization.setName("Organization" + counter++);
+        organization.setName(iterator.next());
         return organization;
+    }
+
+
+    private void fillOrganizations() {
+        JSONArray a = null;
+        try {
+            a = (JSONArray) parser.parse(resource.getInputStream());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object o : a) {
+            JSONObject person = (JSONObject) o;
+            String org = (String) person.get("organization");
+            orgNames.add(org);
+        }
+        iterator = orgNames.iterator();
     }
 }
