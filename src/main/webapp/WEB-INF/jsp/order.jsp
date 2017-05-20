@@ -15,6 +15,9 @@
         color: darkblue;
     }
 
+    #date{
+        text-decoration: underline;
+    }
     .title {
         color: green;
     }
@@ -106,8 +109,8 @@
             historyUL.children().remove();
             $.each(data, function (i, item) {
                 var li = $("<li>").addClass("collection-item")
-                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - " + item.dateChangeStatus
-                        + ", message - " + item.descChangeStatus);
+                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - <span id='date'>" + item.dateChangeStatus
+                        + "</span>, message - " + item.descChangeStatus);
                 historyUL.append(li);
             });
         });
