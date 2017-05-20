@@ -15,6 +15,9 @@ import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.security.RandomString;
+import com.timgroup.jgravatar.Gravatar;
+import com.timgroup.jgravatar.GravatarDefaultImage;
+import com.timgroup.jgravatar.GravatarRating;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private static final String TOKEN_WILD_CARD = "%token%";
     private static final String LOCAL_ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
     private static final String PRODUCTION_ACTIVATION_LINK_TEMPLATE = "http://nc-project.tk/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+    private static final String SRC_IMG_TEMPLATE = "data:image/png;base64,";
 
     @Resource
     private Environment env;
@@ -135,18 +139,35 @@ public class UserServiceImpl implements UserService {
     public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
         UserRole role = principal.getUserRole();
         List<String> names;
-        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
             names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
         } else {
             names = userDao.findUserLastNamesByPattern(pattern);
         }
         List<AutocompleteDto> result = new ArrayList<>();
-        for (String userLastName: names) {
+        for (String userLastName : names) {
             AutocompleteDto autocompleteDto = new AutocompleteDto();
             autocompleteDto.setValue(userLastName);
             result.add(autocompleteDto);
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public String getAvatar(Long id) {
+        User user = userDao.findById(id);
+        Gravatar gravatar = new Gravatar();
+        gravatar.setSize(500);
+        gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
+        gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
+        byte[] avatar = gravatar.download(user.getEmail());
+        if (avatar != null) {
+            String avatarBase64 = Base64.getEncoder().encodeToString(avatar);
+            return SRC_IMG_TEMPLATE + avatarBase64;
+        } else {
+            return null;
+        }
     }
 
     private String createUserRegistrationToken(User user) {

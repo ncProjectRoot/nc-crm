@@ -86,7 +86,7 @@ public class UserRestController {
     public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
                                                         @RequestParam(required = false) boolean individual) {
         Object principal = authentication.getPrincipal();
-        User user  = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUsers(userRowRequest, user, individual), HttpStatus.OK);
     }
 
@@ -94,8 +94,16 @@ public class UserRestController {
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User user  = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/avatar")
+    public ResponseEntity<String> getAvatar(@PathVariable Long id) {
+        String avatarBase64 = userService.getAvatar(id);
+        if (avatarBase64 != null) {
+            return new ResponseEntity<>(avatarBase64, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
