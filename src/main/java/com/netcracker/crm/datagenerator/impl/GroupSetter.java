@@ -20,6 +20,18 @@ public class GroupSetter extends AbstractSetter<Group> {
     private GroupDao groupDao;
     private int counter;
     private List<Discount> discounts;
+    private String[] groupNames = {
+            "Triple-buffered",
+            "fresh-thinking",
+            "hybrid",
+            "optimal",
+            "Fully-configurable",
+            "5th generation",
+            "Up-sized",
+            "Networked",
+            "multimedia",
+            "logistical",
+    };
 
     @Override
     public List<Group> generate(int numbers) {
@@ -39,13 +51,13 @@ public class GroupSetter extends AbstractSetter<Group> {
     @Override
     public Group generateObject() {
         Group group = new Group();
-        group.setName("Group" + counter++);
+        group.setName(groupNames[counter++]);
         group.setDiscount(getDiscount());
         return group;
     }
 
 
-    private Discount getDiscount(){
+    private Discount getDiscount() {
         return Math.random() > 0.5 ? discounts.remove(random.nextInt(discounts.size())) : null;
     }
 }

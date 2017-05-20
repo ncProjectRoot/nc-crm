@@ -3,9 +3,15 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Discount;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +23,14 @@ public class DiscountSetter extends AbstractSetter<Discount> {
 
     @Autowired
     private DiscountDao discountDao;
-    private int counter;
+    private List<String> descs = new ArrayList<>();
+    private List<String> titles = new ArrayList<>();
+    @Value(value = "classpath:testdata/discount.json")
+    private Resource resource;
 
 
-
-    public List<Discount> generate(int numbers){
+    public List<Discount> generate(int numbers) {
+        fillDiscount();
         List<Discount> idList = new ArrayList<>();
         for (int i = 0; i < numbers; i++) {
             Discount discount = generateObject();
@@ -31,13 +40,29 @@ public class DiscountSetter extends AbstractSetter<Discount> {
         return idList;
     }
 
+    private void fillDiscount() {
+        JSONArray a = null;
+        try {
+            a = (JSONArray) parser.parse(resource.getInputStream());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object o : a) {
+            JSONObject person = (JSONObject) o;
+            String desc = (String) person.get("desc");
+            String title = (String) person.get("title");
+            descs.add(desc);
+            titles.add(title);
+        }
+    }
 
 
-    public Discount generateObject(){
+    public Discount generateObject() {
         Discount discount = new Discount();
-        discount.setTitle("discount " + counter++);
-        discount.setPercentage((double)Math.round(Math.random()* 100));
-        discount.setDescription(randomString.nextString());
+        discount.setTitle(titles.get(random.nextInt(titles.size())));
+        discount.setPercentage((double) Math.round(Math.random() * 100));
+        discount.setDescription(descs.get(random.nextInt(descs.size())));
         discount.setActive(random.nextBoolean());
         return discount;
     }

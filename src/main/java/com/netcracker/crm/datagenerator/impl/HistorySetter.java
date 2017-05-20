@@ -36,11 +36,8 @@ public class HistorySetter extends AbstractSetter<History> {
     }
 
     @Override
-    @Transactional
     public History generateObject() {
-        History history = new History();
-        history.setDescChangeStatus(randomString.nextString());
-        return history;
+        return new History();
     }
 
 
@@ -70,6 +67,7 @@ public class HistorySetter extends AbstractSetter<History> {
             History history = generateObject();
             history.setOrder(order);
             history.setNewStatus(orderStatus);
+            setOrderDescHistory(history);
             history.setDateChangeStatus(buffer);
             historyDao.create(history);
             if (order.getStatus() == orderStatus) {
@@ -111,6 +109,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         history.setNewStatus(OrderStatus.REQUEST_TO_RESUME);
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -119,6 +118,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         history.setNewStatus(OrderStatus.ACTIVE);
+        setOrderDescHistory(history, OrderStatus.REQUEST_TO_RESUME);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -127,6 +127,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         history.setNewStatus(OrderStatus.PAUSED);
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -135,6 +136,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         history.setNewStatus(OrderStatus.REQUEST_TO_PAUSE);
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -143,6 +145,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         history.setNewStatus(OrderStatus.REQUEST_TO_DISABLE);
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -151,6 +154,7 @@ public class HistorySetter extends AbstractSetter<History> {
         History history = generateObject();
         history.setOrder(order);
         setEndCycleStatus(order, history);
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
         days = getRand(days);
@@ -158,6 +162,7 @@ public class HistorySetter extends AbstractSetter<History> {
         history = generateObject();
         history.setOrder(order);
         history.setNewStatus(order.getStatus());
+        setOrderDescHistory(history);
         history.setDateChangeStatus(buffer);
         historyDao.create(history);
     }
@@ -177,6 +182,7 @@ public class HistorySetter extends AbstractSetter<History> {
             History history = generateObject();
             history.setComplaint(complaint);
             history.setNewStatus(complaintStatus);
+            setComplaintDescHistory(history);
             history.setDateChangeStatus(buffer);
             historyDao.create(history);
             if (complaint.getStatus() == complaintStatus) {
@@ -194,6 +200,7 @@ public class HistorySetter extends AbstractSetter<History> {
             History history = generateObject();
             history.setProduct(product);
             history.setNewStatus(productStatus);
+            setProductDescHistory(history);
             history.setDateChangeStatus(buffer);
             historyDao.create(history);
             if (product.getStatus() == productStatus) {
@@ -227,5 +234,130 @@ public class HistorySetter extends AbstractSetter<History> {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    private void setOrderDescHistory(History history) {
+        setOrderDescHistory(history, null);
+    }
+
+    private void setOrderDescHistory(History history, OrderStatus oldStatus) {
+        switch ((OrderStatus) history.getNewStatus()) {
+            case NEW:
+                history.setDescChangeStatus(getNewDesc());
+                break;
+            case PROCESSING:
+                history.setDescChangeStatus(getProcessingDesc(history.getOrder().getCsr().getId()));
+                break;
+            case ACTIVE:
+                if (oldStatus != null && oldStatus == OrderStatus.REQUEST_TO_RESUME) {
+                    history.setDescChangeStatus(getResumeDesc(history.getOrder().getCsr().getId()));
+                } else {
+                    history.setDescChangeStatus(getActivateDesc(history.getOrder().getCsr().getId()));
+                }
+                break;
+            case REQUEST_TO_PAUSE:
+                history.setDescChangeStatus(getRequestPauseDesc());
+                break;
+            case REQUEST_TO_RESUME:
+                history.setDescChangeStatus(getRequestResumeDesc());
+                break;
+            case REQUEST_TO_DISABLE:
+                history.setDescChangeStatus(getRequestDisableDesc());
+                break;
+            case PAUSED:
+                history.setDescChangeStatus(getPausedDesc(history.getOrder().getCsr().getId()));
+                break;
+            case DISABLED:
+                history.setDescChangeStatus(getDisabledDesc(history.getOrder().getCsr().getId()));
+                break;
+        }
+    }
+
+    private void setComplaintDescHistory(History history) {
+        switch ((ComplaintStatus) history.getNewStatus()) {
+            case OPEN:
+                history.setDescChangeStatus(getComplOpenDesc());
+                break;
+            case SOLVING:
+                history.setDescChangeStatus(getComplSolvingDesc());
+                break;
+            case CLOSED:
+                history.setDescChangeStatus(getComplClosedDesc());
+                break;
+        }
+    }
+
+    private void setProductDescHistory(History history) {
+        switch ((ProductStatus) history.getNewStatus()) {
+            case PLANNED:
+                history.setDescChangeStatus(getProductPlanedDesc());
+                break;
+            case ACTUAL:
+                history.setDescChangeStatus(getProductActualDesc());
+                break;
+            case OUTDATED:
+                history.setDescChangeStatus(getProductOutdatedDesc());
+                break;
+        }
+    }
+
+    private String getProductPlanedDesc(){
+        return "Product is successful create";
+    }
+
+    private String getProductActualDesc(){
+        return "Product is successful move in actual status";
+    }
+
+    private String getProductOutdatedDesc(){
+        return "Product already not actual after then product be outdated";
+    }
+
+    private String getComplOpenDesc() {
+        return "Complaint is successful open";
+    }
+
+    private String getComplSolvingDesc() {
+        return "Complaint have solving condition";
+    }
+
+    private String getComplClosedDesc() {
+        return "Complaint is successful solved and closed";
+    }
+
+    private String getNewDesc() {
+        return "Order successful create";
+    }
+
+    private String getProcessingDesc(Long csrId) {
+        return "Csr with id : " + csrId + " is successful accepted this order";
+    }
+
+    private String getActivateDesc(Long csrId) {
+        return "Csr with id : " + csrId + " after successfully done work for connect service, csr   activated this order";
+    }
+
+    private String getRequestPauseDesc() {
+        return "Request to pause is successful send";
+    }
+
+    private String getRequestResumeDesc() {
+        return "Request to resume is successful send";
+    }
+
+    private String getRequestDisableDesc() {
+        return "Request to pause is successful send";
+    }
+
+    private String getPausedDesc(Long csrId) {
+        return "Csr with id : " + csrId + " is successful paused this order";
+    }
+
+    private String getResumeDesc(Long csrId) {
+        return "Csr with id : " + csrId + " is successful resume this order";
+    }
+
+    private String getDisabledDesc(Long csrId) {
+        return "Csr with id : " + csrId + " is successful disabled this order";
     }
 }
