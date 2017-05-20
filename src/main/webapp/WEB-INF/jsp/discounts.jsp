@@ -16,9 +16,10 @@
             <div id="all-discounts-wrapper" class="col s12">
                 <div id="table-all-products" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
-                        <table class="striped responsive-table centered ">
+                        <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
+                                <th></th>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
@@ -100,6 +101,102 @@
                     </form>
                 </div>
             </div>
+
+            <div id="bulk-change-modal" class="modal bottom-sheet">
+                <div class="modal-content">
+                    <div class="row">
+                        <div id="bulk-change-modal-title" class="col s3 offset-s2">
+                            <h4>Edit Selected Items</h4>
+                            <p>Choose field to edit it for each selected item.</p>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-percentage">Percentage<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-description">Description<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-is-active">Discount Active<i
+                                    class="chip-close material-icons">close</i></div>
+                        </div>
+                        <div class="col s7">
+                            <div class="row">
+                                <div class="col s12">
+                                    <ul class="tabs">
+                                        <li class="tab col s4 bulk-modal-tab"><a class="active"
+                                                                                 href="#test1">Percentage</a></li>
+                                        <li class="tab col s3 bulk-modal-tab"><a href="#test2">Description</a></li>
+                                        <li class="tab col s4 bulk-modal-tab"><a href="#test3">Discount Active</a></li>
+                                    </ul>
+                                </div>
+                                <form id="bulk-change-form">
+                                    <div class="row col s12">
+                                        <div class="col s8">
+                                            <div id="test1" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class='input-field col s12'>
+                                                        <i class="material-icons prefix">call_received</i>
+                                                        <input id="checkbox-percentage" type="hidden"
+                                                               class="is-changed-checkbox" name="isPercentageChanged">
+                                                        <input class='validate bulk-field-change' type='number'
+                                                               name='percentage' id='bulk-disc-percentage'/>
+                                                        <label for="bulk-disc-percentage">Percentage</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test2" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class="input-field col s12">
+                                                        <input id="checkbox-description" type="hidden"
+                                                               class="is-changed-checkbox" name="isDescriptionChanged">
+                                                        <i class="material-icons prefix">description</i>
+                                                        <textarea id="bulk-desc-product" name="description"
+                                                                  class="bulk-field-change materialize-textarea"></textarea>
+                                                        <label for="bulk-desc-product">Description</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="test3" class="col s12">
+                                                <div class="row edit-selected-items">
+                                                    <div class='input-field col s12 switch'>
+                                                        <label>
+                                                            <input id="checkbox-is-active" type="hidden"
+                                                                   class="is-changed-checkbox" name="isActiveChanged">
+                                                            Inactive
+                                                            <input type="checkbox" class="bulk-field-change"/>
+                                                            <span class="lever"></span>
+                                                            Active
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col s4">
+                                            <input type="hidden" name="itemIds" id="bulk-item-ids">
+                                            <button id="bulk-submit" type="submit" name="action"
+                                                    class="btn waves-effect waves-light">Edit
+                                                <i class="material-icons right">replay</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="bulk-card" class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content center-align">
+                            <span class="card-title">Items Selected</span>
+                            <h5 class="selected-items">0</h5>
+                        </div>
+                        <div class="card-action center-align">
+                            <a id="bulk-change-btn" class="a-dummy" href="#!">Edit</a>
+                            <a id="bulk-cancel-btn" class="a-dummy" href="#!">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </sec:authorize>
     </div>
 </div>
@@ -138,9 +235,11 @@
     $("#table-all-products").karpo_table({
         urlSearch: "/discounts/autocomplete",
         urlTable: "/discounts",
+        bulkUrl: "/discounts/bulk",
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
+            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#discount/" + object.id
@@ -148,8 +247,8 @@
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%" : ""}));
             tr.append($("<td>", {text: object.description}));
-            if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            if (object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             return tr;
         }

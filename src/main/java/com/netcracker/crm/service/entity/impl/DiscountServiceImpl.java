@@ -2,9 +2,10 @@ package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.DiscountDto;
+import com.netcracker.crm.dto.bulk.DiscountBulkDto;
 import com.netcracker.crm.dto.mapper.DiscountMapper;
 import com.netcracker.crm.dto.row.DiscountRowDto;
 import com.netcracker.crm.service.entity.DiscountService;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -60,7 +58,7 @@ public class DiscountServiceImpl implements DiscountService {
     public List<AutocompleteDto> getAutocompleteDto(String pattern) {
         List<Discount> discounts = discountDao.findByIdOrTitle(pattern);
         List<AutocompleteDto> result = new ArrayList<>();
-        for (Discount discount: discounts) {
+        for (Discount discount : discounts) {
             result.add(convertToAutocompleteDto(discount));
         }
         return result;
@@ -80,6 +78,28 @@ public class DiscountServiceImpl implements DiscountService {
         }
         response.put("rows", dtoRows);
         return response;
+    }
+
+    @Override
+    @Transactional
+    public boolean bulkUpdate(DiscountBulkDto bulkDto) {
+        Discount discountTemplate = getBulkDiscount(bulkDto);
+        Set<Long> discountIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) discountIDs.addAll(bulkDto.getItemIds());
+
+        return discountDao.bulkUpdate(discountIDs, discountTemplate);
+    }
+
+    private Discount getBulkDiscount(DiscountBulkDto bulkDto) {
+        Discount discountTemplate = new Discount();
+        if (bulkDto.isDescriptionChanged()) discountTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isActiveChanged()) {
+            boolean isActive = bulkDto.isActive() == null ? false : bulkDto.isActive();
+            discountTemplate.setActive(isActive);
+        }
+        if (bulkDto.isPercentageChanged()) discountTemplate.setPercentage(bulkDto.getPercentage());
+
+        return discountTemplate;
     }
 
     private DiscountRowDto convertToRowDto(Discount discount) {

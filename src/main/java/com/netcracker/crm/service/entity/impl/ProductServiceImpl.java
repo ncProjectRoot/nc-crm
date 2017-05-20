@@ -132,24 +132,6 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
-    private Product getBulkProduct(ProductBulkDto bulkDto) {
-        Product productTemplate = new Product();
-        if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
-        if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
-        if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
-        if (bulkDto.isGroupIdChanged()) {
-            Group group = new Group();
-            group.setId(bulkDto.getGroupId());
-            productTemplate.setGroup(group);
-        }
-        if (bulkDto.isDiscountIdChanged()) {
-            Discount discount = new Discount();
-            discount.setId(bulkDto.getDiscountId());
-            productTemplate.setDiscount(discount);
-        }
-        return productTemplate;
-    }
-
     @Override
     public boolean hasCustomerAccessToProduct(Long productId, Long customerId) {
         return productDao.hasCustomerAccessToProduct(productId, customerId);
@@ -224,6 +206,24 @@ public class ProductServiceImpl implements ProductService {
         product.setGroup(group);
 
         return product;
+    }
+
+    private Product getBulkProduct(ProductBulkDto bulkDto) {
+        Product productTemplate = new Product();
+        if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
+        if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
+        if (bulkDto.isGroupIdChanged()) {
+            Group group = new Group();
+            group.setId(bulkDto.getGroupId());
+            productTemplate.setGroup(group);
+        }
+        if (bulkDto.isDiscountIdChanged()) {
+            Discount discount = new Discount();
+            discount.setId(bulkDto.getDiscountId());
+            productTemplate.setDiscount(discount);
+        }
+        return productTemplate;
     }
 
 

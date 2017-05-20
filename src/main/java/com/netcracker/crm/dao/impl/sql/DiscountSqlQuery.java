@@ -15,6 +15,9 @@ public final class DiscountSqlQuery {
 
     public static final String PARAM_PATTERN = "pattern";
 
+    //BULK
+    public static final String PARAM_DISCOUNT_IDS = "discount_ids";
+
     public static final String SQL_UPDATE_DISCOUNT = "UPDATE discount " +
             "SET title=:title, percentage=:percentage, description=:description, " +
             "active = :active " +
@@ -40,4 +43,7 @@ public final class DiscountSqlQuery {
 
     public static final String SQL_GET_DISC_COUNT = "SELECT count(*) " +
             "FROM discount;";
+
+    public static final String SQL_DISCOUNT_BULK_UPDATE = "" +
+            "SELECT update_discount(ARRAY [:discount_ids ] :: BIGINT[], :active, :percentage, :description);";
 }

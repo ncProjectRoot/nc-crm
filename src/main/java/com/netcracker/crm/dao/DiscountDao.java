@@ -4,6 +4,7 @@ import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Melnyk_Dmytro
@@ -18,5 +19,8 @@ public interface DiscountDao extends CrudDao<Discount> {
     Long getDiscountRowsCount(DiscountRowRequest rowRequest);
 
     List<Discount> findDiscounts(DiscountRowRequest rowRequest);
+
     List<Discount> findByIdOrTitle(String pattern);
+
+    boolean bulkUpdate(Set<Long> discountIDs, Discount discountTemplate);
 }

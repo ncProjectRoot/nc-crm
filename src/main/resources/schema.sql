@@ -365,16 +365,15 @@ ON DELETE CASCADE;
 
 
 ALTER TABLE history
-    ADD CONSTRAINT history_statuses_FK FOREIGN KEY
-    (
-     new_status_id
-    )
-    REFERENCES statuses
-    (
-     id
-    )
-    ON DELETE CASCADE
-;
+  ADD CONSTRAINT history_statuses_FK FOREIGN KEY
+  (
+    new_status_id
+  )
+REFERENCES statuses
+  (
+    id
+  )
+ON DELETE CASCADE;
 
 
 ALTER TABLE orders
@@ -563,7 +562,6 @@ INSERT INTO user_roles (id, name) VALUES (2, 'ROLE_CUSTOMER');
 INSERT INTO user_roles (id, name) VALUES (3, 'ROLE_CSR');
 INSERT INTO user_roles (id, name) VALUES (4, 'ROLE_PMG');
 
-
 -- password - 123123
 INSERT INTO "users" (
   password, first_name, middle_name, last_name, phone, email, enable, account_non_locked,
@@ -586,7 +584,7 @@ INSERT INTO public.statuses (id, name) VALUES (12, 'PLANNED');
 INSERT INTO public.statuses (id, name) VALUES (13, 'ACTUAL');
 INSERT INTO public.statuses (id, name) VALUES (14, 'OUTDATED');
 
-COMMIT;
+
 
 CREATE OR REPLACE FUNCTION update_product(ids               BIGINT [], new_discount_id BIGINT,
                                           new_group_id      BIGINT,
@@ -608,5 +606,26 @@ BEGIN
 END
 '
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_discount(ids            BIGINT [], new_active BOOLEAN,
+                                           new_percentage DOUBLE PRECISION, new_description TEXT)
+  RETURNS INT AS
+'
+DECLARE rows_updated INT;
+BEGIN
+  UPDATE discount
+  SET
+    active      = COALESCE(new_active, active),
+    description = COALESCE(new_description, description),
+    percentage  = COALESCE(new_percentage, percentage)
+  WHERE id IN (SELECT *
+               FROM unnest(ids));
+  GET DIAGNOSTICS rows_updated = ROW_COUNT;
+  RETURN rows_updated;
+END
+'
+LANGUAGE plpgsql;
+
+
 
 COMMIT;

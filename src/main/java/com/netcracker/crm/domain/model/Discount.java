@@ -10,7 +10,7 @@ public class Discount {
     private String title;
     private Double percentage;
     private String description;
-    private boolean active;
+    private Boolean active;
 
     public Discount() {
     }
@@ -48,10 +48,14 @@ public class Discount {
     }
 
     public boolean isActive() {
+        return active != null && active;
+    }
+
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 }

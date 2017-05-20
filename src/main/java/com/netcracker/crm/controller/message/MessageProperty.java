@@ -23,7 +23,7 @@ public final class MessageProperty {
     public static final String SUCCESS_COMPLAINT_CREATED = "success.complaint-create";
     public static final String SUCCESS_ORDER_CREATED = "success.order-create";
     public static final String SUCCESS_PRODUCT_BULK_UPDATED = "success.product-bulk-updated";
-
+    public static final String SUCCESS_DISCOUNT_BULK_UPDATED = "success.discount-bulk-updated";
 
     //Error Keys
     public static final String ERROR_SERVER_ERROR = "error.server-error";
