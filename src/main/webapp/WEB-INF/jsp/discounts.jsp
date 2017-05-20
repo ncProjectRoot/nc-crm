@@ -159,7 +159,7 @@
                                                             <input id="checkbox-is-active" type="hidden"
                                                                    class="is-changed-checkbox" name="isActiveChanged">
                                                             Inactive
-                                                            <input type="checkbox" class="bulk-field-change"/>
+                                                            <input type="checkbox" class="bulk-field-change" name="active"/>
                                                             <span class="lever"></span>
                                                             Active
                                                         </label>
