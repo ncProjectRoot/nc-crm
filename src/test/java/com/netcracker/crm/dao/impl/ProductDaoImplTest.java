@@ -7,6 +7,9 @@ import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
+import com.netcracker.crm.domain.real.RealDiscount;
+import com.netcracker.crm.domain.real.RealGroup;
+import com.netcracker.crm.domain.real.RealProduct;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Karpunets
@@ -41,16 +44,16 @@ public class ProductDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        discountCreated = new Discount();
+        discountCreated = new RealDiscount();
         discountCreated.setTitle("test title discount");
         discountCreated.setPercentage(60.4);
         discountCreated.setDescription("test description discount");
         discountCreated.setActive(false);
 
-        groupCreated = new Group();
+        groupCreated = new RealGroup();
         groupCreated.setName("test name group");
 
-        productCreated = new Product();
+        productCreated = new RealProduct();
         productCreated.setTitle("test title product");
         productCreated.setDefaultPrice(7.7);
         productCreated.setStatus(ProductStatus.ACTUAL);

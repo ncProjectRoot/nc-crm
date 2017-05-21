@@ -3,6 +3,7 @@ package com.netcracker.crm.dao.impl;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.real.RealUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Karpunets
@@ -29,7 +31,7 @@ public class UserDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        userCreated = new User();
+        userCreated = new RealUser();
         userCreated.setPassword("test password");
         userCreated.setFirstName("test first name");
         userCreated.setMiddleName("test middle name");

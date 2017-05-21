@@ -1,57 +1,98 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.DiscountDao;
-import com.netcracker.crm.dao.GroupDao;
+import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.ProductStatus;
 
 /**
  * @author Karpunets
  * @since 14.05.2017
  */
-public class ProductProxy extends Product {
+public class ProductProxy implements Product {
+    private long id;
+    private Product product;
+    private ProductDao productDao;
 
-    private long discountId;
-    private long groupId;
+    public ProductProxy(ProductDao productDao) {
+        this.productDao = productDao;
+    }
 
-    private DiscountDao discountDao;
-    private GroupDao groupDao;
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-    public ProductProxy(DiscountDao discountDao, GroupDao groupDao) {
-        this.discountDao = discountDao;
-        this.groupDao = groupDao;
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getTitle() {
+        return getProduct().getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        getProduct().setTitle(title);
+    }
+
+    @Override
+    public Double getDefaultPrice() {
+        return getProduct().getDefaultPrice();
+    }
+
+    @Override
+    public void setDefaultPrice(Double defaultPrice) {
+        getProduct().setDefaultPrice(defaultPrice);
+    }
+
+    @Override
+    public ProductStatus getStatus() {
+        return getProduct().getStatus();
+    }
+
+    @Override
+    public void setStatus(ProductStatus status) {
+        getProduct().setStatus(status);
+    }
+
+    @Override
+    public String getDescription() {
+        return getProduct().getDescription();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        getProduct().setDescription(description);
     }
 
     @Override
     public Discount getDiscount() {
-        if (super.getDiscount() == null && discountId != 0) {
-            super.setDiscount(discountDao.findById(discountId));
-        }
-        return super.getDiscount();
+        return getProduct().getDiscount();
+    }
+
+    @Override
+    public void setDiscount(Discount discount) {
+        getProduct().setDiscount(discount);
     }
 
     @Override
     public Group getGroup() {
-        if (super.getGroup() == null && groupId != 0) {
-            super.setGroup(groupDao.findById(groupId));
+        return getProduct().getGroup();
+    }
+
+    @Override
+    public void setGroup(Group group) {
+        getProduct().setGroup(group);
+    }
+
+    private Product getProduct() {
+        if (product == null) {
+            product = productDao.findById(id);
         }
-        return super.getGroup();
-    }
-
-    public long getDiscountId() {
-        return discountId;
-    }
-
-    public void setDiscountId(long discountId) {
-        this.discountId = discountId;
-    }
-
-    public long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
+        return product;
     }
 }

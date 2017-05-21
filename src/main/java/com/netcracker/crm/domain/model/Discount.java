@@ -5,53 +5,25 @@ package com.netcracker.crm.domain.model;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Discount {
-    private Long id;
-    private String title;
-    private Double percentage;
-    private String description;
-    private boolean active;
+public interface Discount {
 
-    public Discount() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    String getTitle();
 
-    public String getTitle() {
-        return title;
-    }
+    void setTitle(String title);
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    Double getPercentage();
 
-    public Double getPercentage() {
-        return percentage;
-    }
+    void setPercentage(Double percentage);
 
-    public void setPercentage(Double percentage) {
-        this.percentage = percentage;
-    }
+    String getDescription();
 
-    public String getDescription() {
-        return description;
-    }
+    void setDescription(String description);
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    boolean isActive();
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    void setActive(boolean active);
 }

@@ -18,9 +18,12 @@ public interface UserService {
     boolean activateUser(String userToken);
 
     Map<String, Object> getUsers(UserRowRequest userRowRequest, User user, boolean individual);
+
     User getUserById(Long id);
 
     User update(UserDto userDto);
 
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
+
+    List<User> getOnlineCsrs();
 }

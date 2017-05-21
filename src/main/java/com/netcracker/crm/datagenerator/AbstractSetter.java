@@ -1,6 +1,7 @@
 package com.netcracker.crm.datagenerator;
 
 import com.netcracker.crm.service.security.RandomString;
+import net.minidev.json.parser.JSONParser;
 
 import java.util.List;
 import java.util.Random;
@@ -9,7 +10,7 @@ import java.util.Random;
  * Created by Pasha on 05.05.2017.
  */
 public abstract class AbstractSetter<T> {
-
+    protected JSONParser parser = new JSONParser();
     protected RandomString randomString;
     protected Random random;
 
