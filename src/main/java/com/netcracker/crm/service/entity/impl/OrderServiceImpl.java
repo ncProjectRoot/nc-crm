@@ -11,6 +11,8 @@ import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.OrderHistoryDto;
+import com.netcracker.crm.dto.mapper.ModelMapper;
+import com.netcracker.crm.dto.mapper.impl.OrderMapper;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import com.netcracker.crm.dto.OrderViewDto;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
@@ -38,26 +40,25 @@ public class OrderServiceImpl implements OrderService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final OrderDao orderDao;
-    private final UserDao userDao;
-    private final ProductDao productDao;
     private final HistoryDao historyDao;
     private final OrderLifecycleService lifecycleService;
     private final OrderCache orderCache;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao, OrderLifecycleService lifecycleService, OrderCache orderCache) {
+    public OrderServiceImpl(OrderDao orderDao, HistoryDao historyDao, OrderLifecycleService lifecycleService,
+                            OrderCache orderCache, OrderMapper orderMapper) {
         this.orderDao = orderDao;
-        this.userDao = userDao;
-        this.productDao = productDao;
         this.historyDao = historyDao;
         this.lifecycleService = lifecycleService;
         this.orderCache = orderCache;
+        this.orderMapper = orderMapper;
     }
 
     @Override
     @Transactional
     public Order create(OrderDto orderDto) {
-        Order order = convertFromDtoToEntity(orderDto);
+        Order order = ModelMapper.map(orderMapper.dtoToModel(), orderDto, RealOrder.class);
         lifecycleService.createOrder(order);
         return order;
     }
@@ -76,11 +77,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
         }
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (Order order : orders) {
-            result.add(convertToAutocompleteDto(order));
-        }
-        return result;
+        return ModelMapper.mapList(orderMapper.modelToAutocomplete(), orders, AutocompleteDto.class);
     }
 
     @Override
@@ -91,10 +88,7 @@ public class OrderServiceImpl implements OrderService {
         response.put("length", length);
         List<Order> orders = orderDao.findOrderRows(orderRowRequest);
 
-        List<OrderRowDto> ordersDto = new ArrayList<>();
-        for (Order order : orders) {
-            ordersDto.add(convertToRowDto(order));
-        }
+        List<OrderRowDto> ordersDto = ModelMapper.mapList(orderMapper.modelToRowDto(), orders, OrderRowDto.class);
         response.put("rows", ordersDto);
         return response;
     }
@@ -156,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
         return 0;
     }
 
-
+    // TODO: 22.05.2017 to OrderMapper
     private List<OrderViewDto> convertMapToList(Map<Long, Order> map) {
         List<OrderViewDto> orders = new ArrayList<>();
         for (Map.Entry<Long, Order> m : map.entrySet()) {
@@ -171,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
         return convertToOrderHistory(historyDao.findAllByOrderId(id));
     }
 
-
+    // TODO: 22.05.2017 convertToOrderHistory to OrderMapper
     private Set<OrderHistoryDto> convertToOrderHistory(List<History> list) {
         Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
         for (History history : list) {
@@ -201,57 +195,6 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private Order convertFromDtoToEntity(OrderDto orderDto) {
-        Order order = new RealOrder();
-        Product product = productDao.findById(orderDto.getProductId());
-        User customer = userDao.findById(orderDto.getCustomerId());
-
-        order.setProduct(product);
-        order.setCustomer(customer);
-        order.setStatus(OrderStatus.NEW);
-        order.setDate(LocalDateTime.now());
-
-        StringBuilder preferredDataTime = new StringBuilder();
-        if (!orderDto.getPreferredDate().isEmpty()) {
-            preferredDataTime.append(orderDto.getPreferredDate());
-            if (!orderDto.getPreferredTime().isEmpty()) {
-                preferredDataTime.append('T');
-                preferredDataTime.append(orderDto.getPreferredTime());
-            }
-        }
-        if (preferredDataTime.length() != 0) {
-            order.setPreferedDate(LocalDateTime.parse(preferredDataTime));
-        }
-        return order;
-    }
-
-    private OrderRowDto convertToRowDto(Order order) {
-        OrderRowDto orderRowDto = new OrderRowDto();
-        orderRowDto.setId(order.getId());
-        orderRowDto.setStatus(order.getStatus().getName());
-        orderRowDto.setProductId(order.getProduct().getId());
-        orderRowDto.setProductTitle(order.getProduct().getTitle());
-        orderRowDto.setProductStatus(order.getProduct().getStatus().getName());
-        orderRowDto.setCustomer(order.getCustomer().getId());
-        if (order.getCsr() != null) {
-            orderRowDto.setCsr(order.getCsr().getId());
-        }
-        if (order.getDate() != null) {
-            orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        if (order.getPreferedDate() != null) {
-            orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        return orderRowDto;
-    }
-
-    private AutocompleteDto convertToAutocompleteDto(Order order) {
-        AutocompleteDto autocompleteDto = new AutocompleteDto();
-        autocompleteDto.setId(order.getId());
-        autocompleteDto.setValue(order.getProduct().getTitle() + " " + order.getDate().toLocalDate());
-        return autocompleteDto;
     }
 
 }

@@ -6,6 +6,8 @@ import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Region;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.RegionDto;
+import com.netcracker.crm.dto.mapper.ModelMapper;
+import com.netcracker.crm.dto.mapper.impl.RegionMapper;
 import com.netcracker.crm.service.entity.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,11 +27,13 @@ public class RegionServiceImpl implements RegionService {
 
     private final RegionDao regionDao;
     private final RegionGroupsDao regionGroupsDao;
+    private final RegionMapper regionMapper;
 
     @Autowired
-    public RegionServiceImpl(RegionDao regionDao, RegionGroupsDao regionGroupsDao) {
+    public RegionServiceImpl(RegionDao regionDao, RegionGroupsDao regionGroupsDao, RegionMapper regionMapper) {
         this.regionDao = regionDao;
         this.regionGroupsDao = regionGroupsDao;
+        this.regionMapper = regionMapper;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class RegionServiceImpl implements RegionService {
     @Transactional(readOnly = true)
     public List<AutocompleteDto> getAutocompleteDto(String pattern) {
         List<Region> regions = regionDao.findAllByPattern(pattern);
-        return convertToAutocompletesDto(regions);
+        return ModelMapper.mapList(regionMapper.modelToAutocomplete(), regions, AutocompleteDto.class);
     }
 
     @Override
@@ -61,14 +64,4 @@ public class RegionServiceImpl implements RegionService {
         return true;
     }
 
-    private List<AutocompleteDto> convertToAutocompletesDto(List<Region> regions) {
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (Region region : regions) {
-            AutocompleteDto autocompleteDto = new AutocompleteDto();
-            autocompleteDto.setId(region.getId());
-            autocompleteDto.setValue(region.getName());
-            result.add(autocompleteDto);
-        }
-        return result;
-    }
 }
