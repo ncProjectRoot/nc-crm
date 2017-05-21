@@ -6,71 +6,33 @@ package com.netcracker.crm.domain.model;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Product {
-    private Long id;
-    private String title;
-    private Double defaultPrice;
-    private ProductStatus status;
-    private String description;
-    private Discount discount;
-    private Group group;
+public interface Product {
 
-    public Product() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    String getTitle();
 
-    public String getTitle() {
-        return title;
-    }
+    void setTitle(String title);
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    Double getDefaultPrice();
 
-    public Double getDefaultPrice() {
-        return defaultPrice;
-    }
+    void setDefaultPrice(Double defaultPrice);
 
-    public void setDefaultPrice(Double defaultPrice) {
-        this.defaultPrice = defaultPrice;
-    }
+    ProductStatus getStatus();
 
-    public ProductStatus getStatus() {
-        return status;
-    }
+    void setStatus(ProductStatus status);
 
-    public void setStatus(ProductStatus status) {
-        this.status = status;
-    }
+    String getDescription();
 
-    public String getDescription() {
-        return description;
-    }
+    void setDescription(String description);
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    Discount getDiscount();
 
-    public Discount getDiscount() {
-        return discount;
-    }
+    void setDiscount(Discount discount);
 
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
-    }
+    Group getGroup();
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
+    void setGroup(Group group);
 }

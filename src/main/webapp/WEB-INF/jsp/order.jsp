@@ -10,13 +10,19 @@
         justify-content: center;
         align-items: center;
     }
-    ul li span{
+
+    ul li span {
         color: darkblue;
     }
-    .title{
+
+    #date{
+        text-decoration: underline;
+    }
+    .title {
         color: green;
     }
-    .name{
+
+    .name {
         color: darkblue;
     }
 </style>
@@ -29,24 +35,26 @@
         <h5>Customer : <span class="name">${order.customer.firstName} ${order.customer.lastName}</span></h5>
     </div>
     <div class="section">
-        <h5>Date order : <span>${order.date}</span></h5>
+        <h5>Order date : <span>${order.date.toString().replace("T", " ")}</span></h5>
     </div>
     <c:if test="${order.status == 'PROCESSING'}">
         <div class="section">
-            <h5>Prefered date : <span>${order.preferedDate}</span></h5>
+            <h5>Prefered date : <span>${order.preferedDate.toString().replace("T", " ")}</span></h5>
         </div>
     </c:if>
 
     <div class="row">
         <div class="section">
             <sec:authentication var="user" property="principal"/>
-            <sec:authorize access="hasRole('ROLE_CSR')">
+            <sec:authorize access="hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')">
                 <input type="hidden" id="csrfToken" value="${_csrf.token}"/>
                 <input type="hidden" id="csrfHeader" value="${_csrf.headerName}"/>
                 <div class="section">
-                    <c:if test="${order.status == 'NEW'}">
-                        <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept</a>
-                    </c:if>
+                    <sec:authorize access="hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')">
+                        <c:if test="${order.status == 'NEW'}">
+                            <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept</a>
+                        </c:if>
+                    </sec:authorize>
                     <c:if test="${user.id == order.csr.id}">
                         <c:choose>
                             <c:when test="${order.status == 'PROCESSING'}">
@@ -101,8 +109,8 @@
             historyUL.children().remove();
             $.each(data, function (i, item) {
                 var li = $("<li>").addClass("collection-item")
-                    .append("Old status - <span>" + item.oldStatus + "</span>, time - " + item.dateChangeStatus
-                        + ", message - " + item.descChangeStatus);
+                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - <span id='date'>" + item.dateChangeStatus
+                        + "</span>, message - " + item.descChangeStatus);
                 historyUL.append(li);
             });
         });
@@ -176,7 +184,6 @@
         });
         return xhr;
     }
-
 
 
 </script>

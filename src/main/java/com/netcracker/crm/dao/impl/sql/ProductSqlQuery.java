@@ -19,6 +19,9 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_ROW_STATUS = "status_id";
     public static final String PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE = "active";
 
+    //BULK
+    public static final String PARAM_PRODUCT_IDS = "product_ids";
+
     public static final String PARAM_PATTERN = "pattern";
 
     public static final String SQL_UPDATE_PRODUCT = "UPDATE product "
@@ -97,4 +100,14 @@ public final class ProductSqlQuery {
 
     public static final String SQL_DELETE_PRODUCT = "DELETE FROM product WHERE id = :id;";
 
+    public static final String SQL_GROUP_PRODUCTS_BY_STATUS = "" +
+            "SELECT count(result.status_count) " +
+            "FROM " +
+            "(SELECT count(p.*) status_count " +
+            "FROM product p " +
+            "WHERE p.id IN ( :product_ids ) " +
+            "GROUP BY p.status_id ) AS result;";
+
+    public static final String SQL_PRODUCT_BULK_UPDATE = "" +
+            "SELECT update_product(ARRAY [:product_ids ] :: BIGINT[], :discount_id, :group_id, :default_price, :description);";
 }

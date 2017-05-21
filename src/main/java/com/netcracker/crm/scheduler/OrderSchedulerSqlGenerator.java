@@ -16,12 +16,14 @@ public class OrderSchedulerSqlGenerator {
         builder.append(field);
         builder.append(" IN (");
         for (int i = 0; i < count; i++) {
-            builder.append(":" + fieldName + i);
+            builder.append(":");
+            builder.append(fieldName);
+            builder.append(i);
             if (i < count - 1) {
                 builder.append(",");
             }
         }
-        builder.append(")");
+        builder.append(") ORDER BY h.date_change_status ASC");
         return builder.toString();
     }
 

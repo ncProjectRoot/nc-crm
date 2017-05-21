@@ -4,13 +4,18 @@ import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
-import com.netcracker.crm.service.security.RandomString;
+import com.netcracker.crm.domain.real.RealAddress;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Pasha on 06.05.2017.
@@ -21,11 +26,13 @@ public class AddressSetter extends AbstractSetter<Address> {
     @Autowired
     private AddressDao addressDao;
     private List<Region> regions;
-    private RandomString randomString1 = new RandomString(10);
-
+    private List<String> addresses = new ArrayList<>();
+    @Value(value = "classpath:testdata/address.json")
+    private Resource resource;
     @Override
     public List<Address> generate(int numbers) {
         List<Address> addresses = new ArrayList<>();
+        fillAddress();
         for (int i = 0; i < numbers; i++) {
             Address address= generateObject();
             addressDao.create(address);
@@ -38,13 +45,29 @@ public class AddressSetter extends AbstractSetter<Address> {
         this.regions = regions;
     }
 
+    private void fillAddress(){
+        JSONArray a = null;
+        try {
+            a = (JSONArray) parser.parse(resource.getInputStream());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object o : a) {
+            JSONObject person = (JSONObject) o;
+            String address = (String) person.get("address");
+            addresses.add(address);
+        }
+    }
+
     @Override
     public Address generateObject() {
-        Address address = new Address();
-        address.setDetails(randomString.nextString());
+        Address address = new RealAddress();
+        String addr= addresses.get(random.nextInt(addresses.size()));
+        address.setDetails(addr);
         address.setLatitude((double)Math.round(Math.random() * 1000_000));
         address.setLongitude((double)Math.round(Math.random() * 1000_000));
-        address.setFormattedAddress(randomString1.nextString());
+        address.setFormattedAddress(addr);
         address.setRegion(getRegion());
         return address;
     }

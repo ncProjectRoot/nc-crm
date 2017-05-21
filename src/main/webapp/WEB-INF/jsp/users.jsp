@@ -14,9 +14,9 @@
             <ul id="tabs" class="tabs">
                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a class="active" href="#all-users-wrapper">All Users</a></li>
-                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
-                    </sec:authorize>
-                    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+                    <li class="tab col s3"><a id="link-create-wrapper" href="#create-wrapper">Create</a></li>
+                </sec:authorize>
+                <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
                     </sec:authorize>
             </ul>
@@ -27,55 +27,55 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                                <tr>
-                                    <th data-field="1">
-                                        <a href="#!" class="sorted-element a-dummy">#</a>
-                                    </th>
-                                    <th data-field="2">
-                                        <a href="#!" class="sorted-element a-dummy">First Name</a>
-                                    </th>
-                                    <th data-field="3">
-                                        <a href="#!" class="sorted-element a-dummy">Middle Name</a>
-                                    </th>
-                                    <th data-field="4">
-                                        <a href="#!" class="sorted-element a-dummy">Last Name</a>
-                                    </th>
-                                    <th data-field="5">
-                                        <a href="#!" class="sorted-element a-dummy">E-mail</a>
-                                    </th>
-                                    <th data-field="6">
-                                        <a href="#!" class="sorted-element a-dummy">Phone</a>
-                                    </th>
-                                    <th class="th-dropdown" data-field="roleId">
-                                        <a class='dropdown-button a-dummy' href='#'
-                                           data-activates='dropdown-all-user-role' data-default-name="User Role">
-                                            User Role
-                                        </a>
-                                        <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                            <ul id="dropdown-all-user-role" class='dropdown-content'>
-                                <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
-                                <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
-                                <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
-                                <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
-                            </ul>
-                            </th>
-                            <th class="th-dropdown" data-field="contactPerson">
-                                <a class='dropdown-button a-dummy' href='#'
-                                   data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
-                                    Contact Person
-                                </a>
-                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                            <ul id="dropdown-all-contact-person" class='dropdown-content'>
-                                <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
-                                <li><a href="#" class="a-dummy" data-value="false">No</a></li>
-                            </ul>
-                            </th>
-                            <th data-field="7">
-                                <a href="#!" class="sorted-element a-dummy">Address</a>
-                            </th>
-                            <th data-field="8">
-                                <a href="#!" class="sorted-element a-dummy">Organization</a>
-                            </th>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
+                                </th>
+                                <th class="th-dropdown" data-field="roleId">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-user-role' data-default-name="User Role">
+                                        User Role
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-user-role" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
+                                    </ul>
+                                </th>
+                                <th class="th-dropdown" data-field="contactPerson">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
+                                        Contact Person
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-contact-person" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                                    </ul>
+                                </th>
+                                <th data-field="9">
+                                    <a href="#!" class="sorted-element a-dummy">Address</a>
+                                </th>
+                                <th data-field="10">
+                                    <a href="#!" class="sorted-element a-dummy">Organization</a>
+                                </th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -116,7 +116,7 @@
                                     <label for="customer_address_details">Address Details</label>
                                 </div>
                                 <div>
-                                    <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                                        <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
                                 </div>
                             </div>
                             <div class="col s6">
@@ -174,7 +174,38 @@
         </sec:authorize>
         <sec:authorize access="hasRole('ROLE_CUSTOMER')">
             <div id="my-users-wrapper" class="col s12">
-
+                <div id="table-my-users" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                </th>
+                                <th data-field="4">
+                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
+                                </th>
+                                <th data-field="9">
+                                    <a href="#!" class="sorted-element a-dummy">Address</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </sec:authorize>
 
@@ -182,46 +213,10 @@
 </div>
 
 
-<form id="update-user-form" style="display: none">
-    <div class="modal-content row">
-        
-        <input id="user_id2" type="hidden" name="id" value="${user.id}"/>
-        <input id="user_pass2" type="hidden" name="password" value="${user.password}"/>
-        <input id="user_email2" type="hidden" name="email" value="${user.email}"/>
-        <input id="user_enable2" type="hidden" name="enable" value="${user.enable}"/>
-        <input id="user_accountNonLocked2" type="hidden" name="accountNonLocked" value="${user.accountNonLocked}"/>
-        <input id="user_contactPerson2" type="hidden" name="contactPerson" value="${user.contactPerson}"/>
-        <input id="user_userRole2" type="hidden" name="userRole" value="${user.userRole}"/>
-
-        <input id="user_orgId2" type="hidden" name="orgId" value="${user.organization.id}"/>
-        <input id="user_addressId2" type="hidden" name="addressId" value="${user.address.id}"/>
-
-        <input id="user_organizationName2" type="hidden" name="organizationName" value="${user.organization.name}"/>
-        <input id="user_addressRegionName2" type="hidden" name="addressRegionName" value="${user.address.region}">
-        <input id="user_addressLatitude2" type="hidden" name="addressLatitude" value="${user.address.latitude}">
-        <input id="user_addressLongitude2" type="hidden" name="addressLongitude" value="${user.address.longitude}">
-        <input id="user_formattedAddress2" type="hidden" name="formattedAddress" value="${user.address.formattedAddress}">
-        <input id="user_addressDetails2" type="hidden" name="addressDetails" value="${user.address.details}"/>
-        <div class='input-field col s7'>
-            <i class="material-icons prefix">title</i>
-            <input id="user_lastName2" class='validate' type='text' name='lastName' value="${user.lastName}"/>
-            <label for="user_lname" class="active">Last name</label>
-        </div>
-        <div class='input-field col s7'>
-            <i class="material-icons prefix">title</i>
-            <input id="user_middleName2" class='validate' type='text' name='middleName' value="${user.middleName}"/>
-            <label for="user_mname" class="active">Middle name</label>
-        </div>
-        <div class='input-field col s7'>
-            <i class="material-icons prefix">title</i>
-            <input id="user_firstName2" class='validate' type='text' name='firstName' value="${user.firstName}"/>
-            <label for="user_fname" class="active">First name</label>
-        </div>
-        <div class='input-field col s7'>
-            <i class="material-icons prefix">phone</i>
-            <input id="user_phone2" class='validate' type='text' name='phone' value="${user.phone}"/>
-            <label for="user_phone" class="active">Phone</label>
-        </div>
+<form id="update-user-form2" style="display: none">
+    <div class="modal-content row">        
+        <input id="user_id2" type="hidden" name="id" />
+        <input id="user_contactPerson2" type="hidden" name="contactPerson" />            
     </div>
     <div class="modal-footer center-align">
         <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
@@ -231,40 +226,34 @@
     </div>
 </form>
 
-
-<!--<form id="form-user-create" class="col s12" style="display: none">
-    <input id="user_first_name2" name="firstName" type="text" class="validate">
-    <input id="user_middle_name2" name="middleName" type="text" class="validate">
-    <input id="user_last_name2" name="lastName" type="text" class="validate">
-    <input type="text" id="customer_address2"/>
-    <input id="customer_address_details2" name="addressDetails" type="text"
-           class="validate">
-    <input name="userRole" id="user_role2" type="text">
-    <input id="user_email2" name="email" type="email" class="validate">
-    <input id="user_phone2" name="phone" type="tel" class="validate">
-    <input type="checkbox" class="filled-in" id="customer_contact_person2"
-           name="contactPerson"
-           checked="unchecked"/>
-    <input type="text" id="customer_organization_name2" name="organizationName"
-           class="autocomplete">
-    <div class="row">
-        <div class="col s6">
-            <input type="hidden" name="addressRegionName" id="customer_region_name2">
-            <input type="hidden" name="addressLatitude" id="customer_address_lat2">
-            <input type="hidden" name="addressLongitude" id="customer_address_long2">
-            <input type="hidden" name="formattedAddress" id="customer_formatted_address2">
-            <button id="submit-user-create2" class="btn waves-effect waves-light" type="submit"
-                    name="action">Create Customer
-                <i class="material-icons right">send</i>
-            </button>
-        </div>
-    </div>
-</form>-->
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
     $('ul#tabs').tabs({
-        onShow: function (tab) {
+
+        onShow: function() {
+            $('#map').locationpicker({
+                location: {
+                    latitude: 40.7324319,
+                    longitude: -73.82480777777776
+                },
+                locationName: "",
+                radius: 1,
+                inputBinding: {
+                    locationNameInput: $('#customer_address')
+                },
+                enableAutocomplete: true,
+                enableReverseGeocode: true,
+                draggable: true,
+                onchanged: function (currentLocation, radius, isMarkerDropped) {
+                    var mapContext = $(this).locationpicker('map');
+                    $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
+                    $('#customer_address_lat').val(mapContext.location.latitude);
+                    $('#customer_address_long').val(mapContext.location.longitude);
+                    $('#customer_formatted_address').val(mapContext.location.formattedAddress);
+                },
+                addressFormat: 'street_number'
+            });
         }
     });
 
@@ -287,29 +276,6 @@
                 $('#customer_organization_name').val(val);
             }
         });
-    });
-
-    $('#map').locationpicker({
-        location: {
-            latitude: 40.7324319,
-            longitude: -73.82480777777776
-        },
-        locationName: "",
-        radius: 1,
-        inputBinding: {
-            locationNameInput: $('#customer_address')
-        },
-        enableAutocomplete: true,
-        enableReverseGeocode: true,
-        draggable: true,
-        onchanged: function (currentLocation, radius, isMarkerDropped) {
-            var mapContext = $(this).locationpicker('map');
-            $('#customer_region_name').val(mapContext.location.addressComponents.stateOrProvince);
-            $('#customer_address_lat').val(mapContext.location.latitude);
-            $('#customer_address_long').val(mapContext.location.longitude);
-            $('#customer_formatted_address').val(mapContext.location.formattedAddress);
-        },
-        addressFormat: 'street_number'
     });
 
     $(document).on("change", "#user_role", function () {
@@ -388,24 +354,38 @@
             $(id).fadeIn(1500);
         }
 
-        /*$("#disc_id2").val($("#"+"id"+simpleId).html());
-         $("#disc_title2").val($("#"+"title"+simpleId).html());
-         var length = $("#"+"percentage"+simpleId).html().length;
-         var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
-         $("#disc_percentage2").val(perc);
+         $("#user_id2").val($("#"+"id"+simpleId).html());
          if ($(id).html() == "check")
-         document.getElementById("disc_active2").checked = true;
+            $("#user_contactPerson2").val(true);
          if ($(id).html() == "clear")
-         document.getElementById("disc_active2").checked = false;
+            $("#user_contactPerson2").val(false);
+         //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
          
-         $("#disc_description2").val($("#"+"description"+simpleId).html());
-         
-         
-         
-         var url = "/discounts";
-         var form = "#updateDiscountActive";
-         send(form, url, "PUT");*/
+         var url = "/users/contactPerson";
+         var form = "#update-user-form2";
+         send(form, url, "PUT");
     }
+    </sec:authorize>
+
+    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+    $("#table-my-users").karpo_table({
+        urlSearch: "/users/autocomplete",
+        urlTable: "/users?individual=true",
+        mapper: function (object) {
+            var tr = $("<tr>");
+            tr.append($("<td>").append($("<a>", {
+                text: object.id,
+                href: "#user?id=" + object.id
+            })));
+            tr.append($("<td>", {text: object.firstName}));
+            tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));
+            tr.append($("<td>", {text: object.lastName}));
+            tr.append($("<td>", {text: object.email}));
+            tr.append($("<td>", {text: object.phone}));
+            tr.append($("<td>", {text: object.formattedAddress}));
+            return tr;
+        }
+    });
     </sec:authorize>
 
 </script>

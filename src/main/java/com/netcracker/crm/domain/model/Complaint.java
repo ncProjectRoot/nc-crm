@@ -7,81 +7,38 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Complaint {
-    private Long id;
-    private String title;
-    private String message;
-    private ComplaintStatus status;
-    private LocalDateTime date;
-    private User customer;
-    private User pmg;
-    private Order order;
+public interface Complaint {
 
-    public Complaint() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    void setId(Long id);
     
-    public String getTitle() {
-        return title;
-    }
+    String getTitle();
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    void setTitle(String title);
 
-    public String getMessage() {
-        return message;
-    }
+    String getMessage();
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    void setMessage(String message);
 
-    public ComplaintStatus getStatus() {
-        return status;
-    }
+    ComplaintStatus getStatus();
 
-    public void setStatus(ComplaintStatus status) {
-        this.status = status;
-    }
+    void setStatus(ComplaintStatus status);
 
-    public LocalDateTime getDate() {
-        return date;
-    }
+    LocalDateTime getDate();
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
+    void setDate(LocalDateTime date);
 
-    public User getCustomer() {
-        return customer;
-    }
+    User getCustomer();
 
-    public void setCustomer(User customer) {
-        this.customer = customer;
-    }
+    void setCustomer(User customer);
 
-    public User getPmg() {
-        return pmg;
-    }
+    User getPmg();
 
-    public void setPmg(User pmg) {
-        this.pmg = pmg;
-    }
+    void setPmg(User pmg);
 
-    public Order getOrder() {
-        return order;
-    }
+    Order getOrder();
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
+    void setOrder(Order order);
 
 }

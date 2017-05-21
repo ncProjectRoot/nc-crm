@@ -4,10 +4,14 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealDiscount;
+import com.netcracker.crm.domain.real.RealGroup;
+import com.netcracker.crm.domain.real.RealProduct;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
 import com.netcracker.crm.dto.ProductGroupDto;
+import com.netcracker.crm.dto.bulk.ProductBulkDto;
 import com.netcracker.crm.dto.mapper.ProductGroupDtoMapper;
 import com.netcracker.crm.dto.mapper.ProductMapper;
 import com.netcracker.crm.dto.row.ProductRowDto;
@@ -22,10 +26,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 30.04.2017.
@@ -51,6 +52,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductsById(Long id) {
         return productDao.findById(id);
+    }
+
+    @Override
+    public List<Product> getProductsByGroupId(Long id) {
+        return productDao.findAllByGroupId(id);
     }
 
     @Override
@@ -94,6 +100,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
+    public boolean bulkUpdate(ProductBulkDto bulkDto, User user) {
+        Product productTemplate = getBulkProduct(bulkDto);
+        Set<Long> productIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) productIDs.addAll(bulkDto.getItemIds());
+        for (Long productID : productIDs) {
+            if (productTemplate.getStatus() != null) changeStatus(productID, productTemplate.getStatus().getId(), user);
+        }
+
+        return productDao.bulkUpdate(productIDs, productTemplate);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<AutocompleteDto> getPossibleProductsAutocompleteDtoByCustomer(String pattern, User customer) {
         List<Product> products = productDao.findByPatternAndCustomerIdAndRegionId(pattern, customer.getId(), customer.getAddress().getRegion().getId());
@@ -114,6 +133,24 @@ public class ProductServiceImpl implements ProductService {
         }
         response.put("rows", productsRowDto);
         return response;
+    }
+
+    private Product getBulkProduct(ProductBulkDto bulkDto) {
+        Product productTemplate = new RealProduct();
+        if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
+        if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
+        if (bulkDto.isGroupIdChanged()) {
+            Group group = new RealGroup();
+            group.setId(bulkDto.getGroupId());
+            productTemplate.setGroup(group);
+        }
+        if (bulkDto.isDiscountIdChanged()) {
+            Discount discount = new RealDiscount();
+            discount.setId(bulkDto.getDiscountId());
+            productTemplate.setDiscount(discount);
+        }
+        return productTemplate;
     }
 
     @Override

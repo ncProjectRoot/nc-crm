@@ -124,6 +124,7 @@
                 }
 
                 fillPagination();
+                setCheckboxes();
             } catch (err) {
                 window.location.reload();
             }
@@ -271,6 +272,117 @@
             tableContainer.find(".chips-search input").focus();
         });
 
-    };
+//----------------Bulk Operations---------------------
 
+        const checkBoxIdPrefix = "bulk-table-";
+
+        var card = $(document).find('#bulk-card');
+        var modal = $(document).find('#bulk-change-modal');
+        var itemIDsInput = $(document).find('#bulk-item-ids');
+        var itemIDs = [];
+
+        $(document).on('change', '.bulk-checkbox', function () {
+            if (this.checked) {
+                var itemId = this.id.replace(checkBoxIdPrefix, "");
+                itemIDs.push(itemId);
+
+                selectRow.call(this);
+                getBulkCard();
+            } else {
+                var itemId = this.id.replace(checkBoxIdPrefix, "");
+                var index = $.inArray(itemId, itemIDs);
+                if (index != -1) {
+                    itemIDs.splice(index, 1);
+                }
+                deselectRow.call(this);
+                setItemsCountOnCard();
+            }
+            if (itemIDs.length == 0) {
+                setDefaultTableStyle();
+            }
+        });
+
+        $(document).on('click', '#bulk-change-btn', function () {
+            initMaterializeComponents();
+            $(modal).modal('open');
+        });
+
+        $(document).on('click', '#bulk-submit', function (e) {
+            e.preventDefault();
+            $(itemIDsInput).val(itemIDs);
+            send('#bulk-change-form', params.bulkUrl, 'PUT').done(function () {
+                $('#bulk-change-modal').modal('close');
+                deselectRows();
+                setDefaultTableStyle();
+                $(window).trigger('hashchange');
+            })
+        });
+
+        $(document).on('change', '.bulk-field-change', function () {
+            var checkbox = $(this).parent().find('.is-changed-checkbox');
+            checkbox.val(true);
+            $('div[checkbox-id=' + checkbox.attr('id') + ']').css("display", "block");
+
+        });
+
+        $(document).on('click', '.chip-close', function () {
+            console.log("'click', '.chip-close',");
+            var chip = $(this).parent('.bulk-chip');
+            var checkboxId = chip.attr('checkbox-id');
+            $(modal).find('#' + checkboxId).val(false);
+            $(chip).css("display", "none");
+        });
+
+        $(document).on('click', '#bulk-cancel-btn', function () {
+            deselectRows();
+            setDefaultTableStyle();
+        });
+
+        function selectRow() {
+            tableContainer.find(".bulk-table").removeClass("striped");
+            $(this).parents("tr").addClass("highlighted-row");
+        }
+
+        function deselectRow() {
+            $(this).parents("tr").removeClass("highlighted-row");
+        }
+
+        function deselectRows() {
+            tableContainer.find("tr").removeClass("highlighted-row");
+            tableContainer.find(".bulk-checkbox").prop('checked', false);
+        }
+
+        function setItemsCountOnCard() {
+            card.find(".selected-items").text(itemIDs.length);
+        }
+
+        function getBulkCard() {
+            card.css("display", "block");
+            setItemsCountOnCard();
+        }
+
+        function setDefaultTableStyle() {
+            itemIDs = [];
+            card.css("display", "none");
+            tableContainer.find(".bulk-table").addClass("striped");
+        }
+
+        function setCheckboxes() {
+            if (itemIDs.length == 0) {
+                setDefaultTableStyle();
+            } else {
+                for (var i = 0; i < itemIDs.length; i++) {
+                    var checkBox = tableContainer.find("#" + checkBoxIdPrefix + itemIDs[i]);
+                    $(checkBox).attr("checked", "checked");
+                    $(checkBox).parents("tr").addClass("highlighted-row");
+                }
+            }
+        }
+
+        function initMaterializeComponents() {
+            $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
+            $('ul.tabs').tabs();
+            $('.chips').material_chip();
+        }
+    };
 </script>

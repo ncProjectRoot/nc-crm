@@ -4,6 +4,8 @@ import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.real.RealAddress;
+import com.netcracker.crm.domain.real.RealRegion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Karpunets
@@ -33,11 +36,11 @@ public class AddressDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        addressCreated = new Address();
+        addressCreated = new RealAddress();
         addressCreated.setLatitude(14.6);
         addressCreated.setLongitude(14.6);
 
-        regionCreated = new Region();
+        regionCreated = new RealRegion();
         regionCreated.setName("test region name");
         addressCreated.setRegion(regionCreated);
         addressDao.create(addressCreated);

@@ -39,7 +39,7 @@ public class CustomerController {
         return "dashboard/customer";
     }
 
-    @GetMapping("/users")
+    @GetMapping("/organization")
     public String users(Map<String, Object> model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user;

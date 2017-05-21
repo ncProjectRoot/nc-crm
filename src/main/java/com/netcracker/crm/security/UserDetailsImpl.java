@@ -1,6 +1,7 @@
 package com.netcracker.crm.security;
 
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Created by Pasha on 21.04.2017.
  */
-public class UserDetailsImpl extends User implements UserDetails {
+public class UserDetailsImpl extends RealUser implements UserDetails {
 
     private List<String> userRoles;
 

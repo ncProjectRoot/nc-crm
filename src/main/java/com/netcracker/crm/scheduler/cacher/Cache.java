@@ -5,4 +5,6 @@ package com.netcracker.crm.scheduler.cacher;
  */
 public abstract class Cache<T> {
     public abstract void fillCache();
+
+    public abstract void cleanCache();
 }

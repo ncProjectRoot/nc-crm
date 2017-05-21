@@ -4,6 +4,7 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.scheduler.cacher.Cache;
 import com.netcracker.crm.scheduler.searcher.OrderSearcher;
+import com.netcracker.crm.service.entity.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,23 +28,26 @@ public class OrderCache extends Cache<Order> {
     private static final int INITIAL_CACHE_CAPACITY = 1000;
 
     private final OrderSearcher searcher;
+    private final UserService userService;
 
 
     @Autowired
-    public OrderCache(OrderSearcher searcher) {
+    public OrderCache(OrderSearcher searcher, UserService userService) {
         this.activateCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
         this.pauseCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
         this.resumeCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
         this.disableCache = new ConcurrentHashMap<>(INITIAL_CACHE_CAPACITY);
         this.searcher = searcher;
+        this.userService = userService;
     }
 
 
     public void fillCache() {
-        cacheFiller(activateCache, searcher.searchForActivate());
-        cacheFiller(pauseCache, searcher.searchForPause());
-        cacheFiller(resumeCache, searcher.searchForResume());
-        cacheFiller(disableCache, searcher.searchForDisable());
+        List<User> csr = userService.getOnlineCsrs();
+        cacheFiller(activateCache, searcher.searchForActivate(csr));
+        cacheFiller(pauseCache, searcher.searchForPause(csr));
+        cacheFiller(resumeCache, searcher.searchForResume(csr));
+        cacheFiller(disableCache, searcher.searchForDisable(csr));
     }
 
     public Map<Long, Order> getActivateElement(Long key) {
@@ -71,7 +75,7 @@ public class OrderCache extends Cache<Order> {
             Map<Long, Order> orders;
             if (cache.get(order.getCsr().getId()) == null
                     || cache.get(order.getCsr().getId()).isEmpty()) {
-                orders = new HashMap<>();
+                orders = new LinkedHashMap<>();
             } else {
                 orders = cache.get(order.getCsr().getId());
             }
@@ -100,7 +104,7 @@ public class OrderCache extends Cache<Order> {
     }
 
     private void checkActivateId(Long csrId) {
-        activateCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrOrder(csrId)));
+        activateCache.computeIfAbsent(csrId, k -> convertListOrder(searcher.searchCsrProcessingOrder(csrId)));
     }
 
     private void checkPauseId(Long csrId) {
@@ -136,7 +140,7 @@ public class OrderCache extends Cache<Order> {
      * all that remained
      */
     public void cleanCache() {
-        List<User> csrOnline = searcher.getOnlineCsrs();
+        List<User> csrOnline = userService.getOnlineCsrs();
         cacheCleaner(activateCache, csrOnline);
         cacheCleaner(pauseCache, csrOnline);
         cacheCleaner(disableCache, csrOnline);
@@ -167,7 +171,7 @@ public class OrderCache extends Cache<Order> {
 
 
     private Map<Long, Order> convertListOrder(List<Order> orders) {
-        Map<Long, Order> orderMap = new HashMap<>();
+        Map<Long, Order> orderMap = new LinkedHashMap<>();
         for (Order order : orders) {
             orderMap.put(order.getId(), order);
         }

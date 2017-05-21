@@ -4,7 +4,9 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.domain.proxy.ProductProxy;
+import com.netcracker.crm.domain.proxy.DiscountProxy;
+import com.netcracker.crm.domain.proxy.GroupProxy;
+import com.netcracker.crm.domain.real.RealProduct;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
 
@@ -32,17 +35,29 @@ import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
  */
 @Repository
 public class ProductDaoImpl implements ProductDao {
-
     private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
 
-    @Autowired
     private DiscountDao discountDao;
-    @Autowired
     private GroupDao groupDao;
 
     private SimpleJdbcInsert productInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private ProductWithDetailExtractor productWithDetailExtractor;
+
+    @Autowired
+    public ProductDaoImpl(DiscountDao discountDao, GroupDao groupDao) {
+        this.discountDao = discountDao;
+        this.groupDao = groupDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.productInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_PRODUCT_TABLE)
+                .usingGeneratedKeyColumns(PARAM_PRODUCT_ID);
+        productWithDetailExtractor = new ProductWithDetailExtractor(discountDao, groupDao);
+    }
 
     @Override
     public Long create(Product product) {
@@ -245,6 +260,33 @@ public class ProductDaoImpl implements ProductDao {
 
     }
 
+    @Override
+    public boolean hasSameStatus(Set<Long> productIDs) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_IDS, productIDs);
+
+        boolean isSame = namedJdbcTemplate.queryForObject(SQL_GROUP_PRODUCTS_BY_STATUS, params, Integer.class) == 1;
+        return isSame;
+    }
+
+    @Override
+    public boolean bulkUpdate(Set<Long> productIDs, Product product) {
+        Long groupId = null;
+        Long discountId = null;
+        if (product.getGroup() != null) groupId = product.getGroup().getId();
+        if (product.getDiscount() != null) discountId = product.getDiscount().getId();
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_IDS, productIDs)
+                .addValue(PARAM_PRODUCT_GROUP_ID, groupId)
+                .addValue(PARAM_PRODUCT_DISCOUNT_ID, discountId)
+                .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
+                .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription());
+
+        boolean isSame = namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
+        return isSame;
+    }
+
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
             Long discountId = discount.getId();
@@ -264,20 +306,8 @@ public class ProductDaoImpl implements ProductDao {
             if (groupId != null) {
                 return groupId;
             }
-            groupId = groupDao.create(group);
-
-            return groupId;
         }
         return null;
-    }
-
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.productInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_PRODUCT_TABLE)
-                .usingGeneratedKeyColumns(PARAM_PRODUCT_ID);
-        productWithDetailExtractor = new ProductWithDetailExtractor(discountDao, groupDao);
     }
 
     private static final class ProductWithDetailExtractor implements ResultSetExtractor<List<Product>> {
@@ -294,7 +324,7 @@ public class ProductDaoImpl implements ProductDao {
         public List<Product> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Product> allProduct = new ArrayList<>();
             while (rs.next()) {
-                ProductProxy product = new ProductProxy(discountDao, groupDao);
+                Product product = new RealProduct();
                 product.setId(rs.getLong(PARAM_PRODUCT_ID));
                 product.setTitle(rs.getString(PARAM_PRODUCT_TITLE));
                 product.setDefaultPrice(rs.getDouble(PARAM_PRODUCT_DEFAULT_PRICE));
@@ -305,8 +335,19 @@ public class ProductDaoImpl implements ProductDao {
                     product.setStatus((ProductStatus) status);
                 }
 
-                product.setDiscountId(rs.getLong(PARAM_PRODUCT_DISCOUNT_ID));
-                product.setGroupId(rs.getLong(PARAM_PRODUCT_GROUP_ID));
+                long discountId = rs.getLong(PARAM_PRODUCT_DISCOUNT_ID);
+                if (discountId != 0) {
+                    Discount discount = new DiscountProxy(discountDao);
+                    discount.setId(discountId);
+                    product.setDiscount(discount);
+                }
+
+                long groupId = rs.getLong(PARAM_PRODUCT_GROUP_ID);
+                if (groupId != 0) {
+                    Group group = new GroupProxy(groupDao);
+                    group.setId(groupId);
+                    product.setGroup(group);
+                }
 
                 allProduct.add(product);
             }
