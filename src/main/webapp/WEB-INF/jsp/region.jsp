@@ -23,11 +23,12 @@
         <div class="row region-groups">
             <div class="col s10 m6">
                 <form id="form-update-region">
+                    <input type="hidden" name="id" value="${region.id}">
                     <div class="row">
                         <div class="input-field col s12">
                             <i class="material-icons prefix">bubble_chart</i>
                             <input type="text" id="group-input" class="autocomplete">
-                            <input type="hidden" id="group-hidden-input" name="groups"/>
+                            <input type="hidden" id="group-hidden-input" name="groupIds"/>
                             <label for="group-input">Select group</label>
                         </div>
                         <div class="input-field col s12">
@@ -52,18 +53,15 @@
         hideInput: "#group-hidden-input"
     });
 
-    function fillCollection() {
-        <c:forEach items="${groups}" var="group">
-        $groupInput.addSelected("${group.id}" + " " + "${group.name}");
-        </c:forEach>
-    }
-    fillCollection();
+    <c:forEach items="${groups}" var="group">
+    $groupInput.addSelected("${group.id}" + " " + "${group.name}");
+    </c:forEach>
 
-    $("#update-group").on("submit", function (e) {
+    $("#form-update-region").on("submit", function (e) {
         e.preventDefault();
-        send("#update-group", "/groups", "PUT").done(function () {
-            $('.modal').modal('close');
-            $(window).trigger('hashchange')
+        send("#form-update-region", "/regions", "PUT").done(function () {
+//            $('.modal').modal('close');
+//            $(window).trigger('hashchange')
         })
     });
 

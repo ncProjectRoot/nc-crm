@@ -57,5 +57,8 @@
                 $contentRegion.addClass("content-body-visible");
             }, 500);
         });
+    }).on("onAutocompleteDeleteItem", function () {
+        var $contentRegion = $("#region-page-wrapper");
+        $contentRegion.removeClass("content-body-visible");
     })
 </script>

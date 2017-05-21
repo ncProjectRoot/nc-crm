@@ -1,8 +1,11 @@
 package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.RegionDao;
+import com.netcracker.crm.dao.RegionGroupsDao;
+import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Region;
 import com.netcracker.crm.dto.AutocompleteDto;
+import com.netcracker.crm.dto.RegionDto;
 import com.netcracker.crm.service.entity.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +25,12 @@ public class RegionServiceImpl implements RegionService {
     private static final Logger log = LoggerFactory.getLogger(RegionServiceImpl.class);
 
     private final RegionDao regionDao;
+    private final RegionGroupsDao regionGroupsDao;
 
     @Autowired
-    public RegionServiceImpl(RegionDao regionDao) {
+    public RegionServiceImpl(RegionDao regionDao, RegionGroupsDao regionGroupsDao) {
         this.regionDao = regionDao;
+        this.regionGroupsDao = regionGroupsDao;
     }
 
     @Override
@@ -38,6 +43,22 @@ public class RegionServiceImpl implements RegionService {
     public List<AutocompleteDto> getAutocompleteDto(String pattern) {
         List<Region> regions = regionDao.findAllByPattern(pattern);
         return convertToAutocompletesDto(regions);
+    }
+
+    @Override
+    public boolean update(RegionDto regionDto) {
+        List<Group> oldGroups = regionGroupsDao.findGroupsByRegionId(regionDto.getId());
+        for (Group oldGroup : oldGroups) {
+            if (regionDto.getGroupIds().contains(oldGroup.getId())) {
+                regionDto.getGroupIds().remove(oldGroup.getId());
+            } else {
+                regionGroupsDao.delete(regionDto.getId(), oldGroup.getId());
+            }
+        }
+        for (Long newGroupId : regionDto.getGroupIds()) {
+            regionGroupsDao.create(regionDto.getId(), newGroupId);
+        }
+        return true;
     }
 
     private List<AutocompleteDto> convertToAutocompletesDto(List<Region> regions) {

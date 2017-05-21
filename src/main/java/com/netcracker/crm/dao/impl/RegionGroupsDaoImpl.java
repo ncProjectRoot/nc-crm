@@ -57,18 +57,21 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     }
 
     @Override
-    public Long create(Region region, Group group) {
-        Long regionId = getRegionId(region);
-        Long groupId = getGroupId(group);
-        if (regionId == null || groupId == null) {
+    public Long create(Long idRegion, Long idGroup) {
+        if (idRegion == null || idGroup == null) {
             return null;
         }
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_RG_GROUP_ID, groupId)
-                .addValue(PARAM_RG_REGION_ID, regionId);
+                .addValue(PARAM_RG_GROUP_ID, idGroup)
+                .addValue(PARAM_RG_REGION_ID, idRegion);
         Long idRow = simpleInsert.executeAndReturnKey(params).longValue();
-        log.info("Group with id " + groupId + " added for region with id " + regionId);
+        log.info("Group with id " + idGroup + " added for region with id " + idRegion);
         return idRow;
+    }
+
+    @Override
+    public Long create(Region region, Group group) {
+        return create(getRegionId(region), getGroupId(group));
     }
 
     @Override
@@ -101,13 +104,18 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
     }
 
     @Override
-    public List<Group> findGroupsByRegion(Region region) {
+    public List<Group> findGroupsByRegionId(Long regionId) {
         log.debug("Start finding groups by region");
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_RG_REGION_ID, region.getId());
+                .addValue(PARAM_RG_REGION_ID, regionId);
         List<Group> groups = namedJdbcTemplate.query(SQL_FIND_GROUPS_BY_REGION, params, groupExtractor);
         log.debug("End finding groups by region");
         return groups;
+    }
+
+    @Override
+    public List<Group> findGroupsByRegion(Region region) {
+        return findGroupsByRegionId(region.getId());
     }
 
     @Override
