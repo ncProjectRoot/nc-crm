@@ -50,6 +50,11 @@ public class AdminController {
         return "groups";
     }
 
+    @GetMapping("/regions")
+    public String regions(Map<String, Object> model) {
+        return "regions";
+    }
+
     @GetMapping("/complaints")
     public String complaints(Map<String, Object> model) {
         return "complaints";

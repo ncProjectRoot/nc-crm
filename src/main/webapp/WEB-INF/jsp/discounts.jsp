@@ -3,7 +3,7 @@
 <style>
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-body" data-page-name="Discounts">
+<div class="content-body z-depth-1" data-page-name="Discounts">
     <div id="content-body" class="row">
 
         <div class="col s12">

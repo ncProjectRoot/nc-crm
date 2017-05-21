@@ -7,7 +7,7 @@
     }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-body" data-page-name="Users">
+<div class="content-body z-depth-1" data-page-name="Users">
     <div id="content-body" class="row">
 
         <div class="col s12">

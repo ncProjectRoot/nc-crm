@@ -15,4 +15,5 @@ public interface RegionDao extends CrudDao<Region> {
 
     Long getCount();
 
+    List<Region> findAllByPattern(String pattern);
 }

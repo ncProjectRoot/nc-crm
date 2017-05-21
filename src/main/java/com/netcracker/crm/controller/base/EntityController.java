@@ -1,9 +1,6 @@
 package com.netcracker.crm.controller.base;
 
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +23,20 @@ public class EntityController {
     private final DiscountService discountService;
     private final GroupService groupService;
     private final UserService userService;
+    private final RegionService regionService;
 
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
-                            OrderService orderService, DiscountService discountService, GroupService groupService, UserService userService) {
+                            OrderService orderService, DiscountService discountService, GroupService groupService,
+                            UserService userService, RegionService regionService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
         this.discountService = discountService;
         this.groupService = groupService;
         this.userService = userService;
+        this.regionService = regionService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -100,6 +100,17 @@ public class EntityController {
         return "discount";
     }
 
+    @RequestMapping("/*/region/{id}")
+    public String regions(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (user.getUserRole() == UserRole.ROLE_ADMIN || user.getUserRole() == UserRole.ROLE_CSR) {
+            Region region = regionService.getRegionById(id);
+            model.put("region", region);
+            model.put("groups", groupService.getGroupsByRegion(region));
+            return "region";
+        }
+        return "error/403";
+    }
 
     @RequestMapping("/*/group/{id}")
     public String group(Map<String, Object> model,  @PathVariable Long id) {
