@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.domain.real.RealGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class GroupSetter extends AbstractSetter<Group> {
 
     @Override
     public Group generateObject() {
-        Group group = new Group();
+        Group group = new RealGroup();
         group.setName(groupNames[counter++]);
         group.setDiscount(getDiscount());
         return group;

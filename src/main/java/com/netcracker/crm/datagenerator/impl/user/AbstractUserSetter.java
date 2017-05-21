@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.real.RealUser;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -65,7 +66,7 @@ public abstract class AbstractUserSetter extends AbstractSetter<User> {
 
     @Override
     public User generateObject() {
-        User user = new User();
+        User user = new RealUser();
         user.setAccountNonLocked(true);
         user.setEnable(true);
         user.setFirstName(firstNames.get(random.nextInt(NAMES_NUMBERS)));

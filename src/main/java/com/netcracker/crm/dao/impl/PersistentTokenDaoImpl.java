@@ -1,6 +1,5 @@
 package com.netcracker.crm.dao.impl;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,10 @@ import static com.netcracker.crm.dao.impl.sql.PersistentTokenSqlQuery.*;
  */
 @Repository
 public class PersistentTokenDaoImpl implements PersistentTokenRepository {
+    private static final Logger log = LoggerFactory.getLogger(PersistentTokenDaoImpl.class);
+
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert insert;
-    private static final Logger log = LoggerFactory.getLogger(PersistentTokenDaoImpl.class);
 
     @Autowired
     public void setDataSource(DataSource dataSource) {

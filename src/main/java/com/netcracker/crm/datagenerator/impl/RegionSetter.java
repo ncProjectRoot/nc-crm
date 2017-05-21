@@ -3,6 +3,7 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.real.RealRegion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,6 @@ public class RegionSetter extends AbstractSetter<Region> {
 
     @Override
     public Region generateObject() {
-        return new Region();
+        return new RealRegion();
     }
 }

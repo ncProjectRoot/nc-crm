@@ -7,7 +7,9 @@ import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Organization;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.UserRole;
-import com.netcracker.crm.domain.proxy.UserProxy;
+import com.netcracker.crm.domain.proxy.AddressProxy;
+import com.netcracker.crm.domain.proxy.OrganizationProxy;
+import com.netcracker.crm.domain.real.RealUser;
 import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import org.slf4j.Logger;
@@ -36,14 +38,27 @@ import static com.netcracker.crm.dao.impl.sql.UserSqlQuery.*;
 public class UserDaoImpl implements UserDao {
     private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 
-    @Autowired
     private OrganizationDao organizationDao;
-    @Autowired
     private AddressDao addressDao;
 
     private SimpleJdbcInsert userInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private UserWithDetailExtractor userWithDetailExtractor;
+
+    @Autowired
+    public UserDaoImpl(OrganizationDao organizationDao, AddressDao addressDao) {
+        this.organizationDao = organizationDao;
+        this.addressDao = addressDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.userInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_USER_TABLE)
+                .usingGeneratedKeyColumns(PARAM_USER_ID);
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.userWithDetailExtractor = new UserWithDetailExtractor(organizationDao, addressDao);
+    }
 
     @Override
     public Long create(User user) {
@@ -51,12 +66,6 @@ public class UserDaoImpl implements UserDao {
             return null;
         }
 
-//        Long addressId = null;
-//        Long orgId = null;
-//        if (user.getAddress() != null && user.getOrganization() != null) {
-//            addressId = getAddressId(user.getAddress());
-//            orgId = getOrgId(user.getOrganization());
-//        }
         Long addressId = getAddressId(user.getAddress());
         Long orgId = getOrgId(user.getOrganization());
         SqlParameterSource params = new MapSqlParameterSource()
@@ -275,15 +284,6 @@ public class UserDaoImpl implements UserDao {
         return namedJdbcTemplate.queryForList(SQL_FIND_ORG_USER_LAST_NAMES_BY_PATTERN, params, String.class);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.userInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_USER_TABLE)
-                .usingGeneratedKeyColumns(PARAM_USER_ID);
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.userWithDetailExtractor = new UserWithDetailExtractor(organizationDao, addressDao);
-    }
-
     private static final class UserWithDetailExtractor implements ResultSetExtractor<List<User>> {
 
         private OrganizationDao organizationDao;
@@ -298,7 +298,7 @@ public class UserDaoImpl implements UserDao {
         public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
             List<User> users = new LinkedList<>();
             while (rs.next()) {
-                UserProxy user = new UserProxy(addressDao, organizationDao);
+                User user = new RealUser();
                 user.setId(rs.getLong(PARAM_USER_ID));
                 user.setEmail(rs.getString(PARAM_USER_EMAIL));
                 user.setPassword(rs.getString(PARAM_USER_PASSWORD));
@@ -310,8 +310,22 @@ public class UserDaoImpl implements UserDao {
                 user.setAccountNonLocked(rs.getBoolean(PARAM_USER_ACCOUNT_NON_LOCKED));
                 user.setUserRole(UserRole.valueOf(rs.getString(PARAM_USER_ROLE_NAME)));
                 user.setContactPerson(rs.getBoolean(PARAM_USER_CONTACT_PERSON));
-                user.setOrganizationId(rs.getLong(PARAM_USER_ORG_ID));
-                user.setAddressId(rs.getLong(PARAM_USER_ADDRESS_ID));
+
+                long organizationId = rs.getLong(PARAM_USER_ORG_ID);
+                if (organizationId != 0) {
+                    Organization organization = new OrganizationProxy(organizationDao);
+                    organization.setId(organizationId);
+                    user.setOrganization(organization);
+                }
+
+                long addressId = rs.getLong(PARAM_USER_ORG_ID);
+                if (addressId != 0) {
+                    Address address = new AddressProxy(addressDao);
+                    address.setId(addressId);
+                    user.setAddress(address);
+                }
+
+
 
                 users.add(user);
             }

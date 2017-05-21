@@ -2,7 +2,10 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.domain.proxy.HistoryProxy;
+import com.netcracker.crm.domain.proxy.ComplaintProxy;
+import com.netcracker.crm.domain.proxy.OrderProxy;
+import com.netcracker.crm.domain.proxy.ProductProxy;
+import com.netcracker.crm.domain.real.RealHistory;
 import com.netcracker.crm.dto.GraphDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,19 +34,22 @@ import static com.netcracker.crm.dao.impl.sql.HistorySqlQuery.*;
  */
 @Repository
 public class HistoryDaoImpl implements HistoryDao {
-
     private static final Logger log = LoggerFactory.getLogger(HistoryDaoImpl.class);
 
-    @Autowired
     private ComplaintDao complaintDao;
-    @Autowired
     private OrderDao orderDao;
-    @Autowired
     private ProductDao productDao;
 
     private SimpleJdbcInsert historyInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private HistoryWithDetailExtractor historyWithDetailExtractor;
+
+    @Autowired
+    public HistoryDaoImpl(ComplaintDao complaintDao, OrderDao orderDao, ProductDao productDao) {
+        this.complaintDao = complaintDao;
+        this.orderDao = orderDao;
+        this.productDao = productDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -282,7 +288,7 @@ public class HistoryDaoImpl implements HistoryDao {
         public List<History> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<History> allHistory = new ArrayList<>();
             while (rs.next()) {
-                HistoryProxy history = new HistoryProxy(orderDao, complaintDao, productDao);
+                History history = new RealHistory();
                 history.setId(rs.getLong(PARAM_HISTORY_ID));
                 history.setDateChangeStatus(rs.getTimestamp(PARAM_HISTORY_DATE_CHANGE_STATUS).toLocalDateTime());
                 history.setDescChangeStatus(rs.getString(PARAM_HISTORY_DESC_CHANGE_STATUS));
@@ -292,9 +298,27 @@ public class HistoryDaoImpl implements HistoryDao {
                     history.setNewStatus(Status.getStatusByID(statusId));
                 }
 
-                history.setOrderId(rs.getLong(PARAM_HISTORY_ORDER_ID));
-                history.setComplaintId(rs.getLong(PARAM_HISTORY_COMPLAINT_ID));
-                history.setProductId(rs.getLong(PARAM_HISTORY_PRODUCT_ID));
+                long orderId = rs.getLong(PARAM_HISTORY_ORDER_ID);
+                if (orderId != 0) {
+                    Order order = new OrderProxy(orderDao);
+                    order.setId(orderId);
+                    history.setOrder(order);
+                }
+
+                long complaintId = rs.getLong(PARAM_HISTORY_COMPLAINT_ID);
+                if (complaintId != 0) {
+                    Complaint complaint = new ComplaintProxy(complaintDao);
+                    complaint.setId(complaintId);
+                    history.setComplaint(complaint);
+                }
+
+                long productId = rs.getLong(PARAM_HISTORY_PRODUCT_ID);
+                if (productId != 0) {
+                    Product product = new ProductProxy(productDao);
+                    product.setId(productId);
+                    history.setProduct(product);
+                }
+
                 allHistory.add(history);
             }
             return allHistory;

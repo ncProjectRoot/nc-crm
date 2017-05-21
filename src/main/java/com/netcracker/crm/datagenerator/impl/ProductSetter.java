@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductStatus;
+import com.netcracker.crm.domain.real.RealProduct;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -65,7 +66,7 @@ public class ProductSetter extends AbstractSetter<Product> {
 
     @Override
     public Product generateObject() {
-        Product product = new Product();
+        Product product = new RealProduct();
         product.setDiscount(getDiscount());
         product.setGroup(getGroup());
         product.setDefaultPrice((double) random.nextInt(defaultPrice));

@@ -7,71 +7,33 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since 24.04.2017
  */
-public class History {
-    private Long id;
-    private Status newStatus;
-    private LocalDateTime dateChangeStatus;
-    private String descChangeStatus;
-    private Order order;
-    private Complaint complaint;
-    private Product product;
+public interface History {
 
-    public History() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    Status getNewStatus();
 
-    public Status getNewStatus() {
-        return newStatus;
-    }
+    void setNewStatus(Status newStatus);
 
-    public void setNewStatus(Status newStatus) {
-        this.newStatus = newStatus;
-    }
+    LocalDateTime getDateChangeStatus();
 
-    public LocalDateTime getDateChangeStatus() {
-        return dateChangeStatus;
-    }
+    void setDateChangeStatus(LocalDateTime dateChangeStatus);
 
-    public void setDateChangeStatus(LocalDateTime dateChangeStatus) {
-        this.dateChangeStatus = dateChangeStatus;
-    }
+    String getDescChangeStatus();
 
-    public String getDescChangeStatus() {
-        return descChangeStatus;
-    }
+    void setDescChangeStatus(String descChangeStatus);
 
-    public void setDescChangeStatus(String descChangeStatus) {
-        this.descChangeStatus = descChangeStatus;
-    }
+    Order getOrder();
 
-    public Order getOrder() {
-        return order;
-    }
+    void setOrder(Order order);
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
+    Complaint getComplaint();
 
-    public Complaint getComplaint() {
-        return complaint;
-    }
+    void setComplaint(Complaint complaint);
 
-    public void setComplaint(Complaint complaint) {
-        this.complaint = complaint;
-    }
+    Product getProduct();
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+    void setProduct(Product product);
 }

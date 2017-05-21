@@ -30,17 +30,31 @@ import static com.netcracker.crm.dao.impl.sql.RegionGroupsSqlQuery.*;
 public class RegionGroupsDaoImpl implements RegionGroupsDao {
     private static final Logger log = LoggerFactory.getLogger(RegionGroupsDao.class);
 
-    @Autowired
     private RegionDao regionDao;
-    @Autowired
     private GroupDao groupDao;
-    @Autowired
     private DiscountDao discountDao;
 
     private SimpleJdbcInsert simpleInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private GroupDaoImpl.GroupExtractor groupExtractor;
     private RegionDaoImpl.RegionExtractor regionExtractor;
+
+    @Autowired
+    public RegionGroupsDaoImpl(RegionDao regionDao, GroupDao groupDao, DiscountDao discountDao) {
+        this.regionDao = regionDao;
+        this.groupDao = groupDao;
+        this.discountDao = discountDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        simpleInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_RG_TABLE)
+                .usingGeneratedKeyColumns(PARAM_RG_ID);
+        groupExtractor = new GroupDaoImpl.GroupExtractor(discountDao);
+        regionExtractor = new RegionDaoImpl.RegionExtractor(discountDao);
+    }
 
     @Override
     public Long create(Region region, Group group) {
@@ -129,15 +143,4 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
         }
         return null;
     }
-
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        simpleInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_RG_TABLE)
-                .usingGeneratedKeyColumns(PARAM_RG_ID);
-        groupExtractor = new GroupDaoImpl.GroupExtractor(discountDao);
-        regionExtractor = new RegionDaoImpl.RegionExtractor(discountDao);
-    }
-
 }

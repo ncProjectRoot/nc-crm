@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GraphDto;
@@ -203,7 +204,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Order convertFromDtoToEntity(OrderDto orderDto) {
-        Order order = new Order();
+        Order order = new RealOrder();
         Product product = productDao.findById(orderDto.getProductId());
         User customer = userDao.findById(orderDto.getCustomerId());
 

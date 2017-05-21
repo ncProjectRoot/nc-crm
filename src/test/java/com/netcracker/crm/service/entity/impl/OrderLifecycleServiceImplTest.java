@@ -4,6 +4,9 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealOrder;
+import com.netcracker.crm.domain.real.RealProduct;
+import com.netcracker.crm.domain.real.RealUser;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
 import org.junit.After;
@@ -42,7 +45,7 @@ public class OrderLifecycleServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        customer = new User();
+        customer = new RealUser();
         customer.setPassword("test password");
         customer.setFirstName("test first name");
         customer.setMiddleName("test middle name");
@@ -52,7 +55,7 @@ public class OrderLifecycleServiceImplTest {
         customer.setContactPerson(false);
         customer.setUserRole(UserRole.ROLE_CUSTOMER);
 
-        csr = new User();
+        csr = new RealUser();
         csr.setPassword("test password");
         csr.setFirstName("test first name");
         csr.setMiddleName("test middle name");
@@ -62,13 +65,13 @@ public class OrderLifecycleServiceImplTest {
         csr.setContactPerson(false);
         csr.setUserRole(UserRole.ROLE_CSR);
 
-        this.order = new Order();
+        this.order = new RealOrder();
         this.order.setDate(LocalDateTime.now());
         this.order.setPreferedDate(LocalDateTime.now());
         this.order.setCustomer(customer);
         this.order.setCsr(customer);
 
-        product = new Product();
+        product = new RealProduct();
         product.setTitle("test product title");
         product.setStatus(ProductStatus.ACTUAL);
         this.order.setProduct(product);

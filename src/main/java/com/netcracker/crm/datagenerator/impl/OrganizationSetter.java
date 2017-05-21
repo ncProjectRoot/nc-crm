@@ -3,6 +3,7 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.OrganizationDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Organization;
+import com.netcracker.crm.domain.real.RealOrganization;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -41,7 +42,7 @@ public class OrganizationSetter extends AbstractSetter<Organization> {
 
     @Override
     public Organization generateObject() {
-        Organization organization = new Organization();
+        Organization organization = new RealOrganization();
         organization.setName(iterator.next());
         return organization;
     }

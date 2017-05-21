@@ -5,62 +5,29 @@ package com.netcracker.crm.domain.model;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Address {
-    private Long id;
-    private Double latitude;
-    private Double longitude;
-    private String details;
-    private Region region;
-    private String formattedAddress;
+public interface Address {
 
-    public Address() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void  setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    Double getLatitude();
 
-    public Double getLatitude() {
-        return latitude;
-    }
+    void setLatitude(Double latitude);
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
+    Double getLongitude();
 
-    public Double getLongitude() {
-        return longitude;
-    }
+    void setLongitude(Double longitude);
 
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
+    Region getRegion();
 
-    public Region getRegion() {
-        return region;
-    }
+    void setRegion(Region region);
 
-    public void setRegion(Region region) {
-        this.region = region;
-    }
+    String getDetails();
 
-    public String getDetails() {
-        return details;
-    }
+    void setDetails(String details);
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
+    void setFormattedAddress(String formattedAddress);
 
-    public void setFormattedAddress(String formattedAddress) {
-        this.formattedAddress = formattedAddress;
-    }
-
-    public String getFormattedAddress() {
-        return formattedAddress;
-    }
+    String getFormattedAddress();
 }

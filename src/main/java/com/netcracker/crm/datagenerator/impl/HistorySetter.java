@@ -3,9 +3,9 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,7 +37,7 @@ public class HistorySetter extends AbstractSetter<History> {
 
     @Override
     public History generateObject() {
-        return new History();
+        return new RealHistory();
     }
 
 

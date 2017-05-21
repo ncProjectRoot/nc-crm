@@ -1,21 +1,23 @@
-package com.netcracker.crm.domain.proxy;
+package com.netcracker.crm.domain.real;
 
-import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.domain.model.*;
 
 import java.time.LocalDateTime;
 
 /**
  * @author Karpunets
- * @since 14.05.2017
+ * @since 21.05.2017
  */
-public class HistoryProxy implements History {
-    private long id;
-    private History history;
-    private HistoryDao historyDao;
+public class RealHistory implements History {
+    private Long id;
+    private Status newStatus;
+    private LocalDateTime dateChangeStatus;
+    private String descChangeStatus;
+    private Order order;
+    private Complaint complaint;
+    private Product product;
 
-    public HistoryProxy(HistoryDao historyDao) {
-        this.historyDao = historyDao;
+    public RealHistory() {
     }
 
     @Override
@@ -30,68 +32,61 @@ public class HistoryProxy implements History {
 
     @Override
     public Status getNewStatus() {
-        return getHistory().getNewStatus();
+        return newStatus;
     }
 
     @Override
     public void setNewStatus(Status newStatus) {
-        getHistory().setNewStatus(newStatus);
+        this.newStatus = newStatus;
     }
 
     @Override
     public LocalDateTime getDateChangeStatus() {
-        return getHistory().getDateChangeStatus();
+        return dateChangeStatus;
     }
 
     @Override
     public void setDateChangeStatus(LocalDateTime dateChangeStatus) {
-        getHistory().setDateChangeStatus(dateChangeStatus);
+        this.dateChangeStatus = dateChangeStatus;
     }
 
     @Override
     public String getDescChangeStatus() {
-        return getHistory().getDescChangeStatus();
+        return descChangeStatus;
     }
 
     @Override
     public void setDescChangeStatus(String descChangeStatus) {
-        getHistory().setDescChangeStatus(descChangeStatus);
+        this.descChangeStatus = descChangeStatus;
     }
 
     @Override
     public Order getOrder() {
-        return getHistory().getOrder();
+        return order;
     }
 
     @Override
     public void setOrder(Order order) {
-        getHistory().setOrder(order);
+        this.order = order;
     }
 
     @Override
     public Complaint getComplaint() {
-        return getHistory().getComplaint();
+        return complaint;
     }
 
     @Override
     public void setComplaint(Complaint complaint) {
-        getHistory().setComplaint(complaint);
+        this.complaint = complaint;
     }
 
     @Override
     public Product getProduct() {
-        return getHistory().getProduct();
+        return product;
     }
 
     @Override
     public void setProduct(Product product) {
-        getHistory().setProduct(product);
-    }
-
-    private History getHistory() {
-        if (history == null) {
-            history = historyDao.findById(id);
-        }
-        return history;
+        this.product = product;
     }
 }

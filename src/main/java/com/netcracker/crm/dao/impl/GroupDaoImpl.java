@@ -4,7 +4,8 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
-import com.netcracker.crm.domain.proxy.GroupProxy;
+import com.netcracker.crm.domain.proxy.DiscountProxy;
+import com.netcracker.crm.domain.real.RealGroup;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.dto.GroupTableDto;
@@ -36,13 +37,27 @@ import static com.netcracker.crm.dao.impl.sql.GroupSqlQuery.*;
 public class GroupDaoImpl implements GroupDao {
     private static final Logger log = LoggerFactory.getLogger(GroupDaoImpl.class);
 
-    @Autowired
     private DiscountDao discountDao;
 
     private SimpleJdbcInsert insert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private GroupExtractor groupExtractor;
     private GroupTableDtoExtractor groupTableExtractor;
+
+    @Autowired
+    public GroupDaoImpl(DiscountDao discountDao) {
+        this.discountDao = discountDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.insert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_GROUP_TABLE)
+                .usingGeneratedKeyColumns(PARAM_GROUP_ID);
+        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        groupExtractor = new GroupExtractor(discountDao);
+        groupTableExtractor = new GroupTableDtoExtractor();
+    }
 
     @Override
     public Long create(Group group) {
@@ -173,16 +188,6 @@ public class GroupDaoImpl implements GroupDao {
         return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID_OR_TITLE, params, groupExtractor);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.insert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_GROUP_TABLE)
-                .usingGeneratedKeyColumns(PARAM_GROUP_ID);
-        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        groupExtractor = new GroupExtractor(discountDao);
-        groupTableExtractor = new GroupTableDtoExtractor();
-    }
-
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
             Long discountId = discount.getId();
@@ -208,10 +213,17 @@ public class GroupDaoImpl implements GroupDao {
             log.debug("Start extracting data");
             List<Group> groups = new ArrayList<>();
             while (rs.next()) {
-                GroupProxy group = new GroupProxy(discountDao);
+                Group group = new RealGroup();
                 group.setId(rs.getLong(PARAM_GROUP_ID));
                 group.setName(rs.getString(PARAM_GROUP_NAME));
-                group.setDiscountId(rs.getLong(PARAM_GROUP_DISCOUNT_ID));
+
+                long discountId = rs.getLong(PARAM_GROUP_DISCOUNT_ID);
+                if (discountId != 0) {
+                    Discount discount = new DiscountProxy(discountDao);
+                    discount.setId(discountId);
+                    group.setDiscount(discount);
+                }
+
                 groups.add(group);
             }
             log.debug("End extracting data");
