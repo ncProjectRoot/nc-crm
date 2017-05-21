@@ -1,14 +1,15 @@
 package com.netcracker.crm.config;
 
-import com.netcracker.crm.security.PersistentTokenRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,15 +19,12 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import javax.sql.DataSource;
-
 /**
  * Created by Pasha on 21.04.2017.
  */
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private DataSource dataSource;
     @Autowired
     private AuthenticationSuccessHandler successHandler;
     @Autowired
@@ -36,29 +34,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationProvider authenticationProvider;
     @Autowired
-    private Environment env;
+    private PersistentTokenRepository tokenRepository;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        if (env.acceptsProfiles("!production")) {
-            auth.inMemoryAuthentication().withUser("admin@gmail.com").password("123456").roles("ADMIN");
-            auth.inMemoryAuthentication().withUser("csr@gmail.com").password("123456").roles("CSR");
-            auth.inMemoryAuthentication().withUser("pmg@gmail.com").password("123456").roles("PMG");
-            auth.inMemoryAuthentication().withUser("customer@gmail.com").password("123456").roles("CUSTOMER");
-        } else {
-            auth.authenticationProvider(authenticationProvider).userDetailsService(userDetailsService);
-        }
-
+        auth.authenticationProvider(authenticationProvider).userDetailsService(userDetailsService);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        Session management, need for scheduler logic
+        http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
         http.authorizeRequests()
-                .antMatchers("/").access("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/pmg/**").access("hasRole('ROLE_PMG')")
-                .antMatchers("/csr/**").access("hasRole('ROLE_CSR')")
-                .antMatchers("/customer/**").access("hasRole('ROLE_CUSTOMER')")
+                .anyRequest().authenticated()
+                .antMatchers("/forgot").permitAll()
+                .and()
+                .httpBasic()
                 .and()
                 .formLogin()
                 .loginPage("/login").permitAll()
@@ -73,15 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                 .and()
-                .rememberMe().tokenRepository(persistentTokenRepository())
+                .rememberMe().tokenRepository(tokenRepository)
                 .tokenValiditySeconds(1209600)
         ;
-    }
-
-
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        return new PersistentTokenRepositoryImpl(dataSource);
     }
 
     @Bean
@@ -93,5 +78,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public RedirectStrategy redirectStrategy() {
         return new DefaultRedirectStrategy();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 }

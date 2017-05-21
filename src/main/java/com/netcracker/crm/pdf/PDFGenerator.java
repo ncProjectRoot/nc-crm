@@ -4,12 +4,15 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.User;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class PDFGenerator {
@@ -17,12 +20,12 @@ public class PDFGenerator {
     final static Font BOLD_FONT = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
     final static Font SIMPLE_FONT = new Font(Font.FontFamily.HELVETICA, 12);
 
-    public void generate(Order order) throws DocumentException, IOException, MessagingException {
+    public void generate(Order order, User user, Product product, Discount discount) throws DocumentException, IOException, MessagingException {
 
-        new PDFGenerator().createPdf(generateFileName(), order.getProduct().getTitle(), order.getProduct().getDescription(), order.getProduct().getDefaultPrice(), order.getProduct().getDiscount().getPercentage(), order.getId(), order.getDate(), order.getCustomer().getFirstName(), order.getCustomer().getLastName(), order.getCustomer().getPhone(), order.getCustomer().getEmail());
+        new PDFGenerator().createPdf(generateFileName(), product.getTitle(), product.getDescription(), product.getDefaultPrice(), discount.getPercentage(), order.getId(), order.getDate(), user.getFirstName(), user.getLastName(), user.getPhone(), user.getEmail());
     }
 
-    private void createPdf(String filename, String name, String description, double price, double discount,Long orderNum, LocalDate date, String fName, String lName, String phoneNumber, String email)
+    private void createPdf(String filename, String name, String description, double price, double discount, Long orderNum, LocalDateTime date, String fName, String lName, String phoneNumber, String email)
             throws DocumentException, IOException {
 
         Document document = new Document();
@@ -54,7 +57,7 @@ public class PDFGenerator {
 
     }
 
-    private Paragraph createOrderDate(LocalDate date) {
+    private Paragraph createOrderDate(LocalDateTime date) {
 
         Paragraph orderDate = new Paragraph(null, SIMPLE_FONT);
         orderDate.add("Order placed: " + date);
@@ -74,10 +77,10 @@ public class PDFGenerator {
         infoTable.addCell(new Paragraph("Subtotal: " + price + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(fName + " " + lName, SIMPLE_FONT));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Discount: " + discount + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph("Discount: " + (price - (price * discount/100)) + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(phone));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Total order: " + (price - discount) + " UAH", BOLD_FONT));
+        infoTable.addCell(new Paragraph("Total order: " + (price * discount/100) + " UAH", BOLD_FONT));
         infoTable.addCell(email);
         infoTable.addCell("");
         infoTable.addCell("");
@@ -109,7 +112,7 @@ public class PDFGenerator {
 
     }
 
-    private String generateFileName() {
+    public String generateFileName() {
         UUID fileName = UUID.randomUUID();
 
         return fileName.toString() + ".pdf";

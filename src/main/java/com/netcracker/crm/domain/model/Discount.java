@@ -1,7 +1,5 @@
 package com.netcracker.crm.domain.model;
 
-import java.time.LocalDate;
-
 /**
  * @author Melnyk_Dmytro
  * @version 1.0
@@ -12,8 +10,7 @@ public class Discount {
     private String title;
     private Double percentage;
     private String description;
-    private LocalDate dateStart;
-    private LocalDate dateFinish;
+    private boolean active;
 
     public Discount() {
     }
@@ -50,19 +47,11 @@ public class Discount {
         this.description = description;
     }
 
-    public LocalDate getDateStart() {
-        return dateStart;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setDateStart(LocalDate dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public LocalDate getDateFinish() {
-        return dateFinish;
-    }
-
-    public void setDateFinish(LocalDate dateFinish) {
-        this.dateFinish = dateFinish;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

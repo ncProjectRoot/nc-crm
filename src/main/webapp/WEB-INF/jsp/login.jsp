@@ -19,7 +19,7 @@
 </head>
 
 <body>
-<h1 class="teal-text darken-3">NC-CRM</h1>
+<h1 class="teal-text darken-3-text">NC-CRM</h1>
 <h5 class="teal-text lighten-5">Please, login into your account</h5>
 <div class="form-wrapper z-depth-1 grey lighten-4">
     <form action="/login" class="row" method="post" id="auth-form">
@@ -36,25 +36,51 @@
             <label for='remember'>Remember Me</label>
         </div>
         <div class='col s12'>
-            <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>Log in</button>
+            <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal darken-3'>Log in</button>
         </div>
         <div class="col s12">
             <label class="label-forgot center-align">
-                <a class='blue-grey-text lighten-2' href='#!'><b>Forgot Password?</b></a>
+                <a class='modal-trigger waves-effect waves-light blue-grey-text lighten-2' href='#modal1'><b>Forgot Password?</b></a>
             </label>
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </div>
+
+<div id="modal1" class="modal">
+    <form action="/forgot" method="post">
+        <div class="modal-content">
+            <h4>Recovery password</h4>
+
+            <div class='input-field'>
+                <input class='validate' type='email' name='email' id="email1"/>
+                <label for='email1'>Enter your email</label>
+            </div>
+            <div class='input-field'>
+                <input class='validate' type='tel' name='phone' id="phone"/>
+                <label for='phone'>Enter your phone</label>
+            </div>
+
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+        </div>
+        <div class="modal-footer">
+            <div class='col s12'>
+                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect teal'>Recovery</button>
+            </div>
+        </div>
+    </form>
+</div>
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
 <script>
     $(document).ready(function(){
         <c:if test="${not empty error}">
-        Materialize.toast("${error}", 2000, 'rounded');
+        Materialize.toast("${error}", 10000, 'rounded');
         </c:if>
         <c:if test="${not empty msg}">
-        Materialize.toast("${msg}", 2000, 'rounded');
+        Materialize.toast("${msg}", 10000, 'rounded');
         </c:if>
 
         $('#auth-form').submit(function() {
@@ -63,6 +89,9 @@
             if (hash) el.prop('action', el.prop('action') + '#' + unescape(hash.substring(1)));
             return true;
         });
+
+        $('.modal-trigger').leanModal();
+        Materialize.updateTextFields();
     });
 </script>
 </body>

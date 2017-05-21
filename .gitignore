@@ -24,4 +24,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+src/main/resources/local.properties
+nbactions.xml
+nb-configuration.xml
 /src/main/resources/local.properties

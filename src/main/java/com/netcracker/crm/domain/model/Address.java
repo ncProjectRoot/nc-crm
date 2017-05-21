@@ -9,7 +9,9 @@ public class Address {
     private Long id;
     private Double latitude;
     private Double longitude;
+    private String details;
     private Region region;
+    private String formattedAddress;
 
     public Address() {
     }
@@ -44,5 +46,21 @@ public class Address {
 
     public void setRegion(Region region) {
         this.region = region;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public void setFormattedAddress(String formattedAddress) {
+        this.formattedAddress = formattedAddress;
+    }
+
+    public String getFormattedAddress() {
+        return formattedAddress;
     }
 }

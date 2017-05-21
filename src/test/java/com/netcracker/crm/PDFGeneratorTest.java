@@ -1,10 +1,9 @@
 package com.netcracker.crm;
 
 import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.pdf.PDFGenerator;
 import org.junit.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PDFGeneratorTest {
 
@@ -29,12 +28,12 @@ public class PDFGeneratorTest {
 
         order.setProduct(product);
         order.setId(214748l);
-        order.setDate(LocalDate.MAX);
+        order.setDate(LocalDateTime.MAX);
         order.setCustomer(user);
         order.setStatus(OrderStatus.DISABLED);
 
-        PDFGenerator pdfGenerator = new PDFGenerator();
-        pdfGenerator.generate(order);
+//        PDFGenerator pdfGenerator = new PDFGenerator();
+//        pdfGenerator.generate(order);
 
     }
 }
