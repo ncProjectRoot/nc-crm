@@ -22,6 +22,8 @@ public interface UserService {
     User getUserById(Long id);
 
     User update(UserDto userDto);
+    
+    User update(User user);
 
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
 

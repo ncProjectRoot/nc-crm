@@ -18,7 +18,7 @@
                 </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
-                </sec:authorize>
+                    </sec:authorize>
             </ul>
         </div>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
@@ -211,6 +211,21 @@
 
     </div>
 </div>
+
+
+<form id="update-user-form2" style="display: none">
+    <div class="modal-content row">        
+        <input id="user_id2" type="hidden" name="id" />
+        <input id="user_contactPerson2" type="hidden" name="contactPerson" />            
+    </div>
+    <div class="modal-footer center-align">
+        <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
+            Update
+            <i class="material-icons right">send</i>
+        </button>
+    </div>
+</form>
+
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
@@ -292,26 +307,64 @@
         urlTable: "/users",
         mapper: function (object) {
             var contactPerson = null;
+            var temp = null;
             var tr = $("<tr>");
+            temp = "<span id='id" + object.id + "'>" + object.id + "</span>";
             tr.append($("<td>").append($("<a>", {
-                text: object.id,
+                html: temp,
                 href: "#user/" + object.id
             })));
-            tr.append($("<td>", {text: object.firstName}));
-            tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));
-            tr.append($("<td>", {text: object.lastName}));
-            tr.append($("<td>", {text: object.email}));
-            tr.append($("<td>", {text: object.phone}));
-            tr.append($("<td>", {text: object.userRole}));
-            if(object.contactPerson != null)
-                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
-            tr.append($("<td>", {html: contactPerson}));
-            tr.append($("<td>", {text: object.formattedAddress}));
-            tr.append($("<td>", {text: object.organizationName}));
+            temp = "<span id='firstName" + object.id + "'>" + object.firstName + "</span>";
+            tr.append($("<td>", {html: temp}));
+            var middleName = object.middleName ? object.middleName : "";
+            temp = "<span id='middleName" + object.id + "'>" + middleName + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='lastName" + object.id + "'>" + object.lastName + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='email" + object.id + "'>" + object.email + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='phone" + object.id + "'>" + object.phone + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='userRole" + object.id + "'>" + object.userRole + "</span>";
+            tr.append($("<td>", {html: temp}));
+            if (object.contactPerson != null)
+                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
+            temp = "<span id='contactPerson" + object.id + "'>" + contactPerson + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='formattedAddress" + object.id + "'>" + object.formattedAddress + "</span>";
+            tr.append($("<td>", {html: temp}));
+            temp = "<span id='organizationName" + object.id + "'>" + object.organizationName + "</span>";
+            tr.append($("<td>", {html: temp}));
             return tr;
         }
     });
 
+    function changeBoolValues(id) {
+        var simpleId = id;
+        var id = "#" + id;
+
+        if ($(id).html() == "check") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("clear");
+            $(id).fadeIn(1500);
+        }
+        else if ($(id).html() == "clear") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("check");
+            $(id).fadeIn(1500);
+        }
+
+         $("#user_id2").val($("#"+"id"+simpleId).html());
+         if ($(id).html() == "check")
+            $("#user_contactPerson2").val(true);
+         if ($(id).html() == "clear")
+            $("#user_contactPerson2").val(false);
+         //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
+         
+         var url = "/users/contactPerson";
+         var form = "#update-user-form2";
+         send(form, url, "PUT");
+    }
     </sec:authorize>
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">

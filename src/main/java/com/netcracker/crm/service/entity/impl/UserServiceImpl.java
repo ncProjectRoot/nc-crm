@@ -119,6 +119,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User update(User user) {        
+        userDao.update(user);
+        return user;
+    }
+    
+    @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
         UserRole role = principal.getUserRole();
