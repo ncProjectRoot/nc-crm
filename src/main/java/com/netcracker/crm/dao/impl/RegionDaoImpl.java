@@ -148,6 +148,13 @@ public class RegionDaoImpl implements RegionDao {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_REGION_COUNT, Long.class);
     }
 
+    @Override
+    public List<Region> findAllByPattern(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID_OR_NAME, params, regionExtractor);
+    }
+
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
             Long discountId = discount.getId();

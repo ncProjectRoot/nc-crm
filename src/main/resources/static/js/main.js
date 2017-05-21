@@ -165,8 +165,10 @@ jQuery.fn.karpo_autocomplete = function (params) {
         data: dataAutocomplete,
         onAutocomplete: function(val) {
             $(params.label).text("#" + val);
-            $(params.hideInput).val(convert(val).id);
+            var id = convert(val).id;
+            $(params.hideInput).val(id);
             toggleDeleter();
+            autocomplete.trigger("onAutocompleteItem", id);
         },
         limit: Infinity,
         minLength: 1
@@ -194,6 +196,8 @@ jQuery.fn.karpo_autocomplete = function (params) {
             value: val.substring(val.indexOf(" ") + 1, val.length)
         }
     }
+
+    return autocomplete;
 };
 jQuery.fn.karpo_multi_select = function (params) {
     var autocomplete = $(this[0]);

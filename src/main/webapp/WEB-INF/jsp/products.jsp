@@ -15,7 +15,7 @@
     }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
-<div class="content-body" data-page-name="Products">
+<div class="content-body z-depth-1" data-page-name="Products">
     <div class="row">
 
         <div class="col s12">
@@ -325,8 +325,6 @@
         onShow: function (tab) {
         }
     });
-
-    $('ul#tabs').tabs();
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
