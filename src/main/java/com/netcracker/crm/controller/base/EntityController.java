@@ -1,9 +1,6 @@
 package com.netcracker.crm.controller.base;
 
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +104,9 @@ public class EntityController {
     public String regions(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         User user = (UserDetailsImpl) authentication.getPrincipal();
         if (user.getUserRole() == UserRole.ROLE_ADMIN || user.getUserRole() == UserRole.ROLE_CSR) {
-            model.put("region", regionService.getRegionById(id));
+            Region region = regionService.getRegionById(id);
+            model.put("region", region);
+            model.put("groups", groupService.getGroupsByRegion(region));
             return "region";
         }
         return "error/403";

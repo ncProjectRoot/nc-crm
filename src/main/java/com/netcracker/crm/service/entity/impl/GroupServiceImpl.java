@@ -3,9 +3,11 @@ package com.netcracker.crm.service.entity.impl;
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
+import com.netcracker.crm.dao.RegionGroupsDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Product;
+import com.netcracker.crm.domain.model.Region;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
@@ -31,12 +33,14 @@ public class GroupServiceImpl implements GroupService{
     private final GroupDao groupDao;
     private final DiscountDao discountDao;
     private final ProductDao productDao;
+    private final RegionGroupsDao regionGroupsDao;
 
     @Autowired
-    public GroupServiceImpl(GroupDao groupDao, DiscountDao discountDao,ProductDao productDao) {
+    public GroupServiceImpl(GroupDao groupDao, DiscountDao discountDao,ProductDao productDao, RegionGroupsDao regionGroupsDao) {
         this.groupDao = groupDao;
         this.discountDao = discountDao;
         this.productDao = productDao;
+        this.regionGroupsDao = regionGroupsDao;
     }
 
 
@@ -119,6 +123,11 @@ public class GroupServiceImpl implements GroupService{
     @Override
     public Group getGroupById(Long id) {
         return groupDao.findById(id);
+    }
+
+    @Override
+    public List<Group> getGroupsByRegion(Region region) {
+        return regionGroupsDao.findGroupsByRegion(region);
     }
 
     private AutocompleteDto convertToAutocompleteDto(Group group) {

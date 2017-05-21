@@ -1,20 +1,63 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
+
+    .container {
+        padding-top: 50px;
+        padding-bottom: 100px;
+    }
+
+    h4, h5, h6 {
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    .region-groups {
+        margin: 40px auto;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Region #${region.id}">
-    ${region.name}
+    <div class="container">
+        <h4 class="title field">${region.name}</h4>
+        <div class="divider"></div>
+        <div class="row region-groups">
+            <div class="col s10 m6">
+                <form id="form-update-region">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">bubble_chart</i>
+                            <input type="text" id="group-input" class="autocomplete">
+                            <input type="hidden" id="group-hidden-input" name="groups"/>
+                            <label for="group-input">Select group</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <button class="btn waves-effect waves-light" id="submit-product" type="submit" name="action">Update
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col s10 m6">
+                <ul id="selected-groups" class="collection"></ul>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
 
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+    var $groupInput = $("#group-input").karpo_multi_select({
+        url: "/groups/autocomplete",
+        collection: "#selected-groups",
+        hideInput: "#group-hidden-input"
+    });
 
-    $('.modal').modal({
-            opacity: .5, // Opacity of modal background
-            endingTop: '8%' // Starting top style attribute
-        }
-    );
-
+    function fillCollection() {
+        <c:forEach items="${groups}" var="group">
+        $groupInput.addSelected("${group.id}" + " " + "${group.name}");
+        </c:forEach>
+    }
+    fillCollection();
 
     $("#update-group").on("submit", function (e) {
         e.preventDefault();
@@ -23,30 +66,5 @@
             $(window).trigger('hashchange')
         })
     });
-
-    $('#discount-input').karpo_autocomplete({
-        url: "/discounts/autocomplete",
-        label: "#selected-discount",
-        defaultValue: "${group.discount.id} ${group.discount.title}",
-        hideInput: "#discount-hidden-input"
-    });
-
-
-
-    var $groupProductSelect = $("#product-input").karpo_multi_select({
-        url: "/products/autocomplete?type=withoutGroup",
-        collection: "#selected-products",
-        hideInput: "#product-hidden-input"
-    });
-
-    function fillCollection() {
-        <c:forEach items="${products}" var="product">
-            $groupProductSelect.addSelected("${product.id}" + " " + "${product.title}");
-        </c:forEach>
-    }
-    fillCollection();
-
-
-    </sec:authorize>
 
 </script>

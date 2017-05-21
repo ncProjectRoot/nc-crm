@@ -1,5 +1,6 @@
 package com.netcracker.crm.service.entity;
 
+import com.netcracker.crm.domain.model.Region;
 import com.netcracker.crm.dto.AutocompleteDto;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * @since 21.05.2017
  */
 public interface RegionService {
-    Object getRegionById(Long id);
+    Region getRegionById(Long id);
 
     List<AutocompleteDto> getAutocompleteDto(String pattern);
 }

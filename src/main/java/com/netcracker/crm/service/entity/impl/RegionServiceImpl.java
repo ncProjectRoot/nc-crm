@@ -29,7 +29,7 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public Object getRegionById(Long id) {
+    public Region getRegionById(Long id) {
         return regionDao.findById(id);
     }
 
