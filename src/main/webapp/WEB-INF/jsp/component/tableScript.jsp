@@ -103,7 +103,8 @@
                 if (params.complete) {
                     params.complete();
                 }
-                ;
+            }).done(function () {
+                getAllItems();
             });
         }
 
@@ -278,26 +279,46 @@
 
         var card = $(document).find('#bulk-card');
         var modal = $(document).find('#bulk-change-modal');
-        var itemIDsInput = $(document).find('#bulk-item-ids');
-        var itemIDs = [];
+        var itemIDsInput = $(document).find('#bulk-item-ids')
+        var allItemsID = [];
+        var selectedItemsID = [];
+
+        $(document).on('change', '.bulk-select-all', function () {
+            if (this.checked) {
+                $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, rowCheckbox) {
+                    $(rowCheckbox).prop('checked', true);
+                    pushId.call(rowCheckbox);
+                    selectRow.call(rowCheckbox);
+                    getBulkCard();
+                });
+            } else {
+                $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, rowCheckbox) {
+                    $(rowCheckbox).prop('checked', false);
+                    removeId.call(rowCheckbox);
+                    setItemsCountOnCard();
+                });
+                deselectRows();
+            }
+            if (selectedItemsID.length == 0) {
+                setDefaultTableStyle();
+            }
+        });
 
         $(document).on('change', '.bulk-checkbox', function () {
             if (this.checked) {
-                var itemId = this.id.replace(checkBoxIdPrefix, "");
-                itemIDs.push(itemId);
-
+                pushId.call(this);
                 selectRow.call(this);
                 getBulkCard();
-            } else {
-                var itemId = this.id.replace(checkBoxIdPrefix, "");
-                var index = $.inArray(itemId, itemIDs);
-                if (index != -1) {
-                    itemIDs.splice(index, 1);
+                if (isSubArray(selectedItemsID, allItemsID)) {
+                    $('.bulk-select-all').prop('checked', true);
                 }
+            } else {
+                removeId.call(this);
                 deselectRow.call(this);
                 setItemsCountOnCard();
+                $('.bulk-select-all').prop('checked', false);
             }
-            if (itemIDs.length == 0) {
+            if (selectedItemsID.length == 0) {
                 setDefaultTableStyle();
             }
         });
@@ -309,9 +330,9 @@
 
         $(document).on('click', '#bulk-submit', function (e) {
             e.preventDefault();
-            $(itemIDsInput).val(itemIDs);
+            $(itemIDsInput).val(selectedItemsID);
             send('#bulk-change-form', params.bulkUrl, 'PUT').done(function () {
-                $('#bulk-change-modal').modal('close');
+                $(modal).modal('close');
                 deselectRows();
                 setDefaultTableStyle();
                 $(window).trigger('hashchange');
@@ -322,11 +343,9 @@
             var checkbox = $(this).parent().find('.is-changed-checkbox');
             checkbox.val(true);
             $('div[checkbox-id=' + checkbox.attr('id') + ']').css("display", "block");
-
         });
 
         $(document).on('click', '.chip-close', function () {
-            console.log("'click', '.chip-close',");
             var chip = $(this).parent('.bulk-chip');
             var checkboxId = chip.attr('checkbox-id');
             $(modal).find('#' + checkboxId).val(false);
@@ -334,9 +353,47 @@
         });
 
         $(document).on('click', '#bulk-cancel-btn', function () {
+            $('.bulk-select-all').prop('checked', false);
             deselectRows();
             setDefaultTableStyle();
         });
+
+        function getAllItems() {
+            allItemsID = [];
+            $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, row) {
+                var itemId = row.id.replace(checkBoxIdPrefix, "");
+                var index = $.inArray(itemId, allItemsID);
+                if (index == -1) {
+                    allItemsID.push(itemId);
+                }
+            });
+            console.log('selectedItemsID: ' + selectedItemsID);
+            console.log('allItemsID: ' + allItemsID);
+            console.log('isSubArray(selectedItemsID, allItemsID): ' + isSubArray(selectedItemsID, allItemsID));
+            console.log('isSubArray(allItemsID, selectedItemsID): ' + isSubArray(allItemsID, selectedItemsID));
+            if (isSubArray(selectedItemsID, allItemsID)) {
+                $('.bulk-select-all').prop('checked', true);
+            } else {
+                console.log("$('.bulk-select-all').prop('checked', false);")
+                $('.bulk-select-all').prop('checked', false);
+            }
+        }
+
+        function pushId() {
+            var itemId = this.id.replace(checkBoxIdPrefix, "");
+            var index = $.inArray(itemId, selectedItemsID);
+            if (index == -1) {
+                selectedItemsID.push(itemId);
+            }
+        }
+
+        function removeId() {
+            var itemId = this.id.replace(checkBoxIdPrefix, "");
+            var index = $.inArray(itemId, selectedItemsID);
+            if (index != -1) {
+                selectedItemsID.splice(index, 1);
+            }
+        }
 
         function selectRow() {
             tableContainer.find(".bulk-table").removeClass("striped");
@@ -348,12 +405,13 @@
         }
 
         function deselectRows() {
+
             tableContainer.find("tr").removeClass("highlighted-row");
             tableContainer.find(".bulk-checkbox").prop('checked', false);
         }
 
         function setItemsCountOnCard() {
-            card.find(".selected-items").text(itemIDs.length);
+            card.find(".selected-items").text(selectedItemsID.length);
         }
 
         function getBulkCard() {
@@ -362,17 +420,17 @@
         }
 
         function setDefaultTableStyle() {
-            itemIDs = [];
+            selectedItemsID = [];
             card.css("display", "none");
             tableContainer.find(".bulk-table").addClass("striped");
         }
 
         function setCheckboxes() {
-            if (itemIDs.length == 0) {
+            if (selectedItemsID.length == 0) {
                 setDefaultTableStyle();
             } else {
-                for (var i = 0; i < itemIDs.length; i++) {
-                    var checkBox = tableContainer.find("#" + checkBoxIdPrefix + itemIDs[i]);
+                for (var i = 0; i < selectedItemsID.length; i++) {
+                    var checkBox = tableContainer.find("#" + checkBoxIdPrefix + selectedItemsID[i]);
                     $(checkBox).attr("checked", "checked");
                     $(checkBox).parents("tr").addClass("highlighted-row");
                 }
@@ -383,6 +441,11 @@
             $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
             $('ul.tabs').tabs();
             $('.chips').material_chip();
+        }
+
+        function isSubArray(x, y) {
+            if (x.length === 0 || y.length === 0) return false;
+            return y.reduce((included, num) => included && x.includes(num), true);
         }
     };
 </script>

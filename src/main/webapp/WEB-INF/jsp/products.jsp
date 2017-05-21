@@ -81,7 +81,13 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th>
+                                    <p>
+                                        <input type='checkbox' class='filled-in bulk-select-all'
+                                               id="select-all-checkbox"/>
+                                        <label for='select-all-checkbox'></label>
+                                    </p>
+                                </th>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
