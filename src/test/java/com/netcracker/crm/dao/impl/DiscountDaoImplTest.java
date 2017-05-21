@@ -2,6 +2,7 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.domain.real.RealDiscount;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Melnyk_Dmytro
@@ -31,7 +33,7 @@ public class DiscountDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        discountCreated = new Discount();
+        discountCreated = new RealDiscount();
         discountCreated.setTitle("test discount title");
         discountCreated.setDescription("test discount description");
         discountCreated.setPercentage(0.5);

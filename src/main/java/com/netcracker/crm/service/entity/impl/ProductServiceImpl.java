@@ -4,6 +4,9 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealDiscount;
+import com.netcracker.crm.domain.real.RealGroup;
+import com.netcracker.crm.domain.real.RealProduct;
 import com.netcracker.crm.domain.request.ProductRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductDto;
@@ -133,17 +136,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Product getBulkProduct(ProductBulkDto bulkDto) {
-        Product productTemplate = new Product();
+        Product productTemplate = new RealProduct();
         if (bulkDto.isDescriptionChanged()) productTemplate.setDescription(bulkDto.getDescription());
         if (bulkDto.isStatusNameChanged()) productTemplate.setStatus(ProductStatus.valueOf(bulkDto.getStatusName()));
         if (bulkDto.isDefaultPriceChanged()) productTemplate.setDefaultPrice(bulkDto.getDefaultPrice());
         if (bulkDto.isGroupIdChanged()) {
-            Group group = new Group();
+            Group group = new RealGroup();
             group.setId(bulkDto.getGroupId());
             productTemplate.setGroup(group);
         }
         if (bulkDto.isDiscountIdChanged()) {
-            Discount discount = new Discount();
+            Discount discount = new RealDiscount();
             discount.setId(bulkDto.getDiscountId());
             productTemplate.setDiscount(discount);
         }

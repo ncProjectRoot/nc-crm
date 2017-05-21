@@ -27,6 +27,7 @@ import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.state.order.states.*;
+import com.netcracker.crm.domain.real.RealHistory;
 import com.netcracker.crm.exception.lifecycle.order.UnsupportedTransitionException;
 
 import java.time.LocalDateTime;
@@ -92,7 +93,7 @@ public class OrderState {
     }
 
     protected History getOrderHistory(String description) {
-        History history = new History();
+        History history = new RealHistory();
 
         history.setOrder(this.order);
         history.setDateChangeStatus(LocalDateTime.now());

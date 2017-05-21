@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealComplaint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -69,7 +70,7 @@ public class ComplaintSetter extends AbstractSetter<Complaint> {
 
     @Override
     public Complaint generateObject() {
-        Complaint complaint = new Complaint();
+        Complaint complaint = new RealComplaint();
         setUserOrderDate(complaint);
         complaint.setTitle(titles.get(random.nextInt(titles.size())));
         complaint.setMessage(descs.get(random.nextInt(descs.size())));

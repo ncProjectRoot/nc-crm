@@ -4,7 +4,9 @@ import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.domain.proxy.ComplaintProxy;
+import com.netcracker.crm.domain.proxy.OrderProxy;
+import com.netcracker.crm.domain.proxy.UserProxy;
+import com.netcracker.crm.domain.real.RealComplaint;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -34,15 +36,27 @@ import static com.netcracker.crm.dao.impl.sql.ComplaintSqlQuery.*;
 public class ComplaintDaoImpl implements ComplaintDao {
     private static final Logger log = LoggerFactory.getLogger(ComplaintDaoImpl.class);
 
-    @Autowired
     private UserDao userDao;
-
-    @Autowired
     private OrderDao orderDao;
 
     private SimpleJdbcInsert complaintInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private ComplaintWithDetailExtractor complaintWithDetailExtractor;
+
+    @Autowired
+    public ComplaintDaoImpl(UserDao userDao, OrderDao orderDao) {
+        this.userDao = userDao;
+        this.orderDao = orderDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.complaintInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_COMPLAINT_TABLE)
+                .usingGeneratedKeyColumns(PARAM_COMPLAINT_ID);
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.complaintWithDetailExtractor = new ComplaintWithDetailExtractor(userDao, orderDao);
+    }
 
     @Override
     public Long create(Complaint complaint) {
@@ -286,15 +300,6 @@ public class ComplaintDaoImpl implements ComplaintDao {
         return namedJdbcTemplate.queryForList(SQL_FIND_COMPLAINTS_TITLES_FOR_CONTACT_PERSON, params, String.class);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.complaintInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_COMPLAINT_TABLE)
-                .usingGeneratedKeyColumns(PARAM_COMPLAINT_ID);
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.complaintWithDetailExtractor = new ComplaintWithDetailExtractor(userDao, orderDao);
-    }
-
     private static final class ComplaintWithDetailExtractor implements ResultSetExtractor<List<Complaint>> {
         private UserDao userDao;
         private OrderDao orderDao;
@@ -308,7 +313,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
         public List<Complaint> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Complaint> allComplaint = new ArrayList<>();
             while (rs.next()) {
-                ComplaintProxy complaint = new ComplaintProxy(userDao, orderDao);
+                Complaint complaint = new RealComplaint();
                 complaint.setId(rs.getLong(PARAM_COMPLAINT_ID));
                 complaint.setTitle(rs.getString(PARAM_COMPLAINT_TITLE));
                 complaint.setMessage(rs.getString(PARAM_COMPLAINT_MESSAGE));
@@ -321,9 +326,27 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 }
 
                 complaint.setDate(rs.getTimestamp(PARAM_COMPLAINT_DATE).toLocalDateTime());
-                complaint.setCustomerId(rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID));
-                complaint.setPmgId(rs.getLong(PARAM_COMPLAINT_PMG_ID));
-                complaint.setOrderId(rs.getLong(PARAM_COMPLAINT_ORDER_ID));
+
+                long customerId = rs.getLong(PARAM_COMPLAINT_CUSTOMER_ID);
+                if (customerId != 0) {
+                    User customer = new UserProxy(userDao);
+                    customer.setId(customerId);
+                    complaint.setCustomer(customer);
+                }
+
+                long pmgId = rs.getLong(PARAM_COMPLAINT_PMG_ID);
+                if (pmgId != 0) {
+                    User pmg = new UserProxy(userDao);
+                    pmg.setId(pmgId);
+                    complaint.setPmg(pmg);
+                }
+
+                long orderId = rs.getLong(PARAM_COMPLAINT_ORDER_ID);
+                if (orderId != 0) {
+                    Order order = new OrderProxy(orderDao);
+                    order.setId(rs.getLong(PARAM_COMPLAINT_ORDER_ID));
+                    complaint.setOrder(order);
+                }
 
                 allComplaint.add(complaint);
             }

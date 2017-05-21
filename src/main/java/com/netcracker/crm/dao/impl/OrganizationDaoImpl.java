@@ -2,6 +2,7 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.OrganizationDao;
 import com.netcracker.crm.domain.model.Organization;
+import com.netcracker.crm.domain.real.RealOrganization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,15 @@ public class OrganizationDaoImpl implements OrganizationDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrganizationWithDetailExtractor organizationWithDetailExtractor;
 
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.orgInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_ORG_TABLE)
+                .usingGeneratedKeyColumns(PARAM_ORG_ID);
+        organizationWithDetailExtractor = new OrganizationWithDetailExtractor();
+    }
+
     @Override
     public Long create(Organization org) {
         if (org.getId() != null) {
@@ -59,7 +69,7 @@ public class OrganizationDaoImpl implements OrganizationDao {
                 .addValue(PARAM_ORG_ID, orgId)
                 .addValue(PARAM_ORG_NAME, org.getName());
 
-       // int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
+        // int updatedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_ORGANIZATION, params);
         if (affectedRows == 0) {
             log.error("Organization was not updated.");
@@ -118,21 +128,12 @@ public class OrganizationDaoImpl implements OrganizationDao {
         return new HashSet<>(organizations);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.orgInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_ORG_TABLE)
-                .usingGeneratedKeyColumns(PARAM_ORG_ID);
-        organizationWithDetailExtractor = new OrganizationWithDetailExtractor();
-    }
-
     private static final class OrganizationWithDetailExtractor implements ResultSetExtractor<List<Organization>> {
         @Override
         public List<Organization> extractData(ResultSet rs) throws SQLException, DataAccessException {
             List<Organization> organizations = new LinkedList<>();
             while (rs.next()) {
-                Organization organization = new Organization();
+                Organization organization = new RealOrganization();
                 organization.setId(rs.getLong(PARAM_ORG_ID));
                 organization.setName(rs.getString(PARAM_ORG_NAME));
 

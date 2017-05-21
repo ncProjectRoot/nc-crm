@@ -5,144 +5,59 @@ package com.netcracker.crm.domain.model;
  * @version 1.0
  * @since 24.04.2017
  */
-public class User {
-    private Long id;
-    private String password;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String phone;
-    private String email;
-    private boolean enable;
-    private boolean accountNonLocked;
-    private Address address;
-    private boolean contactPerson;
-    private UserRole userRole;
-    private Organization organization;
+public interface User {
 
+    Long getId();
 
-    public User() {
-    }
+    void setId(Long id);
 
-    public User(User user) {
-        this.id = user.getId();
-        this.password = user.getPassword();
-        this.firstName = user.getFirstName();
-        this.middleName = user.getMiddleName();
-        this.lastName = user.getLastName();
-        this.phone = user.getPhone();
-        this.email = user.getEmail();
-        this.enable = user.isEnable();
-        this.accountNonLocked = user.isAccountNonLocked();
-        this.address = user.getAddress();
-        this.contactPerson = user.isContactPerson();
-        this.userRole = user.getUserRole();
-        this.organization = user.getOrganization();
-    }
+    String getPassword();
 
-    public Long getId() {
-        return id;
-    }
+    void setPassword(String password);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    String getFirstName();
 
-    public String getPassword() {
-        return password;
-    }
+    void setFirstName(String firstName);
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    String getMiddleName();
 
-    public String getFirstName() {
-        return firstName;
-    }
+    void setMiddleName(String middleName);
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    String getLastName();
 
-    public String getMiddleName() {
-        return middleName;
-    }
+    void setLastName(String lastName);
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
+    String getPhone();
 
-    public String getLastName() {
-        return lastName;
-    }
+    void setPhone(String phone);
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    String getEmail();
 
-    public String getPhone() {
-        return phone;
-    }
+    void setEmail(String email);
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    boolean isEnable();
 
-    public String getEmail() {
-        return email;
-    }
+    void setEnable(boolean enable);
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    boolean isAccountNonLocked();
 
-    public boolean isEnable() {
-        return enable;
-    }
+    void setAccountNonLocked(boolean accountNonLocked);
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
+    Address getAddress();
 
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
+    void setAddress(Address address);
 
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
+    boolean isContactPerson();
 
-    public Address getAddress() {
-        return address;
-    }
+    void setContactPerson(boolean contactPerson);
 
-    public void setAddress(Address address) {
-        this.address = address;
-    }
+    UserRole getUserRole();
 
-    public boolean isContactPerson() {
-        return contactPerson;
-    }
+    void setUserRole(UserRole userRole);
 
-    public void setContactPerson(boolean contactPerson) {
-        this.contactPerson = contactPerson;
-    }
+    Organization getOrganization();
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
+    void setOrganization(Organization organization);
 
 
 }

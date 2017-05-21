@@ -3,6 +3,9 @@ package com.netcracker.crm.service.entity.impl;
 import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealAddress;
+import com.netcracker.crm.domain.real.RealOrganization;
+import com.netcracker.crm.domain.real.RealRegion;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
@@ -235,14 +238,14 @@ public class UserServiceImpl implements UserService {
         User user = mapper.map(userDto, User.class);
 
         if (user.getUserRole().equals(UserRole.ROLE_CUSTOMER)) {
-            Address address = new Address();
+            Address address = new RealAddress();
             address.setLatitude(userDto.getAddressLatitude());
             address.setLongitude(userDto.getAddressLongitude());
             address.setDetails(userDto.getAddressDetails());
             address.setFormattedAddress(userDto.getFormattedAddress());
             Region region = regionDao.findByName(userDto.getAddressRegionName());
             if (region == null) {
-                region = new Region();
+                region = new RealRegion();
                 region.setName(userDto.getAddressRegionName());
             }
             address.setRegion(region);
@@ -250,7 +253,7 @@ public class UserServiceImpl implements UserService {
 
             Organization organization = organizationDao.findByName(userDto.getOrganizationName());
             if (organization == null) {
-                organization = new Organization();
+                organization = new RealOrganization();
                 organization.setName(userDto.getOrganizationName());
             }
             user.setOrganization(organization);

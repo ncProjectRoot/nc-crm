@@ -1,25 +1,30 @@
-package com.netcracker.crm.domain.proxy;
+package com.netcracker.crm.domain.real;
 
-import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.model.state.order.OrderState;
+import com.netcracker.crm.domain.model.state.order.states.NewOrder;
 
 import java.time.LocalDateTime;
 
 /**
  * @author Karpunets
- * @since 14.05.2017
+ * @since 21.05.2017
  */
-public class OrderProxy implements Order {
-    private long id;
-    private Order order;
-    private OrderDao orderDao;
+public class RealOrder implements Order {
+    private Long id;
+    private LocalDateTime date;
+    private LocalDateTime preferedDate;
+    private OrderStatus status;
+    private User customer;
+    private Product product;
+    private User csr;
+    private OrderState state;
 
-    public OrderProxy(OrderDao orderDao) {
-        this.orderDao = orderDao;
+    public RealOrder() {
+        this.state = new NewOrder(this);
     }
 
     @Override
@@ -34,78 +39,71 @@ public class OrderProxy implements Order {
 
     @Override
     public OrderStatus getStatus() {
-        return getOrder().getStatus();
+        return status;
     }
 
     @Override
     public void setStatus(OrderStatus status) {
-        getOrder().setStatus(status);
+        this.status = status;
     }
 
     @Override
     public User getCustomer() {
-        return getOrder().getCustomer();
+        return customer;
     }
 
     @Override
     public void setCustomer(User customer) {
-        getOrder().setCustomer(customer);
+        this.customer = customer;
     }
 
     @Override
     public Product getProduct() {
-        return getOrder().getProduct();
+        return product;
     }
 
     @Override
     public void setProduct(Product product) {
-        getOrder().setProduct(product);
+        this.product = product;
     }
 
     @Override
     public User getCsr() {
-        return getOrder().getCsr();
+        return csr;
     }
 
     @Override
     public void setCsr(User csr) {
-        getOrder().setCsr(csr);
+        this.csr = csr;
     }
 
     @Override
     public LocalDateTime getDate() {
-        return getOrder().getDate();
+        return date;
     }
 
     @Override
     public void setDate(LocalDateTime date) {
-        getOrder().setDate(date);
+        this.date = date;
     }
 
     @Override
     public LocalDateTime getPreferedDate() {
-        return getOrder().getPreferedDate();
+        return preferedDate;
     }
 
     @Override
     public void setPreferedDate(LocalDateTime preferedDate) {
-        getOrder().setPreferedDate(preferedDate);
+        this.preferedDate = preferedDate;
     }
 
     @Override
     public OrderState getState() {
-        return getOrder().getState();
+        return state;
     }
 
     @Override
     public void setState(OrderState state) {
-        getOrder().setState(state);
-    }
-
-    private Order getOrder() {
-        if (order == null) {
-            order = orderDao.findById(id);
-        }
-        return order;
+        this.state = state;
     }
 }

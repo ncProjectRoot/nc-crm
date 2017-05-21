@@ -4,18 +4,22 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.netcracker.crm.domain.real.RealOrder;
+import com.netcracker.crm.domain.real.RealProduct;
+import com.netcracker.crm.domain.real.RealUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Karpunets
@@ -24,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class OrderDaoImplTest {
-    
+
     @Autowired
     private OrderDao orderDao;
     @Autowired
@@ -38,7 +42,7 @@ public class OrderDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        userCreated = new User();
+        userCreated = new RealUser();
         userCreated.setPassword("test password");
         userCreated.setFirstName("test first name");
         userCreated.setMiddleName("test middle name");
@@ -48,14 +52,14 @@ public class OrderDaoImplTest {
         userCreated.setContactPerson(false);
         userCreated.setUserRole(UserRole.ROLE_CUSTOMER);
 
-        orderCreated = new Order();
+        orderCreated = new RealOrder();
         orderCreated.setStatus(OrderStatus.NEW);
         orderCreated.setDate(LocalDateTime.now());
         orderCreated.setPreferedDate(LocalDateTime.now());
         orderCreated.setCustomer(userCreated);
         orderCreated.setCsr(userCreated);
 
-        productCreated = new Product();
+        productCreated = new RealProduct();
         productCreated.setTitle("test product title");
         productCreated.setStatus(ProductStatus.OUTDATED);
         orderCreated.setProduct(productCreated);

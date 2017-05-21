@@ -1,6 +1,5 @@
-package com.netcracker.crm.domain.proxy;
+package com.netcracker.crm.domain.real;
 
-import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
@@ -10,16 +9,19 @@ import java.time.LocalDateTime;
 
 /**
  * @author Karpunets
- * @since 14.05.2017
+ * @since 21.05.2017
  */
-public class ComplaintProxy implements Complaint {
-    private long id;
-    private Complaint complaint;
+public class RealComplaint implements Complaint {
+    private Long id;
+    private String title;
+    private String message;
+    private ComplaintStatus status;
+    private LocalDateTime date;
+    private User customer;
+    private User pmg;
+    private Order order;
 
-    private ComplaintDao complaintDao;
-
-    public ComplaintProxy(ComplaintDao complaintDao) {
-        this.complaintDao = complaintDao;
+    public RealComplaint() {
     }
 
     @Override
@@ -34,78 +36,71 @@ public class ComplaintProxy implements Complaint {
 
     @Override
     public String getTitle() {
-        return getComplaint().getTitle();
+        return title;
     }
 
     @Override
     public void setTitle(String title) {
-        getComplaint().setTitle(title);
+        this.title = title;
     }
 
     @Override
     public String getMessage() {
-        return getComplaint().getMessage();
+        return message;
     }
 
     @Override
     public void setMessage(String message) {
-        getComplaint().setMessage(message);
+        this.message = message;
     }
 
     @Override
     public ComplaintStatus getStatus() {
-        return getComplaint().getStatus();
+        return status;
     }
 
     @Override
     public void setStatus(ComplaintStatus status) {
-        getComplaint().setStatus(status);
+        this.status = status;
     }
 
     @Override
     public LocalDateTime getDate() {
-        return getComplaint().getDate();
+        return date;
     }
 
     @Override
     public void setDate(LocalDateTime date) {
-        getComplaint().setDate(date);
+        this.date = date;
     }
 
     @Override
     public User getCustomer() {
-        return getComplaint().getCustomer();
+        return customer;
     }
 
     @Override
     public void setCustomer(User customer) {
-        getComplaint().setCustomer(customer);
+        this.customer = customer;
     }
 
     @Override
     public User getPmg() {
-        return getComplaint().getPmg();
+        return pmg;
     }
 
     @Override
     public void setPmg(User pmg) {
-        getComplaint().setPmg(pmg);
+        this.pmg = pmg;
     }
 
     @Override
     public Order getOrder() {
-        return getComplaint().getOrder();
+        return order;
     }
 
     @Override
     public void setOrder(Order order) {
-        getComplaint().setOrder(order);
-    }
-
-    private Complaint getComplaint() {
-        if (complaint == null) {
-            complaint = complaintDao.findById(id);
-        }
-        return complaint;
+        this.order = order;
     }
 }

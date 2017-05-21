@@ -3,6 +3,7 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.domain.real.RealDiscount;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -59,7 +60,7 @@ public class DiscountSetter extends AbstractSetter<Discount> {
 
 
     public Discount generateObject() {
-        Discount discount = new Discount();
+        Discount discount = new RealDiscount();
         discount.setTitle(titles.get(random.nextInt(titles.size())));
         discount.setPercentage((double) Math.round(Math.random() * 100));
         discount.setDescription(descs.get(random.nextInt(descs.size())));

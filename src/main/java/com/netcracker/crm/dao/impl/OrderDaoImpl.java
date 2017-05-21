@@ -5,7 +5,9 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.model.state.order.OrderState;
-import com.netcracker.crm.domain.proxy.OrderProxy;
+import com.netcracker.crm.domain.proxy.ProductProxy;
+import com.netcracker.crm.domain.proxy.UserProxy;
+import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import com.netcracker.crm.scheduler.OrderSchedulerSqlGenerator;
@@ -37,15 +39,12 @@ import static com.netcracker.crm.dao.impl.sql.OrderSqlQuery.*;
  */
 @Repository
 public class OrderDaoImpl implements OrderDao {
-
     private static final Logger log = LoggerFactory.getLogger(OrderDaoImpl.class);
 
     private final UserDao userDao;
     private final ProductDao productDao;
 
-
     private SimpleJdbcInsert orderInsert;
-
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private OrderWithDetailExtractor orderWithDetailExtractor;
 
@@ -337,7 +336,7 @@ public class OrderDaoImpl implements OrderDao {
         public List<Order> extractData(ResultSet rs) throws SQLException, DataAccessException {
             ArrayList<Order> allOrder = new ArrayList<>();
             while (rs.next()) {
-                OrderProxy order = new OrderProxy(userDao, productDao);
+                Order order = new RealOrder();
                 order.setId(rs.getLong(PARAM_ORDER_ID));
 
                 Timestamp dateFinish = rs.getTimestamp(PARAM_ORDER_DATE_FINISH);
@@ -357,9 +356,26 @@ public class OrderDaoImpl implements OrderDao {
                     OrderState.setStateForOrder((OrderStatus) status, order);
                 }
 
-                order.setCustomerId(rs.getLong(PARAM_CUSTOMER_ID));
-                order.setProductId(rs.getLong(PARAM_PRODUCT_ID));
-                order.setCsrId(rs.getLong(PARAM_CSR_ID));
+                long customerId = rs.getLong(PARAM_CUSTOMER_ID);
+                if (customerId != 0) {
+                    User customer = new UserProxy(userDao);
+                    customer.setId(customerId);
+                    order.setCustomer(customer);
+                }
+
+                long productId = rs.getLong(PARAM_PRODUCT_ID);
+                if (productId != 0) {
+                    Product product = new ProductProxy(productDao);
+                    product.setId(productId);
+                    order.setProduct(product);
+                }
+
+                long csrId = rs.getLong(PARAM_CSR_ID);
+                if (csrId != 0) {
+                    User csr = new UserProxy(userDao);
+                    csr.setId(csrId);
+                    order.setCsr(csr);
+                }
 
                 allOrder.add(order);
             }

@@ -6,93 +6,33 @@ package com.netcracker.crm.domain.model;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Product {
-    private Long id;
-    private String title;
-    private Double defaultPrice;
-    private ProductStatus status;
-    private String description;
-    private Discount discount;
-    private Group group;
+public interface Product {
 
-    public Product() {
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    String getTitle();
 
-    public String getTitle() {
-        return title;
-    }
+    void setTitle(String title);
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    Double getDefaultPrice();
 
-    public Double getDefaultPrice() {
-        return defaultPrice;
-    }
+    void setDefaultPrice(Double defaultPrice);
 
-    public void setDefaultPrice(Double defaultPrice) {
-        this.defaultPrice = defaultPrice;
-    }
+    ProductStatus getStatus();
 
-    public ProductStatus getStatus() {
-        return status;
-    }
+    void setStatus(ProductStatus status);
 
-    public void setStatus(ProductStatus status) {
-        this.status = status;
-    }
+    String getDescription();
 
-    public String getDescription() {
-        return description;
-    }
+    void setDescription(String description);
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    Discount getDiscount();
 
-    public Discount getDiscount() {
-        return discount;
-    }
+    void setDiscount(Discount discount);
 
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
-    }
+    Group getGroup();
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Product product = (Product) o;
-
-        return id != null ? id.equals(product.id) : product.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (defaultPrice != null ? defaultPrice.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (discount != null ? discount.hashCode() : 0);
-        result = 31 * result + (group != null ? group.hashCode() : 0);
-        return result;
-    }
+    void setGroup(Group group);
 }

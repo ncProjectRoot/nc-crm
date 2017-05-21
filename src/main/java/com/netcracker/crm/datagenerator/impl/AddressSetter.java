@@ -4,6 +4,7 @@ import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.real.RealAddress;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -61,7 +62,7 @@ public class AddressSetter extends AbstractSetter<Address> {
 
     @Override
     public Address generateObject() {
-        Address address = new Address();
+        Address address = new RealAddress();
         String addr= addresses.get(random.nextInt(addresses.size()));
         address.setDetails(addr);
         address.setLatitude((double)Math.round(Math.random() * 1000_000));
