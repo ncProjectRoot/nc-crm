@@ -82,7 +82,7 @@ public class GroupServiceImpl implements GroupService{
             }
         }
         for (Product product : products){
-            product.getGroup().setId(null);
+            product.setGroup(null);
             productDao.update(product);
         }
         return groupDao.update(group) > 0;

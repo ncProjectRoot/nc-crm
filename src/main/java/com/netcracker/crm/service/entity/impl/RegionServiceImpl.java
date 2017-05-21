@@ -29,6 +29,11 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
+    public Object getRegionById(Long id) {
+        return regionDao.findById(id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<AutocompleteDto> getAutocompleteDto(String pattern) {
         List<Region> regions = regionDao.findAllByPattern(pattern);

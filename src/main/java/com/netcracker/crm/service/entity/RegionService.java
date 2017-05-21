@@ -9,5 +9,7 @@ import java.util.List;
  * @since 21.05.2017
  */
 public interface RegionService {
+    Object getRegionById(Long id);
+
     List<AutocompleteDto> getAutocompleteDto(String pattern);
 }

@@ -1,8 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
 
+    #region-page-wrapper {
+        transition: margin-top 0.5s, opacity 0.5s linear;
+        margin-top: 50px;
+        opacity: 0;
+    }
+
+    #region-page-wrapper.content-body-visible {
+        margin-top: 0;
+        opacity: 1;
+    }
+
     #search-regions-wrapper {
-        min-height: 450px;
+        min-height: 150px;
     }
 
     #search-regions-wrapper .input-field.regions-input-field {
@@ -26,6 +37,7 @@
         </div>
     </div>
 </div>
+<div id="region-page-wrapper"></div>
 <script>
     $('ul#tabs').tabs();
 
@@ -35,6 +47,15 @@
         defaultValue: "",
         hideInput: "#regions-hidden-input"
     }).on("onAutocompleteItem", function (event, id) {
-        console.log(id)
+        var $contentRegion = $("#region-page-wrapper");
+        $contentRegion.removeClass("content-body-visible");
+        $(".progress").addClass("progress-active");
+        $.get("/" + $(".menu-item-user").data("user-role") + "/region/" + id).success(function (data) {
+            window.setTimeout(function () {
+                $contentRegion.html(data);
+                $(".progress").removeClass("progress-active");
+                $contentRegion.addClass("content-body-visible");
+            }, 500);
+        });
     })
 </script>
