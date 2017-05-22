@@ -57,12 +57,18 @@ public class ProductMapper {
             if (model.getDiscount() != null) {
                 rowDto.setDiscount(model.getDiscount().getId());
                 rowDto.setDiscountTitle(model.getDiscount().getTitle());
-                rowDto.setPercentage(model.getDiscount().getPercentage());
+                rowDto.setDiscountPercentage(model.getDiscount().getPercentage());
                 rowDto.setDiscountActive(model.getDiscount().isActive());
             }
             if (model.getGroup() != null) {
                 rowDto.setGroup(model.getGroup().getId());
                 rowDto.setGroupName(model.getGroup().getName());
+                if (model.getGroup().getDiscount() != null) {
+                    rowDto.setGroupDiscount(model.getGroup().getDiscount().getId());
+                    rowDto.setGroupDiscountTitle(model.getGroup().getDiscount().getTitle());
+                    rowDto.setGroupDiscountPercentage(model.getGroup().getDiscount().getPercentage());
+                    rowDto.setGroupDiscountActive(model.getGroup().getDiscount().isActive());
+                }
             }
         };
     }

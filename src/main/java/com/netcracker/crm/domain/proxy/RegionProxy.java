@@ -37,16 +37,6 @@ public class RegionProxy implements Region {
         getRegion().setName(name);
     }
 
-    @Override
-    public Discount getDiscount() {
-        return getRegion().getDiscount();
-    }
-
-    @Override
-    public void setDiscount(Discount discount) {
-        getRegion().setDiscount(discount);
-    }
-
     private Region getRegion() {
         if (region == null) {
             region = regionDao.findById(id);

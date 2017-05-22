@@ -37,7 +37,6 @@ td.discount .percentage {
     top: 7px;
     right: 40px;
     opacity: 0.7;
-    transform: rotate(12deg);
     transform: scale(0);
 }
 

@@ -14,8 +14,4 @@ public interface Region {
     String getName();
 
     void setName(String name);
-
-    Discount getDiscount();
-
-    void setDiscount(Discount discount);
 }

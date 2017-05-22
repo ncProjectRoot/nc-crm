@@ -207,7 +207,8 @@ public class ProductDaoImpl implements ProductDao {
     public Long getProductRowsCount(ProductRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE, orderRowRequest.getGroupDiscountActive())
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
 
         if (orderRowRequest.getAddress() != null) {
@@ -230,7 +231,8 @@ public class ProductDaoImpl implements ProductDao {
     public List<Product> findProductRows(ProductRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE, orderRowRequest.getGroupDiscountActive())
                 .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
                 .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset())
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
