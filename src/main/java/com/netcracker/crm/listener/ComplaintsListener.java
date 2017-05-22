@@ -52,29 +52,15 @@ public class ComplaintsListener {
         sendMail(complaint);
     }
 
-    @EventListener(condition = "#event.complaint.status.name.equals('OPEN') " +
-            "&& #event.done==false")
+    @EventListener(condition = "(#event.complaint.status.name.equals('OPEN') && #event.changeToStatus.name.equals('SOLVING')) || " +
+            "(#event.complaint.status.name.equals('SOLVING') && #event.changeToStatus.name.equals('CLOSED')) ")
     public void acceptComplaint(ChangeStatusComplaintEvent event) {
         Complaint complaint = event.getComplaint();
-        complaint.setStatus(ComplaintStatus.SOLVING);
+        complaint.setStatus(event.getChangeToStatus());
         History history = generateHistory(complaint);
         String role = getRole(complaint.getPmg());
-        history.setDescChangeStatus(role + " with id " +
-                complaint.getPmg().getId() + " accepted complaint");
-        saveStatusAndHistory(complaint, history);
-        event.setDone(true);
-    }
-
-    @EventListener(condition = "#event.complaint.status.name.equals('SOLVING') " +
-            "&& #event.done==false")
-    public void closeComplaint(ChangeStatusComplaintEvent event) {
-        Complaint complaint = event.getComplaint();
-        complaint.setStatus(ComplaintStatus.CLOSED);
-        History history = generateHistory(complaint);
-        String role = getRole(complaint.getPmg());
-        history.setDescChangeStatus(role + " with id " +
-                complaint.getPmg().getId() + " closed complaint");
-        history.setComplaint(complaint);
+        history.setDescChangeStatus("Status was changed by " + role + " with id " +
+                complaint.getPmg().getId());
         saveStatusAndHistory(complaint, history);
         event.setDone(true);
     }
