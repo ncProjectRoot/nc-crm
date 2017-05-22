@@ -1,8 +1,10 @@
 package com.netcracker.crm.dao.impl;
 
+import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.proxy.UserProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,15 @@ import static com.netcracker.crm.dao.impl.sql.UserTokenSqlQuery.*;
 public class UserTokenDaoImpl implements UserTokenDao {
     private static final Logger log = LoggerFactory.getLogger(UserTokenDaoImpl.class);
 
+    private UserDao userDao;
+
     private SimpleJdbcInsert userTokenInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+
+    @Autowired
+    public UserTokenDaoImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -72,10 +81,16 @@ public class UserTokenDaoImpl implements UserTokenDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_USER_TOKEN_TOKEN, token);
 
-        return namedJdbcTemplate.query(SQL_FIND_USER_TOKEN_BY_TOKEN, params, new UserTokenWithDetailExtractor());
+        return namedJdbcTemplate.query(SQL_FIND_USER_TOKEN_BY_TOKEN, params, new UserTokenWithDetailExtractor(userDao));
     }
 
     private static final class UserTokenWithDetailExtractor implements ResultSetExtractor<UserToken> {
+
+        private UserDao userDao;
+
+        public UserTokenWithDetailExtractor(UserDao userDao) {
+            this.userDao = userDao;
+        }
 
         @Override
         public UserToken extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -87,7 +102,7 @@ public class UserTokenDaoImpl implements UserTokenDao {
                 userToken.setToken(rs.getString(PARAM_USER_TOKEN_TOKEN));
                 userToken.setUsed(rs.getBoolean(PARAM_USER_TOKEN_USED));
 
-                User user = new User();
+                User user = new UserProxy(userDao);
                 user.setId(rs.getLong(PARAM_USER_TOKEN_USER_ID));
                 userToken.setUser(user);
             }

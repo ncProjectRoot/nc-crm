@@ -1,7 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
+    .status{
+        color: darkblue;
+    }
+
+    .date{
+        text-decoration: underline;
+    }
 </style>
-<div class="content-body" data-page-name="Messages">
+<div class="content-body z-depth-1" data-page-name="Messages">
 
     <div class="row">
         <div class="col s12">
@@ -57,7 +64,7 @@
             var ul = $('#' + url);
             ul.children().remove();
             var header = '';
-            if (url != 'activate') {
+            if (url !== 'activate') {
                 header += 'Request to ';
             }
             header += url;
@@ -66,15 +73,20 @@
                 var div = $("<div>").addClass("row");
 
                 var button_to_order = $('<a class="waves-effect waves-light btn right" href="#order/' + item.id + '">Move to order</a>');
-                var button = $('<a class="waves-effect waves-light btn right green" id="' + getStatus(item.status) + item.id + '" >' + getStatus(item.status) + '</a>');
+                var button = $('<a class="waves-effect waves-light btn right" id="' + getStatus(item.status) + item.id + '" >' + getStatus(item.status) + '</a>');
+
+                if (item.timeOver) {
+                    button.addClass("red");
+                }else {
+                    button.addClass("green");
+                }
                 button.click(function () {
                     submitOrder(item.id, item.status);
                 });
                 var li = $("<li>").addClass("collection-item");
-                if (url == 'activate') {
-                    div.append(item.title + ', status - ' + item.status + ', prefered date for activate ' + item.date);
-                } else {
-                    div.append(item.title + ', status - ' + item.status);
+                div.append(item.title + ', status - <span class="status">' + item.status + '</span>');
+                if (url === 'activate') {
+                    div.append(', prefered date for activate <span class="date">' + item.date + '</span>');
                 }
 
                 div.append(button);

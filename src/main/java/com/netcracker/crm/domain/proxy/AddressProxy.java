@@ -1,6 +1,6 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.RegionDao;
+import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
 
@@ -8,29 +8,79 @@ import com.netcracker.crm.domain.model.Region;
  * @author Karpunets
  * @since 14.05.2017
  */
-public class AddressProxy extends Address {
+public class AddressProxy implements Address {
+    private long id;
+    private Address address;
+    private AddressDao addressDao;
 
-    private long regionId;
+    public AddressProxy(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
 
-    private RegionDao regionDao;
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-    public AddressProxy(RegionDao regionDao) {
-        this.regionDao = regionDao;
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public Double getLatitude() {
+        return getAddress().getLatitude();
+    }
+
+    @Override
+    public void setLatitude(Double latitude) {
+        getAddress().setLatitude(latitude);
+    }
+
+    @Override
+    public Double getLongitude() {
+        return getAddress().getLongitude();
+    }
+
+    @Override
+    public void setLongitude(Double longitude) {
+        getAddress().setLongitude(longitude);
     }
 
     @Override
     public Region getRegion() {
-        if (super.getRegion() == null && regionId != 0) {
-            super.setRegion(regionDao.findById(regionId));
+        return getAddress().getRegion();
+    }
+
+    @Override
+    public void setRegion(Region region) {
+        getAddress().setRegion(region);
+    }
+
+    @Override
+    public String getDetails() {
+        return getAddress().getDetails();
+    }
+
+    @Override
+    public void setDetails(String details) {
+        getAddress().setDetails(details);
+    }
+
+    @Override
+    public void setFormattedAddress(String formattedAddress) {
+        getAddress().setFormattedAddress(formattedAddress);
+    }
+
+    @Override
+    public String getFormattedAddress() {
+        return getAddress().getFormattedAddress();
+    }
+
+    private Address getAddress() {
+        if (address == null) {
+            address = addressDao.findById(id);
         }
-        return super.getRegion();
-    }
-
-    public long getRegionId() {
-        return regionId;
-    }
-
-    public void setRegionId(long regionId) {
-        this.regionId = regionId;
+        return address;
     }
 }

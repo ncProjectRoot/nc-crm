@@ -3,12 +3,16 @@ package com.netcracker.crm.service.entity.impl;
 import com.netcracker.crm.dao.*;
 import com.netcracker.crm.domain.UserToken;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealAddress;
+import com.netcracker.crm.domain.real.RealOrganization;
+import com.netcracker.crm.domain.real.RealRegion;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
 import com.netcracker.crm.dto.mapper.UserMap;
 import com.netcracker.crm.dto.row.UserRowDto;
 import com.netcracker.crm.exception.RegistrationException;
+import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
@@ -21,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,11 +57,13 @@ public class UserServiceImpl implements UserService {
     private final AddressDao addressDao;
     private final AbstractEmailSender emailSender;
     private final PasswordEncoder encoder;
+    private final SessionRegistry sessionRegistry;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, RegionDao regionDao,
                            OrganizationDao organizationDao, AddressDao addressDao, PasswordEncoder encoder,
-                           @Qualifier("registrationSender") AbstractEmailSender emailSender) {
+                           @Qualifier("registrationSender") AbstractEmailSender emailSender,
+                           SessionRegistry sessionRegistry) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
         this.regionDao = regionDao;
@@ -64,6 +71,7 @@ public class UserServiceImpl implements UserService {
         this.addressDao = addressDao;
         this.emailSender = emailSender;
         this.encoder = encoder;
+        this.sessionRegistry = sessionRegistry;
     }
 
     @Override
@@ -111,6 +119,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User update(User user) {        
+        userDao.update(user);
+        return user;
+    }
+    
+    @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
         UserRole role = principal.getUserRole();
@@ -135,18 +149,32 @@ public class UserServiceImpl implements UserService {
     public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
         UserRole role = principal.getUserRole();
         List<String> names;
-        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()){
+        if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
             names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
         } else {
             names = userDao.findUserLastNamesByPattern(pattern);
         }
         List<AutocompleteDto> result = new ArrayList<>();
-        for (String userLastName: names) {
+        for (String userLastName : names) {
             AutocompleteDto autocompleteDto = new AutocompleteDto();
             autocompleteDto.setValue(userLastName);
             result.add(autocompleteDto);
         }
         return result;
+    }
+
+    public List<User> getOnlineCsrs() {
+        List principals = sessionRegistry.getAllPrincipals();
+        List<User> csrList = new ArrayList<>();
+        for (Object o : principals) {
+            if (o instanceof UserDetailsImpl) {
+                User user = (User) o;
+                if (user.getUserRole() == UserRole.ROLE_CSR) {
+                    csrList.add(user);
+                }
+            }
+        }
+        return csrList;
     }
 
     private String createUserRegistrationToken(User user) {
@@ -216,14 +244,14 @@ public class UserServiceImpl implements UserService {
         User user = mapper.map(userDto, User.class);
 
         if (user.getUserRole().equals(UserRole.ROLE_CUSTOMER)) {
-            Address address = new Address();
+            Address address = new RealAddress();
             address.setLatitude(userDto.getAddressLatitude());
             address.setLongitude(userDto.getAddressLongitude());
             address.setDetails(userDto.getAddressDetails());
             address.setFormattedAddress(userDto.getFormattedAddress());
             Region region = regionDao.findByName(userDto.getAddressRegionName());
             if (region == null) {
-                region = new Region();
+                region = new RealRegion();
                 region.setName(userDto.getAddressRegionName());
             }
             address.setRegion(region);
@@ -231,7 +259,7 @@ public class UserServiceImpl implements UserService {
 
             Organization organization = organizationDao.findByName(userDto.getOrganizationName());
             if (organization == null) {
-                organization = new Organization();
+                organization = new RealOrganization();
                 organization.setName(userDto.getOrganizationName());
             }
             user.setOrganization(organization);

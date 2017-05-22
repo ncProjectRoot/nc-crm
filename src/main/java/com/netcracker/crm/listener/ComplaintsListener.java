@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealHistory;
 import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
 import com.netcracker.crm.listener.event.CreateComplaintEvent;
 import com.netcracker.crm.service.email.AbstractEmailSender;
@@ -81,7 +82,7 @@ public class ComplaintsListener {
     }
 
     private History generateHistory(Complaint complaint) {
-        History history = new History();
+        History history = new RealHistory();
         history.setDateChangeStatus(LocalDateTime.now());
         history.setNewStatus(complaint.getStatus());
         history.setComplaint(complaint);

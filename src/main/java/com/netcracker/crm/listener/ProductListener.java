@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealHistory;
 import com.netcracker.crm.listener.event.ChangeStatusProductEvent;
 import com.netcracker.crm.listener.event.CreateProductEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class ProductListener {
     }
 
     private History generateHistory(Product product) {
-        History history = new History();
+        History history = new RealHistory();
         history.setDateChangeStatus(LocalDateTime.now());
         history.setNewStatus(product.getStatus());
         history.setProduct(product);

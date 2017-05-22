@@ -6,6 +6,8 @@ import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.dao.RegionGroupsDao;
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.real.RealGroup;
+import com.netcracker.crm.domain.real.RealRegion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -39,9 +42,9 @@ public class RegionGroupsDaoImplTest {
 
     @Before
     public void create() throws Exception {
-        regionCreated = new Region();
+        regionCreated = new RealRegion();
         regionCreated.setName("test region name");
-        groupCreated = new Group();
+        groupCreated = new RealGroup();
         groupCreated.setName("test group name");
 
         Long idRegionGroups = regionGroupsDao.create(regionCreated, groupCreated);

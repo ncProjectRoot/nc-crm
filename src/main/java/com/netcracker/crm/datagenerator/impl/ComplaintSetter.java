@@ -6,9 +6,16 @@ import com.netcracker.crm.domain.model.Complaint;
 import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealComplaint;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +26,21 @@ import java.util.List;
 @Service
 public class ComplaintSetter extends AbstractSetter<Complaint> {
 
-    private int counter;
     private List<Order> orders;
     private List<User> pmgs;
+    private List<String> titles = new ArrayList<>();
+    private List<String> descs = new ArrayList<>();
 
 
     @Autowired
     private ComplaintDao complaintDao;
+    @Value(value = "classpath:testdata/complaint.json")
+    private Resource resource;
 
 
     @Override
     public List<Complaint> generate(int numbers) {
+        fillComplaint();
         List<Complaint> complaints = new ArrayList<>();
 
         for (int i = 0; i < numbers; i++) {
@@ -40,12 +51,29 @@ public class ComplaintSetter extends AbstractSetter<Complaint> {
         return complaints;
     }
 
+    private void fillComplaint() {
+        JSONArray a = null;
+        try {
+            a = (JSONArray) parser.parse(resource.getInputStream());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object o : a) {
+            JSONObject person = (JSONObject) o;
+            String title = (String) person.get("title");
+            String desc = (String) person.get("description");
+            titles.add(title);
+            descs.add(desc);
+        }
+    }
+
     @Override
     public Complaint generateObject() {
-        Complaint complaint = new Complaint();
+        Complaint complaint = new RealComplaint();
         setUserOrderDate(complaint);
-        complaint.setTitle("Complaint " + counter++);
-        complaint.setMessage(randomString.nextString());
+        complaint.setTitle(titles.get(random.nextInt(titles.size())));
+        complaint.setMessage(descs.get(random.nextInt(descs.size())));
         ComplaintStatus status = getStatus();
         complaint.setStatus(status);
         if (status != ComplaintStatus.OPEN) {
@@ -55,17 +83,15 @@ public class ComplaintSetter extends AbstractSetter<Complaint> {
     }
 
 
-
-
-    private ComplaintStatus getStatus(){
+    private ComplaintStatus getStatus() {
         return ComplaintStatus.values()[random.nextInt(ComplaintStatus.values().length)];
     }
 
-    private User getPmg(){
+    private User getPmg() {
         return pmgs.get(random.nextInt(pmgs.size()));
     }
 
-    private void setUserOrderDate(Complaint complaint){
+    private void setUserOrderDate(Complaint complaint) {
         Order order = orders.get(random.nextInt(orders.size()));
         LocalDateTime date = order.getDate();
         date.plusDays(random.nextInt(10));

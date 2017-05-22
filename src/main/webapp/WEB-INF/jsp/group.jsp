@@ -79,7 +79,6 @@
         </div>
     </div>
 </div>
-<%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">

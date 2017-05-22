@@ -14,11 +14,15 @@ public interface RegionGroupsDao {
 
     Long create(Region region, Group group);
 
+    Long create(Long idRegion, Long idGroup);
+
     Long delete(Region region, Group group);
 
     Long delete(Long idRegion, Long idGroup);
 
     List<Group> findGroupsByRegion(Region region);
+
+    List<Group> findGroupsByRegionId(Long region);
 
     List<Region> findRegionsByGroup(Group group);
 

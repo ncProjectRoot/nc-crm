@@ -4,7 +4,8 @@ import com.netcracker.crm.dao.AddressDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Address;
 import com.netcracker.crm.domain.model.Region;
-import com.netcracker.crm.domain.proxy.AddressProxy;
+import com.netcracker.crm.domain.proxy.RegionProxy;
+import com.netcracker.crm.domain.real.RealAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,25 @@ import static com.netcracker.crm.dao.impl.sql.AddressSqlQuery.*;
 public class AddressDaoImpl implements AddressDao {
     private static final Logger log = LoggerFactory.getLogger(AddressDaoImpl.class);
 
-    @Autowired
     private RegionDao regionDao;
 
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert addressInsert;
     private AddressWithDetailExtractor addressWithDetailExtractor;
+
+    @Autowired
+    public AddressDaoImpl(RegionDao regionDao) {
+        this.regionDao = regionDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.addressInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_ADDRESS_TABLE)
+                .usingGeneratedKeyColumns(PARAM_ADDRESS_ID);
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.addressWithDetailExtractor = new AddressWithDetailExtractor(regionDao);
+    }
 
     @Override
     public Long create(Address address) {
@@ -115,15 +129,6 @@ public class AddressDaoImpl implements AddressDao {
         return namedJdbcTemplate.query(SQL_FIND_ADDRESS_BY_ID, params, addressWithDetailExtractor);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.addressInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_ADDRESS_TABLE)
-                .usingGeneratedKeyColumns(PARAM_ADDRESS_ID);
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.addressWithDetailExtractor = new AddressWithDetailExtractor(regionDao);
-    }
-
     private static final class AddressWithDetailExtractor implements ResultSetExtractor<Address> {
 
         private RegionDao regionDao;
@@ -134,15 +139,21 @@ public class AddressDaoImpl implements AddressDao {
 
         @Override
         public Address extractData(ResultSet rs) throws SQLException, DataAccessException {
-            AddressProxy address = null;
+            Address address = null;
             if (rs.next()) {
-                address = new AddressProxy(regionDao);
+                address = new RealAddress();
                 address.setId(rs.getLong(PARAM_ADDRESS_ID));
                 address.setLatitude(rs.getDouble(PARAM_ADDRESS_LATITUDE));
                 address.setLongitude(rs.getDouble(PARAM_ADDRESS_LONGITUDE));
                 address.setFormattedAddress(rs.getString(PARAM_ADDRESS_FORMATTED_ADDRESS));
                 address.setDetails(rs.getString(PARAM_ADDRESS_DETAILS));
-                address.setRegionId(rs.getLong(PARAM_ADDRESS_REGION_ID));
+
+                long regionId = rs.getLong(PARAM_ADDRESS_REGION_ID);
+                if (regionId != 0) {
+                    Region region = new RegionProxy(regionDao);
+                    region.setId(regionId);
+                    address.setRegion(region);
+                }
             }
             return address;
         }
