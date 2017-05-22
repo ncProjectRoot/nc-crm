@@ -1,11 +1,5 @@
 package com.netcracker.crm.dto;
 
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.OrderStatus;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
  * Created by Pasha on 13.05.2017.
  */
@@ -16,15 +10,7 @@ public class OrderViewDto {
     private String date;
     private boolean timeOver;
 
-
-    public OrderViewDto(Order order,DateTimeFormatter formatter) {
-        this.id = order.getId();
-        this.status = order.getStatus().getName();
-        this.title = order.getProduct().getTitle();
-        this.date = formatter.format(order.getPreferedDate());
-        if (order.getStatus() == OrderStatus.PROCESSING) {
-            this.timeOver = LocalDateTime.now().isAfter(order.getPreferedDate());
-        }
+    public OrderViewDto() {
     }
 
     public Long getId() {

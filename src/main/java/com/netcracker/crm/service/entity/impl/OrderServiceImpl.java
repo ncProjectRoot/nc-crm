@@ -2,19 +2,16 @@ package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.model.History;
+import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
-import com.netcracker.crm.dto.AutocompleteDto;
-import com.netcracker.crm.dto.GraphDto;
-import com.netcracker.crm.dto.OrderDto;
-import com.netcracker.crm.dto.OrderHistoryDto;
+import com.netcracker.crm.dto.*;
+import com.netcracker.crm.dto.mapper.Mapper;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.OrderMapper;
 import com.netcracker.crm.dto.row.OrderRowDto;
-import com.netcracker.crm.dto.OrderViewDto;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
@@ -25,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -37,8 +33,6 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     private final OrderDao orderDao;
     private final HistoryDao historyDao;
     private final OrderLifecycleService lifecycleService;
@@ -150,11 +144,11 @@ public class OrderServiceImpl implements OrderService {
         return 0;
     }
 
-    // TODO: 22.05.2017 to OrderMapper
     private List<OrderViewDto> convertMapToList(Map<Long, Order> map) {
         List<OrderViewDto> orders = new ArrayList<>();
+        Mapper<Order, OrderViewDto> mapper = orderMapper.modelToOrderViewDto();
         for (Map.Entry<Long, Order> m : map.entrySet()) {
-            orders.add(new OrderViewDto(m.getValue(), formatter));
+            orders.add(ModelMapper.map(mapper, m.getValue(), OrderViewDto.class));
         }
         return orders;
     }
@@ -162,23 +156,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public Set<OrderHistoryDto> getOrderHistory(Long id) {
-        return convertToOrderHistory(historyDao.findAllByOrderId(id));
-    }
-
-    // TODO: 22.05.2017 convertToOrderHistory to OrderMapper
-    private Set<OrderHistoryDto> convertToOrderHistory(List<History> list) {
+        List<History> histories = historyDao.findAllByOrderId(id);
         Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
-        for (History history : list) {
-            OrderHistoryDto historyDto = new OrderHistoryDto();
-            historyDto.setId(history.getId());
-            historyDto.setDateChangeStatus(history.getDateChangeStatus().toString());
-            historyDto.setDescChangeStatus(history.getDescChangeStatus());
-            historyDto.setOldStatus(history.getNewStatus().getName());
-            orders.add(historyDto);
-        }
+        orders.containsAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
         return orders;
     }
-
 
     private Comparator<OrderHistoryDto> orderHistoryDtoComparator = (o1, o2) -> o1.getId() > o2.getId() ? -1 : 1;
 

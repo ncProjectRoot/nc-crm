@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.dto.OrderHistoryDto;
+import com.netcracker.crm.dto.OrderViewDto;
 import com.netcracker.crm.dto.mapper.Mapper;
 import com.netcracker.crm.dto.row.OrderRowDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class OrderMapper {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER_FULL = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final ProductDao productDao;
     private final UserDao userDao;
 
@@ -68,10 +70,22 @@ public class OrderMapper {
                 rowDto.setCsr(model.getCsr().getId());
             }
             if (model.getDate() != null) {
-                rowDto.setDateFinish(model.getDate().format(FORMATTER));
+                rowDto.setDateFinish(model.getDate().format(FORMATTER_FULL));
             }
             if (model.getPreferedDate() != null) {
-                rowDto.setPreferredDate(model.getPreferedDate().format(FORMATTER));
+                rowDto.setPreferredDate(model.getPreferedDate().format(FORMATTER_FULL));
+            }
+        };
+    }
+
+    public Mapper<Order, OrderViewDto> modelToOrderViewDto() {
+        return (model, orderViewDto) -> {
+            orderViewDto.setId(model.getId());
+            orderViewDto.setStatus(model.getStatus().getName());
+            orderViewDto.setTitle(model.getProduct().getTitle());
+            orderViewDto.setDate(FORMATTER.format(model.getPreferedDate()));
+            if (model.getStatus() == OrderStatus.PROCESSING) {
+                orderViewDto.setTimeOver(LocalDateTime.now().isAfter(model.getPreferedDate()));;
             }
         };
     }
