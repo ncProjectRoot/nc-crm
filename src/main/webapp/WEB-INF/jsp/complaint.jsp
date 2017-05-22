@@ -60,6 +60,11 @@
         top: -20px;
     }
 
+    .history{
+      padding: 0 20px 0;
+        font-size: 17px;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
     <div class="container">
@@ -127,6 +132,17 @@
         <div class="divider"></div>
     </div>
 </div>
+<div class="history" >
+    <ul class="collection" id="history">
+        <c:forEach var="i" items="${history}">
+            <li class="collection-item">
+                <span> <strong>Date:</strong> ${i.dateChangeStatus.toLocalDate()} ${i.dateChangeStatus.toLocalTime()}
+                    <strong>Status: </strong> ${i.newStatus.name}
+                    <strong>Description: </strong> ${i.descChangeStatus} </span>
+            </li>
+        </c:forEach>
+    </ul>
+</div>
 <script>
     $('.collapsible').collapsible();
     <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
@@ -151,7 +167,7 @@
             },
             success: function (data) {
                 if (data === true) {
-                    $(window).trigger('hashchange')
+                    $(window).trigger('hashchange');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
                 } else if (data === false) {

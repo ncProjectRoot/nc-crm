@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +51,9 @@ public class EntityController {
         boolean allowed = complaintService.checkAccessToComplaint(customer, id);
         if (allowed) {
             Complaint complaint = complaintService.findById(id);
+            List<History> histories = complaintService.getHistory(id);
             model.put("complaint", complaint);
+            model.put("history", histories);
             return "complaint";
         } else {
             return "403";

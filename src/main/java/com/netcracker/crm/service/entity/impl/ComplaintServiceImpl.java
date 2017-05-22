@@ -118,7 +118,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         return false;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual) {
         UserRole role = user.getUserRole();
@@ -142,13 +142,13 @@ public class ComplaintServiceImpl implements ComplaintService {
         return response;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<AutocompleteDto> getAutocompleteDto(String pattern, User user, boolean individual) {
         UserRole role = user.getUserRole();
         if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
             if (individual) {
-                return getTitlesByPmg(pattern, user) ;
+                return getTitlesByPmg(pattern, user);
             } else {
                 return getAllTitles(pattern);
             }
@@ -226,6 +226,13 @@ public class ComplaintServiceImpl implements ComplaintService {
             return count > 0;
         }
         return false;
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<History> getHistory(Long complaintId) {
+        return historyDao.findAllByComplaintId(complaintId);
     }
 
     private ComplaintRowDto convertToRowDto(Complaint complaint) {
