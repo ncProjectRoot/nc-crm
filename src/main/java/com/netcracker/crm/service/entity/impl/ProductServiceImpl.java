@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductsByDiscountId(Long id, User user) {
         UserRole role = user.getUserRole();
         List<Product> products = new ArrayList<>();
-        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR)) {
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR ) || role.equals(UserRole.ROLE_PMG)){
             products = productDao.findProductsByDiscountId(id);
         } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
             products = productDao.findProductsByDiscountIdAndCustomerId(id, user.getId());

@@ -132,7 +132,7 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> getGroupsByDiscountId(Long id, User user) {
         List<Group> groups = new ArrayList<>();
         UserRole role = user.getUserRole();
-        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR)) {
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR ) || role.equals(UserRole.ROLE_PMG)) {
             groups = groupDao.findByDiscountId(id);
         } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
             groups = groupDao.findByDiscountIdAndCustomerId(id, user.getId());

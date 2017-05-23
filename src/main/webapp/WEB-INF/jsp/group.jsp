@@ -10,51 +10,66 @@
         overflow: auto;
     }
 
+    .container {
+        padding-top: 50px;
+        padding-bottom: 100px;
+    }
+    .content-body {
+        position: relative;
+    }
+    .change-trigger {
+        position: absolute;
+        margin: 20px;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Group #${group.id}">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     <a class="modal-trigger brown-text change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>
-    <div id="update" class="modal modal-fixed-footer">
-        <div class="row">
-            <form id="update-group">
-                <div class="modal-content row">
-                    <div class="row">
-                        <input type='hidden' name='id' value="${group.id}"/>
-                        <div class='input-field col s6'>
-                            <i class="material-icons prefix">short_text</i>
-                            <input class='validate' type='text' name='name' value="${group.name}" id='group_name'/>
-                            <label for="group_name" class="active">Name</label>
+        <div id="update" class="modal modal-fixed-footer">
+            <div class="row">
+                <form id="update-group">
+                    <div class="modal-content row">
+                        <div class="row">
+                            <input type='hidden' name='id' value="${group.id}"/>
+                            <div class='input-field col s6'>
+                                <i class="material-icons prefix">short_text</i>
+                                <input class='validate' type='text' name='name' value="${group.name}" id='group_name'/>
+                                <label for="group_name" class="active">Name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">loyalty</i>
+                                <input type="text" id="discount-input" class="autocomplete">
+                                <input type="hidden" id="discount-hidden-input" name="discountId"/>
+                                <label for="discount-input" class="active">Selected discount: <span
+                                        id="selected-discount"></span></label>
+                            </div>
                         </div>
-                        <div class="input-field col s6">
-                            <i class="material-icons prefix">loyalty</i>
-                            <input type="text" id="discount-input" class="autocomplete">
-                            <input type="hidden" id="discount-hidden-input" name="discountId"/>
-                            <label for="discount-input" class="active">Selected discount: <span
-                                    id="selected-discount"></span></label>
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">view_list</i>
+                                <input type="text" id="product-input" class="autocomplete">
+                                <input type="hidden" id="product-hidden-input" name="products"/>
+                                <label for="product-input">Select products</label>
+                            </div>
+                            <div class="col s6">
+                                <ul id="selected-products" class="collection"></ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6">
+                                <button class="btn waves-effect waves-light" type="submit" id="submit-group"
+                                        name="action">
+                                    Update
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="input-field col s6">
-                            <i class="material-icons prefix">view_list</i>
-                            <input type="text" id="product-input" class="autocomplete">
-                            <input type="hidden" id="product-hidden-input" name="products"/>
-                            <label for="product-input">Select products</label>
-                        </div>
-                        <div class="col s6">
-                            <ul id="selected-products" class="collection"></ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s6">
-                            <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">
-                                Update
-                                <i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+    </sec:authorize>
     <div class="row">
         <div class="container">
             <h4 class="title field center">${group.name}</h4>
@@ -106,7 +121,6 @@
     });
 
 
-
     var $groupProductSelect = $("#product-input").karpo_multi_select({
         url: "/products/autocomplete?type=withoutGroup",
         collection: "#selected-products",
@@ -115,7 +129,7 @@
 
     function fillCollection() {
         <c:forEach items="${products}" var="product">
-            $groupProductSelect.addSelected("${product.id}" + " " + "${product.title}");
+        $groupProductSelect.addSelected("${product.id}" + " " + "${product.title}");
         </c:forEach>
     }
     fillCollection();

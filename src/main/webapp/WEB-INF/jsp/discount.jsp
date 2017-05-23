@@ -127,10 +127,10 @@
                         <div class="collection with-header">
                             <div class="collection-header"><h5>Products:</h5></div>
                             <c:forEach items="${products}" var="product">
-                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                    <a href="#product/${product.id}" class="collection-item">${product.title}, Price from:
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+                                    <a href="#product/${product.id}" class="collection-item">${product.title}, Default price:
                                         <fmt:formatNumber
-                                                value="${product.defaultPrice-(product.defaultPrice*(discount.percentage/100))}"
+                                                value="${product.defaultPrice}"
                                                 maxFractionDigits="2"/> $,
                                         Product status: ${product.status.name}
                                     </a>
