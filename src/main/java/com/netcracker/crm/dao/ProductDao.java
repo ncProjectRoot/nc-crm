@@ -27,4 +27,6 @@ public interface ProductDao extends CrudDao<Product>, BulkDao<Product> {
     boolean hasSameStatus(Set<Long> productIDs);
 
     List<Product> findProductsByDiscountId(Long id);
+
+    List<Product> findProductsByDiscountIdAndCustomerId(Long discountId, Long customerId);
 }

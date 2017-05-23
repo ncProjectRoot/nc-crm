@@ -2,6 +2,7 @@ package com.netcracker.crm.service.entity;
 
 import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
@@ -22,4 +23,6 @@ public interface GroupService {
     boolean update(GroupDto groupDto);
 
     List<Group> getGroupsByRegion(Region region);
+
+    List<Group> getGroupsByDiscountId(Long id, User user);
 }

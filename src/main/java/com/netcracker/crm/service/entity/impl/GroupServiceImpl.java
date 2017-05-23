@@ -4,9 +4,7 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.RegionGroupsDao;
-import com.netcracker.crm.domain.model.Group;
-import com.netcracker.crm.domain.model.Product;
-import com.netcracker.crm.domain.model.Region;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.real.RealGroup;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
@@ -128,6 +126,18 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<Group> getGroupsByRegion(Region region) {
         return regionGroupsDao.findGroupsByRegion(region);
+    }
+
+    @Override
+    public List<Group> getGroupsByDiscountId(Long id, User user) {
+        List<Group> groups = new ArrayList<>();
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR)) {
+            groups = groupDao.findByDiscountId(id);
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            groups = groupDao.findByDiscountIdAndCustomerId(id, user.getId());
+        }
+        return groups;
     }
 
 }

@@ -94,13 +94,10 @@ public class EntityController {
 
     @RequestMapping("/*/discount/{id}")
     public String discount(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         model.put("discount", discountService.getDiscountById(id));
-        model.put("products", productService.getProductsByDiscountId(id));
+        model.put("products", productService.getProductsByDiscountId(id, user));
+        model.put("groups", groupService.getGroupsByDiscountId(id, user));
         return "discount";
     }
 

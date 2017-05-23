@@ -39,5 +39,5 @@ public interface ProductService {
 
     boolean bulkUpdate(ProductBulkDto bulkDto, User user);
 
-    List<Product> getProductsByDiscountId(Long id);
+    List<Product> getProductsByDiscountId(Long id, User user);
 }

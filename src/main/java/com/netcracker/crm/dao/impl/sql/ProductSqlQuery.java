@@ -116,4 +116,19 @@ public final class ProductSqlQuery {
             "FROM product " +
             "WHERE discount_id = :discount_id " +
             "ORDER BY id;";
+
+    public static final String SQL_FIND_PRODUCTS_BY_DISCOUNT_ID_AND_CUSTOMER_ID = "SELECT p.id, title, default_price, status_id, description, p.discount_id, group_id " +
+            "FROM product p " +
+            "LEFT JOIN groups g ON p.group_id = g.id " +
+            "INNER JOIN statuses s ON s.id=p.status_id " +
+            "WHERE p.discount_id = :discount_id " +
+            "AND (group_id is NULL " +
+            "OR group_id IN (SELECT group_id " +
+            "FROM region_groups rg " +
+            "INNER JOIN region r ON rg.region_id = r.id " +
+            "INNER JOIN address a ON a.region_id = r.id " +
+            "INNER JOIN users u ON u.address_id = a.id " +
+            "WHERE u.id = :customer_id)) " +
+            "AND s.name = 'ACTUAL' " +
+            "ORDER BY id;";
 }
