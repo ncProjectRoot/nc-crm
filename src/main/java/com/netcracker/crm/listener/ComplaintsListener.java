@@ -3,7 +3,6 @@ package com.netcracker.crm.listener;
 import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.domain.model.Complaint;
-import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.real.RealHistory;
@@ -13,6 +12,8 @@ import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
@@ -29,7 +30,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class ComplaintsListener {
-
+    private static final Logger log = LoggerFactory.getLogger(ComplaintsListener.class);
     private HistoryDao historyDao;
     private AbstractEmailSender emailSender;
     private ComplaintDao complaintDao;
@@ -72,7 +73,7 @@ public class ComplaintsListener {
         try {
             emailSender.send(emailMap);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("Letter hadn't been sent", e);
         }
     }
 

@@ -277,13 +277,13 @@
                 <div class="discount-details">
                     <c:if test="${product.discount.active}">
                         <div class="center-align">
-                            <a href = "#discount/${product.discount.id}">${product.discount.title}</a>
+                            <a href="#discount/${product.discount.id}">${product.discount.title}</a>
                             <span>- ${product.discount.percentage}%</span>
                         </div>
                     </c:if>
                     <c:if test="${product.group.discount.active}">
                         <div class="center-align">
-                            <a href = "#discount/${product.group.discount.id}">${product.group.discount.title}</a>
+                            <a href="#discount/${product.group.discount.id}">${product.group.discount.title}</a>
                             <span>- ${product.group.discount.percentage}%</span>
                         </div>
                     </c:if>
@@ -411,19 +411,20 @@
                 productId: ${product.id},
                 statusId: $('#select_product_status').val()
             },
-            success: function (data) {
-                if (data === true) {
+            statusCode: {
+                200: function (data) {
                     Materialize.toast('You have changed status of product!', 5000, 'rounded');
-                } else if (data === false) {
+                },
+                400: function (data) {
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
                         window.location.reload();
                     }, 3000);
                 }
-                $('.modal').modal('close');
-                $(window).trigger('hashchange')
             }
         });
+        $('.modal').modal('close');
+        $(window).trigger('hashchange')
     });
 
     </sec:authorize>

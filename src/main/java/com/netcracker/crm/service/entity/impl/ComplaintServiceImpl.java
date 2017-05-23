@@ -11,6 +11,7 @@ import com.netcracker.crm.dto.GraphDto;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
+import com.netcracker.crm.exception.UnsupportedChangingStatusException;
 import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
 import com.netcracker.crm.listener.event.CreateComplaintEvent;
 import com.netcracker.crm.service.entity.ComplaintService;
@@ -64,45 +65,45 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaint;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByTitle(String title) {
         return complaintDao.findByTitle(title);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByDate(LocalDate date) {
         return complaintDao.findAllByDate(date);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Complaint findById(Long id) {
         return complaintDao.findById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesByPmg(String likeTitle, User pmg) {
         List<String> titles = complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
         return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getAllTitles(String likeTitle) {
         List<String> titles = complaintDao.findComplaintsTitleLikeTitle(likeTitle);
         return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesForContactPerson(String likeTitle, Long custId) {
         List<String> titles = complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
         return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesForNotContactPerson(String likeTitle, Long custId) {
         List<String> titles = complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
         return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
@@ -116,7 +117,8 @@ public class ComplaintServiceImpl implements ComplaintService {
         } else if ("CLOSE".equals(type)) {
             return closeComplaint(complaintId, pmg);
         }
-        return false;
+        throw new UnsupportedChangingStatusException("Complaint with id "
+                + complaintId + " hasn't changed status");
     }
 
     @Transactional(readOnly = true)
@@ -161,6 +163,7 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
         LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
@@ -173,12 +176,18 @@ public class ComplaintServiceImpl implements ComplaintService {
         Complaint complaint = complaintDao.findById(complaintId);
 
         if (complaint.getPmg() != null) {
-            return false;
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
         }
         complaint.setPmg(user);
         ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint, ComplaintStatus.SOLVING);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
 
     @Transactional
@@ -186,17 +195,23 @@ public class ComplaintServiceImpl implements ComplaintService {
         Boolean isRoleAdmin = user.getUserRole().equals(UserRole.ROLE_ADMIN);
         Complaint complaint = complaintDao.findById(complaintId);
         if (complaint.getPmg() == null || (!complaint.getPmg().getId().equals(user.getId())) && (!isRoleAdmin)) {
-            return false;
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
         }
         if (isRoleAdmin) {
             complaint.setPmg(user);
         }
         ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint, ComplaintStatus.CLOSED);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public boolean checkAccessToComplaint(User customer, Long complaintId) {
         UserRole role = customer.getUserRole();
