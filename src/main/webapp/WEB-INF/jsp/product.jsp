@@ -98,6 +98,20 @@
         color: #000;
     }
 
+    .discount-details div:first-child:before {
+        content: "";
+        height: 1px;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        background-color: #e0e0e0;
+        margin-bottom: 1rem;
+    }
+
+    .discount-details div:first-child {
+        margin-top: 40px;
+    }
+
     #order {
         min-height: 320px;
     }
@@ -112,6 +126,7 @@
         position: absolute;
         margin: 20px;
     }
+
     .change-status-trigger {
         position: absolute;
         margin: 20px;
@@ -187,29 +202,31 @@
             </form>
         </div>
         <c:if test="${product.status.name!='OUTDATED'}">
-        <a class="modal-trigger brown-text change-status-trigger" href="#change-status"><i class='material-icons medium'>cached</i></a>
-        <div id="change-status" class="modal modal-fixed-footer status-modal">
-            <form id="change-status-form">
-                <div class="modal-content row">
-                    <h4>Change Product status</h4>
-                    <input type="hidden" name="id" value="${product.id}"/>
-                    <div class="input-field col s7">
-                        <i class="material-icons prefix">cached</i>
-                        <select name="statusName" id="select_product_status">
-                            <option value="12" data-value="12" data-after-disabled="13">PLANNED</option>
-                            <option value="13" data-value="13" data-after-disabled="14">ACTUAL</option>
-                            <option value="14" data-value="14">OUTDATED</option>
-                        </select>
-                        <label for="select_product_status">Choose product status</label>
+            <a class="modal-trigger brown-text change-status-trigger" href="#change-status"><i
+                    class='material-icons medium'>cached</i></a>
+            <div id="change-status" class="modal modal-fixed-footer status-modal">
+                <form id="change-status-form">
+                    <div class="modal-content row">
+                        <h4>Change Product status</h4>
+                        <input type="hidden" name="id" value="${product.id}"/>
+                        <div class="input-field col s7">
+                            <i class="material-icons prefix">cached</i>
+                            <select name="statusName" id="select_product_status">
+                                <option value="12" data-value="12" data-after-disabled="13">PLANNED</option>
+                                <option value="13" data-value="13" data-after-disabled="14">ACTUAL</option>
+                                <option value="14" data-value="14">OUTDATED</option>
+                            </select>
+                            <label for="select_product_status">Choose product status</label>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer center-align">
-                    <button class="btn waves-effect waves-light" id="change-product-status" type="submit" name="action">Change
-                        <i class="material-icons right">send</i>
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div class="modal-footer center-align">
+                        <button class="btn waves-effect waves-light" id="change-product-status" type="submit"
+                                name="action">Change
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </c:if>
     </sec:authorize>
     <c:if test="${product.discount.active}">
@@ -253,10 +270,24 @@
         <div class="section">
             <div class="div-price field">
                 <h5 class="price">${product.defaultPrice}$</h5>
-                <c:if test="${product.discount.active}">
+                <c:if test="${product.discount.active || product.group.discount.active}">
                     <h5 class="new-price"></h5>
-                    <a class="percentage" href="#discount/${product.discount.id}">${product.discount.percentage}%</a>
+                    <span class="percentage"></span>
                 </c:if>
+                <div class="discount-details">
+                    <c:if test="${product.discount.active}">
+                        <div class="center-align">
+                            <a href = "#discount/${product.discount.id}">${product.discount.title}</a>
+                            <span>- ${product.discount.percentage}%</span>
+                        </div>
+                    </c:if>
+                    <c:if test="${product.group.discount.active}">
+                        <div class="center-align">
+                            <a href = "#discount/${product.group.discount.id}">${product.group.discount.title}</a>
+                            <span>- ${product.group.discount.percentage}%</span>
+                        </div>
+                    </c:if>
+                </div>
             </div>
         </div>
         <div class="divider"></div>
@@ -268,12 +299,23 @@
 </div>
 <script>
 
+    <c:if test="${product.discount.active || product.group.discount.active}">
+
+    var allPercentage = 0;
+
     <c:if test="${product.discount.active}">
-    var percentage = parseInt($(".percentage").text());
+    allPercentage += ${product.discount.percentage};
+    </c:if>
+    <c:if test="${product.group.discount.active}">
+    allPercentage += ${product.group.discount.percentage};
+    </c:if>
+
+    allPercentage = allPercentage > 99 ? 99 : allPercentage;
+    $(".percentage").text(allPercentage + "%");
     var $price = $(".price");
-    var oldPrice = parseFloat($price.text());
     $price.addClass("old-price");
-    var newPrice = Math.round((oldPrice - oldPrice * percentage / 100) * 100) / 100;
+    var oldPrice = parseFloat($price.text());
+    var newPrice = Math.round((oldPrice - oldPrice * allPercentage / 100) * 100) / 100;
     $(".new-price").text(newPrice);
     </c:if>
 
@@ -371,7 +413,7 @@
             },
             success: function (data) {
                 if (data === true) {
-                    Materialize.toast('You have changed status of product!'  , 5000, 'rounded');
+                    Materialize.toast('You have changed status of product!', 5000, 'rounded');
                 } else if (data === false) {
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {

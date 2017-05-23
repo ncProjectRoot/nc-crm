@@ -584,7 +584,7 @@
             priceTd.append(price);
             tr.append(priceTd);
             tr.append($("<td>").append($("<a>", {
-                href: "#discount/" + object.group,
+                href: "#group/" + object.group,
                 text: object.groupName
             })));
             tr.append($("<td>").append($("<a>", {
@@ -620,7 +620,7 @@
                 text: object.discountTitle
             })));
             tr.append($("<td>").append($("<a>", {
-                href: "#discount/" + object.group,
+                href: "#group/" + object.group,
                 text: object.groupName
             })));
             tr.append($("<td>").append($("<a>", {
