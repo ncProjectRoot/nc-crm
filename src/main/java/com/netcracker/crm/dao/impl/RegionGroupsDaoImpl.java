@@ -53,7 +53,7 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
                 .withTableName(PARAM_RG_TABLE)
                 .usingGeneratedKeyColumns(PARAM_RG_ID);
         groupExtractor = new GroupDaoImpl.GroupExtractor(discountDao);
-        regionExtractor = new RegionDaoImpl.RegionExtractor(discountDao);
+        regionExtractor = new RegionDaoImpl.RegionExtractor();
     }
 
     @Override

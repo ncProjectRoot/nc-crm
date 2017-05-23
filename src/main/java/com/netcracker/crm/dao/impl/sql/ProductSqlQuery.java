@@ -17,7 +17,8 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_REGION_ID = "region_id";
 
     public static final String PARAM_PRODUCT_ROW_STATUS = "status_id";
-    public static final String PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE = "active";
+    public static final String PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE = "product_discount_active";
+    public static final String PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE = "group_discount_active";
 
     //BULK
     public static final String PARAM_PRODUCT_IDS = "product_ids";

@@ -13,6 +13,50 @@
     .modal-content h4 {
         margin-top: 20px;
     }
+
+    td.discount {
+        position: relative;
+    }
+
+    td.discount .old-price {
+        text-decoration: line-through;
+        opacity: 0.6;
+        position: relative;
+        top: 17px;
+        left: -23px;
+    }
+
+    td.discount .new-price {
+        position: relative;
+        margin: 10px;
+        font-size: 18px;
+        right: 0;
+    }
+
+    td.discount .percentage {
+        transition: all 1s cubic-bezier(0,1.4,1,1.4);
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 2px solid #D32F2F;
+        line-height: 47px;
+        text-align: center;
+        font-size: 18px;
+        position: absolute;
+        border-radius: 30px;
+        top: -3px;
+        right: 9px;
+        opacity: 0.7;
+        transform: scale(0);
+    }
+
+    #order-product-wrapper td.discount .percentage {
+        right: 58px;
+    }
+
+    td.discount .percentage.show{
+        transform: scale(0.7);
+    }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
 <div class="content-body z-depth-1" data-page-name="Products">
@@ -21,7 +65,8 @@
         <div class="col s12">
             <ul id="tabs" class="tabs">
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
-                    <li class="tab col s3"><a class="active" href="#my-product-wrapper">My Products</a></li>
+                    <li class="tab col s3"><a class="active" href="#order-product-wrapper">Order Product</a></li>
+                    <li class="tab col s3"><a class="active" href="#my-product-wrapper">My Active Products</a></li>
                 </sec:authorize>
                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a class="active" href="#all-product-wrapper">All Products</a></li>
@@ -30,6 +75,34 @@
             </ul>
         </div>
         <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+            <div id="order-product-wrapper" class="col s12">
+                <div id="table-create-orders" class="table-container row">
+                    <div class="table-wrapper col s11 center-align">
+                        <table class="striped responsive-table centered ">
+                            <thead>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">Title</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Price</a>
+                                </th>
+                                <th data-field="5">
+                                    <a href="#!" class="sorted-element a-dummy">Group</a>
+                                </th>
+                                <th>
+                                    <a href="#!" class="a-dummy">Action</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <div id="my-product-wrapper" class="col s12">
                 <div id="table-my-products" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
@@ -46,24 +119,13 @@
                                     <a href="#!" class="sorted-element a-dummy">Price</a>
                                 </th>
                                 <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">Discount</a>
+                                    <a href="#!" class="sorted-element a-dummy">Product Discount</a>
                                 </th>
                                 <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
-                                </th>
-                                <th class="th-dropdown" data-field="discountActive">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-my-discount-status' data-default-name="Discount Active">
-                                        Discount Active
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-my-discount-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
-                                    </ul>
+                                    <a href="#!" class="sorted-element a-dummy">Group</a>
                                 </th>
                                 <th data-field="6">
-                                    <a href="#!" class="sorted-element a-dummy">Group</a>
+                                    <a href="#!" class="sorted-element a-dummy">Group Discount</a>
                                 </th>
                             </tr>
                             </thead>
@@ -104,16 +166,13 @@
                                     <a href="#!" class="sorted-element a-dummy">Price</a>
                                 </th>
                                 <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">Discount</a>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
+                                    <a href="#!" class="sorted-element a-dummy">P Discount</a>
                                 </th>
                                 <th class="th-dropdown" data-field="discountActive">
                                     <a class='dropdown-button a-dummy' href='#'
                                        data-activates='dropdown-all-discount-status'
-                                       data-default-name="Discount Active">
-                                        Discount Active
+                                       data-default-name="Active">
+                                        Active
                                     </a>
                                     <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
                                     <ul id="dropdown-all-discount-status" class='dropdown-content'>
@@ -121,8 +180,23 @@
                                         <li><a href="#" class="a-dummy" data-value="false">False</a></li>
                                     </ul>
                                 </th>
-                                <th data-field="6">
+                                <th data-field="5">
                                     <a href="#!" class="sorted-element a-dummy">Group</a>
+                                </th>
+                                <th data-field="6">
+                                    <a href="#!" class="sorted-element a-dummy">G Discount</a>
+                                </th>
+                                <th class="th-dropdown" data-field="groupDiscountActive">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-group-discount-status'
+                                       data-default-name="Active">
+                                        Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-group-discount-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                                    </ul>
                                 </th>
                             </tr>
                             </thead>
@@ -377,23 +451,74 @@
         urlTable: "/products",
         bulkUrl: "/products/bulk",
         mapper: function (object) {
-            var disActive = null;
             var tr = $("<tr>");
-            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            tr.append($("<td><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#product/" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
-            tr.append($("<td>", {text: object.price}));
-            tr.append($("<td>", {text: object.discountTitle}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
+            var priceTd =  $("<td>");
+            var price = $("<span>", {text: object.price});
+            if (object.discountActive || object.groupDiscountActive) {
+                var allPercentage = 0;
+                var tooltipHtml = "";
+                if (object.discountActive) {
+                    allPercentage += object.discountPercentage;
+                    tooltipHtml +=  "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
+                }
+                if (object.groupDiscountActive) {
+                    allPercentage += object.groupDiscountPercentage;
+                    tooltipHtml +=  "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
+                }
+                allPercentage = allPercentage > 99 ? 99: allPercentage;
+                priceTd =  $("<td>", {
+                    "data-tooltip": tooltipHtml
+                });
+                price.addClass("old-price");
+                priceTd.addClass("tooltipped discount");
+                var newPrice = $("<span>", {
+                    text: Math.round((object.price - object.price * allPercentage / 100) * 100) / 100,
+                    class: "red-text text-darken-2 new-price"
+                });
+                priceTd.append(newPrice);
+                var percentage = $("<span>", {
+                    text: allPercentage + "%",
+                    class: "red-text text-darken-2 percentage"
+                });
+                priceTd.append(percentage);
+            }
+            priceTd.append(price);
+            tr.append(priceTd);
+            tr.append($("<td>").append($("<a>", {
+                text: object.discountTitle,
+                href: "#discount/" + object.discount
+            })));
+            var disActive = null;
             if(object.discountActive != null)
                 disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
-            tr.append($("<td>", {text: object.groupName}));
+            tr.append($("<td>").append($("<a>", {
+                text: object.groupName,
+                href: "#group/" + object.group
+            })));
+            tr.append($("<td>").append($("<a>", {
+                text: object.groupDiscountTitle,
+                href: "#discount/" + object.groupDiscount
+            })));
+            var groupDisActive = null;
+            if(object.groupDiscountActive != null)
+                groupDisActive = (object.groupDiscountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            tr.append($("<td>", {html: groupDisActive}));
             return tr;
+        },
+        complete: function () {
+            $(".percentage").addClass("show");
+            $(".tooltipped").tooltip({
+                delay: 50,
+                html: true
+            });
         }
     });
 
@@ -414,6 +539,70 @@
     </sec:authorize>
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+    $("#table-create-orders").karpo_table({
+        urlSearch: "/products/autocomplete?type=possible",
+        urlTable: "/products?type=possible",
+        countTr: 5,
+        mapper: function (object) {
+            var tr = $("<tr>");
+            var aId = $("<a>", {
+                href: "#product/" + object.id,
+                text: object.id
+            })
+            tr.append($("<td>").append(aId));
+            tr.append($("<td>", {text: object.title}));
+            var priceTd =  $("<td>");
+            var price = $("<span>", {text: object.price});
+            if (object.discountActive || object.groupDiscountActive) {
+                var allPercentage = 0;
+                var tooltipHtml = "";
+                if (object.discountActive) {
+                    allPercentage += object.discountPercentage;
+                    tooltipHtml +=  "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
+                }
+                if (object.groupDiscountActive) {
+                    allPercentage += object.groupDiscountPercentage;
+                    tooltipHtml +=  "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
+                }
+                allPercentage = allPercentage > 99 ? 99: allPercentage;
+                priceTd =  $("<td>", {
+                    "data-tooltip": tooltipHtml
+                });
+                price.addClass("old-price");
+                priceTd.addClass("tooltipped discount");
+                var newPrice = $("<span>", {
+                    text: Math.round((object.price - object.price * allPercentage / 100) * 100) / 100,
+                    class: "red-text text-darken-2 new-price"
+                });
+                priceTd.append(newPrice);
+                var percentage = $("<span>", {
+                    text: allPercentage + "%",
+                    class: "red-text text-darken-2 percentage"
+                });
+                priceTd.append(percentage);
+            }
+            priceTd.append(price);
+            tr.append(priceTd);
+            tr.append($("<td>").append($("<a>", {
+                href: "#group/" + object.group,
+                text: object.groupName
+            })));
+            tr.append($("<td>").append($("<a>", {
+                href: "#product/" + object.id,
+                class: "waves-effect waves-light btn",
+                text: "Details"
+            })));
+            return tr;
+        },
+        complete: function () {
+            $(".percentage").addClass("show");
+            $(".tooltipped").tooltip({
+                delay: 50,
+                html: true
+            });
+        }
+    });
+
     $("#table-my-products").karpo_table({
         urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",
@@ -426,12 +615,18 @@
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.price}));
-            tr.append($("<td>", {text: object.discountTitle}));
-            tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
-            if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
-            tr.append($("<td>", {html: disActive}));
-            tr.append($("<td>", {text: object.groupName}));
+            tr.append($("<td>").append($("<a>", {
+                href: "#discount/" + object.discount,
+                text: object.discountTitle
+            })));
+            tr.append($("<td>").append($("<a>", {
+                href: "#group/" + object.group,
+                text: object.groupName
+            })));
+            tr.append($("<td>").append($("<a>", {
+                href: "#discount/" + object.groupDiscount,
+                text: object.groupDiscountTitle
+            })));
             return tr;
         }
     });

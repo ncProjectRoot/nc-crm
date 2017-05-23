@@ -12,10 +12,14 @@ public class ProductRowDto {
     private Double price;
     private Long discount;
     private String discountTitle;
-    private Double percentage;
+    private Double discountPercentage;
     private Boolean discountActive;
     private Long group;
     private String groupName;
+    private Long groupDiscount;
+    private String groupDiscountTitle;
+    private Double groupDiscountPercentage;
+    private Boolean groupDiscountActive;
 
     public Long getId() {
         return id;
@@ -57,12 +61,12 @@ public class ProductRowDto {
         this.discount = discount;
     }
 
-    public Double getPercentage() {
-        return percentage;
+    public Double getDiscountPercentage() {
+        return discountPercentage;
     }
 
-    public void setPercentage(Double percentage) {
-        this.percentage = percentage;
+    public void setDiscountPercentage(Double discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 
     public Boolean getDiscountActive() {
@@ -95,5 +99,37 @@ public class ProductRowDto {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public Long getGroupDiscount() {
+        return groupDiscount;
+    }
+
+    public void setGroupDiscount(Long groupDiscount) {
+        this.groupDiscount = groupDiscount;
+    }
+
+    public String getGroupDiscountTitle() {
+        return groupDiscountTitle;
+    }
+
+    public void setGroupDiscountTitle(String groupDiscountTitle) {
+        this.groupDiscountTitle = groupDiscountTitle;
+    }
+
+    public Double getGroupDiscountPercentage() {
+        return groupDiscountPercentage;
+    }
+
+    public void setGroupDiscountPercentage(Double groupDiscountPercentage) {
+        this.groupDiscountPercentage = groupDiscountPercentage;
+    }
+
+    public Boolean getGroupDiscountActive() {
+        return groupDiscountActive;
+    }
+
+    public void setGroupDiscountActive(Boolean groupDiscountActive) {
+        this.groupDiscountActive = groupDiscountActive;
     }
 }

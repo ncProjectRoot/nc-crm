@@ -165,16 +165,12 @@ ALTER TABLE product
 CREATE TABLE region
 (
   id          BIGSERIAL   NOT NULL,
-  name        VARCHAR(50) NOT NULL,
-  discount_id INTEGER
+  name        VARCHAR(50) NOT NULL
 );
 
 
 ALTER TABLE region
   ADD CONSTRAINT region_PK PRIMARY KEY (id);
-
--- ALTER TABLE region
---   ADD CONSTRAINT region__UN UNIQUE (discount_id);
 
 
 CREATE TABLE region_groups
@@ -450,17 +446,6 @@ ALTER TABLE product
     status_id
   )
 REFERENCES statuses
-  (
-    id
-  );
-
-
-ALTER TABLE region
-  ADD CONSTRAINT region_discount_FK FOREIGN KEY
-  (
-    discount_id
-  )
-REFERENCES discount
   (
     id
   );
