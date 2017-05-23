@@ -110,4 +110,10 @@ public final class ProductSqlQuery {
 
     public static final String SQL_PRODUCT_BULK_UPDATE = "" +
             "SELECT update_product(ARRAY [:product_ids ] :: BIGINT[], :discount_id, :group_id, :default_price, :description);";
+
+    public static final String SQL_FIND_PRODUCTS_BY_DISCOUNT_ID = "SELECT id, title, " +
+            "default_price, status_id, description, discount_id, group_id " +
+            "FROM product " +
+            "WHERE discount_id = :discount_id " +
+            "ORDER BY id;";
 }

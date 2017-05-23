@@ -106,6 +106,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByDiscountId(Long id) {
+        return productDao.findProductsByDiscountId(id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<AutocompleteDto> getPossibleProductsAutocompleteDtoByCustomer(String pattern, User customer) {
         List<Product> products = productDao.findByPatternAndCustomerIdAndRegionId(pattern, customer.getId(), customer.getAddress().getRegion().getId());

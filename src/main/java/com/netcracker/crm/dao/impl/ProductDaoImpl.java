@@ -270,6 +270,13 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<Product> findProductsByDiscountId(Long id) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_DISCOUNT_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCTS_BY_DISCOUNT_ID, params, productWithDetailExtractor);
+    }
+
+    @Override
     public boolean bulkUpdate(Set<Long> productIDs, Product product) {
         Long groupId = null;
         Long discountId = null;

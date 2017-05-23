@@ -100,6 +100,7 @@ public class EntityController {
             user = (UserDetailsImpl) principal;
         }
         model.put("discount", discountService.getDiscountById(id));
+        model.put("products", productService.getProductsByDiscountId(id));
         return "discount";
     }
 
