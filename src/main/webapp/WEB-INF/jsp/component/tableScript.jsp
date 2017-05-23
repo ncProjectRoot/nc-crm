@@ -302,12 +302,12 @@
             }
         });
 
-        $(document).on('click', '#bulk-change-btn', function () {
+        $('#bulk-change-btn').on('click', function () {
             initMaterializeComponents();
             $(modal).modal('open');
         });
 
-        $(document).on('click', '#bulk-submit', function (e) {
+        $('#bulk-submit').on('click', function (e) {
             e.preventDefault();
             $(itemIDsInput).val(itemIDs);
             send('#bulk-change-form', params.bulkUrl, 'PUT').done(function () {
@@ -318,14 +318,14 @@
             })
         });
 
-        $(document).on('change', '.bulk-field-change', function () {
+        $('.bulk-field-change').on('change', function () {
             var checkbox = $(this).parent().find('.is-changed-checkbox');
             checkbox.val(true);
             $('div[checkbox-id=' + checkbox.attr('id') + ']').css("display", "block");
 
         });
 
-        $(document).on('click', '.chip-close', function () {
+        $('.chip-close').on('click', function () {
             console.log("'click', '.chip-close',");
             var chip = $(this).parent('.bulk-chip');
             var checkboxId = chip.attr('checkbox-id');
@@ -333,7 +333,7 @@
             $(chip).css("display", "none");
         });
 
-        $(document).on('click', '#bulk-cancel-btn', function () {
+        $('#bulk-cancel-btn').on('click', function () {
             deselectRows();
             setDefaultTableStyle();
         });

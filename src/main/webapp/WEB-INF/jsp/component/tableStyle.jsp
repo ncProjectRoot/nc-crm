@@ -92,6 +92,14 @@
         max-height: 250px;
     }
 
+    .bulk-checkbox-wrapper {
+        margin: 0;
+    }
+
+    .bulk-checkbox-wrapper label {
+        display: inline;
+    }
+
     .highlighted-row {
         background-color: #f2f2f2;
     }
@@ -102,6 +110,14 @@
         top: 15%;
         right: -20%;
         width: 50%;
+    }
+
+    #bulk-card .card-title {
+        display: inline;
+    }
+
+    #bulk-card .selected-items {
+        display: inline;
     }
 
     .edit-selected-items {

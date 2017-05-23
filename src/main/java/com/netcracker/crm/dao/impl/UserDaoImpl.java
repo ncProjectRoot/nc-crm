@@ -318,7 +318,7 @@ public class UserDaoImpl implements UserDao {
                     user.setOrganization(organization);
                 }
 
-                long addressId = rs.getLong(PARAM_USER_ORG_ID);
+                long addressId = rs.getLong(PARAM_USER_ADDRESS_ID);
                 if (addressId != 0) {
                     Address address = new AddressProxy(addressDao);
                     address.setId(addressId);
