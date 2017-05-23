@@ -60,8 +60,7 @@ public class ComplaintRestController {
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
-        Object principal = authentication.getPrincipal();
-        User user = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         complaintDto.setCustomerId(user.getId());
 
         Complaint complaint = complaintService.persist(complaintDto);
@@ -75,11 +74,7 @@ public class ComplaintRestController {
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<Map<String, Object>> complaints(ComplaintRowRequest complaintRowRequest, Authentication authentication,
                                                           @RequestParam(required = false) boolean individual) {
-        Object principal = authentication.getPrincipal();
-        User user = null;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         return new ResponseEntity<>(complaintService.getComplaintRow(complaintRowRequest, user, individual), HttpStatus.OK);
     }
 
@@ -87,19 +82,22 @@ public class ComplaintRestController {
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<List<AutocompleteDto>> complaintsTitles(String pattern, Authentication authentication,
                                                                   @RequestParam(required = false) boolean individual) {
-        Object principal = authentication.getPrincipal();
-        User user  = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         return new ResponseEntity<>(complaintService.getAutocompleteDto(pattern, user, individual), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')")
     public ResponseEntity<Boolean> acceptOrCloseComplaint(Authentication authentication,
-                                                   @RequestParam(value = "type") String type,
-                                                   @PathVariable Long id) {
-        Object principal = authentication.getPrincipal();
-        User pmg = (UserDetailsImpl) principal;
-        return new ResponseEntity<>(complaintService.changeStatusComplaint(id, type, pmg), HttpStatus.OK);
+                                                          @RequestParam(value = "type") String type,
+                                                          @PathVariable Long id) {
+        User pmg = (UserDetailsImpl) authentication.getPrincipal();
+        Boolean result = complaintService.changeStatusComplaint(id, type, pmg);
+        if (result) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/graph")
@@ -107,5 +105,4 @@ public class ComplaintRestController {
     public GraphDto getGraph(GraphDto graphDto) {
         return complaintService.getStatisticalGraph(graphDto);
     }
-
 }

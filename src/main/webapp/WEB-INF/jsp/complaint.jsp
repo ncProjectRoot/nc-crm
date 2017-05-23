@@ -60,13 +60,20 @@
         top: -20px;
     }
 
+    .history {
+        width: calc(100% - 20px * 2);
+        margin: 0 auto;
+        font-size: 17px;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="Complaint #${complaint.id}">
     <div class="container">
         <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
             <c:if test="${complaint.status=='OPEN'}">
                 <div class="button-pmg">
-                    <a class="waves-effect waves-light btn-large" id="acceptBtn"><i class="material-icons right">done</i>accept</a>
+                    <a class="waves-effect waves-light btn-large" id="acceptBtn"><i
+                            class="material-icons right">done</i>accept</a>
                 </div>
             </c:if>
             <c:if test="${complaint.status=='SOLVING'}">
@@ -127,6 +134,19 @@
         <div class="divider"></div>
     </div>
 </div>
+<div class="history z-depth-1">
+    <ul class="collection" id="history">
+        <c:forEach var="i" items="${history}">
+            <li class="collection-item">
+                <span> <strong>Status: </strong> <span class="status ${i.newStatus.name}"> ${i.newStatus.name} </span>
+                    <strong>Date:</strong> ${i.dateChangeStatus.toLocalDate()} ${i.dateChangeStatus.toLocalTime()}
+                       <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
+                    <strong>Description: </strong> ${i.descChangeStatus} </span>
+                </sec:authorize>
+            </li>
+        </c:forEach>
+    </ul>
+</div>
 <script>
     $('.collapsible').collapsible();
     <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
@@ -149,12 +169,13 @@
             data: {
                 type: 'ACCEPT'
             },
-            success: function (data) {
-                if (data === true) {
-                    $(window).trigger('hashchange')
+            statusCode: {
+                200: function (data) {
+                    $(window).trigger('hashchange');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have accepted the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                },
+                400: function (data) {
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
@@ -173,17 +194,18 @@
             data: {
                 type: 'CLOSE'
             },
-            success: function (data) {
-                if (data === true) {
-                    $(window).trigger('hashchange')
+            statusCode: {
+                200: function (data) {
+                    $(window).trigger('hashchange');
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("You have closed the complaint!", 5000, 'rounded');
-                } else if (data === false) {
+                },
+                400: function (data) {
                     $(".progress").removeClass("progress-active");
-                    Materialize.toast("Something wrong!", 2000, 'rounded');
+                    Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
                         window.location.reload();
-                    }, 2000);
+                    }, 3000);
                 }
             }
         });

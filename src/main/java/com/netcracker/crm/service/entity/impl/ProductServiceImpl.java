@@ -12,6 +12,7 @@ import com.netcracker.crm.dto.bulk.ProductBulkDto;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.ProductMapper;
 import com.netcracker.crm.dto.row.ProductRowDto;
+import com.netcracker.crm.exception.UnsupportedChangingStatusException;
 import com.netcracker.crm.listener.event.ChangeStatusProductEvent;
 import com.netcracker.crm.listener.event.CreateProductEvent;
 import com.netcracker.crm.service.entity.ProductService;
@@ -106,6 +107,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductsByDiscountId(Long id, User user) {
+        UserRole role = user.getUserRole();
+        List<Product> products = new ArrayList<>();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR) || role.equals(UserRole.ROLE_PMG)) {
+            products = productDao.findProductsByDiscountId(id);
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            products = productDao.findProductsByDiscountIdAndCustomerId(id, user.getId());
+        }
+        return products;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<AutocompleteDto> getPossibleProductsAutocompleteDtoByCustomer(String pattern, User customer) {
         List<Product> products = productDao.findByPatternAndCustomerIdAndRegionId(pattern, customer.getId(), customer.getAddress().getRegion().getId());
@@ -156,7 +169,8 @@ public class ProductServiceImpl implements ProductService {
         } else if (statusId.equals(ProductStatus.OUTDATED.getId())) {
             return changeStatusToOutdated(productId, user);
         }
-        return false;
+        throw new UnsupportedChangingStatusException("Product with id "
+                + productId + " hasn't changed status");
     }
 
     @Transactional
@@ -164,7 +178,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = productDao.findById(productId);
         ChangeStatusProductEvent event = new ChangeStatusProductEvent(this, product, user, ProductStatus.OUTDATED);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Product with id "
+                    + productId + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
 
     @Transactional
@@ -172,7 +191,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productDao.findById(productId);
         ChangeStatusProductEvent event = new ChangeStatusProductEvent(this, product, user, ProductStatus.ACTUAL);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Product with id "
+                    + productId + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
-
 }

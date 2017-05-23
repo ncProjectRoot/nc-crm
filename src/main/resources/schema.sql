@@ -74,8 +74,8 @@ CREATE TABLE groups
 ALTER TABLE groups
   ADD CONSTRAINT groups_PK PRIMARY KEY (id);
 
-ALTER TABLE groups
-  ADD CONSTRAINT groups__UN UNIQUE (discount_id);
+-- ALTER TABLE groups
+--   ADD CONSTRAINT groups__UN UNIQUE (discount_id);
 
 
 CREATE TABLE history

@@ -10,6 +10,7 @@ public final class GroupSqlQuery {
     public static final String PARAM_GROUP_ID = "id";
     public static final String PARAM_GROUP_NAME = "name";
     public static final String PARAM_GROUP_DISCOUNT_ID = "discount_id";
+    public static final String PARAM_GROUP_CUSTOMER_ID = "customer_id";
 
 
     public static final String PARAM_GROUP_ROW_DISCOUNT_TITLE = "title";
@@ -40,6 +41,21 @@ public final class GroupSqlQuery {
             "FROM groups " +
             "WHERE concat(id, ' ', name) ILIKE :pattern " +
             "ORDER BY id;";
+
+    public static final String SQL_FIND_GROUP_BY_DISCOUNT_ID = "SELECT id, name, discount_id " +
+            "FROM groups " +
+            "WHERE discount_id = :discount_id " +
+            "ORDER BY id;";
+
+    public static final String SQL_FIND_GROUP_BY_DISCOUNT_ID_AND_CUSTOMER_ID = "SELECT g.id, g.name, g.discount_id " +
+            "FROM groups g " +
+            "INNER JOIN region_groups rg ON rg.group_id=g.id " +
+            "INNER JOIN region r ON rg.region_id = r.id " +
+            "INNER JOIN address a ON a.region_id = r.id " +
+            "INNER JOIN users u ON u.address_id = a.id " +
+            "WHERE g.discount_id = :discount_id " +
+            "AND u.id = :customer_id " +
+            "ORDER BY g.id; ";
 
     public static final String SQL_GET_GROUP_COUNT = "SELECT count(*) " +
             "FROM groups;";
