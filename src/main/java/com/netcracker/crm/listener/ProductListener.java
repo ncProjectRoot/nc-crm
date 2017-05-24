@@ -43,31 +43,17 @@ public class ProductListener {
         historyDao.create(history);
     }
 
-
-    @EventListener(condition = "#event.product.status.name.equals('PLANNED') " +
-            "&& #event.changeToStatus.name.equals('ACTUAL')")
-    public void actualStatus(ChangeStatusProductEvent event) {
-        User user = event.getUser();
-        Product product = event.getProduct();
-        product.setStatus(event.getChangeToStatus());
-        History history = generateHistory(product);
-        String role = getRole(user);
-        history.setDescChangeStatus(role + " with id " +
-                user.getId() + " changed status of Product to 'ACTUAL'");
-        saveStatusAndHistory(product, history);
-        event.setDone(true);
-    }
-
-    @EventListener(condition = "(#event.product.status.name.equals('PLANNED') || #event.product.status.name.equals('ACTUAL')  )" +
-            "&& #event.changeToStatus.name.equals('OUTDATED')")
+    @EventListener(condition = "((#event.product.status.name.equals('PLANNED') || #event.product.status.name.equals('ACTUAL')) && " +
+            "#event.changeToStatus.name.equals('OUTDATED')) || " +
+            "(#event.product.status.name.equals('PLANNED') && #event.changeToStatus.name.equals('ACTUAL'))")
     public void outdatedStatus(ChangeStatusProductEvent event) {
         User user = event.getUser();
         Product product = event.getProduct();
         product.setStatus(event.getChangeToStatus());
         History history = generateHistory(product);
         String role = getRole(user);
-        history.setDescChangeStatus(role + " with id " +
-                user.getId() + " changed status of Product to 'OUTDATED'");
+        history.setDescChangeStatus("Status was changed by " + role + " with id " +
+                user.getId());
         saveStatusAndHistory(product, history);
         event.setDone(true);
     }

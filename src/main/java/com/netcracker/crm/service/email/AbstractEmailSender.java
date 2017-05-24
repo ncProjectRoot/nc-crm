@@ -5,13 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import javax.mail.MessagingException;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
+import java.io.InputStreamReader;
 
 /**
  * @author Melnyk_Dmytro
@@ -25,27 +25,26 @@ public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    private static final String TEMPLATE_PACKAGE = "email/?????";
+    private static final String TEMPLATE_PACKAGE = "classpath:email/?????";
 
     public abstract void send(EmailParam emailParam) throws MessagingException, IncorrectEmailElementException;
+
     protected abstract void checkEmailMap(EmailParam emailParam) throws IncorrectEmailElementException;
 
     public String getTemplate(String template) {
         String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
         log.debug("Getting email template " + concreteTemplate);
         StringBuilder stringBuilder = new StringBuilder();
-        File file = new File(getClass().getClassLoader().getResource(concreteTemplate).getFile());
-        if (file.exists()) {
-            try {
-                List<String> lines = Files.readAllLines(Paths.get(file.getCanonicalPath()));
-                for (String line : lines) {
-                    stringBuilder.append(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            Resource resource = new ClassPathResource(concreteTemplate);
+            BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()), 1024);
+            String line;
+            while ((line = br.readLine()) != null) {
+                stringBuilder.append(line);
             }
-        } else {
-            log.error("File " + concreteTemplate + " not found");
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return stringBuilder.toString();
     }

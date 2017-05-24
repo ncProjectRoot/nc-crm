@@ -34,14 +34,4 @@ public class RealRegion implements Region {
     public void setName(String name) {
         this.name = name;
     }
-
-    @Override
-    public Discount getDiscount() {
-        return discount;
-    }
-
-    @Override
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
-    }
 }

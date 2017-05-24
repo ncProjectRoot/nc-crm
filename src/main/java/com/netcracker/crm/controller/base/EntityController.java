@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +51,9 @@ public class EntityController {
         boolean allowed = complaintService.checkAccessToComplaint(customer, id);
         if (allowed) {
             Complaint complaint = complaintService.findById(id);
+            List<History> histories = complaintService.getHistory(id);
             model.put("complaint", complaint);
+            model.put("history", histories);
             return "complaint";
         } else {
             return "403";
@@ -91,12 +94,10 @@ public class EntityController {
 
     @RequestMapping("/*/discount/{id}")
     public String discount(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         model.put("discount", discountService.getDiscountById(id));
+        model.put("products", productService.getProductsByDiscountId(id, user));
+        model.put("groups", groupService.getGroupsByDiscountId(id, user));
         return "discount";
     }
 

@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -44,6 +45,12 @@
 
     .modal-content h4 {
         margin-top: 20px;
+    }
+
+    .collect {
+        max-height: 600px;
+        overflow: auto;
+        font-size: 17px;
     }
 
 </style>
@@ -112,6 +119,52 @@
                 <h5 class="description field">${discount.description}</h5>
             </div>
         </div>
+        <c:if test="${products.size()>0}">
+            <div class="divider"></div>
+            <div class="section">
+                <div class="row">
+                    <div class="collect center">
+                        <div class="collection with-header">
+                            <div class="collection-header"><h5>Products:</h5></div>
+                            <c:forEach items="${products}" var="product">
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+                                    <a href="#product/${product.id}" class="collection-item">${product.title}, Default price:
+                                        <fmt:formatNumber
+                                                value="${product.defaultPrice}"
+                                                maxFractionDigits="2"/> $,
+                                        Product status: ${product.status.name}
+                                    </a>
+                                </sec:authorize>
+                                <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+                                    <c:if test="${product.status.name=='ACTUAL'}">
+                                        <a href="#product/${product.id}" class="collection-item">${product.title}, Price
+                                            from:
+                                            <fmt:formatNumber
+                                                    value="${product.defaultPrice-(product.defaultPrice*(discount.percentage/100))}"
+                                                    maxFractionDigits="2"/> $</a>
+                                    </c:if>
+                                </sec:authorize>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:if>
+        <c:if test="${groups.size()>0}">
+            <div class="divider"></div>
+            <div class="section">
+                <div class="row">
+                    <div class="collect center">
+                        <div class="collection with-header">
+                            <div class="collection-header"><h5>Groups:</h5></div>
+                            <c:forEach items="${groups}" var="group">
+                                    <a href="#group/${group.id}" class="collection-item">${group.name} </a>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:if>
     </div>
 </div>
 <script>
