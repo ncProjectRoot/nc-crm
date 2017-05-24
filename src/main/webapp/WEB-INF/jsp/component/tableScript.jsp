@@ -22,34 +22,16 @@
             rowOffset: 0
         };
 
-        <%--<div class="input-field col s12 m8 l6 field-search">--%>
-        <%--<i class="material-icons prefix">search</i>--%>
-        <%--<div class="chips chips-search"></div>--%>
-        <%--</div>--%>
-        tableContainer.prepend('<div class="input-field col s12 m8 l6 field-search"><i class="material-icons prefix">search</i><div class="chips chips-search"></div></div>')
-        <%--<div class="message">Unfortunately, your request not found</div>--%>
-        <%--<div class="preloader-wrapper big active ">--%>
-        <%--<div class="spinner-layer spinner-blue-only">--%>
-        <%--<div class="circle-clipper left">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--<div class="gap-patch">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--<div class="circle-clipper right">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--</div>--%>
-        <%--</div>--%>
+        tableContainer.prepend('<div class="found-length-wrapper hide-on-small-only"><span>Found:</span><span class="found-length"></span></div> ')
+        tableContainer.prepend('<div class="input-field col s12 m5 l6 field-search"><i class="material-icons prefix">search</i><div class="chips chips-search"></div></div>')
+        tableContainer.prepend("<div class='input-field col s1 input-number-row hide-on-small-only'><select class='number-row'><option value='3'>3</option><option value='" + countTr + "' selected>" + countTr + "</option><option value='20'>20</option><option value='100'>100</option><option value='9999999'>all</option></select></div>")
         tableContainer.find(".table-wrapper").append('<div class="message">Unfortunately, your request not found</div><div class="preloader-wrapper big active "><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>')
-        <%--<ul class="pagination col">--%>
-        <%--<li class="page-left"><a href="#!" class="a-dummy"><i class="material-icons">chevron_left</i></a>--%>
-        <%--</li>--%>
-        <%--<li class="page-right"><a href="#!" class="a-dummy"><i class="material-icons">chevron_right</i></a>--%>
-        <%--</li>--%>
-        <%--</ul>--%>
-        <%--<div class="footer col"></div>--%>
         tableContainer.append('<ul class="pagination col"><li class="page-left"><a href="#!" class="a-dummy"><i class="material-icons">chevron_left</i></a></li><li class="page-right"><a href="#!" class="a-dummy"><i class="material-icons">chevron_right</i></a></li></ul><div class="footer col"></div>')
+
+        tableContainer.find(".number-row").material_select();
+        tableContainer.find("select.number-row").on("change", function (e) {
+            countTr = parseInt($(this).val());
+        });
 
         tableContainer.find('.chips-search').material_chip({
             placeholder: 'Type and enter',
@@ -90,13 +72,16 @@
                 });
             });
         })
+        Materialize.updateTextFields();
 
         downloadTable();
         function downloadTable() {
             ajaxParametersForTable.rowOffset = (currentPage - 1) * countTr;
             tableContainer.find("tbody").empty();
             tableContainer.find(".preloader-wrapper").addClass("active");
+            ajaxParametersForTable.rowLimit = countTr;
             $.get(params.urlTable, ajaxParametersForTable, function (data) {
+                tableContainer.find(".found-length").text(data.length);
                 tableContainer.find(".preloader-wrapper").removeClass("active");
                 tableContainer.find("tbody").empty();
                 fillTable(data);
@@ -326,7 +311,6 @@
         });
 
         $('.chip-close').on('click', function () {
-            console.log("'click', '.chip-close',");
             var chip = $(this).parent('.bulk-chip');
             var checkboxId = chip.attr('checkbox-id');
             $(modal).find('#' + checkboxId).val(false);

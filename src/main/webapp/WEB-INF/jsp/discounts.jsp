@@ -1,6 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
+    .description {
+        display: block;
+        width: 600px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 </style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
 <div class="content-body z-depth-1" data-page-name="Discounts">
@@ -28,7 +35,7 @@
                                     <th data-field="3">
                                         <a href="#!" class="sorted-element a-dummy">Percentage</a>
                                     </th>
-                                    <th data-field="4">
+                                    <th data-field="4" class="hide-on-med-and-down">
                                         <a href="#!" class="sorted-element a-dummy">Description</a>
                                     </th>
                                     <th class="th-dropdown" data-field="active">
@@ -56,21 +63,21 @@
                 <div class="row">
                     <form class="col s12" id="addDiscount">
                         <div class="row">
-                            <div class='input-field col s6'>
+                            <div class='input-field col s12 m6'>
                                 <i class="material-icons prefix">title</i>
                                 <input class='validate' type='text' name='title' id='disc_title'/>
                                 <label for="disc_title">Title</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class='input-field col s6'>
+                            <div class='input-field col s12 m6'>
                                 <i class="material-icons prefix">call_received</i>
                                 <input class='validate' type='number' name='percentage' id='disc_percentage'/>
                                 <label for="disc_percentage">Percentage</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class='switch col s6'>
+                            <div class='switch col s12 m6'>
                                 <i class="material-icons prefix">touch_app</i>
                                 <label>
                                     Inactive
@@ -81,7 +88,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">description</i>
                                 <textarea id="disc_description" name="description"
                                           class="materialize-textarea"></textarea>
@@ -90,7 +97,7 @@
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <button class="btn waves-effect waves-light" type="submit" id="submit-discount"
                                         name="action">Create Discount
                                     <i class="material-icons right">send</i>
@@ -245,12 +252,12 @@
             var perc = object.percentage ? object.percentage + "%" : "";
             temp = "<span id='percentage" + object.id + "' >"+perc+"</span>"
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='description" + object.id + "' >"+object.description+"</span>";
+            temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >"+object.description+"</span>";
             tr.append($("<td>", {html: temp}));
             
             if (object.discountActive != null)
                 disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
-            temp = "<span id='discountActive" + object.id + "' >"+disActive+"</span>";
+            temp = "<span id='discountActive" + object.id + "' style='cursor: pointer;'>"+disActive+"</span>";
             tr.append($("<td>", {html: temp}));
             return tr;
         }

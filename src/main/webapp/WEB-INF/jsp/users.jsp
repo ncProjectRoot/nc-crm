@@ -88,7 +88,7 @@
                 <div class="row">
                     <form id="form-user-create" class="col s12">
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <div class="input-field">
                                     <i class="material-icons prefix">account_circle</i>
                                     <input id="user_first_name" name="firstName" type="text" class="validate">
@@ -119,7 +119,7 @@
                                         <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
                                 </div>
                             </div>
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <div class="input-field">
                                     <i class="material-icons prefix">work</i>
                                     <select name="userRole" id="user_role">
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <input type="hidden" name="addressRegionName" id="customer_region_name">
                                 <input type="hidden" name="addressLatitude" id="customer_address_lat">
                                 <input type="hidden" name="addressLongitude" id="customer_address_long">
@@ -328,12 +328,14 @@
             temp = "<span id='userRole" + object.id + "'>" + object.userRole + "</span>";
             tr.append($("<td>", {html: temp}));
             if (object.contactPerson != null)
-                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
+                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' style='cursor: pointer;' class='material-icons prefix'>clear</i>";
             temp = "<span id='contactPerson" + object.id + "'>" + contactPerson + "</span>";
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='formattedAddress" + object.id + "'>" + object.formattedAddress + "</span>";
+            var formattedAddress = object.formattedAddress ? object.formattedAddress : "";
+            temp = "<span id='formattedAddress" + object.id + "'>" + formattedAddress + "</span>";
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='organizationName" + object.id + "'>" + object.organizationName + "</span>";
+            var organizationName = object.organizationName ? object.organizationName : "";
+            temp = "<span id='organizationName" + object.id + "'>" + organizationName + "</span>";
             tr.append($("<td>", {html: temp}));
             return tr;
         }

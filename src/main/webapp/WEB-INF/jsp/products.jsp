@@ -143,7 +143,7 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th class="hide-on-med-and-down"></th>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
@@ -210,12 +210,12 @@
                 <div class="row">
                     <form class="col s12" id="addProduct">
                         <div class="row">
-                            <div class='input-field col s6'>
+                            <div class='input-field col s12 m6'>
                                 <i class="material-icons prefix">title</i>
                                 <label for="title">Title</label>
                                 <input class="validate" id="title" type="text" name="title">
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">bubble_chart</i>
                                 <input type="text" id="group-input" class="autocomplete">
                                 <input type="hidden" id="group-hidden-input" name="groupId"/>
@@ -223,12 +223,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class='input-field col s6'>
+                            <div class='input-field col s12 m6'>
                                 <i class="material-icons prefix">attach_money</i>
                                 <input class='validate' type='number' name='defaultPrice' id='price'/>
                                 <label for="price">Price</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">loyalty</i>
                                 <input type="text" id="discount-input" class="autocomplete">
                                 <input type="hidden" id="discount-hidden-input" name="discountId"/>
@@ -246,7 +246,7 @@
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <button class="btn waves-effect waves-light" id="submit-product" type="submit"
                                         name="action">Create Product
                                     <i class="material-icons right">send</i>
@@ -452,7 +452,7 @@
         bulkUrl: "/products/bulk",
         mapper: function (object) {
             var tr = $("<tr>");
-            tr.append($("<td><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            tr.append($("<td  class='hide-on-med-and-down'><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#product/" + object.id
@@ -485,7 +485,7 @@
                 priceTd.append(newPrice);
                 var percentage = $("<span>", {
                     text: allPercentage + "%",
-                    class: "red-text text-darken-2 percentage"
+                    class: "red-text text-darken-2 percentage hide-on-med-and-down"
                 });
                 priceTd.append(percentage);
             }
@@ -577,7 +577,7 @@
                 priceTd.append(newPrice);
                 var percentage = $("<span>", {
                     text: allPercentage + "%",
-                    class: "red-text text-darken-2 percentage"
+                    class: "red-text text-darken-2 percentage hide-on-med-and-down"
                 });
                 priceTd.append(percentage);
             }
