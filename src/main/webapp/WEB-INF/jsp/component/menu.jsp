@@ -72,9 +72,9 @@
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_CSR', 'ROLE_ADMIN')">
     <li>
-        <a href="#excel" class="valign-wrapper menu-element">
-            <i class="white-text material-icons">trending_up</i>
-            <h2>Excel</h2>
+        <a href="#report" class="valign-wrapper menu-element">
+            <i class="white-text material-icons">save</i>
+            <h2>Report</h2>
         </a>
     </li>
 </sec:authorize>

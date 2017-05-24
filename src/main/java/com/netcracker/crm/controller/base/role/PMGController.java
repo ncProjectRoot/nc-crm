@@ -30,8 +30,8 @@ public class PMGController {
         return "complaints";
     }
 
-    @GetMapping("/excel")
+    @GetMapping("/report")
     public String excel(Map<String, Object> model) {
-        return "excel";
+        return "report";
     }
 }

@@ -140,13 +140,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User principal) {
         UserRole role = principal.getUserRole();
-        List<String> names;
+        List<User> users;
         if (role.equals(UserRole.ROLE_CUSTOMER) && principal.isContactPerson()) {
-            names = userDao.findOrgUserLastNamesByPattern(pattern, principal);
+            users = userDao.findOrgUsersByPattern(pattern, principal);
         } else {
-            names = userDao.findUserLastNamesByPattern(pattern);
+            users = userDao.findUsersByPattern(pattern);
         }
-        return ModelMapper.mapList(userMapper.modelLastNameToAutocomplete(), names, AutocompleteDto.class);
+        return ModelMapper.mapList(userMapper.modelLastNameToAutocomplete(), users, AutocompleteDto.class);
     }
 
     public List<User> getOnlineCsrs() {
