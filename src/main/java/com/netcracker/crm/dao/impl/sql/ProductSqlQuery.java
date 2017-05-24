@@ -17,7 +17,8 @@ public final class ProductSqlQuery {
     public static final String PARAM_PRODUCT_REGION_ID = "region_id";
 
     public static final String PARAM_PRODUCT_ROW_STATUS = "status_id";
-    public static final String PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE = "active";
+    public static final String PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE = "product_discount_active";
+    public static final String PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE = "group_discount_active";
 
     //BULK
     public static final String PARAM_PRODUCT_IDS = "product_ids";
@@ -110,4 +111,25 @@ public final class ProductSqlQuery {
 
     public static final String SQL_PRODUCT_BULK_UPDATE = "" +
             "SELECT update_product(ARRAY [:product_ids ] :: BIGINT[], :discount_id, :group_id, :default_price, :description);";
+
+    public static final String SQL_FIND_PRODUCTS_BY_DISCOUNT_ID = "SELECT id, title, " +
+            "default_price, status_id, description, discount_id, group_id " +
+            "FROM product " +
+            "WHERE discount_id = :discount_id " +
+            "ORDER BY id;";
+
+    public static final String SQL_FIND_PRODUCTS_BY_DISCOUNT_ID_AND_CUSTOMER_ID = "SELECT p.id, title, default_price, status_id, description, p.discount_id, group_id " +
+            "FROM product p " +
+            "LEFT JOIN groups g ON p.group_id = g.id " +
+            "INNER JOIN statuses s ON s.id=p.status_id " +
+            "WHERE p.discount_id = :discount_id " +
+            "AND (group_id is NULL " +
+            "OR group_id IN (SELECT group_id " +
+            "FROM region_groups rg " +
+            "INNER JOIN region r ON rg.region_id = r.id " +
+            "INNER JOIN address a ON a.region_id = r.id " +
+            "INNER JOIN users u ON u.address_id = a.id " +
+            "WHERE u.id = :customer_id)) " +
+            "AND s.name = 'ACTUAL' " +
+            "ORDER BY id;";
 }

@@ -1,6 +1,7 @@
 package com.netcracker.crm.listener.event;
 
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.ComplaintStatus;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -12,10 +13,12 @@ public class ChangeStatusComplaintEvent extends ApplicationEvent {
 
     private Complaint complaint;
     private boolean isDone;
+    private ComplaintStatus changeToStatus;
 
-    public ChangeStatusComplaintEvent(Object source, Complaint complaint) {
+    public ChangeStatusComplaintEvent(Object source, Complaint complaint, ComplaintStatus changeToStatus) {
         super(source);
         this.complaint = complaint;
+        this.changeToStatus = changeToStatus;
     }
 
     public Complaint getComplaint() {
@@ -32,5 +35,13 @@ public class ChangeStatusComplaintEvent extends ApplicationEvent {
 
     public void setDone(boolean done) {
         isDone = done;
+    }
+
+    public ComplaintStatus getChangeToStatus() {
+        return changeToStatus;
+    }
+
+    public void setChangeToStatus(ComplaintStatus changeToStatus) {
+        this.changeToStatus = changeToStatus;
     }
 }

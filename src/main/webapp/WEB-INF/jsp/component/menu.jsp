@@ -55,6 +55,12 @@
             <h2>Groups</h2>
         </a>
     </li>
+    <li>
+        <a href="#regions" class="valign-wrapper menu-element">
+            <i class="white-text material-icons">public</i>
+            <h2>Regions</h2>
+        </a>
+    </li>
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_CUSTOMER', 'ROLE_ADMIN')">
     <li>

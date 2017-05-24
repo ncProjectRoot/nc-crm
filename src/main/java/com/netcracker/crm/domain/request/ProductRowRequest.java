@@ -10,22 +10,25 @@ public class ProductRowRequest extends RowRequest {
 
     private Long statusId;
     private Boolean discountActive;
+    private Boolean groupDiscountActive;
     private Long customerId;
     private Address address;
 
     private static final String BEGIN_SQL = "" +
-            "SELECT p.id, p.title, p.default_price, d.title, d.percentage," +
-            "g.name, d.active, p.status_id, p.description, p.discount_id, p.group_id " +
+            "SELECT p.id, p.title, p.default_price, d.title, " +
+            "g.name, gd.title, p.status_id, p.description, p.discount_id, p.group_id " +
             "FROM product p " +
             "INNER JOIN statuses s ON p.status_id = s.id " +
             "LEFT JOIN groups g ON p.group_id = g.id " +
-            "LEFT JOIN discount d ON p.discount_id = d.id";
+            "LEFT JOIN discount d ON p.discount_id = d.id " +
+            "LEFT JOIN discount gd ON g.discount_id = gd.id";
     private static final String BEGIN_SQL_COUNT = "" +
             "SELECT count(*) " +
             "FROM product p " +
             "INNER JOIN statuses s ON p.status_id = s.id " +
             "LEFT JOIN groups g ON p.group_id = g.id " +
-            "LEFT JOIN discount d ON p.discount_id = d.id";
+            "LEFT JOIN discount d ON p.discount_id = d.id " +
+            "LEFT JOIN discount gd ON g.discount_id = gd.id";
 
     public ProductRowRequest() {
         super(new String[]{
@@ -33,8 +36,8 @@ public class ProductRowRequest extends RowRequest {
                 "p.title",
                 "p.default_price",
                 "d.title",
-                "d.percentage",
-                "g.name"
+                "g.name",
+                "gd.title"
         });
     }
 
@@ -53,6 +56,14 @@ public class ProductRowRequest extends RowRequest {
 
     public void setDiscountActive(Boolean discountActive) {
         this.discountActive = discountActive;
+    }
+
+    public Boolean getGroupDiscountActive() {
+        return groupDiscountActive;
+    }
+
+    public void setGroupDiscountActive(Boolean groupDiscountActive) {
+        this.groupDiscountActive = groupDiscountActive;
     }
 
     public void setCustomerId(Long customerId) {
@@ -89,7 +100,11 @@ public class ProductRowRequest extends RowRequest {
         }
         if (discountActive != null) {
             appendWhere(sql);
-            sql.append("d.active = :active ");
+            sql.append("d.active = :product_discount_active ");
+        }
+        if (groupDiscountActive != null) {
+            appendWhere(sql);
+            sql.append("gd.active = :group_discount_active ");
         }
         return sql;
     }

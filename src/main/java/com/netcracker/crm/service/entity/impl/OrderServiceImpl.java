@@ -2,17 +2,17 @@ package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.model.History;
+import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
-import com.netcracker.crm.dto.AutocompleteDto;
-import com.netcracker.crm.dto.GraphDto;
-import com.netcracker.crm.dto.OrderDto;
-import com.netcracker.crm.dto.OrderHistoryDto;
+import com.netcracker.crm.dto.*;
+import com.netcracker.crm.dto.mapper.Mapper;
+import com.netcracker.crm.dto.mapper.ModelMapper;
+import com.netcracker.crm.dto.mapper.impl.OrderMapper;
 import com.netcracker.crm.dto.row.OrderRowDto;
-import com.netcracker.crm.dto.OrderViewDto;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -35,29 +34,26 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     private final OrderDao orderDao;
-    private final UserDao userDao;
-    private final ProductDao productDao;
     private final HistoryDao historyDao;
     private final OrderLifecycleService lifecycleService;
     private final OrderCache orderCache;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, ProductDao productDao, HistoryDao historyDao, OrderLifecycleService lifecycleService, OrderCache orderCache) {
+    public OrderServiceImpl(OrderDao orderDao, HistoryDao historyDao, OrderLifecycleService lifecycleService,
+                            OrderCache orderCache, OrderMapper orderMapper) {
         this.orderDao = orderDao;
-        this.userDao = userDao;
-        this.productDao = productDao;
         this.historyDao = historyDao;
         this.lifecycleService = lifecycleService;
         this.orderCache = orderCache;
+        this.orderMapper = orderMapper;
     }
 
     @Override
     @Transactional
     public Order create(OrderDto orderDto) {
-        Order order = convertFromDtoToEntity(orderDto);
+        Order order = ModelMapper.map(orderMapper.dtoToModel(), orderDto, RealOrder.class);
         lifecycleService.createOrder(order);
         return order;
     }
@@ -76,11 +72,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             orders = orderDao.findByIdOrTitleByCustomer(pattern, user.getId());
         }
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (Order order : orders) {
-            result.add(convertToAutocompleteDto(order));
-        }
-        return result;
+        return ModelMapper.mapList(orderMapper.modelToAutocomplete(), orders, AutocompleteDto.class);
     }
 
     @Override
@@ -91,10 +83,7 @@ public class OrderServiceImpl implements OrderService {
         response.put("length", length);
         List<Order> orders = orderDao.findOrderRows(orderRowRequest);
 
-        List<OrderRowDto> ordersDto = new ArrayList<>();
-        for (Order order : orders) {
-            ordersDto.add(convertToRowDto(order));
-        }
+        List<OrderRowDto> ordersDto = ModelMapper.mapList(orderMapper.modelToRowDto(), orders, OrderRowDto.class);
         response.put("rows", ordersDto);
         return response;
     }
@@ -107,6 +96,24 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean checkAccessToOrder(User user, Long orderId) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_CSR)) {
+            return true;
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            Long count = null;
+            if (user.isContactPerson()) {
+                count = orderDao.checkOwnershipOfContactPerson(orderId, user.getId());
+            } else {
+                count = orderDao.checkOwnershipOfCustomer(orderId, user.getId());
+            }
+            return count > 0;
+        }
+        return false;
     }
 
     @Override
@@ -156,11 +163,11 @@ public class OrderServiceImpl implements OrderService {
         return 0;
     }
 
-
     private List<OrderViewDto> convertMapToList(Map<Long, Order> map) {
         List<OrderViewDto> orders = new ArrayList<>();
+        Mapper<Order, OrderViewDto> mapper = orderMapper.modelToOrderViewDto();
         for (Map.Entry<Long, Order> m : map.entrySet()) {
-            orders.add(new OrderViewDto(m.getValue(), formatter));
+            orders.add(ModelMapper.map(mapper, m.getValue(), OrderViewDto.class));
         }
         return orders;
     }
@@ -168,23 +175,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public Set<OrderHistoryDto> getOrderHistory(Long id) {
-        return convertToOrderHistory(historyDao.findAllByOrderId(id));
-    }
-
-
-    private Set<OrderHistoryDto> convertToOrderHistory(List<History> list) {
+        List<History> histories = historyDao.findAllByOrderId(id);
         Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
-        for (History history : list) {
-            OrderHistoryDto historyDto = new OrderHistoryDto();
-            historyDto.setId(history.getId());
-            historyDto.setDateChangeStatus(history.getDateChangeStatus().toString());
-            historyDto.setDescChangeStatus(history.getDescChangeStatus());
-            historyDto.setOldStatus(history.getNewStatus().getName());
-            orders.add(historyDto);
-        }
+        orders.containsAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
         return orders;
     }
-
 
     private Comparator<OrderHistoryDto> orderHistoryDtoComparator = (o1, o2) -> o1.getId() > o2.getId() ? -1 : 1;
 
@@ -201,57 +196,6 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private Order convertFromDtoToEntity(OrderDto orderDto) {
-        Order order = new RealOrder();
-        Product product = productDao.findById(orderDto.getProductId());
-        User customer = userDao.findById(orderDto.getCustomerId());
-
-        order.setProduct(product);
-        order.setCustomer(customer);
-        order.setStatus(OrderStatus.NEW);
-        order.setDate(LocalDateTime.now());
-
-        StringBuilder preferredDataTime = new StringBuilder();
-        if (!orderDto.getPreferredDate().isEmpty()) {
-            preferredDataTime.append(orderDto.getPreferredDate());
-            if (!orderDto.getPreferredTime().isEmpty()) {
-                preferredDataTime.append('T');
-                preferredDataTime.append(orderDto.getPreferredTime());
-            }
-        }
-        if (preferredDataTime.length() != 0) {
-            order.setPreferedDate(LocalDateTime.parse(preferredDataTime));
-        }
-        return order;
-    }
-
-    private OrderRowDto convertToRowDto(Order order) {
-        OrderRowDto orderRowDto = new OrderRowDto();
-        orderRowDto.setId(order.getId());
-        orderRowDto.setStatus(order.getStatus().getName());
-        orderRowDto.setProductId(order.getProduct().getId());
-        orderRowDto.setProductTitle(order.getProduct().getTitle());
-        orderRowDto.setProductStatus(order.getProduct().getStatus().getName());
-        orderRowDto.setCustomer(order.getCustomer().getId());
-        if (order.getCsr() != null) {
-            orderRowDto.setCsr(order.getCsr().getId());
-        }
-        if (order.getDate() != null) {
-            orderRowDto.setDateFinish(order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        if (order.getPreferedDate() != null) {
-            orderRowDto.setPreferredDate(order.getPreferedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        return orderRowDto;
-    }
-
-    private AutocompleteDto convertToAutocompleteDto(Order order) {
-        AutocompleteDto autocompleteDto = new AutocompleteDto();
-        autocompleteDto.setId(order.getId());
-        autocompleteDto.setValue(order.getProduct().getTitle() + " " + order.getDate().toLocalDate());
-        return autocompleteDto;
     }
 
 }

@@ -22,34 +22,16 @@
             rowOffset: 0
         };
 
-        <%--<div class="input-field col s12 m8 l6 field-search">--%>
-        <%--<i class="material-icons prefix">search</i>--%>
-        <%--<div class="chips chips-search"></div>--%>
-        <%--</div>--%>
-        tableContainer.prepend('<div class="input-field col s12 m8 l6 field-search"><i class="material-icons prefix">search</i><div class="chips chips-search"></div></div>')
-        <%--<div class="message">Unfortunately, your request not found</div>--%>
-        <%--<div class="preloader-wrapper big active ">--%>
-        <%--<div class="spinner-layer spinner-blue-only">--%>
-        <%--<div class="circle-clipper left">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--<div class="gap-patch">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--<div class="circle-clipper right">--%>
-        <%--<div class="circle"></div>--%>
-        <%--</div>--%>
-        <%--</div>--%>
-        <%--</div>--%>
+        tableContainer.prepend('<div class="found-length-wrapper hide-on-small-only"><span>Found:</span><span class="found-length"></span></div> ')
+        tableContainer.prepend('<div class="input-field col s12 m5 l6 field-search"><i class="material-icons prefix">search</i><div class="chips chips-search"></div></div>')
+        tableContainer.prepend("<div class='input-field col s1 input-number-row hide-on-small-only'><select class='number-row'><option value='3'>3</option><option value='" + countTr + "' selected>" + countTr + "</option><option value='20'>20</option><option value='100'>100</option><option value='9999999'>all</option></select></div>")
         tableContainer.find(".table-wrapper").append('<div class="message">Unfortunately, your request not found</div><div class="preloader-wrapper big active "><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>')
-        <%--<ul class="pagination col">--%>
-        <%--<li class="page-left"><a href="#!" class="a-dummy"><i class="material-icons">chevron_left</i></a>--%>
-        <%--</li>--%>
-        <%--<li class="page-right"><a href="#!" class="a-dummy"><i class="material-icons">chevron_right</i></a>--%>
-        <%--</li>--%>
-        <%--</ul>--%>
-        <%--<div class="footer col"></div>--%>
         tableContainer.append('<ul class="pagination col"><li class="page-left"><a href="#!" class="a-dummy"><i class="material-icons">chevron_left</i></a></li><li class="page-right"><a href="#!" class="a-dummy"><i class="material-icons">chevron_right</i></a></li></ul><div class="footer col"></div>')
+
+        tableContainer.find(".number-row").material_select();
+        tableContainer.find("select.number-row").on("change", function (e) {
+            countTr = parseInt($(this).val());
+        });
 
         tableContainer.find('.chips-search').material_chip({
             placeholder: 'Type and enter',
@@ -90,20 +72,24 @@
                 });
             });
         })
+        Materialize.updateTextFields();
 
         downloadTable();
         function downloadTable() {
             ajaxParametersForTable.rowOffset = (currentPage - 1) * countTr;
             tableContainer.find("tbody").empty();
             tableContainer.find(".preloader-wrapper").addClass("active");
+            ajaxParametersForTable.rowLimit = countTr;
             $.get(params.urlTable, ajaxParametersForTable, function (data) {
+                tableContainer.find(".found-length").text(data.length);
                 tableContainer.find(".preloader-wrapper").removeClass("active");
                 tableContainer.find("tbody").empty();
                 fillTable(data);
                 if (params.complete) {
                     params.complete();
                 }
-                ;
+            }).done(function () {
+                getAllItems();
             });
         }
 
@@ -278,65 +264,116 @@
 
         var card = $(document).find('#bulk-card');
         var modal = $(document).find('#bulk-change-modal');
-        var itemIDsInput = $(document).find('#bulk-item-ids');
-        var itemIDs = [];
+        var itemIDsInput = $(document).find('#bulk-item-ids')
+        var allItemsID = [];
+        var selectedItemsID = [];
 
-        $(document).on('change', '.bulk-checkbox', function () {
+        $(document).on('change', '.bulk-select-all', function () {
             if (this.checked) {
-                var itemId = this.id.replace(checkBoxIdPrefix, "");
-                itemIDs.push(itemId);
-
-                selectRow.call(this);
-                getBulkCard();
+                $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, rowCheckbox) {
+                    $(rowCheckbox).prop('checked', true);
+                    pushId.call(rowCheckbox);
+                    selectRow.call(rowCheckbox);
+                    getBulkCard();
+                });
             } else {
-                var itemId = this.id.replace(checkBoxIdPrefix, "");
-                var index = $.inArray(itemId, itemIDs);
-                if (index != -1) {
-                    itemIDs.splice(index, 1);
-                }
-                deselectRow.call(this);
-                setItemsCountOnCard();
+                $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, rowCheckbox) {
+                    $(rowCheckbox).prop('checked', false);
+                    removeId.call(rowCheckbox);
+                    setItemsCountOnCard();
+                });
+                deselectRows();
             }
-            if (itemIDs.length == 0) {
+            if (selectedItemsID.length == 0) {
                 setDefaultTableStyle();
             }
         });
 
-        $(document).on('click', '#bulk-change-btn', function () {
+        $(document).on('change', '.bulk-checkbox', function () {
+            if (this.checked) {
+                pushId.call(this);
+                selectRow.call(this);
+                getBulkCard();
+                if (isSubArray(selectedItemsID, allItemsID)) {
+                    $('.bulk-select-all').prop('checked', true);
+                }
+            } else {
+                removeId.call(this);
+                deselectRow.call(this);
+                setItemsCountOnCard();
+                $('.bulk-select-all').prop('checked', false);
+            }
+            if (selectedItemsID.length == 0) {
+                setDefaultTableStyle();
+            }
+        });
+
+        $('#bulk-change-btn').on('click', function () {
             initMaterializeComponents();
             $(modal).modal('open');
         });
 
-        $(document).on('click', '#bulk-submit', function (e) {
+        $('#bulk-submit').on('click', function (e) {
             e.preventDefault();
-            $(itemIDsInput).val(itemIDs);
+            $(itemIDsInput).val(selectedItemsID);
             send('#bulk-change-form', params.bulkUrl, 'PUT').done(function () {
-                $('#bulk-change-modal').modal('close');
+                $(modal).modal('close');
                 deselectRows();
                 setDefaultTableStyle();
                 $(window).trigger('hashchange');
             })
         });
 
-        $(document).on('change', '.bulk-field-change', function () {
+        $('.bulk-field-change').on('change', function () {
             var checkbox = $(this).parent().find('.is-changed-checkbox');
             checkbox.val(true);
             $('div[checkbox-id=' + checkbox.attr('id') + ']').css("display", "block");
-
         });
 
-        $(document).on('click', '.chip-close', function () {
-            console.log("'click', '.chip-close',");
+        $('.chip-close').on('click', function () {
             var chip = $(this).parent('.bulk-chip');
             var checkboxId = chip.attr('checkbox-id');
             $(modal).find('#' + checkboxId).val(false);
             $(chip).css("display", "none");
         });
 
-        $(document).on('click', '#bulk-cancel-btn', function () {
+        $('#bulk-cancel-btn').on('click', function () {
             deselectRows();
             setDefaultTableStyle();
         });
+
+        function getAllItems() {
+            allItemsID = [];
+            $('input[id^=' + checkBoxIdPrefix + ']').each(function (i, row) {
+                var itemId = row.id.replace(checkBoxIdPrefix, "");
+                var index = $.inArray(itemId, allItemsID);
+                if (index == -1) {
+                    allItemsID.push(itemId);
+                }
+            });
+            if (isSubArray(selectedItemsID, allItemsID)) {
+                $('.bulk-select-all').prop('checked', true);
+            } else {
+                console.log("$('.bulk-select-all').prop('checked', false);")
+                $('.bulk-select-all').prop('checked', false);
+            }
+        }
+
+        function pushId() {
+            var itemId = this.id.replace(checkBoxIdPrefix, "");
+            var index = $.inArray(itemId, selectedItemsID);
+            if (index == -1) {
+                selectedItemsID.push(itemId);
+            }
+        }
+
+        function removeId() {
+            var itemId = this.id.replace(checkBoxIdPrefix, "");
+            var index = $.inArray(itemId, selectedItemsID);
+            if (index != -1) {
+                selectedItemsID.splice(index, 1);
+            }
+        }
 
         function selectRow() {
             tableContainer.find(".bulk-table").removeClass("striped");
@@ -353,7 +390,7 @@
         }
 
         function setItemsCountOnCard() {
-            card.find(".selected-items").text(itemIDs.length);
+            card.find(".selected-items").text(selectedItemsID.length);
         }
 
         function getBulkCard() {
@@ -362,17 +399,17 @@
         }
 
         function setDefaultTableStyle() {
-            itemIDs = [];
+            selectedItemsID = [];
             card.css("display", "none");
             tableContainer.find(".bulk-table").addClass("striped");
         }
 
         function setCheckboxes() {
-            if (itemIDs.length == 0) {
+            if (selectedItemsID.length == 0) {
                 setDefaultTableStyle();
             } else {
-                for (var i = 0; i < itemIDs.length; i++) {
-                    var checkBox = tableContainer.find("#" + checkBoxIdPrefix + itemIDs[i]);
+                for (var i = 0; i < selectedItemsID.length; i++) {
+                    var checkBox = tableContainer.find("#" + checkBoxIdPrefix + selectedItemsID[i]);
                     $(checkBox).attr("checked", "checked");
                     $(checkBox).parents("tr").addClass("highlighted-row");
                 }
@@ -383,6 +420,11 @@
             $('.modal').modal({opacity: .5, startingTop: '4%', endingTop: '10%'});
             $('ul.tabs').tabs();
             $('.chips').material_chip();
+        }
+
+        function isSubArray(x, y) {
+            if (x.length === 0 || y.length === 0) return false;
+            return y.reduce((included, num) => included && x.includes(num), true);
         }
     };
 </script>

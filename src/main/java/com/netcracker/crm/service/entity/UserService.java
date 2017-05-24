@@ -23,7 +23,11 @@ public interface UserService {
 
     User update(UserDto userDto);
 
+    User update(User user);
+
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
+
+    String getAvatar(Long id);
 
     List<User> getOnlineCsrs();
 }

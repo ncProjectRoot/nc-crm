@@ -188,6 +188,21 @@ public class GroupDaoImpl implements GroupDao {
         return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_ID_OR_TITLE, params, groupExtractor);
     }
 
+    @Override
+    public List<Group> findByDiscountId(Long id) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_DISCOUNT_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_DISCOUNT_ID, params, groupExtractor);
+    }
+
+    @Override
+    public List<Group> findByDiscountIdAndCustomerId(Long discountId, Long customerId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_DISCOUNT_ID, discountId)
+                .addValue(PARAM_GROUP_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_DISCOUNT_ID_AND_CUSTOMER_ID, params, groupExtractor);
+    }
+
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
             Long discountId = discount.getId();

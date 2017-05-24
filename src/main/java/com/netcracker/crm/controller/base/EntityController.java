@@ -1,5 +1,6 @@
 package com.netcracker.crm.controller.base;
 
+import com.netcracker.crm.domain.model.*;
 import com.itextpdf.text.DocumentException;
 import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.pdf.PDFGenerator;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,17 +35,20 @@ public class EntityController {
     private final DiscountService discountService;
     private final GroupService groupService;
     private final UserService userService;
+    private final RegionService regionService;
 
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
-                            OrderService orderService, DiscountService discountService, GroupService groupService, UserService userService) {
+                            OrderService orderService, DiscountService discountService, GroupService groupService,
+                            UserService userService, RegionService regionService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
         this.discountService = discountService;
         this.groupService = groupService;
         this.userService = userService;
+        this.regionService = regionService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -57,10 +62,12 @@ public class EntityController {
         boolean allowed = complaintService.checkAccessToComplaint(customer, id);
         if (allowed) {
             Complaint complaint = complaintService.findById(id);
+            List<History> histories = complaintService.getHistory(id);
             model.put("complaint", complaint);
+            model.put("history", histories);
             return "complaint";
         } else {
-            return "403";
+            return "error/403";
         }
     }
 
@@ -85,28 +92,39 @@ public class EntityController {
     public String order(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         Order order = orderService.getOrderById(id);
-        User user;
+        User user = null;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
-            if (user.getUserRole() == UserRole.ROLE_CUSTOMER && !order.getCustomer().getId().equals(user.getId())) {
-                return "error/403";
-            }
         }
-        model.put("order", order);
-        return "order";
+        boolean allowed = orderService.checkAccessToOrder(user, id);
+        if (allowed) {
+            model.put("order", order);
+            return "order";
+        } else {
+            return "error/403";
+        }
     }
 
     @RequestMapping("/*/discount/{id}")
     public String discount(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         model.put("discount", discountService.getDiscountById(id));
+        model.put("products", productService.getProductsByDiscountId(id, user));
+        model.put("groups", groupService.getGroupsByDiscountId(id, user));
         return "discount";
     }
 
+    @RequestMapping("/*/region/{id}")
+    public String regions(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (user.getUserRole() == UserRole.ROLE_ADMIN || user.getUserRole() == UserRole.ROLE_CSR) {
+            Region region = regionService.getRegionById(id);
+            model.put("region", region);
+            model.put("groups", groupService.getGroupsByRegion(region));
+            return "region";
+        }
+        return "error/403";
+    }
 
     @RequestMapping("/*/group/{id}")
     public String group(Map<String, Object> model, @PathVariable Long id) {
