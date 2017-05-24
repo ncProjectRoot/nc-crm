@@ -1,13 +1,8 @@
 package com.netcracker.crm.controller.base;
 
 import com.netcracker.crm.domain.model.*;
-import com.itextpdf.text.DocumentException;
-import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.pdf.PDFGenerator;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.*;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -16,10 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.List;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -159,28 +152,8 @@ public class EntityController {
         return "profile";
     }
 
-
-
-    @RequestMapping(path = "/{role}/order/{id}/report", method = RequestMethod.GET)
-    public void getFile(Authentication authentication, @PathVariable("id") Long id, HttpServletResponse response) throws MessagingException, DocumentException {
-
-        PDFGenerator pdfGenerator = new PDFGenerator();
-        Order order = orderService.getOrderById(id);
-        User user = order.getCustomer();
-        Product product = order.getProduct();
-        Discount discount = order.getProduct().getDiscount();
-        try {
-            // get your file as InputStream
-            InputStream is = pdfGenerator.generate(order, user, product, discount);
-            // copy it to response's OutputStream
-            IOUtils.copy(is, response.getOutputStream());
-            response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment; filename=Accepted.pdf");
-
-            response.flushBuffer();
-        } catch (IOException ex) {
-//            log.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
-//            throw new RuntimeException("IOError writing file to output stream");
-        }
+    @RequestMapping(path = "/order/{id}/report", method = RequestMethod.GET)
+    public void getPdfFile(@PathVariable("id") Long id, HttpServletResponse response) {
+        orderService.getPdfReport(id, response);
     }
 }

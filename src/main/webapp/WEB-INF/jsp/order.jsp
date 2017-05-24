@@ -15,9 +15,10 @@
         color: darkblue;
     }
 
-    #date{
+    #date {
         text-decoration: underline;
     }
+
     .title {
         color: green;
     }
@@ -91,6 +92,8 @@
             </sec:authorize>
         </div>
     </div>
+
+    <a href="/order/${order.id}/report" class="waves-effect waves-light btn">Get PDF Report</a>
 
 </div>
 <div class="row">

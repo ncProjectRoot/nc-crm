@@ -9,24 +9,38 @@ import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Service
 public class PDFGenerator {
 
-    final static Font BOLD_FONT = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-    final static Font SIMPLE_FONT = new Font(Font.FontFamily.HELVETICA, 12);
+    private final static Font BOLD_FONT = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+    private final static Font SIMPLE_FONT = new Font(Font.FontFamily.HELVETICA, 12);
 
-    public InputStream generate(Order order, User user, Product product, Discount discount) throws DocumentException, IOException, MessagingException {
-
-        String test = generateFileName();
-        return createPdf(test, product.getTitle(), product.getDescription(), product.getDefaultPrice(), discount.getPercentage(), order.getId(), order.getDate(), user.getFirstName(), user.getLastName(), user.getPhone(), user.getEmail());
-
+    public byte[] generate(Order order, User customer, Product product, Discount discount) throws DocumentException, IOException, MessagingException {
+        String title = product.getTitle();
+        String description = product.getDescription();
+        Double price = product.getDefaultPrice();
+        Long orderId = order.getId();
+        LocalDateTime orderDate = order.getDate();
+        String email = customer.getEmail();
+        String firstName = customer.getFirstName();
+        String lastName = customer.getLastName();
+        String phone = "";
+        if (customer.getPhone() != null) phone = customer.getPhone();
+        Double percentage = 0D;
+        if (discount != null) percentage = discount.getPercentage();
+        return createPdf(title, description, price, percentage, orderId,
+                orderDate, firstName, lastName, phone, email);
     }
 
-    public InputStream createPdf(String filename, String name, String description, double price, double discount, Long orderNum, LocalDateTime date, String fName, String lName, String phoneNumber, String email)
+    private byte[] createPdf(String title, String description, double price, double discount, Long orderNum,
+                             LocalDateTime date, String fName, String lName, String phoneNumber, String email)
             throws DocumentException, IOException {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -37,6 +51,7 @@ public class PDFGenerator {
             try {
                 PdfWriter.getInstance(document, stream);
             } catch (DocumentException e) {
+                e.printStackTrace();
             }
 
             document.open();
@@ -46,7 +61,7 @@ public class PDFGenerator {
             document.add(createOrderDate(date));
 
             //insert table
-            document.add(createTable(name, description, String.valueOf(price)));
+            document.add(createTable(title, description, String.valueOf(price)));
 
             //insert customer's order details
             document.add(createOrderInfoTable(fName, lName, price, discount, phoneNumber, email));
@@ -55,7 +70,7 @@ public class PDFGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ByteArrayInputStream(stream.toByteArray());
+        return stream.toByteArray();
     }
 
     private Paragraph createHeader(Long orderNum) {
@@ -88,10 +103,10 @@ public class PDFGenerator {
         infoTable.addCell(new Paragraph("Subtotal: " + price + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(fName + " " + lName, SIMPLE_FONT));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Discount: " + (price - (price * discount / 100)) + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph("Discount: " + (price * discount / 100) + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(phone));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Total order: " + (price * discount / 100) + " UAH", BOLD_FONT));
+        infoTable.addCell(new Paragraph("Total order: " + (price * (100 - discount) / 100) + " UAH", BOLD_FONT));
         infoTable.addCell(email);
         infoTable.addCell("");
         infoTable.addCell("");
