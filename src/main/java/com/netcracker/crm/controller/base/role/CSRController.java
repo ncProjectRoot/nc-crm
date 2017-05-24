@@ -60,4 +60,8 @@ public class CSRController {
         return "messages";
     }
 
+    @GetMapping("/excel")
+    public String excel(Map<String, Object> model) {
+        return "excel";
+    }
 }
