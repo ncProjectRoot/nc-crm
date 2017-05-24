@@ -7,7 +7,6 @@ import com.netcracker.crm.domain.request.DiscountRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.dto.bulk.DiscountBulkDto;
-import com.netcracker.crm.dto.mapper.DiscountMapper;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.DiscountMapper;
 import com.netcracker.crm.dto.row.DiscountRowDto;
@@ -19,9 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -83,15 +79,15 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     @Transactional
     public boolean bulkUpdate(DiscountBulkDto bulkDto) {
-        Discount discountTemplate = getBulkDiscount(bulkDto);
+        RealDiscount discountTemplate = getBulkDiscount(bulkDto);
         Set<Long> discountIDs = new HashSet<>();
         if (bulkDto.getItemIds() != null) discountIDs.addAll(bulkDto.getItemIds());
 
         return discountDao.bulkUpdate(discountIDs, discountTemplate);
     }
 
-    private Discount getBulkDiscount(DiscountBulkDto bulkDto) {
-        Discount discountTemplate = new Discount();
+    private RealDiscount getBulkDiscount(DiscountBulkDto bulkDto) {
+        RealDiscount discountTemplate = new RealDiscount();
         if (bulkDto.isDescriptionChanged()) discountTemplate.setDescription(bulkDto.getDescription());
         if (bulkDto.isActiveChanged()) {
             boolean isActive = bulkDto.isActive() == null ? false : bulkDto.isActive();

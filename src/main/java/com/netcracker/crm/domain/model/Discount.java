@@ -23,7 +23,7 @@ public interface Discount {
 
     void setDescription(String description);
 
-    boolean isActive();
+    Boolean isActive();
 
-    void setActive(boolean active);
+    void setActive(Boolean active);
 }

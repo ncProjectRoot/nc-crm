@@ -182,7 +182,7 @@ public class DiscountDaoImpl implements DiscountDao {
     }
 
     @Override
-    public boolean bulkUpdate(Set<Long> discountIDs, Discount discount) {
+    public boolean bulkUpdate(Set<Long> discountIDs, RealDiscount discount) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_DISCOUNT_IDS, discountIDs)
                 .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive())
