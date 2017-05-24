@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.*;
 import org.springframework.security.core.Authentication;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,4 +45,5 @@ public interface OrderService {
 
     boolean checkAccessToOrder(User customer, Long orderId);
 
+    void getPdfReport(Long orderId, HttpServletResponse response);
 }

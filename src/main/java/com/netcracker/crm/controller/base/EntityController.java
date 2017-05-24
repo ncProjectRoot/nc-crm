@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -149,5 +150,10 @@ public class EntityController {
         long id = user1.getId();
         model.put("profile", userService.getUserById(id));
         return "profile";
+    }
+
+    @RequestMapping(path = "/order/{id}/report", method = RequestMethod.GET)
+    public void getPdfFile(@PathVariable("id") Long id, HttpServletResponse response) {
+        orderService.getPdfReport(id, response);
     }
 }
