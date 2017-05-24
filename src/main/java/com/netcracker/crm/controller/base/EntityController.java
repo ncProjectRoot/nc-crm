@@ -5,6 +5,8 @@ import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.pdf.PDFGenerator;
 import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.*;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -142,32 +144,25 @@ public class EntityController {
 
 
     @RequestMapping(path = "/{role}/order/{id}/report", method = RequestMethod.GET)
-    public String report(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id, produces) throws DocumentException, MessagingException, IOException, com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException {
-
-        Object principal = authentication.getPrincipal();
-//        User user;
-//        if (principal instanceof UserDetailsImpl) {
-//            user = (UserDetailsImpl) principal;
-//        }
+    public void getFile(Authentication authentication, @PathVariable("id") Long id, HttpServletResponse response) throws MessagingException, DocumentException {
 
         PDFGenerator pdfGenerator = new PDFGenerator();
         Order order = orderService.getOrderById(id);
         User user = order.getCustomer();
         Product product = order.getProduct();
         Discount discount = order.getProduct().getDiscount();
+        try {
+            // get your file as InputStream
+            InputStream is = pdfGenerator.generate(order, user, product, discount);
+            // copy it to response's OutputStream
+            IOUtils.copy(is, response.getOutputStream());
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=Accepted.pdf");
 
-        pdfGenerator.generate(order, user, product, discount);
-        response.setContentType("application/pdf");
-        //response.setContentLength(content.length);
-        response.setHeader("Content-Disposition", "inline; filename=" + pdfGenerator.generateFileName());
-        model.put("pdf", pdfGenerator.generateFileName());
-
-        return pdfGenerator.generate(order, user, product, discount);
+            response.flushBuffer();
+        } catch (IOException ex) {
+//            log.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
+//            throw new RuntimeException("IOError writing file to output stream");
+        }
     }
-
-//    @RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
-//    @ResponseBody
-//    public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
-//        return new FileSystemResource();
-//    }
 }

@@ -10,8 +10,7 @@ import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,31 +19,43 @@ public class PDFGenerator {
     final static Font BOLD_FONT = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
     final static Font SIMPLE_FONT = new Font(Font.FontFamily.HELVETICA, 12);
 
-    public void generate(Order order, User user, Product product, Discount discount) throws DocumentException, IOException, MessagingException {
+    public InputStream generate(Order order, User user, Product product, Discount discount) throws DocumentException, IOException, MessagingException {
 
-        new PDFGenerator().createPdf(generateFileName(), product.getTitle(), product.getDescription(), product.getDefaultPrice(), discount.getPercentage(), order.getId(), order.getDate(), user.getFirstName(), user.getLastName(), user.getPhone(), user.getEmail());
+        String test = generateFileName();
+        return createPdf(test, product.getTitle(), product.getDescription(), product.getDefaultPrice(), discount.getPercentage(), order.getId(), order.getDate(), user.getFirstName(), user.getLastName(), user.getPhone(), user.getEmail());
+
     }
 
-    private void createPdf(String filename, String name, String description, double price, double discount, Long orderNum, LocalDateTime date, String fName, String lName, String phoneNumber, String email)
+    public InputStream createPdf(String filename, String name, String description, double price, double discount, Long orderNum, LocalDateTime date, String fName, String lName, String phoneNumber, String email)
             throws DocumentException, IOException {
 
-        Document document = new Document();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
 
-        PdfWriter.getInstance(document, new FileOutputStream(filename));
+            Document document = new Document();
 
-        document.open();
+            try {
+                PdfWriter.getInstance(document, stream);
+            } catch (DocumentException e) {
+            }
 
-        //insert order details
-        document.add(createHeader(orderNum));
-        document.add(createOrderDate(date));
+            document.open();
 
-        //insert table
-        document.add(createTable(name, description, String.valueOf(price)));
+            //insert order details
+            document.add(createHeader(orderNum));
+            document.add(createOrderDate(date));
 
-        //insert customer's order details
-        document.add(createOrderInfoTable(fName, lName, price, discount, phoneNumber, email));
+            //insert table
+            document.add(createTable(name, description, String.valueOf(price)));
 
-        document.close();
+            //insert customer's order details
+            document.add(createOrderInfoTable(fName, lName, price, discount, phoneNumber, email));
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ByteArrayInputStream(stream.toByteArray());
     }
 
     private Paragraph createHeader(Long orderNum) {
@@ -77,17 +88,18 @@ public class PDFGenerator {
         infoTable.addCell(new Paragraph("Subtotal: " + price + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(fName + " " + lName, SIMPLE_FONT));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Discount: " + (price - (price * discount/100)) + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph("Discount: " + (price - (price * discount / 100)) + " UAH", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(phone));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Total order: " + (price * discount/100) + " UAH", BOLD_FONT));
+        infoTable.addCell(new Paragraph("Total order: " + (price * discount / 100) + " UAH", BOLD_FONT));
         infoTable.addCell(email);
         infoTable.addCell("");
         infoTable.addCell("");
 
-        return  infoTable;
+        return infoTable;
 
     }
+
     private PdfPTable createTable(String name, String description, String price) {
 
         PdfPTable table = new PdfPTable(3);
