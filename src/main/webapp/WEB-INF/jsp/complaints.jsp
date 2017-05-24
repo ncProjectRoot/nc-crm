@@ -237,7 +237,7 @@
                 <div class="row">
                     <form id="createComplaintForm" class="col s12" name="createComplaint">
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">title</i>
                                 <input id="title" type="text" class="validate" name="title" maxlength="50"
                                        data-length="50">
@@ -245,7 +245,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">loyalty</i>
                                 <input type="text" id="order-input" class="autocomplete">
                                 <input type="hidden" id="order-hidden-input" name="orderId"/>
@@ -253,7 +253,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6">
                                 <i class="material-icons prefix">mode_edit</i>
                                 <textarea name="message" id="message" class="materialize-textarea"
                                           maxlength="375" data-length="375"></textarea>
@@ -261,7 +261,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <button class="btn waves-effect waves-light" type="submit" name="action"
                                         id="createButton">
                                     Create Copmplaint
@@ -322,19 +322,26 @@
                 tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
                 tr.append($("<td>", {text: object.title}));
                 tr.append($("<td>", {text: object.status}));
-                tr.append($("<td>", {text: object.customer}));
-                tr.append($("<td>", {text: object.order}));
+                tr.append($("<td>").append($("<a>", {
+                    html: object.customer,
+                    href: "#user/" + object.customer
+                })));
+                tr.append($("<td>").append($("<a>", {
+                    html: object.order,
+                    href: "#order/" + object.order
+                })));
                 tr.append($("<td>", {text: object.orderStatus}));
                 tr.append($("<td>", {text: object.productTitle}));
                 tr.append($("<td>", {text: object.productStatus}));
-                tr.append($("<td>", {text: object.pmg}));
+                tr.append($("<td>").append($("<a>", {
+                    html: object.pmg,
+                    href: "#user/" + object.pmg
+                })));
                 tr.append($("<td>", {text: object.date}));
                 return tr;
             }
         });
-        </sec:authorize>
 
-        <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')">
         $("#table-pmg-complaints").karpo_table({
             urlSearch: "/complaints/autocomplete?individual=true",
             urlTable: "/complaints?individual=true",

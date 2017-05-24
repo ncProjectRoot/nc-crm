@@ -55,12 +55,12 @@
             <div class="row">
                 <form class="col s12" id="addGroup">
                     <div class="row">
-                        <div class='input-field col s6'>
+                        <div class='input-field col s12 m6'>
                             <i class="material-icons prefix">short_text</i>
                             <input class='validate' type='text' name='name' id='group_name'/>
                             <label for="group_name">Name</label>
                         </div>
-                        <div class="input-field col s6">
+                        <div class="input-field col s12 m6">
                             <i class="material-icons prefix">loyalty</i>
                             <input type="text" id="discount-input" class="autocomplete">
                             <input type="hidden" id="discount-hidden-input" name="discountId"/>
@@ -68,18 +68,18 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s6">
+                        <div class="input-field col s12 m6">
                             <i class="material-icons prefix">view_list</i>
                             <input type="text" id="product-input" class="autocomplete">
                             <input type="hidden" id="product-hidden-input" name="products"/>
                             <label for="product-input">Select products</label>
                         </div>
-                        <div class="col s6">
+                        <div class="col s12 m6">
                             <ul id="selected-products" class="collection"></ul>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col s6">
+                        <div class="col s12 m6">
                             <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">
                                 Create Group
                                 <i class="material-icons right">send</i>
