@@ -295,7 +295,7 @@
         var form = "#form-user-create";
         send(form, url, "POST").done(function (id) {
             if (id) {
-                location.hash = '#user?id=' + id;
+                location.hash = '#user/' + id;
             }
         })
     });

@@ -301,8 +301,7 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
                 .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription());
 
-        boolean isSame = namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
-        return isSame;
+        return namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
     }
 
     private Long getDiscountId(Discount discount) {

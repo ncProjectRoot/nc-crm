@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.netcracker.crm.dao.impl.sql.DiscountSqlQuery.*;
 
@@ -178,6 +179,17 @@ public class DiscountDaoImpl implements DiscountDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PATTERN, "%" + pattern + "%");
         return namedJdbcTemplate.query(SQL_FIND_DISC_BY_ID_OR_TITLE, params, discountExtractor);
+    }
+
+    @Override
+    public boolean bulkUpdate(Set<Long> discountIDs, RealDiscount discount) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_DISCOUNT_IDS, discountIDs)
+                .addValue(PARAM_DISCOUNT_ACTIVE, discount.getActive())
+                .addValue(PARAM_DISCOUNT_PERCENTAGE, discount.getPercentage())
+                .addValue(PARAM_DISCOUNT_DESCRIPTION, discount.getDescription());
+
+        return namedJdbcTemplate.queryForObject(SQL_DISCOUNT_BULK_UPDATE, params, Integer.class) == discountIDs.size();
     }
 
     private static final class DiscountExtractor implements ResultSetExtractor<List<Discount>> {

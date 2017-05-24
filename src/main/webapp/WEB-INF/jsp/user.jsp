@@ -46,6 +46,12 @@
         margin-top: 20px;
     }
 
+    .avatar {
+        display: none;
+        border-radius: 50%;
+        width: 150px;
+    }
+
 </style>
 <div class="content-body z-depth-1" data-page-name="User #${user.id}">
 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
@@ -54,7 +60,7 @@
         <form id="update-user-form">
             <div class="modal-content row">
                 <h4>Update user</h4>
-                <input type="hidden" name="id" value="${user.id}"/>
+                <input id="user-id" type="hidden" name="id" value="${user.id}"/>
                 <input type="hidden" name="password" value="${user.password}"/>
                 <input type="hidden" name="email" value="${user.email}"/>
                 <input type="hidden" name="enable" value="${user.enable}"/>
@@ -112,6 +118,7 @@
 
 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     <div class="container">
+        <div><img id="user-avatar" class="avatar" src=""/></div>
         <h4 class="name field">${user.lastName} ${user.middleName} ${user.firstName}</h4>
         <div class="divider"></div>
         <div class="section">
@@ -173,4 +180,10 @@
 
     </sec:authorize>
 
+
+    $.get('/users/' + $('#user-id').val() + '/avatar', function (data) {
+    }).done(function (data) {
+        $("#user-avatar").attr('src', data);
+        $("#user-avatar").css('display', 'block');
+    });
 </script>

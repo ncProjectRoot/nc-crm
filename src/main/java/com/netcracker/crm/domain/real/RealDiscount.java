@@ -11,7 +11,7 @@ public class RealDiscount implements Discount {
     private String title;
     private Double percentage;
     private String description;
-    private boolean active;
+    private Boolean active;
 
     public RealDiscount() {
     }
@@ -57,12 +57,17 @@ public class RealDiscount implements Discount {
     }
 
     @Override
-    public boolean isActive() {
+    public Boolean isActive() {
+        return active != null && active;
+    }
+
+
+    public Boolean getActive() {
         return active;
     }
 
     @Override
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 }

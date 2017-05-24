@@ -57,7 +57,7 @@
                 <li class="menu-item-user hide-on-small-only" data-user-role="${user.userRole}">
                     <div>
                         <a class='dropdown-button a-dummy' href='.' data-activates='dropdown-user'>
-                            <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png"
+                            <img id="profile-avatar" src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png"
                                  alt="" class="circle responsive-img z-depth-1">
                             <div>
                                 <span class="black-text title" id="user-name">${user.lastName} ${user.firstName}</span>

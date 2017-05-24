@@ -39,7 +39,14 @@ $(document).ready(function () {
     $(window).on('hashchange', function () {
         downloadContent();
     });
+
+    $.get('/users/avatar', function (data) {
+    }).done(function (data) {
+        $("#profile-avatar").attr('src', data);
+        $("#profile-avatar").css('display', 'block');
+    });
 });
+
 
 function checkNewMessage() {
     var messageItem = $(".message-menu-item");
@@ -53,7 +60,7 @@ function checkNewMessage() {
 function countMessage() {
     $.get("/messages/count").success(function (data) {
         var count = data;
-        if (count > 0){
+        if (count > 0) {
             $(".message-menu-item").attr("data-new-message", count);
             checkNewMessage();
         }
@@ -139,7 +146,7 @@ jQuery.fn.karpo_status = function (activeStatusId) {
 };
 jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
-    var dataAutocomplete = {"null":null};
+    var dataAutocomplete = {"null": null};
     var deleter;
     if (params.defaultValue.length > 1) {
         var defaultObject = convert(params.defaultValue);
@@ -163,7 +170,7 @@ jQuery.fn.karpo_autocomplete = function (params) {
     });
     autocomplete.autocomplete({
         data: dataAutocomplete,
-        onAutocomplete: function(val) {
+        onAutocomplete: function (val) {
             $(params.label).text("#" + val);
             var id = convert(val).id;
             $(params.hideInput).val(id);
@@ -186,6 +193,7 @@ jQuery.fn.karpo_autocomplete = function (params) {
             }
         }
     }
+
     function deleteValue() {
         $(params.label).text("#");
         autocomplete.val("");
@@ -193,6 +201,7 @@ jQuery.fn.karpo_autocomplete = function (params) {
         autocomplete.trigger("onAutocompleteDeleteItem");
         toggleDeleter("hide");
     }
+
     function convert(val) {
         return {
             id: parseFloat(val.substring(0, val.indexOf(" "))),
@@ -220,7 +229,7 @@ jQuery.fn.karpo_multi_select = function (params) {
         });
     });
 
-    this.addSelected =  function (val) {
+    this.addSelected = function (val) {
         var id = parseFloat(val.substring(0, val.indexOf(" ")));
         if (selected.indexOf(id) == -1) {
             selected.push(id);
@@ -256,7 +265,6 @@ jQuery.fn.karpo_multi_select = function (params) {
     };
 
     return this;
-
 
 
 };
