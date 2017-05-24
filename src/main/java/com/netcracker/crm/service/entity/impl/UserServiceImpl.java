@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private static final String TOKEN_WILD_CARD = "%token%";
     private static final String LOCAL_ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
     private static final String PRODUCTION_ACTIVATION_LINK_TEMPLATE = "http://nc-project.tk/user/registration/confirm?token=" + TOKEN_WILD_CARD;
-    private static final String SRC_IMG_TEMPLATE = "data:image/png;base64,";
+    private static final String DEFAULT_AVATAR = "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png";
 
     @Resource
     private Environment env;
@@ -161,13 +161,14 @@ public class UserServiceImpl implements UserService {
         gravatar.setSize(500);
         gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
         gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
-        byte[] avatar = gravatar.download(user.getEmail());
-        if (avatar != null) {
-            String avatarBase64 = Base64.getEncoder().encodeToString(avatar);
-            return SRC_IMG_TEMPLATE + avatarBase64;
-        } else {
-            return null;
+        if (user != null) {
+            byte[] byteUrl = gravatar.download(user.getEmail());
+            String url = gravatar.getUrl(user.getEmail());
+            if (byteUrl != null) {
+                return url;
+            }
         }
+        return DEFAULT_AVATAR;
     }
 
     private String createUserRegistrationToken(User user) {

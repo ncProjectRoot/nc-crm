@@ -100,10 +100,17 @@ public class UserRestController {
 
     @GetMapping("/{id}/avatar")
     public ResponseEntity<String> getAvatar(@PathVariable Long id) {
-        String avatarBase64 = userService.getAvatar(id);
-        if (avatarBase64 != null) {
-            return new ResponseEntity<>(avatarBase64, HttpStatus.OK);
+        String avatar = userService.getAvatar(id);
+        if (avatar != null) {
+            return new ResponseEntity<>(avatar, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/avatar")
+    public ResponseEntity<String> getAvatar(Authentication authentication) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        String avatar = userService.getAvatar(user.getId());
+        return new ResponseEntity<>(avatar, HttpStatus.OK);
     }
 }
