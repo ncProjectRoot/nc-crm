@@ -38,7 +38,7 @@ public class GroupRestController {
 
     @Autowired
     public GroupRestController(GroupService groupService, GroupValidator groupValidator,
-                                  ResponseGenerator<Group> generator, BindingResultHandler bindingResultHandler) {
+                               ResponseGenerator<Group> generator, BindingResultHandler bindingResultHandler) {
         this.groupService = groupService;
         this.groupValidator = groupValidator;
         this.generator = generator;
@@ -47,27 +47,27 @@ public class GroupRestController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<?> createGroup(@Valid GroupDto groupDto, BindingResult bindingResult){
+    public ResponseEntity<?> createGroup(@Valid GroupDto groupDto, BindingResult bindingResult) {
         groupValidator.validate(groupDto, bindingResult);
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
         Group group = groupService.create(groupDto);
-        if (group.getId() > 0){
-            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE,SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
+        if (group.getId() > 0) {
+            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE, SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping(value = "/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern){
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG')")
+    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern) {
         return new ResponseEntity<>(groupService.getAutocompleteGroup(pattern), HttpStatus.OK);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> getGroupRows(GroupRowRequest request){
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG')")
+    public ResponseEntity<Map<String, Object>> getGroupRows(GroupRowRequest request) {
         return new ResponseEntity<>(groupService.getGroupPage(request), HttpStatus.OK);
     }
 

@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-orders-wrapper">All Orders</a></li>
                 </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
@@ -15,7 +15,7 @@
                 </sec:authorize>
             </ul>
         </div>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
             <div id="all-orders-wrapper" class="col s12">
                 <div id="table-all-orders" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
@@ -152,7 +152,7 @@
 
     $('ul#tabs').tabs();
 
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     $("#table-all-orders").karpo_table({
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/orders",

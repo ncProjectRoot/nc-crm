@@ -15,41 +15,45 @@
 
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <li class="tab col s3"><a class="active" href="#all-discounts-wrapper">All Discounts</a></li>
-                <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+                    <li class="tab col s3"><a class="active" href="#all-discounts-wrapper">All Discounts</a></li>
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                </sec:authorize>
             </ul>
         </div>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
             <div id="all-discounts-wrapper" class="col s12">
                 <div id="table-all-products" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                                <tr>
-                                    <th data-field="1">
-                                        <a href="#!" class="sorted-element a-dummy">#</a>
-                                    </th>
-                                    <th data-field="2">
-                                        <a href="#!" class="sorted-element a-dummy">Title</a>
-                                    </th>
-                                    <th data-field="3">
-                                        <a href="#!" class="sorted-element a-dummy">Percentage</a>
-                                    </th>
-                                    <th data-field="4" class="hide-on-med-and-down">
-                                        <a href="#!" class="sorted-element a-dummy">Description</a>
-                                    </th>
-                                    <th class="th-dropdown" data-field="active">
-                                        <a class='dropdown-button a-dummy' href='#'
-                                           data-activates='dropdown-all-discount-status'
-                                           data-default-name="Discount Active">
-                                            Discount Active
-                                        </a>
-                                        <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                            <ul id="dropdown-all-discount-status" class='dropdown-content'>
-                                <li><a href="#" class="a-dummy" data-value="true">True</a></li>
-                                <li><a href="#" class="a-dummy" data-value="false">False</a></li>
-                            </ul>
-                            </th>
+                            <tr>
+                                <th data-field="1">
+                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                </th>
+                                <th data-field="2">
+                                    <a href="#!" class="sorted-element a-dummy">Title</a>
+                                </th>
+                                <th data-field="3">
+                                    <a href="#!" class="sorted-element a-dummy">Percentage</a>
+                                </th>
+                                <th data-field="4" class="hide-on-med-and-down">
+                                    <a href="#!" class="sorted-element a-dummy">Description</a>
+                                </th>
+                                <th class="th-dropdown" data-field="active">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-discount-status'
+                                       data-default-name="Discount Active">
+                                        Discount Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-discount-status" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                                    </ul>
+                                </th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -57,8 +61,8 @@
                     </div>
                 </div>
             </div>
-
-
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form class="col s12" id="addDiscount">
@@ -153,11 +157,13 @@
                 <i class="material-icons right">send</i>
             </button>
         </div>
-    </div>    
+    </div>
 </form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
+    $('ul#tabs').tabs();
 
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
@@ -172,68 +178,66 @@
             $(id).html("check");
             $(id).fadeIn(3000);
         }
-        
-        $("#disc_id2").val($("#"+"id"+simpleId).html());
-        $("#disc_title2").val($("#"+"title"+simpleId).html());
-        var length = $("#"+"percentage"+simpleId).html().length;
-        var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
+
+        $("#disc_id2").val($("#" + "id" + simpleId).html());
+        $("#disc_title2").val($("#" + "title" + simpleId).html());
+        var length = $("#" + "percentage" + simpleId).html().length;
+        var perc = $("#" + "percentage" + simpleId).html().substring(0, length - 1);
         $("#disc_percentage2").val(perc);
         if ($(id).html() == "check")
             document.getElementById("disc_active2").checked = true;
         if ($(id).html() == "clear")
             document.getElementById("disc_active2").checked = false;
         //$("#disc_active2").val($("#"+"discountActive"+simpleId).val());
-        $("#disc_description2").val($("#"+"description"+simpleId).html());
-        
-        
+        $("#disc_description2").val($("#" + "description" + simpleId).html());
+
+
         /*$("#disc_title").val($("#"+"title"+simpleId).html());
-        var length = $("#"+"percentage"+simpleId).html().length;
-        var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
-        $("#disc_percentage").val(perc);
-        
-        if ($(id).html() == "check")
-            document.getElementById("disc_active").checked = true;
-        if ($(id).html() == "clear")
-            document.getElementById("disc_active").checked = false;
-        
-        //$("#disc_active").val($("#"+"discountActive"+simpleId).html());
-        $("#disc_description").val($("#"+"description"+simpleId).html());
-        */
-        
+         var length = $("#"+"percentage"+simpleId).html().length;
+         var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
+         $("#disc_percentage").val(perc);
+
+         if ($(id).html() == "check")
+         document.getElementById("disc_active").checked = true;
+         if ($(id).html() == "clear")
+         document.getElementById("disc_active").checked = false;
+
+         //$("#disc_active").val($("#"+"discountActive"+simpleId).html());
+         $("#disc_description").val($("#"+"description"+simpleId).html());
+         */
+
         var url = "/discounts";
         var form = "#updateDiscountActive";
         send(form, url, "PUT");
     }
 
-    $('ul#tabs').tabs();
-
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     //////// create ////////
 
     $('select').material_select();
 
     $("#addDiscount").on("submit", function (e) {
-        e.preventDefault();
-        var title = $('#disc_title').val();
-        var percentage = $('#disc_percentage').val();
-        if (title.length < 5) {
-            Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
-        } else if (percentage < 0 || percentage > 100) {
-            Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
-        } else {
-            var url = "/discounts";
-            var form = "#addDiscount";
-            send(form, url, "POST").done(function (id) {
-                if (id) {
-                    location.hash = '#discount/' + id;
-                }
-            })
+            e.preventDefault();
+            var title = $('#disc_title').val();
+            var percentage = $('#disc_percentage').val();
+            if (title.length < 5) {
+                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+            } else if (percentage < 0 || percentage > 100) {
+                Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
+            } else {
+                var url = "/discounts";
+                var form = "#addDiscount";
+                send(form, url, "POST").done(function (id) {
+                    if (id) {
+                        location.hash = '#discount/' + id;
+                    }
+                })
+            }
         }
-    }
     );
+    </sec:authorize>
 
     //////// all ////////
-
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     $("#table-all-products").karpo_table({
         urlSearch: "/discounts/autocomplete",
         urlTable: "/discounts",
@@ -241,23 +245,23 @@
             var disActive = null;
             var temp = null;
             var tr = $("<tr>");
-            temp = "<span id='id" + object.id + "'>"+object.id+"</span>";
+            temp = "<span id='id" + object.id + "'>" + object.id + "</span>";
             tr.append($("<td>").append($("<a>", {
                 html: temp,
                 href: "#discount/" + object.id
             })));
             // id='title" + object.id + "'
-            temp = "<span id='title" + object.id + "' >"+object.title+"</span>";
+            temp = "<span id='title" + object.id + "' >" + object.title + "</span>";
             tr.append($("<td>", {html: temp}));
             var perc = object.percentage ? object.percentage + "%" : "";
-            temp = "<span id='percentage" + object.id + "' >"+perc+"</span>"
+            temp = "<span id='percentage" + object.id + "' >" + perc + "</span>"
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >"+object.description+"</span>";
+            temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >" + object.description + "</span>";
             tr.append($("<td>", {html: temp}));
-            
+
             if (object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
-            temp = "<span id='discountActive" + object.id + "' style='cursor: pointer;'>"+disActive+"</span>";
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
+            temp = "<span id='discountActive" + object.id + "' style='cursor: pointer;'>" + disActive + "</span>";
             tr.append($("<td>", {html: temp}));
             return tr;
         }

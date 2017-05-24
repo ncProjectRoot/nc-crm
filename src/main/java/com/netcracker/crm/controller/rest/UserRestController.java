@@ -82,10 +82,10 @@ public class UserRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }*/
-    
+
     @PutMapping("/contactPerson")
     public ResponseEntity<?> updateUser(UserDto userDto) {
-        
+
         User updatingUser = userService.getUserById(userDto.getId());
         updatingUser.setContactPerson(userDto.isContactPerson());
         User user = userService.update(updatingUser);
@@ -95,7 +95,7 @@ public class UserRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
     @PutMapping
     public ResponseEntity<?> updateUserContactPerson(@Valid UserDto userDto) {
 
@@ -108,19 +108,19 @@ public class UserRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
                                                         @RequestParam(required = false) boolean individual) {
         Object principal = authentication.getPrincipal();
-        User user  = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUsers(userRowRequest, user, individual), HttpStatus.OK);
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        User user  = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
 

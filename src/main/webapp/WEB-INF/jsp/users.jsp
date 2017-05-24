@@ -12,16 +12,18 @@
 
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-users-wrapper">All Users</a></li>
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a id="link-create-wrapper" href="#create-wrapper">Create</a></li>
                 </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
-                    </sec:authorize>
+                </sec:authorize>
             </ul>
         </div>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
             <div id="all-users-wrapper" class="col s12">
                 <div id="table-all-users" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
@@ -83,7 +85,8 @@
                     </div>
                 </div>
             </div>
-
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form id="form-user-create" class="col s12">
@@ -116,7 +119,7 @@
                                     <label for="customer_address_details">Address Details</label>
                                 </div>
                                 <div>
-                                        <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                                    <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
                                 </div>
                             </div>
                             <div class="col s12 m6">
@@ -214,9 +217,9 @@
 
 
 <form id="update-user-form2" style="display: none">
-    <div class="modal-content row">        
-        <input id="user_id2" type="hidden" name="id" />
-        <input id="user_contactPerson2" type="hidden" name="contactPerson" />            
+    <div class="modal-content row">
+        <input id="user_id2" type="hidden" name="id"/>
+        <input id="user_contactPerson2" type="hidden" name="contactPerson"/>
     </div>
     <div class="modal-footer center-align">
         <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
@@ -231,7 +234,7 @@
 
     $('ul#tabs').tabs({
 
-        onShow: function() {
+        onShow: function () {
             $('#map').locationpicker({
                 location: {
                     latitude: 40.7324319,
@@ -299,9 +302,11 @@
             }
         })
     });
+    </sec:authorize>
 
     //////// all ////////
 
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     $("#table-all-users").karpo_table({
         urlSearch: "/users/autocomplete",
         urlTable: "/users",
@@ -340,7 +345,8 @@
             return tr;
         }
     });
-
+    </sec:authorize>
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
@@ -356,16 +362,16 @@
             $(id).fadeIn(1500);
         }
 
-         $("#user_id2").val($("#"+"id"+simpleId).html());
-         if ($(id).html() == "check")
+        $("#user_id2").val($("#" + "id" + simpleId).html());
+        if ($(id).html() == "check")
             $("#user_contactPerson2").val(true);
-         if ($(id).html() == "clear")
+        if ($(id).html() == "clear")
             $("#user_contactPerson2").val(false);
-         //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
-         
-         var url = "/users/contactPerson";
-         var form = "#update-user-form2";
-         send(form, url, "PUT");
+        //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
+
+        var url = "/users/contactPerson";
+        var form = "#update-user-form2";
+        send(form, url, "PUT");
     }
     </sec:authorize>
 
