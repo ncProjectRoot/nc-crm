@@ -76,22 +76,19 @@ public class OrderRestController {
         Map<String, Object> result;
         if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
             orderRowRequest.setCustomerId(user.getId());
-            result = orderService.getOrdersRow(orderRowRequest);
-        } else {
-            result = orderService.getOrdersRow(orderRowRequest);
+            if (user.isContactPerson()) {
+                orderRowRequest.setIsContactPerson(true);
+            }
         }
+        result = orderService.getOrdersRow(orderRowRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_CUSTOMER')")
     public List<AutocompleteDto> getAutocompleteDto(String pattern, Authentication authentication,
-                                                     @PathVariable(value = "userId") Long userId) {
-        Object principal = authentication.getPrincipal();
-        User customer = null;
-        if (principal instanceof UserDetailsImpl) {
-            customer = (UserDetailsImpl) principal;
-        }
+                                                    @PathVariable(value = "userId") Long userId) {
+        User customer = (UserDetailsImpl) authentication.getPrincipal();
         return orderService.getAutocompleteOrder(pattern, customer);
     }
 
@@ -103,7 +100,7 @@ public class OrderRestController {
 
     @GetMapping("/{id}/history")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_ADMIN')")
-    public Set<OrderHistoryDto> orderHistory(@PathVariable Long id){
+    public Set<OrderHistoryDto> orderHistory(@PathVariable Long id) {
         return orderService.getOrderHistory(id);
     }
 

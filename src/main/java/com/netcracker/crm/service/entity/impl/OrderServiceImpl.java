@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.*;
@@ -95,6 +96,24 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean hasCustomerProduct(Long productId, Long customerId) {
         return orderDao.hasCustomerProduct(productId, customerId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean checkAccessToOrder(User user, Long orderId) {
+        UserRole role = user.getUserRole();
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_CSR)) {
+            return true;
+        } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
+            Long count = null;
+            if (user.isContactPerson()) {
+                count = orderDao.checkOwnershipOfContactPerson(orderId, user.getId());
+            } else {
+                count = orderDao.checkOwnershipOfCustomer(orderId, user.getId());
+            }
+            return count > 0;
+        }
+        return false;
     }
 
     @Override

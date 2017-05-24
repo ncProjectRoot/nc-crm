@@ -6,7 +6,10 @@ import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,7 @@ public class EntityController {
             model.put("history", histories);
             return "complaint";
         } else {
-            return "403";
+            return "error/403";
         }
     }
 
@@ -81,15 +84,17 @@ public class EntityController {
     public String order(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         Order order = orderService.getOrderById(id);
-        User user;
+        User user = null;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
-            if (user.getUserRole() == UserRole.ROLE_CUSTOMER && !order.getCustomer().getId().equals(user.getId())) {
-                return "error/403";
-            }
         }
-        model.put("order", order);
-        return "order";
+        boolean allowed = orderService.checkAccessToOrder(user, id);
+        if (allowed) {
+            model.put("order", order);
+            return "order";
+        } else {
+            return "error/403";
+        }
     }
 
     @RequestMapping("/*/discount/{id}")
@@ -114,14 +119,15 @@ public class EntityController {
     }
 
     @RequestMapping("/*/group/{id}")
-    public String group(Map<String, Object> model,  @PathVariable Long id) {
+    public String group(Map<String, Object> model, @PathVariable Long id) {
         model.put("group", groupService.getGroupById(id));
         model.put("products", productService.getProductsByGroupId(id));
         return "group";
     }
+
     @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
     public String user(Map<String, Object> model, Authentication authentication,
-                           @PathVariable Long id) {
+                       @PathVariable Long id) {
         Object principal = authentication.getPrincipal();
         User user;
         if (principal instanceof UserDetailsImpl) {

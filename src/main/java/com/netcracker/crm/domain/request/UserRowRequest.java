@@ -25,6 +25,7 @@ public class UserRowRequest extends RowRequest {
             " org_id = (SELECT org_id " +
             "FROM users " +
             "WHERE id = :id)";
+
     private Long roleId;
     private Boolean accountNonLocked;
     private Boolean contactPerson;

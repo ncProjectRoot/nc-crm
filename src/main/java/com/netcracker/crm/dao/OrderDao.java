@@ -20,8 +20,9 @@ public interface OrderDao extends CrudDao<Order> {
 
     List<Order> findAllByPrefDateAndStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
                                            LocalDateTime to, OrderStatus orderStatus);
+
     List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
-                                           OrderStatus orderStatus);
+                                OrderStatus orderStatus);
 
     List<Order> findAllByProductId(Long id);
 
@@ -42,4 +43,8 @@ public interface OrderDao extends CrudDao<Order> {
     List<Order> findByIdOrTitleByCustomer(String pattern, Long customerId);
 
     Boolean hasCustomerProduct(Long productId, Long customerId);
+
+    Long checkOwnershipOfContactPerson(Long orderId, Long id);
+
+    Long checkOwnershipOfCustomer(Long orderId, Long id);
 }
