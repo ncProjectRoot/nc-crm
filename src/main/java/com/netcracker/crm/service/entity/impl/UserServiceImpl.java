@@ -1,14 +1,19 @@
 package com.netcracker.crm.service.entity.impl;
 
-import com.netcracker.crm.dao.*;
+import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.dao.UserTokenDao;
 import com.netcracker.crm.domain.UserToken;
-import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.UserRole;
+import com.netcracker.crm.domain.real.RealUser;
 import com.netcracker.crm.domain.request.UserRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.UserDto;
-import com.netcracker.crm.dto.mapper.UserMap;
+import com.netcracker.crm.dto.mapper.ModelMapper;
+import com.netcracker.crm.dto.mapper.impl.UserMapper;
 import com.netcracker.crm.dto.row.UserRowDto;
 import com.netcracker.crm.exception.RegistrationException;
+import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
@@ -24,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,23 +57,21 @@ public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final UserTokenDao tokenDao;
-    private final RegionDao regionDao;
-    private final OrganizationDao organizationDao;
-    private final AddressDao addressDao;
     private final AbstractEmailSender emailSender;
     private final PasswordEncoder encoder;
+    private final SessionRegistry sessionRegistry;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, RegionDao regionDao,
-                           OrganizationDao organizationDao, AddressDao addressDao, PasswordEncoder encoder,
-                           @Qualifier("registrationSender") AbstractEmailSender emailSender) {
+    public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, PasswordEncoder encoder,
+                           @Qualifier("registrationSender") AbstractEmailSender emailSender,
+                           SessionRegistry sessionRegistry, UserMapper userMapper) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
-        this.regionDao = regionDao;
-        this.organizationDao = organizationDao;
-        this.addressDao = addressDao;
         this.emailSender = emailSender;
         this.encoder = encoder;
+        this.sessionRegistry = sessionRegistry;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -78,7 +82,7 @@ public class UserServiceImpl implements UserService {
         userDto.setPassword(password);
         encodePassword(userDto);
 
-        User user = mapFromDto(userDto);
+        User user = ModelMapper.map(userMapper.dtoToModelForCreate(), userDto, RealUser.class);
 
         userDao.create(user);
         String registrationToken = createUserRegistrationToken(user);
@@ -109,7 +113,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(UserDto userDto) {
-        User user = convertToEntity(userDto);
+        User user = ModelMapper.map(userMapper.dtoToModel(), userDto, RealUser.class);
+        userDao.update(user);
+        return user;
+    }
+
+    @Override
+    public User update(User user) {
         userDao.update(user);
         return user;
     }
@@ -126,10 +136,7 @@ public class UserServiceImpl implements UserService {
         response.put("length", length);
         List<User> users = userDao.findUsers(userRowRequest);
 
-        List<UserRowDto> dtoRows = new ArrayList<>();
-        for (User user : users) {
-            dtoRows.add(convertToRowDto(user));
-        }
+        List<UserRowDto> dtoRows = ModelMapper.mapList(userMapper.modelToRowDto(), users, UserRowDto.class);
         response.put("rows", dtoRows);
         return response;
     }
@@ -144,13 +151,21 @@ public class UserServiceImpl implements UserService {
         } else {
             names = userDao.findUserLastNamesByPattern(pattern);
         }
-        List<AutocompleteDto> result = new ArrayList<>();
-        for (String userLastName : names) {
-            AutocompleteDto autocompleteDto = new AutocompleteDto();
-            autocompleteDto.setValue(userLastName);
-            result.add(autocompleteDto);
+        return ModelMapper.mapList(userMapper.modelLastNameToAutocomplete(), names, AutocompleteDto.class);
+    }
+
+    public List<User> getOnlineCsrs() {
+        List principals = sessionRegistry.getAllPrincipals();
+        List<User> csrList = new ArrayList<>();
+        for (Object o : principals) {
+            if (o instanceof UserDetailsImpl) {
+                User user = (User) o;
+                if (user.getUserRole() == UserRole.ROLE_CSR) {
+                    csrList.add(user);
+                }
+            }
         }
-        return result;
+        return csrList;
     }
 
     @Override
@@ -206,81 +221,6 @@ public class UserServiceImpl implements UserService {
         } catch (MessagingException e) {
             throw new RegistrationException("Registration email wasn't sent.", e);
         }
-    }
-
-    private UserRowDto convertToRowDto(User user) {
-        UserRowDto userRowDto = new UserRowDto();
-        userRowDto.setId(user.getId());
-        userRowDto.setFirstName(user.getFirstName());
-        userRowDto.setMiddleName(user.getMiddleName());
-        userRowDto.setLastName(user.getLastName());
-        userRowDto.setEmail(user.getEmail());
-        userRowDto.setPhone(user.getPhone());
-        userRowDto.setContactPerson(user.isContactPerson());
-        userRowDto.setUserRole(user.getUserRole().getFormattedName());
-        userRowDto.setAccountNonLocked(user.isAccountNonLocked());
-
-        Organization organization = user.getOrganization();
-        if (organization != null) {
-            userRowDto.setOrganizationName(organization.getName());
-        }
-
-        Address address = user.getAddress();
-        if (address != null) {
-            userRowDto.setFormattedAddress(address.getFormattedAddress());
-        }
-
-        return userRowDto;
-    }
-
-    private User mapFromDto(UserDto userDto) {
-        ModelMapper mapper = configureMapper();
-        User user = mapper.map(userDto, User.class);
-
-        if (user.getUserRole().equals(UserRole.ROLE_CUSTOMER)) {
-            Address address = new Address();
-            address.setLatitude(userDto.getAddressLatitude());
-            address.setLongitude(userDto.getAddressLongitude());
-            address.setDetails(userDto.getAddressDetails());
-            address.setFormattedAddress(userDto.getFormattedAddress());
-            Region region = regionDao.findByName(userDto.getAddressRegionName());
-            if (region == null) {
-                region = new Region();
-                region.setName(userDto.getAddressRegionName());
-            }
-            address.setRegion(region);
-            user.setAddress(address);
-
-            Organization organization = organizationDao.findByName(userDto.getOrganizationName());
-            if (organization == null) {
-                organization = new Organization();
-                organization.setName(userDto.getOrganizationName());
-            }
-            user.setOrganization(organization);
-        } else {
-            user.setAddress(null);
-            user.setOrganization(null);
-        }
-        return user;
-    }
-
-    private User convertToEntity(UserDto userDto) {
-        ModelMapper mapper = configureMapper();
-
-        Organization organization = userDto.getOrgId() > 0 ? organizationDao.findById(userDto.getOrgId()) : null;
-        Address address = userDto.getAddressId() > 0 ? addressDao.findById(userDto.getAddressId()) : null;
-        User user = mapper.map(userDto, User.class);
-
-        user.setOrganization(organization);
-        user.setAddress(address);
-
-        return user;
-    }
-
-    private ModelMapper configureMapper() {
-        ModelMapper mapper = new ModelMapper();
-        mapper.addMappings(new UserMap());
-        return mapper;
     }
 
     private void encodePassword(UserDto userDto) {

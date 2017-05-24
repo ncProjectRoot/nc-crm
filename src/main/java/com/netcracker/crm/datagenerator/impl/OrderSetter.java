@@ -3,6 +3,7 @@ package com.netcracker.crm.datagenerator.impl;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.datagenerator.AbstractSetter;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class OrderSetter extends AbstractSetter<Order> {
 
     @Override
     public Order generateObject() {
-        Order order = new Order();
+        Order order = new RealOrder();
         order.setDate(getOrderDate());
         order.setPreferedDate(getPreferDate());
         setProductCustomer(order);

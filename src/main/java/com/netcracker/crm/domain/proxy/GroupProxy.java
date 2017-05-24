@@ -1,6 +1,6 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.DiscountDao;
+import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Group;
 
@@ -8,29 +8,49 @@ import com.netcracker.crm.domain.model.Group;
  * @author Karpunets
  * @since 14.05.2017
  */
-public class GroupProxy extends Group {
+public class GroupProxy implements Group {
+    private long id;
+    private Group group;
+    private GroupDao groupDao;
 
-    private long discountId;
+    public GroupProxy(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
 
-    private DiscountDao discountDao;
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-    public GroupProxy(DiscountDao discountDao) {
-        this.discountDao = discountDao;
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getName() {
+        return getGroup().getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        getGroup().setName(name);
     }
 
     @Override
     public Discount getDiscount() {
-        if (super.getDiscount() == null && discountId != 0) {
-            super.setDiscount(discountDao.findById(discountId));
+        return getGroup().getDiscount();
+    }
+
+    @Override
+    public void setDiscount(Discount discount) {
+        getGroup().setDiscount(discount);
+    }
+
+    private Group getGroup() {
+        if (group == null) {
+            group = groupDao.findById(id);
         }
-        return super.getDiscount();
-    }
-
-    public long getDiscountId() {
-        return discountId;
-    }
-
-    public void setDiscountId(long discountId) {
-        this.discountId = discountId;
+        return group;
     }
 }

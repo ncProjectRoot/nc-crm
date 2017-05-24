@@ -10,81 +10,37 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since 24.04.2017
  */
-public class Order {
-    private Long id;
-    private LocalDateTime date;
-    private LocalDateTime preferedDate;
-    private OrderStatus status;
-    private User customer;
-    private Product product;
-    private User csr;
-    private OrderState state;
+public interface Order {
 
-    public Order() {
-        this.state = new NewOrder(this);
-    }
+    Long getId();
 
-    public Long getId() {
-        return id;
-    }
+    void setId(Long id);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    OrderStatus getStatus();
 
-    public OrderStatus getStatus() {
-        return status;
-    }
+    void setStatus(OrderStatus status);
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+    User getCustomer();
 
-    public User getCustomer() {
-        return customer;
-    }
+    void setCustomer(User customer);
 
-    public void setCustomer(User customer) {
-        this.customer = customer;
-    }
+    Product getProduct();
 
-    public Product getProduct() {
-        return product;
-    }
+    void setProduct(Product product);
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+    User getCsr();
 
-    public User getCsr() {
-        return csr;
-    }
+    void setCsr(User csr);
 
-    public void setCsr(User csr) {
-        this.csr = csr;
-    }
+    LocalDateTime getDate();
 
-    public LocalDateTime getDate() {
-        return date;
-    }
+    void setDate(LocalDateTime date);
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
+    LocalDateTime getPreferedDate();
 
-    public LocalDateTime getPreferedDate() {
-        return preferedDate;
-    }
+    void setPreferedDate(LocalDateTime preferedDate);
 
-    public void setPreferedDate(LocalDateTime preferedDate) {
-        this.preferedDate = preferedDate;
-    }
+    OrderState getState();
 
-    public OrderState getState() {
-        return state;
-    }
-
-    public void setState(OrderState state) {
-        this.state = state;
-    }
+    void setState(OrderState state);
 }

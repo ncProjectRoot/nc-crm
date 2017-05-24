@@ -1,74 +1,111 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.ProductDao;
-import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.OrderStatus;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.model.state.order.OrderState;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Karpunets
  * @since 14.05.2017
  */
-public class OrderProxy extends Order {
+public class OrderProxy implements Order {
+    private long id;
+    private Order order;
+    private OrderDao orderDao;
 
-    private long customerId;
-    private long productId;
-    private long csrId;
+    public OrderProxy(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
 
-    private UserDao userDao;
-    private ProductDao productDao;
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-    public OrderProxy(UserDao userDao, ProductDao productDao) {
-        this.userDao = userDao;
-        this.productDao = productDao;
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public OrderStatus getStatus() {
+        return getOrder().getStatus();
+    }
+
+    @Override
+    public void setStatus(OrderStatus status) {
+        getOrder().setStatus(status);
     }
 
     @Override
     public User getCustomer() {
-        if (super.getCustomer() == null && customerId != 0) {
-            super.setCustomer(userDao.findById(customerId));
-        }
-        return super.getCustomer();
+        return getOrder().getCustomer();
+    }
+
+    @Override
+    public void setCustomer(User customer) {
+        getOrder().setCustomer(customer);
     }
 
     @Override
     public Product getProduct() {
-        if (super.getProduct() == null && productId != 0) {
-            super.setProduct(productDao.findById(productId));
-        }
-        return super.getProduct();
+        return getOrder().getProduct();
+    }
+
+    @Override
+    public void setProduct(Product product) {
+        getOrder().setProduct(product);
     }
 
     @Override
     public User getCsr() {
-        if (super.getCsr() == null && csrId != 0) {
-            super.setCsr(userDao.findById(csrId));
+        return getOrder().getCsr();
+    }
+
+    @Override
+    public void setCsr(User csr) {
+        getOrder().setCsr(csr);
+    }
+
+    @Override
+    public LocalDateTime getDate() {
+        return getOrder().getDate();
+    }
+
+    @Override
+    public void setDate(LocalDateTime date) {
+        getOrder().setDate(date);
+    }
+
+    @Override
+    public LocalDateTime getPreferedDate() {
+        return getOrder().getPreferedDate();
+    }
+
+    @Override
+    public void setPreferedDate(LocalDateTime preferedDate) {
+        getOrder().setPreferedDate(preferedDate);
+    }
+
+    @Override
+    public OrderState getState() {
+        return getOrder().getState();
+    }
+
+    @Override
+    public void setState(OrderState state) {
+        getOrder().setState(state);
+    }
+
+    private Order getOrder() {
+        if (order == null) {
+            order = orderDao.findById(id);
         }
-        return super.getCsr();
-    }
-
-    public long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
-    }
-
-    public long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(long productId) {
-        this.productId = productId;
-    }
-
-    public long getCsrId() {
-        return csrId;
-    }
-
-    public void setCsrId(long csrId) {
-        this.csrId = csrId;
+        return order;
     }
 }

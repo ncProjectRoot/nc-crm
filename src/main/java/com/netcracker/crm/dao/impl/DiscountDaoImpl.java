@@ -2,6 +2,7 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.domain.real.RealDiscount;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
 import com.netcracker.crm.domain.request.RowRequest;
 import org.slf4j.Logger;
@@ -37,6 +38,15 @@ public class DiscountDaoImpl implements DiscountDao {
     private SimpleJdbcInsert discountInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private DiscountExtractor discountExtractor;
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.discountInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_DISCOUNT_TABLE)
+                .usingGeneratedKeyColumns(PARAM_DISCOUNT_ID);
+        this.discountExtractor = new DiscountExtractor();
+    }
 
     @Override
     public Long create(Discount discount) {
@@ -182,22 +192,13 @@ public class DiscountDaoImpl implements DiscountDao {
         return namedJdbcTemplate.queryForObject(SQL_DISCOUNT_BULK_UPDATE, params, Integer.class) == discountIDs.size();
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.discountInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(PARAM_DISCOUNT_TABLE)
-                .usingGeneratedKeyColumns(PARAM_DISCOUNT_ID);
-        this.discountExtractor = new DiscountExtractor();
-    }
-
     private static final class DiscountExtractor implements ResultSetExtractor<List<Discount>> {
         @Override
         public List<Discount> extractData(ResultSet rs) throws SQLException, DataAccessException {
             log.debug("Start extracting data");
             List<Discount> discounts = new ArrayList<>();
             while (rs.next()) {
-                Discount discount = new Discount();
+                Discount discount = new RealDiscount();
                 discount.setId(rs.getLong(PARAM_DISCOUNT_ID));
                 discount.setDescription(rs.getString(PARAM_DISCOUNT_DESCRIPTION));
                 discount.setPercentage(rs.getDouble(PARAM_DISCOUNT_PERCENTAGE));

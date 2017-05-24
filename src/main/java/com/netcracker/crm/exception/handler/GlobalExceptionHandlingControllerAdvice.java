@@ -3,6 +3,7 @@ package com.netcracker.crm.exception.handler;
 import com.netcracker.crm.controller.message.MessageHeader;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.exception.NoSuchEmailException;
+import com.netcracker.crm.exception.UnsupportedChangingStatusException;
 import com.netcracker.crm.exception.lifecycle.order.UnsupportedTransitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,12 @@ public class GlobalExceptionHandlingControllerAdvice {
         log.error(exception.getMessage(), exception);
         return generator.getHttpResponse(MessageHeader.ERROR_MESSAGE, ERROR_LIFECYCLE_ORDER,
                 new String[]{exception.getFrom()}, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = UnsupportedChangingStatusException.class)
+    public ResponseEntity<?> handleUnsupportedChangingStatus(UnsupportedChangingStatusException exception) {
+        log.error(exception.getMessage(), exception);
+        return generator.getHttpResponse(HttpStatus.BAD_REQUEST);
     }
 
 }

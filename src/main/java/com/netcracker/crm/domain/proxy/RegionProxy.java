@@ -1,6 +1,6 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.DiscountDao;
+import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Region;
 
@@ -8,29 +8,39 @@ import com.netcracker.crm.domain.model.Region;
  * @author Karpunets
  * @since 14.05.2017
  */
-public class RegionProxy extends Region {
+public class RegionProxy implements Region {
+    private long id;
+    private Region region;
+    private RegionDao regionDao;
 
-    private long discountId;
-
-    private DiscountDao discountDao;
-
-    public RegionProxy(DiscountDao discountDao) {
-        this.discountDao = discountDao;
+    public RegionProxy(RegionDao regionDao) {
+        this.regionDao = regionDao;
     }
 
     @Override
-    public Discount getDiscount() {
-        if (super.getDiscount() == null && discountId != 0) {
-            super.setDiscount(discountDao.findById(discountId));
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getName() {
+        return getRegion().getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        getRegion().setName(name);
+    }
+
+    private Region getRegion() {
+        if (region == null) {
+            region = regionDao.findById(id);
         }
-        return super.getDiscount();
-    }
-
-    public long getDiscountId() {
-        return discountId;
-    }
-
-    public void setDiscountId(long discountId) {
-        this.discountId = discountId;
+        return region;
     }
 }

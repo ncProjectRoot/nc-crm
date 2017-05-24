@@ -66,7 +66,8 @@ public final class OrderSqlQuery {
             "FROM orders o " +
             "WHERE o.status_id = :status_id " +
             "AND o.preferred_date < :preferred_date " +
-            "AND o.csr_id = :csr_id";
+            "AND o.csr_id = :csr_id " +
+            "ORDER BY o.preferred_date ASC";
 
     public static final String SQL_FIND_ALL_ORDER_BY_DATE_FINISH = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
@@ -114,4 +115,16 @@ public final class OrderSqlQuery {
             "AND concat(o.id, ' ', p.title) ILIKE :pattern " +
             "ORDER BY date_finish desc " +
             "LIMIT 20;";
+
+    public static final String SQL_CHECK_OWNERSHIP_OF_CUSTOMER = "SELECT count(*) " +
+            "FROM orders " +
+            "WHERE id = :id AND customer_id = :customer_id";
+
+    public static final String SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON = "SELECT count(*) " +
+            "FROM orders " +
+            "WHERE id = :id AND customer_id IN (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id));";
 }

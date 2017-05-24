@@ -70,8 +70,34 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /*@PutMapping("/{contactPerson}/{userId}")
+    public ResponseEntity<?> updateUser(Boolean contactPerson, Long userId) {
+        
+        User updatingUser = userService.getUserById(userId);
+        updatingUser.setContactPerson(contactPerson);
+        User user = userService.update(updatingUser);
+
+        if (user.getId() > 0) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }*/
+    
+    @PutMapping("/contactPerson")
+    public ResponseEntity<?> updateUser(UserDto userDto) {
+        
+        User updatingUser = userService.getUserById(userDto.getId());
+        updatingUser.setContactPerson(userDto.isContactPerson());
+        User user = userService.update(updatingUser);
+
+        if (user.getId() > 0) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
+    public ResponseEntity<?> updateUserContactPerson(@Valid UserDto userDto) {
 
         User user = userService.update(userDto);
 

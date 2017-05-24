@@ -2,19 +2,19 @@ package com.netcracker.crm.service.entity.impl;
 
 import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.dao.HistoryDao;
-import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealComplaint;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ComplaintDto;
 import com.netcracker.crm.dto.GraphDto;
-import com.netcracker.crm.dto.mapper.ComplaintMapper;
+import com.netcracker.crm.dto.mapper.ModelMapper;
+import com.netcracker.crm.dto.mapper.impl.ComplaintMapper;
 import com.netcracker.crm.dto.row.ComplaintRowDto;
+import com.netcracker.crm.exception.UnsupportedChangingStatusException;
 import com.netcracker.crm.listener.event.ChangeStatusComplaintEvent;
 import com.netcracker.crm.listener.event.CreateComplaintEvent;
 import com.netcracker.crm.service.entity.ComplaintService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,25 +40,23 @@ import java.util.Map;
 public class ComplaintServiceImpl implements ComplaintService {
     private static final Logger log = LoggerFactory.getLogger(ComplaintServiceImpl.class);
 
-    private ApplicationEventPublisher publisher;
-    private ComplaintDao complaintDao;
-    private OrderDao orderDao;
-    private UserDao userDao;
-    private HistoryDao historyDao;
+    private final ApplicationEventPublisher publisher;
+    private final ComplaintDao complaintDao;
+    private final HistoryDao historyDao;
+    private final ComplaintMapper complaintMapper;
 
     @Autowired
-    public ComplaintServiceImpl(ComplaintDao complaintDao, OrderDao orderDao, UserDao userDao, HistoryDao historyDao,
-                                ApplicationEventPublisher publisher) {
+    public ComplaintServiceImpl(ComplaintDao complaintDao, HistoryDao historyDao,
+                                ApplicationEventPublisher publisher, ComplaintMapper complaintMapper) {
         this.complaintDao = complaintDao;
-        this.orderDao = orderDao;
-        this.userDao = userDao;
         this.historyDao = historyDao;
         this.publisher = publisher;
+        this.complaintMapper = complaintMapper;
     }
 
     @Transactional
     public Complaint persist(ComplaintDto dto) {
-        Complaint complaint = convertToModel(dto);
+        Complaint complaint = ModelMapper.map(complaintMapper.dtoToModel(), dto, RealComplaint.class);
         complaint.setDate(LocalDateTime.now());
         complaint.setStatus(ComplaintStatus.OPEN);
         Long id = complaintDao.create(complaint);
@@ -67,44 +65,48 @@ public class ComplaintServiceImpl implements ComplaintService {
         return complaint;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByTitle(String title) {
         return complaintDao.findByTitle(title);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByDate(LocalDate date) {
         return complaintDao.findAllByDate(date);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Complaint> findByCustomerId(Long id) {
         return complaintDao.findAllByCustomerId(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Complaint findById(Long id) {
         return complaintDao.findById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesByPmg(String likeTitle, User pmg) {
-        return convertToAutocompleteDto(complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId()));
+        List<String> titles = complaintDao.findComplaintsTitleByPmgId(likeTitle, pmg.getId());
+        return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getAllTitles(String likeTitle) {
-        return convertToAutocompleteDto(complaintDao.findComplaintsTitleLikeTitle(likeTitle));
+        List<String> titles = complaintDao.findComplaintsTitleLikeTitle(likeTitle);
+        return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesForContactPerson(String likeTitle, Long custId) {
-        return convertToAutocompleteDto(complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId));
+        List<String> titles = complaintDao.findComplaintsTitleForContactPerson(likeTitle, custId);
+        return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     private List<AutocompleteDto> getTitlesForNotContactPerson(String likeTitle, Long custId) {
-        return convertToAutocompleteDto(complaintDao.findComplaintsTitleByCustId(likeTitle, custId));
+        List<String> titles = complaintDao.findComplaintsTitleByCustId(likeTitle, custId);
+        return ModelMapper.mapList(complaintMapper.modelToAutocomplete(), titles, AutocompleteDto.class);
     }
 
     @Transactional
@@ -115,10 +117,11 @@ public class ComplaintServiceImpl implements ComplaintService {
         } else if ("CLOSE".equals(type)) {
             return closeComplaint(complaintId, pmg);
         }
-        return false;
+        throw new UnsupportedChangingStatusException("Complaint with id "
+                + complaintId + " hasn't changed status");
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Map<String, Object> getComplaintRow(ComplaintRowRequest complaintRowRequest, User user, boolean individual) {
         UserRole role = user.getUserRole();
@@ -134,21 +137,18 @@ public class ComplaintServiceImpl implements ComplaintService {
         Long length = complaintDao.getComplaintRowsCount(complaintRowRequest);
         response.put("length", length);
         List<Complaint> complaints = complaintDao.findComplaintRows(complaintRowRequest);
-        List<ComplaintRowDto> dtos = new ArrayList<>();
-        for (Complaint complaint : complaints) {
-            dtos.add(convertToRowDto(complaint));
-        }
+        List<ComplaintRowDto> dtos = ModelMapper.mapList(complaintMapper.modelToRowDto(), complaints, ComplaintRowDto.class);
         response.put("rows", dtos);
         return response;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<AutocompleteDto> getAutocompleteDto(String pattern, User user, boolean individual) {
         UserRole role = user.getUserRole();
         if (role.equals(UserRole.ROLE_PMG) || role.equals(UserRole.ROLE_ADMIN)) {
             if (individual) {
-                return getTitlesByPmg(pattern, user) ;
+                return getTitlesByPmg(pattern, user);
             } else {
                 return getAllTitles(pattern);
             }
@@ -163,6 +163,7 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GraphDto getStatisticalGraph(GraphDto graphDto) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(graphDto.getDatePattern());
         LocalDate fromDate = LocalDate.parse(graphDto.getFromDate(), dtf);
@@ -170,27 +171,23 @@ public class ComplaintServiceImpl implements ComplaintService {
         return historyDao.findComplaintHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
     }
 
-    private List<AutocompleteDto> convertToAutocompleteDto(List<String> complaints) {
-        List<AutocompleteDto> autocompleteDtos = new ArrayList<>();
-        for (String title : complaints) {
-            AutocompleteDto autocompleteDto = new AutocompleteDto();
-            autocompleteDto.setValue(title);
-            autocompleteDtos.add(autocompleteDto);
-        }
-        return autocompleteDtos;
-    }
-
     @Transactional
     private boolean acceptComplaint(Long complaintId, User user) {
         Complaint complaint = complaintDao.findById(complaintId);
 
         if (complaint.getPmg() != null) {
-            return false;
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
         }
         complaint.setPmg(user);
-        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint);
+        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint, ComplaintStatus.SOLVING);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
 
     @Transactional
@@ -198,17 +195,23 @@ public class ComplaintServiceImpl implements ComplaintService {
         Boolean isRoleAdmin = user.getUserRole().equals(UserRole.ROLE_ADMIN);
         Complaint complaint = complaintDao.findById(complaintId);
         if (complaint.getPmg() == null || (!complaint.getPmg().getId().equals(user.getId())) && (!isRoleAdmin)) {
-            return false;
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
         }
         if (isRoleAdmin) {
             complaint.setPmg(user);
         }
-        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint);
+        ChangeStatusComplaintEvent event = new ChangeStatusComplaintEvent(this, complaint, ComplaintStatus.CLOSED);
         publisher.publishEvent(event);
-        return event.isDone();
+        if (!event.isDone()) {
+            throw new UnsupportedChangingStatusException("Complaint with id "
+                    + complaint.getId() + " hasn't changed status");
+        } else {
+            return event.isDone();
+        }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public boolean checkAccessToComplaint(User customer, Long complaintId) {
         UserRole role = customer.getUserRole();
@@ -228,38 +231,9 @@ public class ComplaintServiceImpl implements ComplaintService {
         return false;
     }
 
-    private ComplaintRowDto convertToRowDto(Complaint complaint) {
-        ComplaintRowDto complaintRowDto = new ComplaintRowDto();
-        complaintRowDto.setId(complaint.getId());
-        complaintRowDto.setTitle(complaint.getTitle());
-        complaintRowDto.setMessage(complaint.getMessage());
-        complaintRowDto.setStatus(complaint.getStatus().getName());
-        complaintRowDto.setCustomer(complaint.getCustomer().getId());
-        complaintRowDto.setOrder(complaint.getOrder().getId());
-        complaintRowDto.setOrderStatus(complaint.getOrder().getStatus().getName());
-        complaintRowDto.setProductTitle(complaint.getOrder().getProduct().getTitle());
-        complaintRowDto.setProductStatus(complaint.getOrder().getProduct().getStatus().getName());
-        complaintRowDto.setDate(complaint.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh-mm")));
-        if (complaint.getPmg() != null) {
-            complaintRowDto.setPmg(complaint.getPmg().getId());
-        }
-        return complaintRowDto;
-    }
-
-    private Complaint convertToModel(ComplaintDto dto) {
-        ModelMapper mapper = configureMapper();
-        dto.setMessage(dto.getMessage().trim());
-        Complaint complaint = mapper.map(dto, Complaint.class);
-        Order order = orderDao.findById(dto.getOrderId());
-        complaint.setOrder(order);
-        User customer = userDao.findById(dto.getCustomerId());
-        complaint.setCustomer(customer);
-        return complaint;
-    }
-
-    private ModelMapper configureMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new ComplaintMapper());
-        return modelMapper;
+    @Transactional(readOnly = true)
+    @Override
+    public List<History> getHistory(Long complaintId) {
+        return historyDao.findAllByComplaintId(complaintId);
     }
 }

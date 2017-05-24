@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.dto.OrderDto;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
@@ -151,18 +152,6 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         }
         return false;
     }
-
-    private Order convertFromDtoToEntity(OrderDto orderDto) {
-        Order order = new Order();
-        Product product = productDao.findById(orderDto.getProductId());
-        User customer = userDao.findById(orderDto.getCustomerId());
-
-        order.setProduct(product);
-        order.setCustomer(customer);
-        order.setDate(LocalDateTime.now());
-        return order;
-    }
-
 
     private boolean saveCondition(Order order, History history) {
         return historyDao.create(history) != null && orderDao.update(order) != null;

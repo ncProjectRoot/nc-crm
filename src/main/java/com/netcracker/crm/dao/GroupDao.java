@@ -22,4 +22,8 @@ public interface GroupDao extends CrudDao<Group> {
     List<GroupTableDto> getPartRows(GroupRowRequest request);
 
     List<Group> findByIdOrTitle(String pattern);
+
+    List<Group> findByDiscountId(Long id);
+
+    List<Group> findByDiscountIdAndCustomerId(Long discountId, Long customerId);
 }

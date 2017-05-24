@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.*;
-import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.PARAM_USER_ID;
 
 
 /**
@@ -32,10 +31,16 @@ import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.PARAM_USER_ID;
 public class UserAttemptsDaoImpl implements UserAttemptsDao {
     private static final int MAX_ATTEMPTS = 3;
     private static final Logger log = LoggerFactory.getLogger(UserAttemptsDaoImpl.class);
+
+    private UserDao userDao;
+
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private SimpleJdbcInsert insert;
+
     @Autowired
-    private UserDao userDao;
+    public UserAttemptsDaoImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Autowired
     public void setDataSource(DataSource dataSource) {

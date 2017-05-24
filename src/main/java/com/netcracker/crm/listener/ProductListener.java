@@ -5,6 +5,7 @@ import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.domain.model.History;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.User;
+import com.netcracker.crm.domain.real.RealHistory;
 import com.netcracker.crm.listener.event.ChangeStatusProductEvent;
 import com.netcracker.crm.listener.event.CreateProductEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,31 +43,17 @@ public class ProductListener {
         historyDao.create(history);
     }
 
-
-    @EventListener(condition = "#event.product.status.name.equals('PLANNED') " +
-            "&& #event.changeToStatus.name.equals('ACTUAL')")
-    public void actualStatus(ChangeStatusProductEvent event) {
-        User user = event.getUser();
-        Product product = event.getProduct();
-        product.setStatus(event.getChangeToStatus());
-        History history = generateHistory(product);
-        String role = getRole(user);
-        history.setDescChangeStatus(role + " with id " +
-                user.getId() + " changed status of Product to 'ACTUAL'");
-        saveStatusAndHistory(product, history);
-        event.setDone(true);
-    }
-
-    @EventListener(condition = "(#event.product.status.name.equals('PLANNED') || #event.product.status.name.equals('ACTUAL')  )" +
-            "&& #event.changeToStatus.name.equals('OUTDATED')")
+    @EventListener(condition = "((#event.product.status.name.equals('PLANNED') || #event.product.status.name.equals('ACTUAL')) && " +
+            "#event.changeToStatus.name.equals('OUTDATED')) || " +
+            "(#event.product.status.name.equals('PLANNED') && #event.changeToStatus.name.equals('ACTUAL'))")
     public void outdatedStatus(ChangeStatusProductEvent event) {
         User user = event.getUser();
         Product product = event.getProduct();
         product.setStatus(event.getChangeToStatus());
         History history = generateHistory(product);
         String role = getRole(user);
-        history.setDescChangeStatus(role + " with id " +
-                user.getId() + " changed status of Product to 'OUTDATED'");
+        history.setDescChangeStatus("Status was changed by " + role + " with id " +
+                user.getId());
         saveStatusAndHistory(product, history);
         event.setDone(true);
     }
@@ -77,7 +64,7 @@ public class ProductListener {
     }
 
     private History generateHistory(Product product) {
-        History history = new History();
+        History history = new RealHistory();
         history.setDateChangeStatus(LocalDateTime.now());
         history.setNewStatus(product.getStatus());
         history.setProduct(product);

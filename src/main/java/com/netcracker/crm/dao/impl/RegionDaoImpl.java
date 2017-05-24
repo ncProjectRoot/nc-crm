@@ -4,7 +4,8 @@ import com.netcracker.crm.dao.DiscountDao;
 import com.netcracker.crm.dao.RegionDao;
 import com.netcracker.crm.domain.model.Discount;
 import com.netcracker.crm.domain.model.Region;
-import com.netcracker.crm.domain.proxy.RegionProxy;
+import com.netcracker.crm.domain.proxy.DiscountProxy;
+import com.netcracker.crm.domain.real.RealRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,22 +34,33 @@ import static com.netcracker.crm.dao.impl.sql.RegionSqlQuery.*;
 public class RegionDaoImpl implements RegionDao {
     private static final Logger log = LoggerFactory.getLogger(RegionDaoImpl.class);
 
-    @Autowired
     private DiscountDao discountDao;
 
     private SimpleJdbcInsert regionInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private RegionExtractor regionExtractor;
 
+    @Autowired
+    public RegionDaoImpl(DiscountDao discountDao) {
+        this.discountDao = discountDao;
+    }
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        regionInsert = new SimpleJdbcInsert(dataSource)
+                .usingGeneratedKeyColumns(PARAM_REGION_ID)
+                .withTableName(PARAM_REGION_TABLE);
+        regionExtractor = new RegionExtractor();
+    }
+
     @Override
     public Long create(Region region) {
         if (region.getId() != null) {
             return null;
         }
-        Long discountId = getDiscountId(region.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_REGION_NAME, region.getName())
-                .addValue(PARAM_REGION_DISCOUNT_ID, discountId);
+                .addValue(PARAM_REGION_NAME, region.getName());
         Long id = regionInsert.executeAndReturnKey(params).longValue();
         region.setId(id);
         log.info("Region with id: " + id + " is successfully created.");
@@ -62,11 +74,9 @@ public class RegionDaoImpl implements RegionDao {
         if (regionId == null) {
             return null;
         }
-        Long discountId = getDiscountId(region.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_REGION_ID, regionId)
-                .addValue(PARAM_REGION_NAME, region.getName())
-                .addValue(PARAM_REGION_DISCOUNT_ID, discountId);
+                .addValue(PARAM_REGION_NAME, region.getName());
         long affectedRows = namedJdbcTemplate.update(SQL_UPDATE_REGION, params);
         if (affectedRows == 0) {
             log.error("Region has not been updated");
@@ -134,13 +144,11 @@ public class RegionDaoImpl implements RegionDao {
         return namedJdbcTemplate.getJdbcOperations().queryForObject(SQL_GET_REGION_COUNT, Long.class);
     }
 
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        regionInsert = new SimpleJdbcInsert(dataSource)
-                .usingGeneratedKeyColumns(PARAM_REGION_ID)
-                .withTableName(PARAM_REGION_TABLE);
-        regionExtractor = new RegionExtractor(discountDao);
+    @Override
+    public List<Region> findAllByPattern(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_REGION_BY_ID_OR_NAME, params, regionExtractor);
     }
 
     private Long getDiscountId(Discount discount) {
@@ -157,21 +165,15 @@ public class RegionDaoImpl implements RegionDao {
 
     static final class RegionExtractor implements ResultSetExtractor<List<Region>> {
 
-        private DiscountDao discountDao;
-
-        RegionExtractor(DiscountDao discountDao) {
-            this.discountDao = discountDao;
-        }
-
         @Override
         public List<Region> extractData(ResultSet rs) throws SQLException, DataAccessException {
             log.debug("Start extracting data");
             List<Region> regions = new ArrayList<>();
             while (rs.next()) {
-                RegionProxy region = new RegionProxy(discountDao);
+                Region region = new RealRegion();
                 region.setId(rs.getLong(PARAM_REGION_ID));
                 region.setName(rs.getString(PARAM_REGION_NAME));
-                region.setDiscountId(rs.getLong(PARAM_REGION_ID));
+
                 regions.add(region);
             }
             log.debug("End extracting data");

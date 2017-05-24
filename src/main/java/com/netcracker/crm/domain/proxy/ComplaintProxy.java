@@ -1,74 +1,111 @@
 package com.netcracker.crm.domain.proxy;
 
-import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.dao.UserDao;
+import com.netcracker.crm.dao.ComplaintDao;
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.ComplaintStatus;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Karpunets
  * @since 14.05.2017
  */
-public class ComplaintProxy extends Complaint {
+public class ComplaintProxy implements Complaint {
+    private long id;
+    private Complaint complaint;
 
-    private long customerId;
-    private long pmgId;
-    private long orderId;
+    private ComplaintDao complaintDao;
 
-    private UserDao userDao;
-    private OrderDao orderDao;
+    public ComplaintProxy(ComplaintDao complaintDao) {
+        this.complaintDao = complaintDao;
+    }
 
-    public ComplaintProxy(UserDao userDao, OrderDao orderDao) {
-        this.userDao = userDao;
-        this.orderDao = orderDao;
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getTitle() {
+        return getComplaint().getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        getComplaint().setTitle(title);
+    }
+
+    @Override
+    public String getMessage() {
+        return getComplaint().getMessage();
+    }
+
+    @Override
+    public void setMessage(String message) {
+        getComplaint().setMessage(message);
+    }
+
+    @Override
+    public ComplaintStatus getStatus() {
+        return getComplaint().getStatus();
+    }
+
+    @Override
+    public void setStatus(ComplaintStatus status) {
+        getComplaint().setStatus(status);
+    }
+
+    @Override
+    public LocalDateTime getDate() {
+        return getComplaint().getDate();
+    }
+
+    @Override
+    public void setDate(LocalDateTime date) {
+        getComplaint().setDate(date);
     }
 
     @Override
     public User getCustomer() {
-        if (super.getCustomer() == null && customerId != 0) {
-            super.setCustomer(userDao.findById(customerId));
-        }
-        return super.getCustomer();
+        return getComplaint().getCustomer();
+    }
+
+    @Override
+    public void setCustomer(User customer) {
+        getComplaint().setCustomer(customer);
     }
 
     @Override
     public User getPmg() {
-        if (super.getPmg() == null && pmgId != 0) {
-            super.setPmg(userDao.findById(pmgId));
-        }
-        return super.getPmg();
+        return getComplaint().getPmg();
+    }
+
+    @Override
+    public void setPmg(User pmg) {
+        getComplaint().setPmg(pmg);
     }
 
     @Override
     public Order getOrder() {
-        if (super.getOrder() == null && orderId != 0) {
-            super.setOrder(orderDao.findById(orderId));
+        return getComplaint().getOrder();
+    }
+
+    @Override
+    public void setOrder(Order order) {
+        getComplaint().setOrder(order);
+    }
+
+    private Complaint getComplaint() {
+        if (complaint == null) {
+            complaint = complaintDao.findById(id);
         }
-        return super.getOrder();
-    }
-
-    public long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
-    }
-
-    public long getPmgId() {
-        return pmgId;
-    }
-
-    public void setPmgId(long pmgId) {
-        this.pmgId = pmgId;
-    }
-
-    public long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(long orderId) {
-        this.orderId = orderId;
+        return complaint;
     }
 }

@@ -1,8 +1,4 @@
-package com.netcracker.crm.scheduler;
-
-import com.netcracker.crm.domain.model.Order;
-
-import java.time.format.DateTimeFormatter;
+package com.netcracker.crm.dto;
 
 /**
  * Created by Pasha on 13.05.2017.
@@ -12,13 +8,9 @@ public class OrderViewDto {
     private String status;
     private String title;
     private String date;
+    private boolean timeOver;
 
-
-    public OrderViewDto(Order order,DateTimeFormatter formatter) {
-        this.id = order.getId();
-        this.status = order.getStatus().getName();
-        this.title = order.getProduct().getTitle();
-        this.date = formatter.format(order.getPreferedDate());
+    public OrderViewDto() {
     }
 
     public Long getId() {
@@ -51,5 +43,13 @@ public class OrderViewDto {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public boolean isTimeOver() {
+        return timeOver;
+    }
+
+    public void setTimeOver(boolean timeOver) {
+        this.timeOver = timeOver;
     }
 }
