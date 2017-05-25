@@ -34,11 +34,6 @@ public class CustomerController {
         return "home";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Map<String, Object> model) {
-        return "dashboard/customer";
-    }
-
     @GetMapping("/organization")
     public String users(Map<String, Object> model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
