@@ -16,6 +16,7 @@ public class UserRowDto {
     private boolean contactPerson;
     private String userRole;
     private boolean accountNonLocked;
+    private boolean enable;
 
     public UserRowDto() {
     }
@@ -106,5 +107,13 @@ public class UserRowDto {
 
     public boolean isAccountNonLocked() {
         return accountNonLocked;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }

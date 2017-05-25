@@ -42,6 +42,17 @@
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Last Name</a>
                                 </th>
+                                <th class="th-dropdown" data-field="enable">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-active' data-default-name="Active">
+                                        Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-active" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                                    </ul>
+                                </th>
                                 <th data-field="5">
                                     <a href="#!" class="sorted-element a-dummy">E-mail</a>
                                 </th>
@@ -326,6 +337,9 @@
             tr.append($("<td>", {html: temp}));
             temp = "<span id='lastName" + object.id + "'>" + object.lastName + "</span>";
             tr.append($("<td>", {html: temp}));
+            if (object.enable != null)
+                userActive = (object.enable == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            tr.append($("<td>", {html: userActive}));
             temp = "<span id='email" + object.id + "'>" + object.email + "</span>";
             tr.append($("<td>", {html: temp}));
             temp = "<span id='phone" + object.id + "'>" + object.phone + "</span>";
