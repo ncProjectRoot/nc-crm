@@ -97,6 +97,7 @@ public class UserMapper {
             rowDto.setUserRole(model.getUserRole().getFormattedName());
             rowDto.setAccountNonLocked(model.isAccountNonLocked());
             rowDto.setEnable(model.isEnable());
+
             Organization organization = model.getOrganization();
             if (organization != null) {
                 rowDto.setOrganizationName(organization.getName());

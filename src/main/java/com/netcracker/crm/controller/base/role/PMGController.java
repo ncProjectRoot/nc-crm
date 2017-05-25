@@ -35,4 +35,29 @@ public class PMGController {
         return "settings";
     }
 
+    @GetMapping("/orders")
+    public String orders(Map<String, Object> model) {
+        return "orders";
+    }
+
+    @GetMapping("/products")
+    public String products(Map<String, Object> model) {
+        return "products";
+    }
+
+    @GetMapping("/users")
+    public String users(Map<String, Object> model) {
+        return "users";
+    }
+
+    @GetMapping("/discounts")
+    public String discounts(Map<String, Object> model) {
+        return "discounts";
+    }
+
+    @GetMapping("/groups")
+    public String groups(Map<String, Object> model) {
+        return "groups";
+    }
+
 }

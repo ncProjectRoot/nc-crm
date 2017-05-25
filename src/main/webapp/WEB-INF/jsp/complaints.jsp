@@ -198,6 +198,11 @@
                                         <li><a href="#" class="a-dummy" data-value="3">CLOSED</a></li>
                                     </ul>
                                 </th>
+                                <c:if test="${user.isContactPerson()}">
+                                    <th data-field="3">
+                                        <a href="#!" class="sorted-element a-dummy">Customer</a>
+                                    </th>
+                                </c:if>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Order</a>
                                 </th>
@@ -350,8 +355,14 @@
                 tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
                 tr.append($("<td>", {text: object.title}));
                 tr.append($("<td>", {text: object.status}));
-                tr.append($("<td>", {text: object.customer}));
-                tr.append($("<td>", {text: object.order}));
+                tr.append($("<td>").append($("<a>", {
+                    html: object.customer,
+                    href: "#user/" + object.customer
+                })));
+                tr.append($("<td>").append($("<a>", {
+                    html: object.order,
+                    href: "#order/" + object.order
+                })));
                 tr.append($("<td>", {text: object.orderStatus}));
                 tr.append($("<td>", {text: object.productTitle}));
                 tr.append($("<td>", {text: object.productStatus}));
@@ -370,7 +381,16 @@
                 tr.append($("<td>", {html: '<a href="#complaint/' + object.id + '">' + object.id + '</a>'}));
                 tr.append($("<td>", {text: object.title}));
                 tr.append($("<td>", {text: object.status}));
-                tr.append($("<td>", {text: object.order}));
+                <c:if test="${user.isContactPerson()}">
+                tr.append($("<td>").append($("<a>", {
+                    html: object.customer,
+                    href: "#user/" + object.customer
+                })));
+                </c:if>
+                tr.append($("<td>").append($("<a>", {
+                    html: object.order,
+                    href: "#order/" + object.order
+                })));
                 tr.append($("<td>", {text: object.orderStatus}));
                 tr.append($("<td>", {text: object.productTitle}));
                 tr.append($("<td>", {text: object.date}));

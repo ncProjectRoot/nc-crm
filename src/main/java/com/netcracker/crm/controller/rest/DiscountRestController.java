@@ -75,13 +75,13 @@ public class DiscountRestController {
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern) {
         return new ResponseEntity<>(discountService.getAutocompleteDto(pattern), HttpStatus.OK);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG')")
     public ResponseEntity<Map<String, Object>> getDiscountRows(DiscountRowRequest rowRequest) {
         return new ResponseEntity<>(discountService.getDiscountRows(rowRequest), HttpStatus.OK);
     }
