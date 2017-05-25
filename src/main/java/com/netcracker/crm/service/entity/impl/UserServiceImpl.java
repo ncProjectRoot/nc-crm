@@ -20,6 +20,9 @@ import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.security.RandomString;
+import com.timgroup.jgravatar.Gravatar;
+import com.timgroup.jgravatar.GravatarDefaultImage;
+import com.timgroup.jgravatar.GravatarRating;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private static final String TOKEN_WILD_CARD = "%token%";
     private static final String LOCAL_ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
     private static final String PRODUCTION_ACTIVATION_LINK_TEMPLATE = "http://nc-project.tk/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+    private static final String DEFAULT_AVATAR = "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png";
 
     @Resource
     private Environment env;
@@ -161,6 +165,24 @@ public class UserServiceImpl implements UserService {
             }
         }
         return csrList;
+    }
+
+    @Override
+    @Transactional
+    public String getAvatar(Long id) {
+        User user = userDao.findById(id);
+        Gravatar gravatar = new Gravatar();
+        gravatar.setSize(500);
+        gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
+        gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
+        if (user != null) {
+            byte[] byteUrl = gravatar.download(user.getEmail());
+            String url = gravatar.getUrl(user.getEmail());
+            if (byteUrl != null) {
+                return url;
+            }
+        }
+        return DEFAULT_AVATAR;
     }
 
     private String createUserRegistrationToken(User user) {

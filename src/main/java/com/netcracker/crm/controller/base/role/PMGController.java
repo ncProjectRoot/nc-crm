@@ -30,6 +30,11 @@ public class PMGController {
         return "complaints";
     }
 
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
+    }
+
     @GetMapping("/orders")
     public String orders(Map<String, Object> model) {
         return "orders";

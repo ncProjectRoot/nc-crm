@@ -42,6 +42,8 @@ public class UserMapper {
             model.setEmail(dto.getEmail());
             model.setPhone(dto.getPhone());
             model.setContactPerson(dto.isContactPerson());
+            model.setEnable(dto.isEnable());
+            model.setAccountNonLocked(dto.isAccountNonLocked());
             if (dto.getUserRole() != null) {
                 model.setUserRole(UserRole.valueOf(dto.getUserRole()));
             }

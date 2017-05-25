@@ -70,22 +70,9 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /*@PutMapping("/{contactPerson}/{userId}")
-    public ResponseEntity<?> updateUser(Boolean contactPerson, Long userId) {
-        
-        User updatingUser = userService.getUserById(userId);
-        updatingUser.setContactPerson(contactPerson);
-        User user = userService.update(updatingUser);
-
-        if (user.getId() > 0) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
-        }
-        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
-
     @PutMapping("/contactPerson")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<?> updateUser(UserDto userDto) {
+    public ResponseEntity<?> updateUserContactPerson(UserDto userDto) {
 
         User updatingUser = userService.getUserById(userDto.getId());
         updatingUser.setContactPerson(userDto.isContactPerson());
@@ -98,10 +85,9 @@ public class UserRestController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUserContactPerson(@Valid UserDto userDto) {
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
 
         User user = userService.update(userDto);
-
         if (user.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
         }
@@ -126,5 +112,4 @@ public class UserRestController {
         User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
     }
-
 }

@@ -57,12 +57,12 @@ public class DiscountProxy implements Discount {
     }
 
     @Override
-    public boolean isActive() {
+    public Boolean isActive() {
         return getDiscount().isActive();
     }
 
     @Override
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         getDiscount().setActive(active);
     }
 

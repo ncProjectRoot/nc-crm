@@ -60,4 +60,9 @@ public class CSRController {
         return "messages";
     }
 
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
+    }
+
 }

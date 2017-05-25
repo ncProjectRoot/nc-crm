@@ -2,11 +2,13 @@ package com.netcracker.crm.controller.rest;
 
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.Discount;
-import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.DiscountDto;
+import com.netcracker.crm.dto.bulk.DiscountBulkDto;
 import com.netcracker.crm.service.entity.DiscountService;
 import com.netcracker.crm.validation.BindingResultHandler;
+import com.netcracker.crm.validation.impl.BulkDiscountValidator;
 import com.netcracker.crm.validation.impl.DiscountValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,7 @@ import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISCOUNT_CREATED;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISCOUNT_UPDATED;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -33,14 +33,16 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISC
 public class DiscountRestController {
     private final DiscountService discountService;
     private final DiscountValidator discountValidator;
+    private final BulkDiscountValidator bulkDiscountValidator;
     private final ResponseGenerator<Discount> generator;
     private final BindingResultHandler bindingResultHandler;
 
     @Autowired
     public DiscountRestController(DiscountService discountService, DiscountValidator discountValidator,
-                                  ResponseGenerator<Discount> generator, BindingResultHandler bindingResultHandler) {
+                                  BulkDiscountValidator bulkDiscountValidator, ResponseGenerator<Discount> generator, BindingResultHandler bindingResultHandler) {
         this.discountService = discountService;
         this.discountValidator = discountValidator;
+        this.bulkDiscountValidator = bulkDiscountValidator;
         this.generator = generator;
         this.bindingResultHandler = bindingResultHandler;
     }
@@ -84,4 +86,18 @@ public class DiscountRestController {
         return new ResponseEntity<>(discountService.getDiscountRows(rowRequest), HttpStatus.OK);
     }
 
+    @PutMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity discountBulkUpdate(@Valid DiscountBulkDto bulkDto, BindingResult bindingResult) {
+        bulkDiscountValidator.validate(bulkDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
+
+        if (discountService.bulkUpdate(bulkDto)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_BULK_UPDATED, HttpStatus.OK);
+        }
+
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
