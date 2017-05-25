@@ -67,7 +67,6 @@ function downloadContent() {
     $(".progress").addClass("progress-active");
     $.get("/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1))
         .success(function (data) {
-            console.log(data)
             window.setTimeout(function () {
                 $contentBody.html(data);
                 $(".progress").removeClass("progress-active");

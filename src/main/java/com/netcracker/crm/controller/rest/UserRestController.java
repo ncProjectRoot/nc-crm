@@ -83,7 +83,7 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
-    @PutMapping("/password")
+    @PutMapping
     public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
         User user = userService.update(userDto);
         if (user.getId() > 0) {
@@ -92,7 +92,7 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PutMapping
+    @PutMapping("/password")
     public ResponseEntity<?> updateUserPassword(String oldPassword, String newPassword, Authentication authentication) {
         User user = (UserDetailsImpl) authentication.getPrincipal();
         if (userService.updatePassword(user, oldPassword, newPassword)) {
