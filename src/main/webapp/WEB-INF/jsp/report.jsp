@@ -18,12 +18,12 @@
     <div id="content-body" class="row">
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <li class="tab col s3"><a href="#xml-wrapper">Excel</a></li>
+                <li class="tab col s3"><a href="#xlsl-wrapper">Excel</a></li>
             </ul>
         </div>
-        <div id="xml-wrapper" class="col s12">
+        <div id="xlsl-wrapper" class="col s12">
             <div class="row">
-                <form class="col s12" id="downloadXml" method="get" action="/*/report/users">
+                <form class="col s12" id="downloadXlsx" method="get" action="/*/report/users">
                     <div class="row date-fields-wrapper">
                         <div class="input-field col s11 m4">
                             <input name="dateFrom" id="from-date" type="date" class="datepicker">
