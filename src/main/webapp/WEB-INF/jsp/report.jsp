@@ -23,7 +23,7 @@
         </div>
         <div id="xml-wrapper" class="col s12">
             <div class="row">
-                <form class="col s12" id="downloadXml" method="get" action="/report/xml">
+                <form class="col s12" id="downloadXml" method="get" action="/*/report/users">
                     <div class="row date-fields-wrapper">
                         <div class="input-field col s11 m4">
                             <input name="dateFrom" id="from-date" type="date" class="datepicker">
@@ -48,17 +48,19 @@
                             <div class="input-field col s12">
                                 <select name="orderByIndex" id="orderBySelect">
                                     <option value="" disabled selected>Choose your option</option>
-                                    <option value="1">id</option>
-                                    <option value="2">name</option>
-                                    <option value="3">date</option>
+                                    <option value="1">User name</option>
+                                    <option value="2">Product title</option>
+                                    <option value="3">Order date</option>
+                                    <option value="4">Prefered date</option>
+                                    <option value="5">Order status</option>
+                                    <option value="6">CSR id</option>
                                 </select>
                                 <label>Order By</label>
                             </div>
                             <div class="col s12">
-                                <button class="btn waves-effect waves-light" type="submit" id="submit-group"
-                                        name="action">
-                                    Create Group
-                                    <i class="material-icons right">send</i>
+                                <button class="btn waves-effect waves-light" type="submit" id="download-orders" name="action">
+                                    Download
+                                    <i class="material-icons right">save</i>
                                 </button>
                             </div>
                         </div>
@@ -89,7 +91,7 @@
 
     Materialize.updateTextFields();
 
-    $("#downloadXml").on("submit", function (e) {
+    $("#download-orders").on("submit", function (e) {
         if (!$("#orderBySelect").val()) {
             Materialize.toast("Please, select order by", 5000);
             e.preventDefault();

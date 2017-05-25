@@ -33,6 +33,16 @@ public class ExcelBuilder {
         return this;
     }
 
+    public ExcelBuilder getRow(int numberRow){
+        currentRow = sheet.getRow(numberRow);
+        return this;
+    }
+
+    public ExcelBuilder getCell(int numberCell){
+        currentCell = currentRow.getCell(numberCell);
+        return this;
+    }
+
     public ExcelBuilder createRow(int numberRow){
         currentRow = sheet.createRow(numberRow);
         return this;
@@ -75,8 +85,10 @@ public class ExcelBuilder {
     public ExcelBuilder setCellValue(Object o){
         if (o instanceof Double){
             currentCell.setCellValue((Double) o);
-        }else if (o instanceof Long || o instanceof Integer){
-            currentCell.setCellValue((Long) o);
+        }else if (o instanceof Long) {
+            currentCell.setCellValue((long) o);
+        }else if (o instanceof Integer){
+            currentCell.setCellValue((int)o);
         }else if (o instanceof Boolean){
             currentCell.setCellValue((Boolean) o);
         }else if (o instanceof Date){
@@ -93,6 +105,10 @@ public class ExcelBuilder {
         for (int i = 0; i < numberColumns; i++) {
             sheet.autoSizeColumn(i);
         }
+    }
+
+    public Sheet getSheet() {
+        return sheet;
     }
 
     public Workbook getWorkbook(){

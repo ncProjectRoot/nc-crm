@@ -1,6 +1,6 @@
 package com.netcracker.crm.excel.service;
 
-import com.netcracker.crm.excel.OrderExcelDto;
+import com.netcracker.crm.dto.OrderExcelDto;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

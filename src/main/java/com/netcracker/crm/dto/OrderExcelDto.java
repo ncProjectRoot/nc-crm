@@ -1,4 +1,4 @@
-package com.netcracker.crm.excel;
+package com.netcracker.crm.dto;
 
 /**
  * Created by Pasha on 23.05.2017.
