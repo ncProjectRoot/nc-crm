@@ -22,8 +22,14 @@ import java.util.Map;
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
+import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_DISCOUNT_UPDATED;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_CREATED;
 import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_UPDATE;
+import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.dto.DiscountDto;
+import com.netcracker.crm.service.entity.DiscountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -31,14 +37,18 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROU
 @RestController
 @RequestMapping(value = "/groups")
 public class GroupRestController {
+    private static final Logger log = LoggerFactory.getLogger(UserRestController.class);
+    
+    private final DiscountService discountService;
     private final GroupService groupService;
     private final ResponseGenerator<Group> generator;
     private final GroupValidator groupValidator;
     private final BindingResultHandler bindingResultHandler;
 
     @Autowired
-    public GroupRestController(GroupService groupService, GroupValidator groupValidator,
+    public GroupRestController(DiscountService discountService, GroupService groupService, GroupValidator groupValidator,
                                   ResponseGenerator<Group> generator, BindingResultHandler bindingResultHandler) {
+        this.discountService = discountService;
         this.groupService = groupService;
         this.groupValidator = groupValidator;
         this.generator = generator;
@@ -82,6 +92,18 @@ public class GroupRestController {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_GROUP_UPDATE, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @PutMapping    
+    @RequestMapping(value = "/changeDiscount")
+    public ResponseEntity<?> updateDiscount(GroupDto groupDto) {
+        Group group = groupService.getGroupById(groupDto.getId());
+        Discount changedDisc = group.getDiscount();
+        changedDisc.setActive(!changedDisc.isActive());
+        discountService.update(changedDisc);
+        
+        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);       
+        
     }
 
 }

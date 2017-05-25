@@ -315,8 +315,33 @@
 
     </div>
 </div>
+<form class="col s12" id="updateDiscountActive" style="display: none">
+    <input type='text' name='id' id='disc_id2'/>      
+</form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
+    function changeBoolValues(id) {
+        var simpleId = id;
+        var id = "#" + id;
+
+        if ($(id).html() == "check") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("clear");
+            $(id).fadeIn(2000);
+        }
+        else if ($(id).html() == "clear") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("check");
+            $(id).fadeIn(2000);
+        }
+        
+        $("#disc_id2").val(simpleId);
+               
+        var url = "/products/changeDiscount";
+        var form = "#updateDiscountActive";
+        send(form, url, "PUT");
+    }
+    
     //TODO: help me
     $(document).ready(function () {
         $('.scrollspy').scrollSpy();
@@ -392,7 +417,7 @@
             tr.append($("<td>", {text: object.discountTitle}));
             tr.append($("<td>", {text: object.percentage ? object.percentage + "%": ""}));
             if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             tr.append($("<td>", {text: object.groupName}));
             return tr;

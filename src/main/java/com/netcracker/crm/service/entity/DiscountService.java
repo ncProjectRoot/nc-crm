@@ -15,7 +15,8 @@ public interface DiscountService {
 
     Discount create(DiscountDto discountDto);
     boolean update(DiscountDto discountDto);
-
+    boolean update(Discount discount);
+    
     Discount getDiscountById(Long id);
 
     List<AutocompleteDto> getAutocompleteDto(String pattern);

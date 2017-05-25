@@ -158,12 +158,12 @@
         if ($(id).html() == "check") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("clear");
-            $(id).fadeIn(3000);
+            $(id).fadeIn(2000);
         }
         else if ($(id).html() == "clear") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("check");
-            $(id).fadeIn(3000);
+            $(id).fadeIn(2000);
         }
         
         $("#disc_id2").val($("#"+"id"+simpleId).html());
