@@ -16,6 +16,12 @@ public final class OrderSqlQuery {
 
     public static final String PARAM_PATTERN = "pattern";
 
+    public static final String PARAM_DATE_FROM = "from";
+    public static final String PARAM_DATE_TO = "to";
+    public static final String PARAM_ORDER_BY_INDEX = "order_by_index";
+
+
+
     public static final String PARAM_ORDER_ROW_STATUS = "status_id";
     public static final String PARAM_ORDER_ROW_PRODUCT_STATUS = "product_status_id";
 
@@ -80,6 +86,19 @@ public final class OrderSqlQuery {
     public static final String SQL_FIND_ALL_ORDER_BY_PRODUCT_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "
             + "csr_id FROM orders WHERE product_id = :product_id;";
+
+    public static final String SQL_FIND_ORDER_BY_CUSTOMER_IDS = "SELECT " +
+            " o.customer_id," +
+            " p.title, " +
+            " o.date_finish, " +
+            " o.preferred_date," +
+            " o.status_id," +
+            " o.csr_id, " +
+            " product_id," +
+            " o.id " +
+            "FROM orders o " +
+            "INNER JOIN product p ON p.id = o.product_id " +
+            "WHERE customer_id IN(:customer_id) AND date_finish BETWEEN :from AND :to ";
 
     public static final String SQL_FIND_ALL_ORDER_BY_CUSTOMER_ID = "SELECT id, "
             + "date_finish, preferred_date, status_id, customer_id, product_id, "

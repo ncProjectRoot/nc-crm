@@ -259,6 +259,17 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
+    public List<Order> findAllByCustomerIds(List<Long> id, LocalDate from, LocalDate to, int orderByIndex) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_CUSTOMER_ID, id)
+                .addValue(PARAM_DATE_FROM, from)
+                .addValue(PARAM_DATE_TO, to)
+                .addValue(PARAM_ORDER_BY_INDEX , orderByIndex);
+        String sql = SQL_FIND_ORDER_BY_CUSTOMER_IDS + " ORDER BY " + orderByIndex +" ASC;";
+        return namedJdbcTemplate.query(sql, params, orderWithDetailExtractor);
+    }
+
+    @Override
     public List<Order> findOrderRows(OrderRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_ROW_STATUS, orderRowRequest.getStatusId())
