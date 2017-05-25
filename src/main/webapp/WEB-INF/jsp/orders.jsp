@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<sec:authentication var="user" property="principal"/>
+
 <style></style>
 <%@ include file="/WEB-INF/jsp/component/tableStyle.jsp" %>
 <div class="content-body z-depth-1" data-page-name="Orders">
@@ -125,9 +128,11 @@
                                         <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
                                     </ul>
                                 </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">CSR</a>
-                                </th>
+                                <c:if test="${user.isContactPerson()}">
+                                    <th data-field="4">
+                                        <a href="#!" class="sorted-element a-dummy">Customer</a>
+                                    </th>
+                                </c:if>
                                 <th data-field="6">
                                     <a href="#!" class="sorted-element a-dummy">Date Finish</a>
                                 </th>
@@ -139,10 +144,7 @@
                             <tbody></tbody>
                         </table>
                     </div>
-
                 </div>
-
-
             </div>
         </sec:authorize>
     </div>
@@ -201,7 +203,12 @@
             })));
             tr.append($("<td>", {text: object.productTitle}));
             tr.append($("<td>", {text: object.productStatus}));
-            tr.append($("<td>", {text: object.csr}));
+            <c:if test="${user.isContactPerson()}">
+            tr.append($("<td>").append($("<a>", {
+                href: "#user/" + object.customer,
+                text: object.customer
+            })));
+            </c:if>
             tr.append($("<td>", {text: object.dateFinish}));
             tr.append($("<td>", {text: object.preferredDate}));
             return tr;

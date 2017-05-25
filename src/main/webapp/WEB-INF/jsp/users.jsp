@@ -346,7 +346,7 @@
         }
     });
     </sec:authorize>
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;

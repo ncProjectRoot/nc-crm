@@ -84,6 +84,7 @@ public class UserRestController {
     }*/
 
     @PutMapping("/contactPerson")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(UserDto userDto) {
 
         User updatingUser = userService.getUserById(userDto.getId());
@@ -108,7 +109,8 @@ public class UserRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') " +
+            "or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
                                                         @RequestParam(required = false) boolean individual) {
         Object principal = authentication.getPrincipal();
@@ -117,7 +119,8 @@ public class UserRestController {
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') " +
+            "or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
