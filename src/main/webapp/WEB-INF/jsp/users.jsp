@@ -292,7 +292,7 @@
         });
     });
 
-    $(document).on("change", "#user_role", function () {
+    $("#user_role").on("change", function () {
         if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
             $('.customer-field').css("display", "block");
         } else {

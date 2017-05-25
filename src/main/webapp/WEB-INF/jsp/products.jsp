@@ -145,13 +145,15 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th class="hide-on-med-and-down">
-                                    <p>
-                                        <input type='checkbox' class='filled-in bulk-select-all'
-                                               id="select-all-checkbox"/>
-                                        <label for='select-all-checkbox'></label>
-                                    </p>
-                                </th>
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                    <th class="hide-on-med-and-down">
+                                        <p>
+                                            <input type='checkbox' class='filled-in bulk-select-all'
+                                                   id="select-all-checkbox"/>
+                                            <label for='select-all-checkbox'></label>
+                                        </p>
+                                    </th>
+                                </sec:authorize>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
