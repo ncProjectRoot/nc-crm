@@ -50,6 +50,13 @@ public class DiscountServiceImpl implements DiscountService {
         Long updateId = discountDao.update(discount);
         return updateId > 0;
     }
+    
+    @Override
+    @Transactional
+    public boolean update(Discount discount) {        
+        Long updateId = discountDao.update(discount);
+        return updateId > 0;
+    }
 
     @Override
     public Discount getDiscountById(Long id) {
