@@ -38,11 +38,6 @@ public class ExcelBuilder {
         return this;
     }
 
-    public ExcelBuilder getCell(int numberCell){
-        currentCell = currentRow.getCell(numberCell);
-        return this;
-    }
-
     public ExcelBuilder createRow(int numberRow){
         currentRow = sheet.createRow(numberRow);
         return this;
@@ -96,7 +91,7 @@ public class ExcelBuilder {
         }else if (o != null){
             currentCell.setCellValue(o.toString());
         }else {
-            currentCell.setCellValue("null");
+            currentCell.setCellValue("empty");
         }
         return this;
     }
