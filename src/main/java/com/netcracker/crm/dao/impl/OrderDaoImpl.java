@@ -129,7 +129,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<Order> findAllByStatus(OrderSchedulerSqlGenerator generator, List<User> csrs,
-                                                  OrderStatus orderStatus) {
+                                       OrderStatus orderStatus) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_STATUS, orderStatus.getId());
         String sql = generator.generateSqlForOnlineCsr(SQL_FIND_ALL_ORDER_BY_STATUS, PARAM_CSR_ID, csrs.size());
@@ -315,6 +315,22 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_PRODUCT_ID, productId)
                 .addValue(PARAM_CUSTOMER_ID, customerId);
         return namedJdbcTemplate.queryForObject(SQL_HAS_CUSTOMER_PRODUCT, params, Boolean.class);
+    }
+
+    @Override
+    public Long checkOwnershipOfContactPerson(Long orderId, Long userId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_ID, orderId)
+                .addValue(PARAM_CUSTOMER_ID, userId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON, params, Long.class);
+    }
+
+    @Override
+    public Long checkOwnershipOfCustomer(Long orderId, Long userId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_ORDER_ID, orderId)
+                .addValue(PARAM_CUSTOMER_ID, userId);
+        return namedJdbcTemplate.queryForObject(SQL_CHECK_OWNERSHIP_OF_CUSTOMER, params, Long.class);
     }
 
     @Override

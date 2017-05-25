@@ -44,9 +44,13 @@ public final class UserSqlQuery {
             "WHERE u.id = :id;";
 
     public static final String SQL_UPDATE_USER = "UPDATE users " +
-            "SET password=:password, first_name=:first_name, middle_name=:middle_name, last_name=:last_name, " +
+            "SET first_name=:first_name, middle_name=:middle_name, last_name=:last_name, " +
             "phone=:phone, email=:email, enable=:enable, account_non_locked=:account_non_locked, " +
             "contact_person=:contact_person, address_id=:address_id, user_role_id=:user_role_id, org_id=:org_id " +
+            "WHERE id=:id;";
+
+    public static final String SQL_UPDATE_PASSWORD = "UPDATE users " +
+            "SET password=:password " +
             "WHERE id=:id;";
 
     public static final String SQL_DELETE_USER = "DELETE FROM users WHERE id = :id;";

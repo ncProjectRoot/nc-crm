@@ -18,8 +18,13 @@ import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.senders.ChangeSender;
+import com.netcracker.crm.service.email.senders.RecoveryPasswordSender;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.security.RandomString;
+import com.timgroup.jgravatar.Gravatar;
+import com.timgroup.jgravatar.GravatarDefaultImage;
+import com.timgroup.jgravatar.GravatarRating;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private static final String TOKEN_WILD_CARD = "%token%";
     private static final String LOCAL_ACTIVATION_LINK_TEMPLATE = "http://localhost:8888/user/registration/confirm?token=" + TOKEN_WILD_CARD;
     private static final String PRODUCTION_ACTIVATION_LINK_TEMPLATE = "http://nc-project.tk/user/registration/confirm?token=" + TOKEN_WILD_CARD;
+    private static final String DEFAULT_AVATAR = "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png";
 
     @Resource
     private Environment env;
@@ -53,6 +59,7 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final UserTokenDao tokenDao;
     private final AbstractEmailSender emailSender;
+    private final AbstractEmailSender changeSender;
     private final PasswordEncoder encoder;
     private final SessionRegistry sessionRegistry;
     private final UserMapper userMapper;
@@ -60,10 +67,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, PasswordEncoder encoder,
                            @Qualifier("registrationSender") AbstractEmailSender emailSender,
+                           @Qualifier("changeSender") ChangeSender changeSender,
                            SessionRegistry sessionRegistry, UserMapper userMapper) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
         this.emailSender = emailSender;
+        this.changeSender = changeSender;
         this.encoder = encoder;
         this.sessionRegistry = sessionRegistry;
         this.userMapper = userMapper;
@@ -120,6 +129,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updatePassword(User user, String oldPassword, String newPassword) {
+        if (encoder.matches(oldPassword, user.getPassword())) {
+            String encodedPassword = encoder.encode(newPassword);
+            user.setPassword(encodedPassword);
+            if (userDao.updatePassword(user, encodedPassword) != 0) {
+                EmailParam emailMap = new EmailParam(EmailType.CHANGE);
+                emailMap.put(EmailParamKeys.USER, user);
+                emailMap.put(EmailParamKeys.CHANGE_TYPE, "password");
+                emailMap.put(EmailParamKeys.CHANGE_VALUE, newPassword);
+                try {
+                    changeSender.send(emailMap);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getUsers(UserRowRequest userRowRequest, User principal, boolean individual) {
         UserRole role = principal.getUserRole();
@@ -161,6 +191,24 @@ public class UserServiceImpl implements UserService {
             }
         }
         return csrList;
+    }
+
+    @Override
+    @Transactional
+    public String getAvatar(Long id) {
+        User user = userDao.findById(id);
+        Gravatar gravatar = new Gravatar();
+        gravatar.setSize(500);
+        gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
+        gravatar.setDefaultImage(GravatarDefaultImage.IDENTICON);
+        if (user != null) {
+            byte[] byteUrl = gravatar.download(user.getEmail());
+            String url = gravatar.getUrl(user.getEmail());
+            if (byteUrl != null) {
+                return url;
+            }
+        }
+        return DEFAULT_AVATAR;
     }
 
     private String createUserRegistrationToken(User user) {

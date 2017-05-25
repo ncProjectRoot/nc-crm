@@ -6,7 +6,7 @@ package com.netcracker.crm.domain.request;
 public class UserRowRequest extends RowRequest {
     private static final String BEGIN_SQL = "" +
             "SELECT u.id, email, password, phone, first_name, last_name, middle_name, " +
-            "enable, account_non_locked, user_role_id, role.name role_name, contact_person, " +
+            "enable, account_non_locked, enable, user_role_id, role.name role_name, contact_person, " +
             "org_id, address_id, r.name, a.formatted_address, o.name " +
             "FROM users u " +
             "INNER JOIN user_roles role ON user_role_id = role.id " +
@@ -25,8 +25,10 @@ public class UserRowRequest extends RowRequest {
             " org_id = (SELECT org_id " +
             "FROM users " +
             "WHERE id = :id)";
+
     private Long roleId;
     private Boolean accountNonLocked;
+    private Boolean enable;
     private Boolean contactPerson;
     private Long customerId;
 
@@ -41,7 +43,8 @@ public class UserRowRequest extends RowRequest {
                 "r.name",
                 "contact_person",
                 "a.formatted_address",
-                "o.name"
+                "o.name",
+                "enable"
         });
     }
 
@@ -65,6 +68,10 @@ public class UserRowRequest extends RowRequest {
             appendWhere(sql);
             sql.append("account_non_locked = :account_non_locked ");
         }
+        if (enable != null) {
+            appendWhere(sql);
+            sql.append("enable = :enable ");
+        }
         if (contactPerson != null) {
             appendWhere(sql);
             sql.append("contact_person = :contact_person ");
@@ -74,7 +81,7 @@ public class UserRowRequest extends RowRequest {
 
     @Override
     protected StringBuilder appendWhereParam(StringBuilder sql) {
-        if (customerId!=null) {
+        if (customerId != null) {
             appendWhere(sql);
             sql.append(ORG_USERS_WHERE_SQL);
         }
@@ -111,5 +118,13 @@ public class UserRowRequest extends RowRequest {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
     }
 }

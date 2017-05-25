@@ -6,8 +6,12 @@ import com.netcracker.crm.service.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +60,7 @@ public class EntityController {
             model.put("history", histories);
             return "complaint";
         } else {
-            return "403";
+            return "error/403";
         }
     }
 
@@ -81,15 +85,17 @@ public class EntityController {
     public String order(Map<String, Object> model, Authentication authentication, @PathVariable("id") Long id) {
         Object principal = authentication.getPrincipal();
         Order order = orderService.getOrderById(id);
-        User user;
+        User user = null;
         if (principal instanceof UserDetailsImpl) {
             user = (UserDetailsImpl) principal;
-            if (user.getUserRole() == UserRole.ROLE_CUSTOMER && !order.getCustomer().getId().equals(user.getId())) {
-                return "error/403";
-            }
         }
-        model.put("order", order);
-        return "order";
+        boolean allowed = orderService.checkAccessToOrder(user, id);
+        if (allowed) {
+            model.put("order", order);
+            return "order";
+        } else {
+            return "error/403";
+        }
     }
 
     @RequestMapping("/*/discount/{id}")
@@ -114,34 +120,31 @@ public class EntityController {
     }
 
     @RequestMapping("/*/group/{id}")
-    public String group(Map<String, Object> model,  @PathVariable Long id) {
+    public String group(Map<String, Object> model, @PathVariable Long id) {
         model.put("group", groupService.getGroupById(id));
         model.put("products", productService.getProductsByGroupId(id));
         return "group";
     }
+
     @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
     public String user(Map<String, Object> model, Authentication authentication,
-                           @PathVariable Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+                       @PathVariable Long id) {
         model.put("user", userService.getUserById(id));
+        model.put("avatar", userService.getAvatar(id));
         return "user";
     }
 
     @RequestMapping(value = "/{role}/profile", method = {RequestMethod.GET})
     public String profile(Map<String, Object> model, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (User) authentication.getPrincipal();
+        model.put("user", userService.getUserById(user.getId()));
+        model.put("avatar", userService.getAvatar(user.getId()));
+        model.put("isProfile", true);
+        return "user";
+    }
 
-        User user1 = (User) authentication.getPrincipal();
-        long id = user1.getId();
-        model.put("profile", userService.getUserById(id));
-        return "profile";
+    @RequestMapping(path = "/order/{id}/report", method = RequestMethod.GET)
+    public void getPdfFile(@PathVariable("id") Long id, HttpServletResponse response) {
+        orderService.getPdfReport(id, response);
     }
 }

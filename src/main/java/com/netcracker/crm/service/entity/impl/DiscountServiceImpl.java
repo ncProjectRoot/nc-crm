@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.real.RealDiscount;
 import com.netcracker.crm.domain.request.DiscountRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.DiscountDto;
+import com.netcracker.crm.dto.bulk.DiscountBulkDto;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.DiscountMapper;
 import com.netcracker.crm.dto.row.DiscountRowDto;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -51,6 +50,13 @@ public class DiscountServiceImpl implements DiscountService {
         Long updateId = discountDao.update(discount);
         return updateId > 0;
     }
+    
+    @Override
+    @Transactional
+    public boolean update(Discount discount) {        
+        Long updateId = discountDao.update(discount);
+        return updateId > 0;
+    }
 
     @Override
     public Discount getDiscountById(Long id) {
@@ -77,4 +83,25 @@ public class DiscountServiceImpl implements DiscountService {
         return response;
     }
 
+    @Override
+    @Transactional
+    public boolean bulkUpdate(DiscountBulkDto bulkDto) {
+        RealDiscount discountTemplate = getBulkDiscount(bulkDto);
+        Set<Long> discountIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) discountIDs.addAll(bulkDto.getItemIds());
+
+        return discountDao.bulkUpdate(discountIDs, discountTemplate);
+    }
+
+    private RealDiscount getBulkDiscount(DiscountBulkDto bulkDto) {
+        RealDiscount discountTemplate = new RealDiscount();
+        if (bulkDto.isDescriptionChanged()) discountTemplate.setDescription(bulkDto.getDescription());
+        if (bulkDto.isActiveChanged()) {
+            boolean isActive = bulkDto.isActive() == null ? false : bulkDto.isActive();
+            discountTemplate.setActive(isActive);
+        }
+        if (bulkDto.isPercentageChanged()) discountTemplate.setPercentage(bulkDto.getPercentage());
+
+        return discountTemplate;
+    }
 }

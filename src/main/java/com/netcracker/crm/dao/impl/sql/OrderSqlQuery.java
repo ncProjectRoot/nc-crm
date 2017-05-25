@@ -134,4 +134,16 @@ public final class OrderSqlQuery {
             "AND concat(o.id, ' ', p.title) ILIKE :pattern " +
             "ORDER BY date_finish desc " +
             "LIMIT 20;";
+
+    public static final String SQL_CHECK_OWNERSHIP_OF_CUSTOMER = "SELECT count(*) " +
+            "FROM orders " +
+            "WHERE id = :id AND customer_id = :customer_id";
+
+    public static final String SQL_CHECK_OWNERSHIP_OF_CONTACT_PERSON = "SELECT count(*) " +
+            "FROM orders " +
+            "WHERE id = :id AND customer_id IN (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id));";
 }

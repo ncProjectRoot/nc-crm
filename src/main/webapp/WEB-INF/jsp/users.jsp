@@ -12,16 +12,18 @@
 
         <div class="col s12">
             <ul id="tabs" class="tabs">
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-users-wrapper">All Users</a></li>
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a id="link-create-wrapper" href="#create-wrapper">Create</a></li>
                 </sec:authorize>
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
-                    </sec:authorize>
+                </sec:authorize>
             </ul>
         </div>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
             <div id="all-users-wrapper" class="col s12">
                 <div id="table-all-users" class="table-container row">
                     <div class="table-wrapper col s11 center-align">
@@ -39,6 +41,17 @@
                                 </th>
                                 <th data-field="4">
                                     <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                </th>
+                                <th class="th-dropdown" data-field="enable">
+                                    <a class='dropdown-button a-dummy' href='#'
+                                       data-activates='dropdown-all-active' data-default-name="Active">
+                                        Active
+                                    </a>
+                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                                    <ul id="dropdown-all-active" class='dropdown-content'>
+                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                                    </ul>
                                 </th>
                                 <th data-field="5">
                                     <a href="#!" class="sorted-element a-dummy">E-mail</a>
@@ -83,12 +96,13 @@
                     </div>
                 </div>
             </div>
-
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form id="form-user-create" class="col s12">
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <div class="input-field">
                                     <i class="material-icons prefix">account_circle</i>
                                     <input id="user_first_name" name="firstName" type="text" class="validate">
@@ -116,10 +130,10 @@
                                     <label for="customer_address_details">Address Details</label>
                                 </div>
                                 <div>
-                                        <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                                    <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
                                 </div>
                             </div>
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <div class="input-field">
                                     <i class="material-icons prefix">work</i>
                                     <select name="userRole" id="user_role">
@@ -157,7 +171,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s12 m6">
                                 <input type="hidden" name="addressRegionName" id="customer_region_name">
                                 <input type="hidden" name="addressLatitude" id="customer_address_lat">
                                 <input type="hidden" name="addressLongitude" id="customer_address_long">
@@ -214,9 +228,9 @@
 
 
 <form id="update-user-form2" style="display: none">
-    <div class="modal-content row">        
-        <input id="user_id2" type="hidden" name="id" />
-        <input id="user_contactPerson2" type="hidden" name="contactPerson" />            
+    <div class="modal-content row">
+        <input id="user_id2" type="hidden" name="id"/>
+        <input id="user_contactPerson2" type="hidden" name="contactPerson"/>
     </div>
     <div class="modal-footer center-align">
         <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
@@ -231,7 +245,7 @@
 
     $('ul#tabs').tabs({
 
-        onShow: function() {
+        onShow: function () {
             $('#map').locationpicker({
                 location: {
                     latitude: 40.7324319,
@@ -278,7 +292,7 @@
         });
     });
 
-    $(document).on("change", "#user_role", function () {
+    $("#user_role").on("change", function () {
         if ($('#user_role option:selected').val() == 'ROLE_CUSTOMER') {
             $('.customer-field').css("display", "block");
         } else {
@@ -295,13 +309,15 @@
         var form = "#form-user-create";
         send(form, url, "POST").done(function (id) {
             if (id) {
-                location.hash = '#user?id=' + id;
+                location.hash = '#user/' + id;
             }
         })
     });
+    </sec:authorize>
 
     //////// all ////////
 
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     $("#table-all-users").karpo_table({
         urlSearch: "/users/autocomplete",
         urlTable: "/users",
@@ -321,24 +337,36 @@
             tr.append($("<td>", {html: temp}));
             temp = "<span id='lastName" + object.id + "'>" + object.lastName + "</span>";
             tr.append($("<td>", {html: temp}));
+            if (object.enable != null)
+                userActive = (object.enable == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            tr.append($("<td>", {html: userActive}));
             temp = "<span id='email" + object.id + "'>" + object.email + "</span>";
             tr.append($("<td>", {html: temp}));
             temp = "<span id='phone" + object.id + "'>" + object.phone + "</span>";
             tr.append($("<td>", {html: temp}));
             temp = "<span id='userRole" + object.id + "'>" + object.userRole + "</span>";
             tr.append($("<td>", {html: temp}));
-            if (object.contactPerson != null)
-                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
+            if (object.contactPerson != null) {
+                <sec:authorize access="hasAnyRole('ROLE_PMG')">
+                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' style='cursor: pointer;' class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+            }
             temp = "<span id='contactPerson" + object.id + "'>" + contactPerson + "</span>";
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='formattedAddress" + object.id + "'>" + object.formattedAddress + "</span>";
+            var formattedAddress = object.formattedAddress ? object.formattedAddress : "";
+            temp = "<span id='formattedAddress" + object.id + "'>" + formattedAddress + "</span>";
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='organizationName" + object.id + "'>" + object.organizationName + "</span>";
+            var organizationName = object.organizationName ? object.organizationName : "";
+            temp = "<span id='organizationName" + object.id + "'>" + organizationName + "</span>";
             tr.append($("<td>", {html: temp}));
             return tr;
         }
     });
-
+    </sec:authorize>
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
@@ -346,24 +374,24 @@
         if ($(id).html() == "check") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("clear");
-            $(id).fadeIn(1500);
+            $(id).fadeIn(2000);
         }
         else if ($(id).html() == "clear") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("check");
-            $(id).fadeIn(1500);
+            $(id).fadeIn(2000);
         }
 
-         $("#user_id2").val($("#"+"id"+simpleId).html());
-         if ($(id).html() == "check")
+        $("#user_id2").val($("#" + "id" + simpleId).html());
+        if ($(id).html() == "check")
             $("#user_contactPerson2").val(true);
-         if ($(id).html() == "clear")
+        if ($(id).html() == "clear")
             $("#user_contactPerson2").val(false);
-         //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
-         
-         var url = "/users/contactPerson";
-         var form = "#update-user-form2";
-         send(form, url, "PUT");
+        //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
+
+        var url = "/users/contactPerson";
+        var form = "#update-user-form2";
+        send(form, url, "PUT");
     }
     </sec:authorize>
 
@@ -375,7 +403,7 @@
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#user?id=" + object.id
+                href: "#user/" + object.id
             })));
             tr.append($("<td>", {text: object.firstName}));
             tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));

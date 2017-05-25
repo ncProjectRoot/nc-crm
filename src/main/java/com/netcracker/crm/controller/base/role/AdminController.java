@@ -66,5 +66,9 @@ public class AdminController {
     }
 
 
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
+    }
 
 }

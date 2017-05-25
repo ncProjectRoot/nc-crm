@@ -57,7 +57,7 @@
                 <li class="menu-item-user hide-on-small-only" data-user-role="${user.userRole}">
                     <div>
                         <a class='dropdown-button a-dummy' href='.' data-activates='dropdown-user'>
-                            <img src="https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png"
+                            <img id="profile-avatar" src="${avatar}"
                                  alt="" class="circle responsive-img z-depth-1">
                             <div>
                                 <span class="black-text title" id="user-name">${user.lastName} ${user.firstName}</span>
@@ -115,12 +115,14 @@
 <%--Google API Key: AIzaSyCT7tBQN8l0fcDdcZUwuxD0XGjgM7qbTL4 sensor=false&--%>
 <script src="${springMainScript}"></script>
 <script src="${springLocationPickerScript}"></script>
+<sec:authorize access="hasRole('ROLE_CSR')">
 <script>
     setInterval(function () {
         countMessage()
     }, 60000);
     countMessage();
 </script>
+</sec:authorize>
 </div>
 </body>
 </html>

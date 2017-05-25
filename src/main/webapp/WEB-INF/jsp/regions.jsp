@@ -29,7 +29,7 @@
         </ul>
     </div>
     <div id="search-regions-wrapper" class="col s12">
-        <div class="input-field col s6 regions-input-field">
+        <div class="input-field col s10 m6 regions-input-field">
             <i class="material-icons prefix">search</i>
             <input type="text" id="regions-input" class="autocomplete">
             <input type="hidden" id="regions-hidden-input" name="discountId"/>
