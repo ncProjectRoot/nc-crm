@@ -1,18 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_PMG', 'ROLE_CSR')">
 <li>
     <a href="#dashboard" class="valign-wrapper menu-element">
         <i class="white-text material-icons">dashboard</i>
         <h2>Dashboard</h2>
     </a>
 </li>
+</sec:authorize>
 <li>
     <a href="#profile" class="valign-wrapper menu-element">
         <i class="white-text material-icons">person_pin</i>
         <h2>My Profile</h2>
     </a>
 </li>
-<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER', 'ROLE_CSR')">
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER', 'ROLE_CSR', 'ROLE_PMG' )">
     <li>
         <a href="#orders" class="valign-wrapper menu-element">
             <i class="white-text material-icons">add_shopping_cart</i>
@@ -36,7 +38,7 @@
         </li>
     </c:if>
 </sec:authorize>
-<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     <li>
         <a href="#users" class="valign-wrapper menu-element">
             <i class="white-text material-icons">face</i>
@@ -55,6 +57,14 @@
             <h2>Groups</h2>
         </a>
     </li>
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <li>
+            <a href="#regions" class="valign-wrapper menu-element">
+                <i class="white-text material-icons">public</i>
+                <h2>Regions</h2>
+            </a>
+        </li>
+    </sec:authorize>
 </sec:authorize>
 <sec:authorize access="hasAnyRole('ROLE_PMG', 'ROLE_CUSTOMER', 'ROLE_ADMIN')">
     <li>

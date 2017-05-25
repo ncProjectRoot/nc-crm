@@ -15,9 +15,10 @@
         color: darkblue;
     }
 
-    #date{
+    #date {
         text-decoration: underline;
     }
+
     .title {
         color: green;
     }
@@ -26,7 +27,7 @@
         color: darkblue;
     }
 </style>
-<div class="content-body" data-page-name="Product #${order.id}">
+<div class="content-body z-depth-1" data-page-name="Order #${order.id}">
     <a class="waves-effect waves-light btn-large" id="status">${order.status.name.replaceAll("_", " ")}</a>
     <div class="section">
         <h5>Product title : <span class="title">${order.product.title}</span></h5>
@@ -91,6 +92,8 @@
             </sec:authorize>
         </div>
     </div>
+
+    <a href="/order/${order.id}/report" class="waves-effect waves-light btn">Get PDF Report</a>
 
 </div>
 <div class="row">

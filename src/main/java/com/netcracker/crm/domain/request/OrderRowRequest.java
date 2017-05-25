@@ -9,6 +9,7 @@ public class OrderRowRequest extends RowRequest {
     private Integer statusId;
     private Integer productStatusId;
     private Long customerId;
+    private boolean isContactPerson;
 
     private static final String BEGIN_SQL = ""
             + "SELECT o.id, product_id, p.title, customer_id, csr_id, date_finish, preferred_date, o.status_id "
@@ -17,6 +18,13 @@ public class OrderRowRequest extends RowRequest {
     private static final String BEGIN_SQL_COUNT = "SELECT count(*) "
             + "FROM orders o "
             + "INNER JOIN product p ON o.product_id = p.id ";
+
+    private static final String ORG_ORDERS_WHERE_SQL = "" +
+            " customer_id in (SELECT id " +
+            "FROM users " +
+            "WHERE org_id = (SELECT org_id " +
+            "FROM users " +
+            "WHERE id = :customer_id))";
 
     public OrderRowRequest() {
         super(new String[]{
@@ -82,8 +90,16 @@ public class OrderRowRequest extends RowRequest {
     protected StringBuilder appendWhereParam(StringBuilder sql) {
         if (customerId != null) {
             appendWhere(sql);
-            sql.append("customer_id = :customer_id ");
+            if(isContactPerson){
+                sql.append(ORG_ORDERS_WHERE_SQL);
+            } else {
+                sql.append("customer_id = :customer_id ");
+            }
         }
         return sql;
+    }
+
+    public void setIsContactPerson(boolean isContactPerson) {
+        this.isContactPerson = isContactPerson;
     }
 }

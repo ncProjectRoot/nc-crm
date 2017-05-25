@@ -50,9 +50,19 @@ public class CSRController {
         return "groups";
     }
 
+    @GetMapping("/regions")
+    public String regions(Map<String, Object> model) {
+        return "regions";
+    }
+
     @GetMapping("/messages")
     public String message(Map<String, Object> model) {
         return "messages";
+    }
+
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
     }
 
 }

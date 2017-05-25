@@ -207,7 +207,8 @@ public class ProductDaoImpl implements ProductDao {
     public Long getProductRowsCount(ProductRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE, orderRowRequest.getGroupDiscountActive())
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
 
         if (orderRowRequest.getAddress() != null) {
@@ -230,7 +231,8 @@ public class ProductDaoImpl implements ProductDao {
     public List<Product> findProductRows(ProductRowRequest orderRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ROW_STATUS, orderRowRequest.getStatusId())
-                .addValue(PARAM_PRODUCT_ROW_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_PRODUCT_DISCOUNT_ACTIVE, orderRowRequest.getDiscountActive())
+                .addValue(PARAM_PRODUCT_ROW_GROUP_DISCOUNT_ACTIVE, orderRowRequest.getGroupDiscountActive())
                 .addValue(RowRequest.PARAM_ROW_LIMIT, orderRowRequest.getRowLimit())
                 .addValue(RowRequest.PARAM_ROW_OFFSET, orderRowRequest.getRowOffset())
                 .addValue(PARAM_PRODUCT_CUSTOMER_ID, orderRowRequest.getCustomerId());
@@ -270,6 +272,22 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<Product> findProductsByDiscountId(Long id) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_DISCOUNT_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCTS_BY_DISCOUNT_ID, params, productWithDetailExtractor);
+    }
+
+
+    @Override
+    public List<Product> findProductsByDiscountIdAndCustomerId(Long discountId, Long customerId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_DISCOUNT_ID, discountId)
+                .addValue(PARAM_PRODUCT_CUSTOMER_ID, customerId);
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCTS_BY_DISCOUNT_ID_AND_CUSTOMER_ID, params, productWithDetailExtractor);
+    }
+
+    @Override
     public boolean bulkUpdate(Set<Long> productIDs, Product product) {
         Long groupId = null;
         Long discountId = null;
@@ -283,8 +301,7 @@ public class ProductDaoImpl implements ProductDao {
                 .addValue(PARAM_PRODUCT_DEFAULT_PRICE, product.getDefaultPrice())
                 .addValue(PARAM_PRODUCT_DESCRIPTION, product.getDescription());
 
-        boolean isSame = namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
-        return isSame;
+        return namedJdbcTemplate.queryForObject(SQL_PRODUCT_BULK_UPDATE, params, Integer.class) == productIDs.size();
     }
 
     private Long getDiscountId(Discount discount) {

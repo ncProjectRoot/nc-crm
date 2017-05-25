@@ -41,6 +41,7 @@ $(document).ready(function () {
     });
 });
 
+
 function checkNewMessage() {
     var messageItem = $(".message-menu-item");
     if (messageItem.data("new-message") != 0) {
@@ -53,7 +54,7 @@ function checkNewMessage() {
 function countMessage() {
     $.get("/messages/count").success(function (data) {
         var count = data;
-        if (count > 0){
+        if (count > 0) {
             $(".message-menu-item").attr("data-new-message", count);
             checkNewMessage();
         }
@@ -87,6 +88,7 @@ function downloadContent() {
 function send(form, url, type) {
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
+    $(".progress").addClass("progress-active");
     var xhr = $.ajax({
         url: url,
         type: type,
@@ -108,6 +110,8 @@ function send(form, url, type) {
                 Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
             }
         }
+    }).complete(function () {
+        $(".progress").removeClass("progress-active");
     });
     return xhr;
 }
@@ -139,14 +143,14 @@ jQuery.fn.karpo_status = function (activeStatusId) {
 };
 jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
-    var dataAutocomplete = {"null":null};
+    var dataAutocomplete = {"null": null};
     var deleter;
     if (params.defaultValue.length > 1) {
         var defaultObject = convert(params.defaultValue);
         $(params.label).text("#" + params.defaultValue);
         autocomplete.val(params.defaultValue);
         $(params.hideInput).val(defaultObject.id);
-        toggleDeleter();
+        toggleDeleter("show");
     } else {
         $(params.hideInput).val(0);
     }
@@ -163,37 +167,46 @@ jQuery.fn.karpo_autocomplete = function (params) {
     });
     autocomplete.autocomplete({
         data: dataAutocomplete,
-        onAutocomplete: function(val) {
+        onAutocomplete: function (val) {
             $(params.label).text("#" + val);
-            $(params.hideInput).val(convert(val).id);
-            toggleDeleter();
+            var id = convert(val).id;
+            $(params.hideInput).val(id);
+            toggleDeleter("show");
+            autocomplete.trigger("onAutocompleteItem", id);
         },
         limit: Infinity,
         minLength: 1
     });
-    function toggleDeleter() {
-        if (deleter) {
+    function toggleDeleter(type) {
+        if (type == "hide") {
             $(params.label).next().remove();
             deleter.off("click", deleteValue);
             deleter = null;
-        } else {
-            deleter = $("<i class='material-icons tiny deleter'>delete_forever</i>");
-            $(params.label).after(deleter)
-            deleter.on("click", deleteValue);
+        } else if (type == "show") {
+            if (!deleter) {
+                deleter = $("<i class='material-icons tiny deleter'>delete_forever</i>");
+                $(params.label).after(deleter)
+                deleter.on("click", deleteValue);
+            }
         }
     }
+
     function deleteValue() {
         $(params.label).text("#");
         autocomplete.val("");
         $(params.hideInput).val(0);
-        toggleDeleter();
+        autocomplete.trigger("onAutocompleteDeleteItem");
+        toggleDeleter("hide");
     }
+
     function convert(val) {
         return {
             id: parseFloat(val.substring(0, val.indexOf(" "))),
             value: val.substring(val.indexOf(" ") + 1, val.length)
         }
     }
+
+    return autocomplete;
 };
 jQuery.fn.karpo_multi_select = function (params) {
     var autocomplete = $(this[0]);
@@ -213,7 +226,7 @@ jQuery.fn.karpo_multi_select = function (params) {
         });
     });
 
-    this.addSelected =  function (val) {
+    this.addSelected = function (val) {
         var id = parseFloat(val.substring(0, val.indexOf(" ")));
         if (selected.indexOf(id) == -1) {
             selected.push(id);
@@ -249,7 +262,6 @@ jQuery.fn.karpo_multi_select = function (params) {
     };
 
     return this;
-
 
 
 };

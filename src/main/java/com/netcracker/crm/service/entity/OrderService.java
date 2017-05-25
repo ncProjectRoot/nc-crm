@@ -3,13 +3,10 @@ package com.netcracker.crm.service.entity;
 import com.netcracker.crm.domain.model.Order;
 import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.domain.request.OrderRowRequest;
-import com.netcracker.crm.dto.AutocompleteDto;
-import com.netcracker.crm.dto.GraphDto;
-import com.netcracker.crm.dto.OrderDto;
-import com.netcracker.crm.dto.OrderHistoryDto;
-import com.netcracker.crm.dto.OrderViewDto;
+import com.netcracker.crm.dto.*;
 import org.springframework.security.core.Authentication;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,4 +43,7 @@ public interface OrderService {
 
     Integer getCsrOrderCount(Authentication authentication);
 
+    boolean checkAccessToOrder(User customer, Long orderId);
+
+    void getPdfReport(Long orderId, HttpServletResponse response);
 }

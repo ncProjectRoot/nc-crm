@@ -10,8 +10,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
 import static com.netcracker.crm.controller.message.MessageProperty.*;
-import static com.netcracker.crm.validation.field.ProductBulkDtoField.DEFAULT_PRICE;
-import static com.netcracker.crm.validation.field.ProductBulkDtoField.DESCRIPTION;
+import static com.netcracker.crm.validation.field.ProductDtoField.DEFAULT_PRICE;
+import static com.netcracker.crm.validation.field.ProductDtoField.DESCRIPTION;
 
 
 /**

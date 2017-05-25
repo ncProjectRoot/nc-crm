@@ -226,6 +226,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
                 .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
                 .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_IS_ENABLE, rowRequest.getEnable())
                 .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
 
         String sql = rowRequest.getSqlCount();
@@ -251,6 +252,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
                 .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
                 .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_IS_ENABLE, rowRequest.getEnable())
                 .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
         String sql = rowRequest.getSql();
 
@@ -318,13 +320,12 @@ public class UserDaoImpl implements UserDao {
                     user.setOrganization(organization);
                 }
 
-                long addressId = rs.getLong(PARAM_USER_ORG_ID);
+                long addressId = rs.getLong(PARAM_USER_ADDRESS_ID);
                 if (addressId != 0) {
                     Address address = new AddressProxy(addressDao);
                     address.setId(addressId);
                     user.setAddress(address);
                 }
-
 
 
                 users.add(user);

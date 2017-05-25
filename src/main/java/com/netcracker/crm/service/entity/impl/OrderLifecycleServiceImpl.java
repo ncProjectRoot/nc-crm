@@ -153,18 +153,6 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         return false;
     }
 
-    private Order convertFromDtoToEntity(OrderDto orderDto) {
-        Order order = new RealOrder();
-        Product product = productDao.findById(orderDto.getProductId());
-        User customer = userDao.findById(orderDto.getCustomerId());
-
-        order.setProduct(product);
-        order.setCustomer(customer);
-        order.setDate(LocalDateTime.now());
-        return order;
-    }
-
-
     private boolean saveCondition(Order order, History history) {
         return historyDao.create(history) != null && orderDao.update(order) != null;
     }

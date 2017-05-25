@@ -38,4 +38,6 @@ public interface ProductService {
     boolean changeStatus(Long productId, Long statusId, User user);
 
     boolean bulkUpdate(ProductBulkDto bulkDto, User user);
+
+    List<Product> getProductsByDiscountId(Long id, User user);
 }

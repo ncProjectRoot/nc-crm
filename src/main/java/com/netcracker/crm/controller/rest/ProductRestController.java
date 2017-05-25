@@ -108,14 +108,17 @@ public class ProductRestController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
     public ResponseEntity<?> changeStatus(@RequestParam Long productId, @RequestParam Long statusId,
                                           Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User user = (UserDetailsImpl) principal;
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         boolean result = productService.changeStatus(productId, statusId, user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        if (result) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
     public ResponseEntity<List<AutocompleteDto>> productNames(String pattern, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
@@ -142,7 +145,7 @@ public class ProductRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
     public ResponseEntity<Map<String, Object>> productRows(ProductRowRequest productRowRequest, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;

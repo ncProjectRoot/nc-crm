@@ -8,7 +8,7 @@
         text-decoration: underline;
     }
 </style>
-<div class="content-body" data-page-name="Messages">
+<div class="content-body z-depth-1" data-page-name="Messages">
 
     <div class="row">
         <div class="col s12">
