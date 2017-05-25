@@ -39,12 +39,6 @@ $(document).ready(function () {
     $(window).on('hashchange', function () {
         downloadContent();
     });
-
-    $.get('/users/avatar', function (data) {
-    }).done(function (data) {
-        $("#profile-avatar").attr('src', data);
-        $("#profile-avatar").css('display', 'block');
-    });
 });
 
 
@@ -94,6 +88,7 @@ function downloadContent() {
 function send(form, url, type) {
     var token = $("meta[name='_csrf']").attr("content");
     var header = $("meta[name='_csrf_header']").attr("content");
+    $(".progress").addClass("progress-active");
     var xhr = $.ajax({
         url: url,
         type: type,
@@ -115,6 +110,8 @@ function send(form, url, type) {
                 Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
             }
         }
+    }).done(function () {
+        $(".progress").removeClass("progress-active");
     });
     return xhr;
 }

@@ -143,8 +143,7 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th class="hide-on-med-and-down"></th>
-                                <th>
+                                <th class="hide-on-med-and-down">
                                     <p>
                                         <input type='checkbox' class='filled-in bulk-select-all'
                                                id="select-all-checkbox"/>

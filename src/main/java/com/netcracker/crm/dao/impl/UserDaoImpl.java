@@ -126,6 +126,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public boolean updatePassword(User user) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_USER_ID, user.getId())
+                .addValue(PARAM_USER_PASSWORD, user.getPassword());
+
+        return namedJdbcTemplate.update(SQL_UPDATE_PASSWORD, params) != 0;
+    }
+
+    @Override
     public Long delete(Long id) {
         if (id != null) {
             MapSqlParameterSource params = new MapSqlParameterSource()

@@ -60,6 +60,9 @@ public class AdminController {
         return "complaints";
     }
 
-
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
+    }
 
 }
