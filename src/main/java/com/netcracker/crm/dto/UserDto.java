@@ -21,6 +21,8 @@ public class UserDto {
     private String addressRegionName;
     private Long orgId;
     private Long addressId;
+    private boolean enable;
+    private boolean accountNonLocked;
 
     public UserDto() {
     }
@@ -121,7 +123,6 @@ public class UserDto {
         this.addressLongitude = addressLongitude;
     }
 
-
     public String getAddressRegionName() {
         return addressRegionName;
     }
@@ -160,5 +161,21 @@ public class UserDto {
 
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
     }
 }

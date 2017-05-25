@@ -9,7 +9,9 @@
         <div class="col s12">
             <ul id="tabs" class="tabs">
                 <li class="tab col s3"><a class="active" href="#all-groups-wrapper">All Groups</a></li>
-                <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                </sec:authorize>
             </ul>
         </div>
         <div id="all-groups-wrapper" class="col s12">
@@ -51,44 +53,48 @@
                 </div>
             </div>
         </div>
-        <div id="create-wrapper" class="col s12">
-            <div class="row">
-                <form class="col s12" id="addGroup">
-                    <div class="row">
-                        <div class='input-field col s12 m6'>
-                            <i class="material-icons prefix">short_text</i>
-                            <input class='validate' type='text' name='name' id='group_name'/>
-                            <label for="group_name">Name</label>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+            <div id="create-wrapper" class="col s12">
+                <div class="row">
+                    <form class="col s12" id="addGroup">
+                        <div class="row">
+                            <div class='input-field col s12 m6'>
+                                <i class="material-icons prefix">short_text</i>
+                                <input class='validate' type='text' name='name' id='group_name'/>
+                                <label for="group_name">Name</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <i class="material-icons prefix">loyalty</i>
+                                <input type="text" id="discount-input" class="autocomplete">
+                                <input type="hidden" id="discount-hidden-input" name="discountId"/>
+                                <label for="discount-input">Selected discount: <span
+                                        id="selected-discount"></span></label>
+                            </div>
                         </div>
-                        <div class="input-field col s12 m6">
-                            <i class="material-icons prefix">loyalty</i>
-                            <input type="text" id="discount-input" class="autocomplete">
-                            <input type="hidden" id="discount-hidden-input" name="discountId"/>
-                            <label for="discount-input">Selected discount: <span id="selected-discount"></span></label>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <i class="material-icons prefix">view_list</i>
+                                <input type="text" id="product-input" class="autocomplete">
+                                <input type="hidden" id="product-hidden-input" name="products"/>
+                                <label for="product-input">Select products</label>
+                            </div>
+                            <div class="col s12 m6">
+                                <ul id="selected-products" class="collection"></ul>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12 m6">
-                            <i class="material-icons prefix">view_list</i>
-                            <input type="text" id="product-input" class="autocomplete">
-                            <input type="hidden" id="product-hidden-input" name="products"/>
-                            <label for="product-input">Select products</label>
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <button class="btn waves-effect waves-light" type="submit" id="submit-group"
+                                        name="action">
+                                    Create Group
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="col s12 m6">
-                            <ul id="selected-products" class="collection"></ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 m6">
-                            <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">
-                                Create Group
-                                <i class="material-icons right">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
+        </sec:authorize>
     </div>
 </div>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
@@ -102,13 +108,13 @@
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
-            tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#group/' + object.id + '">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
             tr.append($("<td>", {text: object.discountValue}));
-            if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";            
+            if (object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             return tr;
         }

@@ -18,6 +18,8 @@ import com.netcracker.crm.service.email.AbstractEmailSender;
 import com.netcracker.crm.service.email.EmailParam;
 import com.netcracker.crm.service.email.EmailParamKeys;
 import com.netcracker.crm.service.email.EmailType;
+import com.netcracker.crm.service.email.senders.ChangeSender;
+import com.netcracker.crm.service.email.senders.RecoveryPasswordSender;
 import com.netcracker.crm.service.entity.UserService;
 import com.netcracker.crm.service.security.RandomString;
 import com.timgroup.jgravatar.Gravatar;
@@ -57,6 +59,7 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final UserTokenDao tokenDao;
     private final AbstractEmailSender emailSender;
+    private final AbstractEmailSender changeSender;
     private final PasswordEncoder encoder;
     private final SessionRegistry sessionRegistry;
     private final UserMapper userMapper;
@@ -64,10 +67,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserDao userDao, UserTokenDao tokenDao, PasswordEncoder encoder,
                            @Qualifier("registrationSender") AbstractEmailSender emailSender,
+                           @Qualifier("changeSender") ChangeSender changeSender,
                            SessionRegistry sessionRegistry, UserMapper userMapper) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
         this.emailSender = emailSender;
+        this.changeSender = changeSender;
         this.encoder = encoder;
         this.sessionRegistry = sessionRegistry;
         this.userMapper = userMapper;
@@ -121,6 +126,27 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         userDao.update(user);
         return user;
+    }
+
+    @Override
+    public boolean updatePassword(User user, String oldPassword, String newPassword) {
+        if (encoder.matches(oldPassword, user.getPassword())) {
+            String encodedPassword = encoder.encode(newPassword);
+            user.setPassword(encodedPassword);
+            if (userDao.updatePassword(user, encodedPassword) != 0) {
+                EmailParam emailMap = new EmailParam(EmailType.CHANGE);
+                emailMap.put(EmailParamKeys.USER, user);
+                emailMap.put(EmailParamKeys.CHANGE_TYPE, "password");
+                emailMap.put(EmailParamKeys.CHANGE_VALUE, newPassword);
+                try {
+                    changeSender.send(emailMap);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

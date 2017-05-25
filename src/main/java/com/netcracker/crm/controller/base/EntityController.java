@@ -129,27 +129,18 @@ public class EntityController {
     @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
     public String user(Map<String, Object> model, Authentication authentication,
                        @PathVariable Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
         model.put("user", userService.getUserById(id));
+        model.put("avatar", userService.getAvatar(id));
         return "user";
     }
 
     @RequestMapping(value = "/{role}/profile", method = {RequestMethod.GET})
     public String profile(Map<String, Object> model, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
-
-        User user1 = (User) authentication.getPrincipal();
-        long id = user1.getId();
-        model.put("profile", userService.getUserById(id));
-        return "profile";
+        User user = (User) authentication.getPrincipal();
+        model.put("user", userService.getUserById(user.getId()));
+        model.put("avatar", userService.getAvatar(user.getId()));
+        model.put("isProfile", true);
+        return "user";
     }
 
     @RequestMapping(path = "/order/{id}/report", method = RequestMethod.GET)

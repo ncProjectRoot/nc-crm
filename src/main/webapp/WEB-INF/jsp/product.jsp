@@ -229,7 +229,7 @@
             </div>
         </c:if>
     </sec:authorize>
-    <c:if test="${product.discount.active}">
+    <c:if test="${product.discount != null && product.discount.isActive()}">
         <img class="discount-img" src="${discountUrl}"/>
     </c:if>
     <div class="container">
@@ -270,18 +270,18 @@
         <div class="section">
             <div class="div-price field">
                 <h5 class="price">${product.defaultPrice}$</h5>
-                <c:if test="${product.discount.active || product.group.discount.active}">
+                <c:if test="${product.discount.isActive() || product.group.discount.isActive()}">
                     <h5 class="new-price"></h5>
                     <span class="percentage"></span>
                 </c:if>
                 <div class="discount-details">
-                    <c:if test="${product.discount.active}">
+                    <c:if test="${product.discount.isActive()}">
                         <div class="center-align">
                             <a href="#discount/${product.discount.id}">${product.discount.title}</a>
                             <span>- ${product.discount.percentage}%</span>
                         </div>
                     </c:if>
-                    <c:if test="${product.group.discount.active}">
+                    <c:if test="${product.group.discount.isActive()}">
                         <div class="center-align">
                             <a href="#discount/${product.group.discount.id}">${product.group.discount.title}</a>
                             <span>- ${product.group.discount.percentage}%</span>
@@ -299,14 +299,14 @@
 </div>
 <script>
 
-    <c:if test="${product.discount.active || product.group.discount.active}">
+    <c:if test="${product.discount.isActive() || product.group.discount.isActive()}">
 
     var allPercentage = 0;
 
-    <c:if test="${product.discount.active}">
+    <c:if test="${product.discount.isActive()}">
     allPercentage += ${product.discount.percentage};
     </c:if>
-    <c:if test="${product.group.discount.active}">
+    <c:if test="${product.group.discount.isActive()}">
     allPercentage += ${product.group.discount.percentage};
     </c:if>
 
