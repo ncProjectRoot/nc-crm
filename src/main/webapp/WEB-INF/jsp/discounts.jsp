@@ -259,9 +259,16 @@
             temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >" + object.description + "</span>";
             tr.append($("<td>", {html: temp}));
 
-            if (object.discountActive != null)
+            if (object.discountActive != null) {
+                <sec:authorize access="hasAnyRole('ROLE_PMG')">
+                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+                temp = "<span id='discountActive" + object.id + "'>" + disActive + "</span>";
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                 disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
-            temp = "<span id='discountActive" + object.id + "' style='cursor: pointer;'>" + disActive + "</span>";
+                temp = "<span id='discountActive" + object.id + "' style='cursor: pointer;'>" + disActive + "</span>";
+                </sec:authorize>
+            }
             tr.append($("<td>", {html: temp}));
             return tr;
         }

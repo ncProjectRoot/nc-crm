@@ -346,8 +346,14 @@
             tr.append($("<td>", {html: temp}));
             temp = "<span id='userRole" + object.id + "'>" + object.userRole + "</span>";
             tr.append($("<td>", {html: temp}));
-            if (object.contactPerson != null)
+            if (object.contactPerson != null) {
+                <sec:authorize access="hasAnyRole('ROLE_PMG')">
+                contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                 contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' style='cursor: pointer;' class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+            }
             temp = "<span id='contactPerson" + object.id + "'>" + contactPerson + "</span>";
             tr.append($("<td>", {html: temp}));
             var formattedAddress = object.formattedAddress ? object.formattedAddress : "";
