@@ -85,7 +85,7 @@
         } else {
 
         }
-    })
+    });
 
     $("#update-email").on("submit",  function (e) {
         e.preventDefault();

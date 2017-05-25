@@ -25,6 +25,8 @@ public interface UserService {
 
     User update(User user);
 
+    boolean updatePassword(User user, String oldPassword, String newPassword);
+
     List<AutocompleteDto> getUserLastNamesByPattern(String pattern, User user);
 
     String getAvatar(Long id);

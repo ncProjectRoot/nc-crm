@@ -83,13 +83,22 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
-    @PutMapping
+    @PutMapping("/password")
     public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
         User user = userService.update(userDto);
         if (user.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUserPassword(String oldPassword, String newPassword, Authentication authentication) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (userService.updatePassword(user, oldPassword, newPassword)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PASSWORD_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping
