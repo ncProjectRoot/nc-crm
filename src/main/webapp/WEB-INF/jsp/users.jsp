@@ -403,7 +403,7 @@
             var tr = $("<tr>");
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
-                href: "#user?id=" + object.id
+                href: "#user/" + object.id
             })));
             tr.append($("<td>", {text: object.firstName}));
             tr.append($("<td>", {text: object.middleName ? object.middleName : ""}));

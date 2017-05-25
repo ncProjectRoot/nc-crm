@@ -30,13 +30,15 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th>
-                                    <p>
-                                        <input type='checkbox' class='filled-in bulk-select-all'
-                                               id="select-all-checkbox"/>
-                                        <label for='select-all-checkbox'></label>
-                                    </p>
-                                </th>
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                    <th>
+                                        <p>
+                                            <input type='checkbox' class='filled-in bulk-select-all'
+                                                   id="select-all-checkbox"/>
+                                            <label for='select-all-checkbox'></label>
+                                        </p>
+                                    </th>
+                                </sec:authorize>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
@@ -283,32 +285,32 @@
             $(id).fadeIn(3000);
         }
 
-        $("#disc_id2").val($("#"+"id"+simpleId).html());
-        $("#disc_title2").val($("#"+"title"+simpleId).html());
-        var length = $("#"+"percentage"+simpleId).html().length;
-        var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
+        $("#disc_id2").val($("#" + "id" + simpleId).html());
+        $("#disc_title2").val($("#" + "title" + simpleId).html());
+        var length = $("#" + "percentage" + simpleId).html().length;
+        var perc = $("#" + "percentage" + simpleId).html().substring(0, length - 1);
         $("#disc_percentage2").val(perc);
         if ($(id).html() == "check")
             document.getElementById("disc_active2").checked = true;
         if ($(id).html() == "clear")
             document.getElementById("disc_active2").checked = false;
         //$("#disc_active2").val($("#"+"discountActive"+simpleId).val());
-        $("#disc_description2").val($("#"+"description"+simpleId).html());
+        $("#disc_description2").val($("#" + "description" + simpleId).html());
 
 
         /*$("#disc_title").val($("#"+"title"+simpleId).html());
-        var length = $("#"+"percentage"+simpleId).html().length;
-        var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
-        $("#disc_percentage").val(perc);
+         var length = $("#"+"percentage"+simpleId).html().length;
+         var perc = $("#"+"percentage"+simpleId).html().substring(0, length-1);
+         $("#disc_percentage").val(perc);
 
-        if ($(id).html() == "check")
-            document.getElementById("disc_active").checked = true;
-        if ($(id).html() == "clear")
-            document.getElementById("disc_active").checked = false;
+         if ($(id).html() == "check")
+         document.getElementById("disc_active").checked = true;
+         if ($(id).html() == "clear")
+         document.getElementById("disc_active").checked = false;
 
-        //$("#disc_active").val($("#"+"discountActive"+simpleId).html());
-        $("#disc_description").val($("#"+"description"+simpleId).html());
-        */
+         //$("#disc_active").val($("#"+"discountActive"+simpleId).html());
+         $("#disc_description").val($("#"+"description"+simpleId).html());
+         */
 
         var url = "/discounts";
         var form = "#updateDiscountActive";
@@ -320,23 +322,23 @@
     $('select').material_select();
 
     $("#addDiscount").on("submit", function (e) {
-        e.preventDefault();
-        var title = $('#disc_title').val();
-        var percentage = $('#disc_percentage').val();
-        if (title.length < 5) {
-            Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
-        } else if (percentage < 0 || percentage > 100) {
-            Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
-        } else {
-            var url = "/discounts";
-            var form = "#addDiscount";
-            send(form, url, "POST").done(function (id) {
-                if (id) {
-                    location.hash = '#discount/' + id;
-                }
-            })
+            e.preventDefault();
+            var title = $('#disc_title').val();
+            var percentage = $('#disc_percentage').val();
+            if (title.length < 5) {
+                Materialize.toast("Please enter title at least 5 characters", 10000, 'rounded');
+            } else if (percentage < 0 || percentage > 100) {
+                Materialize.toast("Please enter percentage more 0 and less 100", 10000, 'rounded');
+            } else {
+                var url = "/discounts";
+                var form = "#addDiscount";
+                send(form, url, "POST").done(function (id) {
+                    if (id) {
+                        location.hash = '#discount/' + id;
+                    }
+                })
+            }
         }
-    }
     );
     </sec:authorize>
 
@@ -350,19 +352,21 @@
             var disActive = null;
             var temp = null;
             var tr = $("<tr>");
-            temp = "<span id='id" + object.id + "'>"+object.id+"</span>";
+            temp = "<span id='id" + object.id + "'>" + object.id + "</span>";
+            <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            </sec:authorize>
             tr.append($("<td>").append($("<a>", {
                 html: temp,
                 href: "#discount/" + object.id
             })));
             // id='title" + object.id + "'
-            temp = "<span id='title" + object.id + "' >"+object.title+"</span>";
+            temp = "<span id='title" + object.id + "' >" + object.title + "</span>";
             tr.append($("<td>", {html: temp}));
             var perc = object.percentage ? object.percentage + "%" : "";
-            temp = "<span id='percentage" + object.id + "' >"+perc+"</span>"
+            temp = "<span id='percentage" + object.id + "' >" + perc + "</span>"
             tr.append($("<td>", {html: temp}));
-            temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >"+object.description+"</span>";
+            temp = "<span id='description" + object.id + "' class='description hide-on-med-and-down' >" + object.description + "</span>";
             tr.append($("<td>", {html: temp}));
             if (object.discountActive != null) {
                 <sec:authorize access="hasAnyRole('ROLE_PMG')">
