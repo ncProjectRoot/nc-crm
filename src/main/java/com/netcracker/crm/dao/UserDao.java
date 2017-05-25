@@ -10,8 +10,6 @@ import java.util.List;
  */
 public interface UserDao extends CrudDao<User> {
 
-    boolean updatePassword(User user);
-
     User findByEmail(String email);
 
     long updatePassword(User user, String password);

@@ -59,7 +59,7 @@
     }
 
 </style>
-<div class="content-body z-depth-1" data-page-name="User #${user.id}">
+<div class="content-body z-depth-1" data-page-name="User #${user.id}" data-latitude="${user.address.latitude}" data-longitude="${user.address.longitude}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
         <a class="modal-trigger teal-text text-darken-3 change-trigger" href="#update"><i class='material-icons medium'>cached</i></a>
         <div id="update" class="modal modal-fixed-footer">
@@ -162,20 +162,16 @@
 </div>
 <script>
 
-    if (document.getElementById('customer_address_lat').value && document.getElementById('customer_address_long').value) {
-        $('#map').locationpicker({
-            location: {
-                latitude: document.getElementById('customer_address_lat').value,
-                longitude: document.getElementById('customer_address_long').value
-            },
-            radius: 1,
-            enableAutocomplete: true,
-            enableReverseGeocode: true,
-            draggable: false
-        });
-    } else {
-        map.style.visibility = 'hidden';
-    }
+    $('#map').locationpicker({
+        location: {
+            latitude: parseFloat($(".content-body").data("latitude")),
+            longitude: parseFloat($(".content-body").data("longitude"))
+        },
+        radius: 1,
+        enableAutocomplete: true,
+        enableReverseGeocode: true,
+        draggable: false
+    });
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
 

@@ -8,5 +8,6 @@ public enum EmailType {
     COMPLAINT,
     ORDER_STATUS,
     REGISTRATION,
-    RECOVERY_PASSWORD
+    RECOVERY_PASSWORD,
+    CHANGE
 }

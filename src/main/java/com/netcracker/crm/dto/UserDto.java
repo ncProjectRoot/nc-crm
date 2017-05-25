@@ -123,7 +123,6 @@ public class UserDto {
         this.addressLongitude = addressLongitude;
     }
 
-
     public String getAddressRegionName() {
         return addressRegionName;
     }

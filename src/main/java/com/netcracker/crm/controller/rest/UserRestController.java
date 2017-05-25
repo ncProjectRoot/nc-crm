@@ -94,6 +94,15 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @PutMapping("/password")
+    public ResponseEntity<?> updateUserPassword(String oldPassword, String newPassword, Authentication authentication) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (userService.updatePassword(user, oldPassword, newPassword)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PASSWORD_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') " +
             "or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")

@@ -25,13 +25,13 @@
             <form id="update-password">
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="old-password" type="password" class="validate">
+                        <input id="old-password" type="password" class="validate" name="oldPassword">
                         <label for="old-password">Old Password</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <input id="new-password" type="password" class="validate">
+                        <input id="new-password" type="password" class="validate" name="newPassword">
                         <label for="new-password">New Password</label>
                     </div>
                 </div>
@@ -83,9 +83,11 @@
         if ($("#new-password").val() != $("#confirm-password").val()) {
             Materialize.toast("New password and confirm password don't  match", 5000);
         } else {
-
+            send("#update-password", "/users/password", "PUT").statusCode({400: function () {
+                Materialize.toast("Wrong password", 5000);
+            }})
         }
-    })
+    });
 
     $("#update-email").on("submit",  function (e) {
         e.preventDefault();
