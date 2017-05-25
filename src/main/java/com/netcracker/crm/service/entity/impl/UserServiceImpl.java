@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         if (encoder.matches(oldPassword, user.getPassword())) {
             String encodedPassword = encoder.encode(newPassword);
             user.setPassword(encodedPassword);
-            if (userDao.updatePassword(user, newPassword) != 0) {
+            if (userDao.updatePassword(user, encodedPassword) != 0) {
                 EmailParam emailMap = new EmailParam(EmailType.CHANGE);
                 emailMap.put(EmailParamKeys.USER, user);
                 emailMap.put(EmailParamKeys.CHANGE_TYPE, "password");

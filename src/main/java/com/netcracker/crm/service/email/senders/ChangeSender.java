@@ -44,15 +44,15 @@ public class ChangeSender extends AbstractEmailSender {
 
     private void prepareAndSendMail(User user, String type, String value) throws MessagingException {
         String template = replace(getTemplate(changeTemplate), user, type, value);
-        buildAndSend(user, changeSubject, template);
+        buildAndSend(user, changeSubject, template, type);
     }
 
-    private void buildAndSend(User user, String subject, String body) throws MessagingException {
+    private void buildAndSend(User user, String subject, String body, String type) throws MessagingException {
         EmailBuilder emailBuilder = new EmailBuilder();
         emailBuilder.setProperties(properties);
         emailBuilder.setContent(body);
         emailBuilder.setAddress(user.getEmail());
-        emailBuilder.setSubject(subject);
+        emailBuilder.setSubject(subject.replaceAll("%type%", type));
         mailSender.send(emailBuilder.generateMessage());
     }
 

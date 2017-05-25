@@ -164,8 +164,8 @@
 
     $('#map').locationpicker({
         location: {
-            latitude: parseFloat($(".content-body").data("latitude")),
-            longitude: parseFloat($(".content-body").data("longitude"))
+            latitude: $(".content-body").data("latitude"),
+            longitude: $(".content-body").data("longitude")
         },
         radius: 1,
         enableAutocomplete: true,

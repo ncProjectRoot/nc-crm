@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER', 'ROLE_CSR')">
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_PMG', 'ROLE_CSR')">
 <li>
     <a href="#dashboard" class="valign-wrapper menu-element">
         <i class="white-text material-icons">dashboard</i>

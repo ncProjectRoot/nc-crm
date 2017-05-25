@@ -110,7 +110,7 @@ function send(form, url, type) {
                 Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000, 'red');
             }
         }
-    }).done(function () {
+    }).complete(function () {
         $(".progress").removeClass("progress-active");
     });
     return xhr;

@@ -83,9 +83,11 @@
         if ($("#new-password").val() != $("#confirm-password").val()) {
             Materialize.toast("New password and confirm password don't  match", 5000);
         } else {
-            send("#update-password", "/users/password", "PUT").statusCode({400: function () {
-                Materialize.toast("Wrong password", 5000);
-            }})
+            send("#update-password", "/users/password", "PUT").complete(function(xhr, textStatus) {
+                if (xhr.status == 400) {
+                    Materialize.toast("Wrong password", 5000);
+                }
+            })
         }
     });
 
