@@ -47,7 +47,6 @@
                             </div>
                             <div class="input-field col s12">
                                 <select name="orderByIndex" id="orderBySelect">
-                                    <option value="" disabled selected>Choose your option</option>
                                     <option value="1">User name</option>
                                     <option value="2">Product title</option>
                                     <option value="3">Order date</option>

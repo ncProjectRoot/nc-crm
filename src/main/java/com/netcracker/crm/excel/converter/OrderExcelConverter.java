@@ -27,9 +27,9 @@ public class OrderExcelConverter {
             custFullNames.add(getFullName(order.getCustomer()));
             productTitles.add(order.getProduct().getTitle());
             preferedDates.add(order.getPreferedDate());
-            if (order.getCsr() == null){
+            if (order.getCsr() == null) {
                 csrId.add(null);
-            }else {
+            } else {
                 csrId.add(order.getCsr().getId());
             }
             orderDates.add(order.getDate());

@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class ExcelDrawer {
 
-    public void drawChart(Sheet sheet, int left, int top, int right, int bottom, Map<LocalDate, Map<String, Integer>> mapData){
+    public void drawChart(Sheet sheet, int left, int top, int right, int bottom, Map<LocalDate, Map<String, Integer>> mapData) {
         Drawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, left, top, right, bottom);
         Chart chart = drawing.createChart(anchor);
@@ -30,9 +30,9 @@ public class ExcelDrawer {
         ChartDataSource<LocalDate> x = DataSources.fromArray(dateRange.toArray(new LocalDate[dateRange.size()]));
         int i = 1;
         Set<String> productTitles = mapData.values().iterator().next().keySet();
-        for (String title : productTitles){
+        for (String title : productTitles) {
             ChartDataSource<Number> y = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(bottom + i + 5, bottom + i + 5, 2, dateRange.size() + 1));
-            data.addSeries(x , y).setTitle(title);
+            data.addSeries(x, y).setTitle(title);
             i++;
         }
         chart.plot(data, bottomAxis, leftAxis);
