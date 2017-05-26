@@ -150,7 +150,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
     }
     
     @Override
-    public List<ProductParam> findByParamName(String paramName) {
+    public List<ProductParam> findAllByParamName(String paramName) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_NAME, paramName);
 

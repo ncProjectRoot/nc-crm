@@ -84,7 +84,7 @@ public class ProductParamDaoImplTest {
         assertEquals(productParamCreated.getParamName(), productParamFoundById.getParamName());        
         assertEquals(productParamCreated.getValue(), productParamFoundById.getValue());
         
-        List<ProductParam> productParamsFoundByParamName = productParamDao.findByParamName(productParamCreated.getParamName());
+        List<ProductParam> productParamsFoundByParamName = productParamDao.findAllByParamName(productParamCreated.getParamName());
         assertEquals(productParamCreated.getId(), productParamsFoundByParamName.get(0).getId());
 
         List<ProductParam> productParamsFoundByProductId = productParamDao.findAllByProductId(productCreated.getId());
