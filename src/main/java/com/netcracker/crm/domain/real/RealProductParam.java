@@ -52,6 +52,11 @@ public class RealProductParam implements ProductParam{
     public Product getProduct() {
         return product;
     }
+    
+    @Override
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
     @Override
     public int hashCode() {
@@ -85,10 +90,5 @@ public class RealProductParam implements ProductParam{
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+    }    
 }
