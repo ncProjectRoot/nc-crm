@@ -110,9 +110,10 @@ public class UserMapper {
         };
     }
 
-    public Mapper<String, AutocompleteDto> modelLastNameToAutocomplete() {
-        return (modelLastName, autocompleteDto) -> {
-            autocompleteDto.setValue(modelLastName);
+    public Mapper<User, AutocompleteDto> modelLastNameToAutocomplete() {
+        return (model, autocompleteDto) -> {
+            autocompleteDto.setId(model.getId());
+            autocompleteDto.setValue(model.getFirstName() + " " + model.getLastName());
         };
     }
 

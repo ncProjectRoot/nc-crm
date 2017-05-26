@@ -22,5 +22,5 @@
     <h2 class="welcome-h2">Use toolbar for navigation. Good luck!</h2>
 </div>
 <script>
-    $(".welcome-h1 .user-name").html($("#user-name").html())
+    $(".welcome-h1 .user-name").html($("#user-name").html());
 </script>
