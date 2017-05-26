@@ -13,7 +13,7 @@ import java.util.List;
  * @author YARUS
  */
 public interface ProductParamDao extends CrudDao<ProductParam>{
-    ProductParam findByParamName(String paramName);
+    List<ProductParam> findByParamName(String paramName);
     
     List<ProductParam> findAllByProductId(Long id);
     

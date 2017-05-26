@@ -2,64 +2,166 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.ProductParamDao;
+import static com.netcracker.crm.dao.impl.sql.ProductParamSqlQuery.*;
+import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductParam;
+import com.netcracker.crm.domain.proxy.ProductProxy;
+import com.netcracker.crm.domain.real.RealProductParam;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author YARUS
  */
+@Repository
 public class ProductParamDaoImpl implements ProductParamDao{
 
     private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
 
-    private ProductDao discountDao;
+    private ProductDao productDao;
     
-    private SimpleJdbcInsert productInsert;
+    private SimpleJdbcInsert productParamInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private ProductParamWithDetailExtractor productParamWithDetailExtractor;
     
-    @Override
-    public ProductParam findByParamName(String paramName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Autowired
+    public ProductParamDaoImpl(ProductDao productDao) {
+        this.productDao = productDao;        
     }
+    
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.productParamInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName(PARAM_PRODUCT_PARAM_TABLE)
+                .usingGeneratedKeyColumns(PARAM_PRODUCT_PARAM_ID);
+        productParamWithDetailExtractor = new ProductParamWithDetailExtractor(productDao);
+    }      
 
     @Override
-    public List<ProductParam> findAllByProductId(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Long create(ProductParam productParam) {
+        if (productParam.getId() != null) {
+            return null;
+        }
+
+        Long productId = getProductId(productParam.getProduct());        
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_PARAM_NAME, productParam.getParamName())
+                .addValue(PARAM_PRODUCT_PARAM_VALUE, productParam.getValue())
+                .addValue(PARAM_PRODUCT_PARAM_PRODUCT_ID, productId);
+
+        long newId = productParamInsert.executeAndReturnKey(params).longValue();
+
+        productParam.setId(newId);
+
+        log.info("Parameter with id: " + newId + " is successfully created.");
+        return newId;
     }
 
-    @Override
-    public Long create(ProductParam object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    private Long getProductId(Product product) {
+        if (product != null) {
+            Long productId = product.getId();
+            if (productId != null) {
+                return productId;
+            }
+            productId = productDao.create(product);
 
+            return productId;
+        }
+        return null;
+    }
+    
     @Override
-    public Long update(ProductParam object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Long update(ProductParam productParam) {
+        Long productParamId = productParam.getId();
+        if (productParamId == null) {
+            return null;
+        }
+        Long productId = getProductId(productParam.getProduct());
+        
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_PARAM_ID, productParamId)
+                .addValue(PARAM_PRODUCT_PARAM_NAME, productParam.getParamName())
+                .addValue(PARAM_PRODUCT_PARAM_VALUE, productParam.getValue())
+                .addValue(PARAM_PRODUCT_PARAM_PRODUCT_ID, productId);
+
+        int affectedRows = namedJdbcTemplate.update(SQL_UPDATE_PRODUCT_PARAM, params);
+
+        if (affectedRows > 0) {
+            log.info("Parameter with id: " + productParamId + " is successfully updated.");
+            return productParamId;
+        } else {
+            log.error("Parameter was not updated.");
+            return -1L;
+        }
     }
 
     @Override
     public Long delete(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (id != null) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue(PARAM_PRODUCT_PARAM_ID, id);
+            long deletedRows = namedJdbcTemplate.update(SQL_DELETE_PRODUCT_PARAM, params);
+            if (deletedRows == 0) {
+                log.error("Parameter has not been deleted");
+                return null;
+            } else {
+                log.info("Parameter with id " + id + " was successfully deleted");
+                return deletedRows;
+            }
+        }
+        return null;
     }
 
     @Override
-    public Long delete(ProductParam object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Long delete(ProductParam productParam) {
+        if (productParam != null) {
+            return delete(productParam.getId());
+        }
+        return null;
     }
 
     @Override
     public ProductParam findById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_PARAM_ID, id);
+
+        List<ProductParam> allProductParams = namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAM_BY_ID, params, productParamWithDetailExtractor);
+        ProductParam productParam = null;
+        if (allProductParams.size() != 0) {
+            productParam = allProductParams.get(0);
+        }
+        return productParam;
+    }
+    
+    @Override
+    public List<ProductParam> findByParamName(String paramName) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_PARAM_NAME, paramName);
+
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAM_BY_NAME, params, productParamWithDetailExtractor);        
+    }
+
+    @Override
+    public List<ProductParam> findAllByProductId(Long id) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_PARAM_PRODUCT_ID, id);
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAMS_BY_PRODUCT_ID, params, productParamWithDetailExtractor);
     }
     
     private static final class ProductParamWithDetailExtractor implements ResultSetExtractor<List<ProductParam>> {
@@ -72,8 +174,23 @@ public class ProductParamDaoImpl implements ProductParamDao{
 
         @Override
         public List<ProductParam> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            
-            return null;
+            ArrayList<ProductParam> allProductParams = new ArrayList<>();
+            while (rs.next()) {
+                ProductParam productParam = new RealProductParam();
+                productParam.setId(rs.getLong(PARAM_PRODUCT_PARAM_ID));
+                productParam.setParamName(rs.getString(PARAM_PRODUCT_PARAM_NAME));
+                productParam.setValue(rs.getString(PARAM_PRODUCT_PARAM_VALUE));                                
+
+                long productId = rs.getLong(PARAM_PRODUCT_PARAM_PRODUCT_ID);
+                if (productId != 0) {
+                    Product product = new ProductProxy(productDao);
+                    product.setId(productId);
+                    productParam.setProduct(product);
+                }
+
+                allProductParams.add(productParam);
+            }
+            return allProductParams;
         }
     }
 }

@@ -34,7 +34,7 @@ public class RealProductParam implements ProductParam{
     }
 
     @Override
-    public void setParamName(String title) {
+    public void setParamName(String paramName) {
         this.paramName = paramName;
     }
 
