@@ -294,21 +294,35 @@
         <div class="section">
             <h5 class="description field">${product.description}</h5>
         </div>
+        <div class="divider"></div>
+        <div class="section">
+            <ul class="collapsible" data-collapsible="expandable" id="message_popup">
+                <li>
+                    <div class="collapsible-header"><h5>Parameters</h5></div>
+                    <div class="collapsible-body">
+                        <c:forEach var="productParam" items="${productParams}">
+                            <span><h5 class="message_block">${productParam.paramName}: ${productParam.value}</h5></span>
+                        </c:forEach>                        
+                    </div>
+                </li>
+            </ul>
+
+        </div>
     </div>
 
 </div>
 <script>
-
+    $('.collapsible').collapsible();
     <c:if test="${product.discount.isActive() || product.group.discount.isActive()}">
 
     var allPercentage = 0;
 
-    <c:if test="${product.discount.isActive()}">
+        <c:if test="${product.discount.isActive()}">
     allPercentage += ${product.discount.percentage};
-    </c:if>
-    <c:if test="${product.group.discount.isActive()}">
+        </c:if>
+        <c:if test="${product.group.discount.isActive()}">
     allPercentage += ${product.group.discount.percentage};
-    </c:if>
+        </c:if>
 
     allPercentage = allPercentage > 99 ? 99 : allPercentage;
     $(".percentage").text(allPercentage + "%");
@@ -321,10 +335,10 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
 
-    <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
+        <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
     $('.modal').modal({
-            opacity: .5
-        }
+        opacity: .5
+    }
     );
     $('.datepicker').pickadate({
         selectMonths: true,
@@ -352,16 +366,16 @@
             $('.modal').modal('close');
         })
     })
-    ;
-    </c:if>
+            ;
+        </c:if>
     </sec:authorize>
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     $('.modal').modal({
-            opacity: .5, // Opacity of modal background
-            endingTop: '8%' // Starting top style attribute
-        }
+        opacity: .5, // Opacity of modal background
+        endingTop: '8%' // Starting top style attribute
+    }
     );
 
 
@@ -372,60 +386,60 @@
         url: "/discounts/autocomplete",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
-        hideInput: "#discount-hidden-input"
-    });
-    $('#group-input').karpo_autocomplete({
-        url: "/groups/autocomplete/",
-        label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
-        hideInput: "#group-hidden-input"
-    });
-
-    $('.materialize-textarea').trigger('autoresize');
-    Materialize.updateTextFields();
-
-    $("#change-form").on("submit", function (e) {
-        e.preventDefault();
-        send("#change-form", "/products", "PUT").done(function () {
-            $('.modal').modal('close');
-            $(window).trigger('hashchange')
-        })
-    });
-
-    $.ajaxSetup({
-        complete: $(function () {
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            $(document).ajaxSend(function (e, xhr, options) {
-                xhr.setRequestHeader(header, token);
+                hideInput: "#discount-hidden-input"
             });
-        })
-    });
+            $('#group-input').karpo_autocomplete({
+                url: "/groups/autocomplete/",
+                label: "#selected-group",
+                defaultValue: "${product.group.id} ${product.group.name}",
+                        hideInput: "#group-hidden-input"
+                    });
 
-    $("#change-status-form").on("submit", function (e) {
-        e.preventDefault();
-        $.ajax({
-            url: "/products/status",
-            type: 'PUT',
-            data: {
-                productId: ${product.id},
-                statusId: $('#select_product_status').val()
-            },
-            statusCode: {
-                200: function (data) {
-                    Materialize.toast('You have changed status of product!', 5000, 'rounded');
-                },
-                400: function (data) {
-                    Materialize.toast("Something wrong!", 3000, 'rounded');
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 3000);
-                }
-            }
-        });
-        $('.modal').modal('close');
-        $(window).trigger('hashchange')
-    });
+                    $('.materialize-textarea').trigger('autoresize');
+                    Materialize.updateTextFields();
+
+                    $("#change-form").on("submit", function (e) {
+                        e.preventDefault();
+                        send("#change-form", "/products", "PUT").done(function () {
+                            $('.modal').modal('close');
+                            $(window).trigger('hashchange')
+                        })
+                    });
+
+                    $.ajaxSetup({
+                        complete: $(function () {
+                            var token = $("meta[name='_csrf']").attr("content");
+                            var header = $("meta[name='_csrf_header']").attr("content");
+                            $(document).ajaxSend(function (e, xhr, options) {
+                                xhr.setRequestHeader(header, token);
+                            });
+                        })
+                    });
+
+                    $("#change-status-form").on("submit", function (e) {
+                        e.preventDefault();
+                        $.ajax({
+                            url: "/products/status",
+                            type: 'PUT',
+                            data: {
+                                productId: ${product.id},
+                                statusId: $('#select_product_status').val()
+                            },
+                            statusCode: {
+                                200: function (data) {
+                                    Materialize.toast('You have changed status of product!', 5000, 'rounded');
+                                },
+                                400: function (data) {
+                                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                                    setTimeout(function () {
+                                        window.location.reload();
+                                    }, 3000);
+                                }
+                            }
+                        });
+                        $('.modal').modal('close');
+                        $(window).trigger('hashchange')
+                    });
 
     </sec:authorize>
 
