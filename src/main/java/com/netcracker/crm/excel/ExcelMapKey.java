@@ -3,11 +3,11 @@ package com.netcracker.crm.excel;
 /**
  * Created by Pasha on 22.05.2017.
  */
-public enum OrderMapKey {
+public enum ExcelMapKey {
     FULL_NAME,
     PRODUCT_TITLE,
+    COMPLAINT_TITLE,
     DATE,
     PREFERED_DATE,
     STATUS,
-    CSR_ID
 }

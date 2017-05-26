@@ -1,15 +1,15 @@
 package com.netcracker.crm.controller.excel;
 
-import com.netcracker.crm.controller.message.ResponseGenerator;
-import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.dto.ComplaintExcelDto;
 import com.netcracker.crm.dto.OrderExcelDto;
+import com.netcracker.crm.excel.service.ComplaintExcelService;
 import com.netcracker.crm.excel.service.OrderExcelService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.OrderExcelValidator;
-import com.netcracker.crm.validation.impl.OrderValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-
-import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_ORDER_CREATED;
+import java.time.LocalDate;
 
 /**
  * Created by Pasha on 22.05.2017.
@@ -27,26 +25,29 @@ import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_ORDE
 @RestController
 public class ExcelController {
     private final OrderExcelService orderExcelService;
-    private final OrderExcelValidator orderExcelValidator;
-    private final BindingResultHandler bindingResultHandler;
-
-
+    private final ComplaintExcelService complaintExcelService;
 
     @Autowired
-    public ExcelController(OrderExcelService orderExcelService,OrderExcelValidator orderExcelValidator,
-                           BindingResultHandler bindingResultHandler) {
+    public ExcelController(OrderExcelService orderExcelService, ComplaintExcelService complaintExcelService) {
         this.orderExcelService = orderExcelService;
-        this.orderExcelValidator = orderExcelValidator;
-        this.bindingResultHandler = bindingResultHandler;
+        this.complaintExcelService = complaintExcelService;
     }
 
     @GetMapping(path = "/*/report/users")
-    public ResponseEntity<?> download(HttpServletResponse response, @Valid OrderExcelDto orderExcelDto, BindingResult bindingResult) throws IOException {
-        orderExcelValidator.validate(orderExcelDto, bindingResult);
-        if (bindingResult.hasErrors()) {
-            return bindingResultHandler.handle(bindingResult);
-        }
-        orderExcelService.generateCustomerOrders(response, orderExcelDto);
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<?> reportByUsers(HttpServletResponse response, OrderExcelDto orderExcelDto) throws IOException {
+        response.setContentType("application/xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=Orders-" + LocalDate.now() + ".xlsx");
+        orderExcelService.generateCustomerOrders(response.getOutputStream(), orderExcelDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/*/report/complaints")
+    @PreAuthorize("hasAnyRole('ROLE_PMG', 'ROLE_ADMIN')")
+    public ResponseEntity<?> reportByComplaints(HttpServletResponse response, ComplaintExcelDto complaintExcelDto) throws IOException {
+        response.setContentType("application/xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=Complaints-" + LocalDate.now() + ".xlsx");
+        complaintExcelService.generateCustomerComplaints(response.getOutputStream(), complaintExcelDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

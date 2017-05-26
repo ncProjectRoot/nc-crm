@@ -10,8 +10,12 @@ import org.springframework.core.io.Resource;
 
 import javax.mail.MessagingException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * @author Melnyk_Dmytro
@@ -25,28 +29,47 @@ public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    private static final String TEMPLATE_PACKAGE = "classpath:email/?????";
+    private static final String TEMPLATE_PACKAGE = "email/?????";
 
     public abstract void send(EmailParam emailParam) throws MessagingException, IncorrectEmailElementException;
 
     protected abstract void checkEmailMap(EmailParam emailParam) throws IncorrectEmailElementException;
 
+//    public String getTemplate(String template) {
+//        String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
+//        log.debug("Getting email template " + concreteTemplate);
+//        StringBuilder stringBuilder = new StringBuilder();
+//        try {
+//            Resource resource = new ClassPathResource(concreteTemplate);
+//            BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()), 1024);
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                stringBuilder.append(line);
+//            }
+//            br.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return stringBuilder.toString();
+//    }
+
     public String getTemplate(String template) {
         String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
         log.debug("Getting email template " + concreteTemplate);
         StringBuilder stringBuilder = new StringBuilder();
-        try {
-            Resource resource = new ClassPathResource(concreteTemplate);
-            BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()), 1024);
-            String line;
-            while ((line = br.readLine()) != null) {
-                stringBuilder.append(line);
+        File file = new File(getClass().getClassLoader().getResource(concreteTemplate).getFile());
+        if (file.exists()) {
+            try {
+                List<String> lines = Files.readAllLines(Paths.get(file.getCanonicalPath()));
+                for (String line : lines) {
+                    stringBuilder.append(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            log.error("File " + concreteTemplate + " not found");
         }
         return stringBuilder.toString();
     }
-
 }

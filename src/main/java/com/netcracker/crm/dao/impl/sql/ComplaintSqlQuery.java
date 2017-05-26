@@ -17,6 +17,12 @@ public final class ComplaintSqlQuery {
     public static final String PARAM_COMPLAINT_PMG_ID = "pmg_id";
     public static final String PARAM_COMPLAINT_ORDER_ID = "order_id";
 
+
+    public static final String PARAM_PRODUCT_ID = "product_id";
+    public static final String PARAM_DATE_FROM = "from";
+    public static final String PARAM_DATE_TO = "to";
+    public static final String PARAM_ORDER_BY_INDEX = "order_by_index";
+
     public static final String PARAM_COMPLAINT_ROW_STATUS = "status_id";
     public static final String PARAM_COMPLAINT_ROW_PRODUCT_STATUS = "product_status_id";
     public static final String PARAM_COMPLAINT_ROW_ORDER_STATUS = "order_status_id";
@@ -43,6 +49,24 @@ public final class ComplaintSqlQuery {
             "customer_id, pmg_id, order_id FROM complaint " +
             "WHERE customer_id = :customer_id " +
             "ORDER BY date desc;";
+
+
+    public static final String SQL_FIND_COMPLAINT_BY_PRODUCT_IDS = "SELECT " +
+            " u.first_name," +
+            " c.title," +
+            " p.title," +
+            " c.status_id," +
+            " c.date," +
+            " c.id," +
+            " c.message," +
+            " c.customer_id," +
+            " c.pmg_id," +
+            " c.order_id " +
+            "FROM complaint c " +
+            "INNER JOIN orders o ON o.id = c.order_id " +
+            "INNER JOIN product p ON  p.id IN(:product_id) AND p.id = o.product_id " +
+            "INNER JOIN users u ON u.id = o.customer_id " +
+            "WHERE c.date BETWEEN :from AND :to ";
 
 
     public static final String SQL_FIND_COMPLAINTS_TITLES_LIKE_TITLE = "" +

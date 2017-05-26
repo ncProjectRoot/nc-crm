@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.charts.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Set;
 /**
  * Created by Pasha on 22.05.2017.
  */
+@Component
 public class ExcelDrawer {
 
     public void drawChart(Sheet sheet, int left, int top, int right, int bottom, Map<LocalDate, Map<String, Integer>> mapData) {

@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -63,26 +65,31 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
 
     private boolean checkTimeout(UserAttempts userAttempts) {
         return userAttempts.getLastModified() != null &&
-                userAttempts.getLastModified().getTime() + TIME_OUT < new Date().getTime();
+                LocalDateTime.now().isAfter(userAttempts.getLastModified().plusMinutes(5));
     }
 
-    private String getInformMessage(String userMail, Date lastModified) {
-        long timeWait = (TIME_OUT + lastModified.getTime()) - new Date().getTime();
+    private String getInformMessage(String userMail, LocalDateTime lastModified) {
+        Date time = Date.from(lastModified.atZone(ZoneId.systemDefault()).toInstant());
+        Date now = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+        long timeWait = (TIME_OUT + time.getTime()) - now.getTime();
         long minutes = getMinutes(timeWait);
         long seconds = getSeconds(timeWait);
-        String result = "User account is locked!<br> Username : "
-                + userMail + "<br>Please wait : ";
+        StringBuilder builder = new StringBuilder();
+        builder.append("User account is locked!<br> Email : ");
+        builder.append(userMail);
+        builder.append("<br>Please wait : ");
         if (minutes > 0) {
-            result += minutes + " minutes ";
+            builder.append(minutes);
+            builder.append(" minutes ");
         }
-        result += seconds + " seconds";
-        return result;
+        builder.append(seconds);
+        builder.append(" seconds");
+        return builder.toString();
 
     }
 
     private long getMinutes(long time) {
-        long result = time / MINUTE_IN_MILLISECONDS;
-        return result;
+        return time / MINUTE_IN_MILLISECONDS;
     }
 
     private long getSeconds(long time) {
