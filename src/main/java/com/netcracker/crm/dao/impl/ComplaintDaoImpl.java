@@ -228,6 +228,18 @@ public class ComplaintDaoImpl implements ComplaintDao {
         return namedJdbcTemplate.query(query, params, complaintWithDetailExtractor);
     }
 
+
+    @Override
+    public List<Complaint> findAllByProductIds(List<Long> id, LocalDate from, LocalDate to, int orderByIndex) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PRODUCT_ID, id)
+                .addValue(PARAM_DATE_FROM, from)
+                .addValue(PARAM_DATE_TO, to)
+                .addValue(PARAM_ORDER_BY_INDEX , orderByIndex);
+        String sql = SQL_FIND_COMPLAINT_BY_PRODUCT_IDS + " ORDER BY " + orderByIndex +" ASC;";
+        return namedJdbcTemplate.query(sql, params, complaintWithDetailExtractor);
+    }
+
     @Override
     public Long getComplaintRowsCount(ComplaintRowRequest complaintRowRequest) {
         MapSqlParameterSource params = new MapSqlParameterSource();

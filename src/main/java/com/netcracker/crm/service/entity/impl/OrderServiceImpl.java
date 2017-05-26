@@ -190,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
     public Set<OrderHistoryDto> getOrderHistory(Long id) {
         List<History> histories = historyDao.findAllByOrderId(id);
         Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
-        orders.containsAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
+        orders.addAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
         return orders;
     }
 
