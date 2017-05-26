@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import static com.netcracker.crm.dao.impl.sql.UserAttemptSqlQuery.*;
+import static com.netcracker.crm.dao.impl.sql.UserSqlQuery.PARAM_USER_ACCOUNT_NON_LOCKED;
+import static com.netcracker.crm.dao.impl.sql.UserSqlQuery.SQL_USERS_UPDATE_LOCKED;
 
 
 /**
@@ -99,18 +101,17 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
     public boolean lockUserAccount(String userMail, boolean lock) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_EMAIL, userMail)
-                .addValue(UserSqlQuery.PARAM_USER_ACCOUNT_NON_LOCKED, !lock);
-        int count = namedJdbcTemplate.update(UserSqlQuery.SQL_USERS_UPDATE_LOCKED, params);
+                .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, !lock);
+        int count = namedJdbcTemplate.update(SQL_USERS_UPDATE_LOCKED, params);
         if (count == 1) {
             log.info("Update user with email : " + userMail + " is successful");
             return true;
         } else if (count > 1) {
             log.error("Update more 1 rows");
             return false;
-        } else {
-            log.info("Update 0 rows");
-            return false;
         }
+        log.info("Update 0 rows");
+        return false;
     }
 
     private boolean isUserExists(String userMail) {
@@ -156,7 +157,7 @@ public class UserAttemptsDaoImpl implements UserAttemptsDao {
                 userAttempts.setId(rs.getInt(PARAM_ID));
                 userAttempts.setUserMail(rs.getString(PARAM_EMAIL));
                 userAttempts.setAttempts(rs.getInt(PARAM_ATTEMPTS));
-                userAttempts.setLastModified(rs.getTimestamp(PARAM_LAST_MODIFIED));
+                userAttempts.setLastModified(rs.getTimestamp(PARAM_LAST_MODIFIED).toLocalDateTime());
             }
             return userAttempts;
         }
