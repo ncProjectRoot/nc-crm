@@ -333,8 +333,8 @@
                 <h4>New Parameter</h4>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
-                    <label for="param_name">Title</label>
-                    <input class="validate" id="param_name" type="text" name="paramName">
+                    <input class="validate" id='param_name' type='text' name='paramName'>
+                    <label for="paramName">Title</label>                    
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
@@ -388,7 +388,7 @@
         var value = $('#param_value').val();
         if (name.length < 0 || name.length > 20) {
             Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value < 0 || value > 20) {
+        } else if (value.length < 0 || value.length > 20) {
             Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
         } else {
             var url = "/productParams";
@@ -407,7 +407,7 @@
         var value = $('#edit_param_value').val();
         if (name.length < 0 || name.length > 20) {
             Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value < 0 || value > 20) {
+        } else if (value.length < 0 || value.length > 20) {
             Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
         } else {
             var url = "/productParams";
