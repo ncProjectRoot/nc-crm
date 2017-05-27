@@ -28,6 +28,7 @@ public class GeneratorDbData {
     private static final int INDEX_COMPLAINT = 500;
     private static final int INDEX_ADDRESSES = 5000;
     private static final int INDEX_REGION = 20;
+    private static final int INDEX_PRODUCT_PARAM = 100;
 
     @Autowired
     private DiscountSetter discountSetter;
@@ -57,6 +58,8 @@ public class GeneratorDbData {
     private RegionGroupsSetter regionGroupsSetter;
     @Autowired
     private HistorySetter historySetter;
+    @Autowired
+    private ProductParamSetter productParamSetter;
 
     public void generateDataForDB(int number){
         List<Discount> discounts = discountSetter.generate(number * INDEX_DISCOUNT);
@@ -67,6 +70,9 @@ public class GeneratorDbData {
         productSetter.setGroups(groups);
 
         List<Product> products = productSetter.generate(number * INDEX_PRODUCT);
+        
+        productParamSetter.setProducts(products);
+        List<ProductParam> productParams = productParamSetter.generate(number * INDEX_PRODUCT_PARAM);
 
         List<Region> regions = regionSetter.generate(number * INDEX_REGION);
 
