@@ -43,11 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        Session management, need for scheduler logic
         http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
         http.authorizeRequests()
-                .anyRequest().authenticated()
                 .antMatchers("/forgot").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic()
                 .and()

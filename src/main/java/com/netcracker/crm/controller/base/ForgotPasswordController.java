@@ -17,8 +17,12 @@ import javax.mail.MessagingException;
 @Controller
 public class ForgotPasswordController {
 
+    private final ForgotPasswordService forgotPasswordService;
+
     @Autowired
-    private ForgotPasswordService forgotPasswordService;
+    public ForgotPasswordController(ForgotPasswordService forgotPasswordService) {
+        this.forgotPasswordService = forgotPasswordService;
+    }
 
 
     @RequestMapping(value = "/forgot", method = RequestMethod.POST)
