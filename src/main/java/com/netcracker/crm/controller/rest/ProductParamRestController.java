@@ -7,6 +7,7 @@ import com.netcracker.crm.domain.model.ProductParam;
 import com.netcracker.crm.dto.ProductParamDto;
 import com.netcracker.crm.service.entity.ProductParamService;
 import com.netcracker.crm.validation.BindingResultHandler;
+import com.netcracker.crm.validation.impl.ProductParamValidator;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/productParams")
 public class ProductParamRestController {
-    private final ProductParamService productParamService;    
+    private final ProductParamService productParamService;  
+    private final ProductParamValidator productParamValidator;
     private final ResponseGenerator<ProductParam> generator;
     private final BindingResultHandler bindingResultHandler;
     
     @Autowired
-    public ProductParamRestController(ProductParamService productParamService, ResponseGenerator<ProductParam> generator, BindingResultHandler bindingResultHandler) {
-        this.productParamService = productParamService;        
+    public ProductParamRestController(ProductParamService productParamService, ProductParamValidator productParamValidator, ResponseGenerator<ProductParam> generator, BindingResultHandler bindingResultHandler) {
+        this.productParamService = productParamService; 
+        this.productParamValidator = productParamValidator;
         this.generator = generator;
         this.bindingResultHandler = bindingResultHandler;
     }
@@ -41,10 +44,10 @@ public class ProductParamRestController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> create(@Valid ProductParamDto productParamDto, BindingResult bindingResult) {
-        //discountValidator.validate(productParamDto, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return bindingResultHandler.handle(bindingResult);
-//        }
+        productParamValidator.validate(productParamDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
         ProductParam pParam = productParamService.create(productParamDto);
         if (pParam.getId() > 0) {
             return generator.getHttpResponse(pParam.getId(), SUCCESS_MESSAGE, SUCCESS_PRODUCT_PARAM_CREATED, HttpStatus.CREATED);
@@ -55,10 +58,10 @@ public class ProductParamRestController {
     @PutMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> update(@Valid ProductParamDto productParamDto, BindingResult bindingResult) {
-//        discountValidator.validate(productParamDto, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return bindingResultHandler.handle(bindingResult);
-//        }
+        productParamValidator.validate(productParamDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return bindingResultHandler.handle(bindingResult);
+        }
         if (productParamService.update(productParamDto)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_PARAM_UPDATED, HttpStatus.OK);
         }
@@ -69,10 +72,6 @@ public class ProductParamRestController {
     @RequestMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-//        discountValidator.validate(productParamDto, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            return bindingResultHandler.handle(bindingResult);
-//        }
         if (productParamService.delete(id)) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PRODUCT_PARAM_DELETED, HttpStatus.OK);
         }
