@@ -24,17 +24,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductParamSetter extends AbstractSetter<ProductParam> {
 
-    private final int COUNT_PARAM_ON_PRODUCT = 5;
-    
     @Autowired
     private ProductParamDao productParamDao;
     private List<String> paramNames = new ArrayList<>();
     private List<String> values = new ArrayList<>();
-    private List<Product> products = new ArrayList<>();    
+    private List<Product> products = new ArrayList<>(); 
+    private Product actualProduct = null;
+    
+    //minimal count param on products
+    private final int MIN_COUNT_PARAM = 2;
+    private final int MAX_COUNT_PARAM = 6;
+    private int countParamOnProduct;
+    
     private int counter;
     private int counterParamName;
-    private int counterValue;
-    private int counterProduct;
+    private int counterValue;    
     
     @Value(value = "classpath:testdata/productParams.json")
     private Resource resource;
@@ -43,8 +47,9 @@ public class ProductParamSetter extends AbstractSetter<ProductParam> {
     public List<ProductParam> generate(int numbers) {
         fillProductParam();
         List<ProductParam> idList = new ArrayList<>();
-        for (int i = 0; i < numbers; i++) {            
-            for(int j = 0; j < COUNT_PARAM_ON_PRODUCT; j++){
+        for (int i = 0; i < numbers; i++) { 
+            countParamOnProduct = MIN_COUNT_PARAM + random.nextInt(MAX_COUNT_PARAM - MIN_COUNT_PARAM);
+            for(int j = 0; j < countParamOnProduct; j++){
                 ProductParam productParam = generateObject();
                 productParamDao.create(productParam);
                 idList.add(productParam);
@@ -77,23 +82,24 @@ public class ProductParamSetter extends AbstractSetter<ProductParam> {
         if(++counterParamName >= paramNames.size())
             counterParamName = 0;
         if(++counterValue >= values.size())
-            counterValue = 0;
+            counterValue = 0;        
+        
         productParam.setParamName(paramNames.get(counterParamName));
         productParam.setValue(values.get(counterValue));
         
         return productParam;
     }
     
-    private Product getProduct(){
-        int oldCounterProd = counterProduct;
-        if(++counter >= COUNT_PARAM_ON_PRODUCT){
-            counter = 0;
-            counterProduct++;
+    private Product getProduct(){                
+        if(counter++ >= countParamOnProduct){
+            counter = 0;            
+            actualProduct = products.remove(random.nextInt(products.size()));
         } 
-        return products.get(oldCounterProd);
+        return actualProduct;
     }    
     
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setProducts(List<Product> products) {        
+        this.products = products;        
+        actualProduct = products.remove(random.nextInt(products.size()));
     }
 }
