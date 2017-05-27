@@ -158,10 +158,16 @@
     .modal-content h4 {
         margin-top: 20px;
     }
-    
+
     .parameter {
+        font-size: 16pt;
         display: inline-block; 
         width: 500px;
+    }
+    
+    #productParamValue {
+        font-size: 16pt;
+        color: darkgray;        
     }
 
 
@@ -311,10 +317,14 @@
                     <div class="collapsible-body">
                         <c:forEach var="productParam" items="${productParams}">
                             <h5 class="message_block">
-                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"><a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
-                                    <span class='parameter'>${productParam.paramName}: ${productParam.value} </span>
-                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                <span class='parameter'>
                                     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                        <a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
+                                        ${productParam.paramName}:  
+                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                        <span id='productParamValue'>${productParam.value}</span>
+                                    </span>
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                                     <div onclick="deleteParam('${productParam.id}')" class=" waves-effect waves-light btn-flat btn-small" ><i class='material-icons prefix'><i class="material-icons">backspace</i></i></div>
                                 </sec:authorize>                                
                             </h5>                            
@@ -379,7 +389,7 @@
     function fillEditForm(id, name, value) {
         $("#edit_param_id").val(id);
         $("#edit_param_name").val(name);
-        $("#edit_param_value").val(value);        
+        $("#edit_param_value").val(value);
     }
 
     $("#add_param-form").on("submit", function (e) {
@@ -393,7 +403,7 @@
         } else {
             var url = "/productParams";
             var form = "#add_param-form";
-            send(form, url, "POST").done(function (id) {                
+            send(form, url, "POST").done(function (id) {
                 $('.modal').modal('close');
                 $(window).trigger('hashchange');
             })
@@ -412,23 +422,23 @@
         } else {
             var url = "/productParams";
             var form = "#edit_param-form";
-            send(form, url, "PUT").done(function (id) {                
+            send(form, url, "PUT").done(function (id) {
                 $('.modal').modal('close');
-                $(window).trigger('hashchange')                
+                $(window).trigger('hashchange')
             })
         }
     }
     );
 
     function deleteParam(id) {
-        var url = "/productParams/"+id;
+        var url = "/productParams/" + id;
         var form;
-        send(form, url, "DELETE").done(function (id) {            
+        send(form, url, "DELETE").done(function (id) {
             $('.modal').modal('close');
             $(window).trigger('hashchange');
         })
     }
-    
+
     $('.collapsible').collapsible();
     <c:if test="${product.discount.isActive() || product.group.discount.isActive()}">
 
