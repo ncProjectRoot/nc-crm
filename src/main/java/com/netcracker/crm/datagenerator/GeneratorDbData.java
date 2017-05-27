@@ -72,7 +72,7 @@ public class GeneratorDbData {
         List<Product> products = productSetter.generate(number * INDEX_PRODUCT);
         
         productParamSetter.setProducts(products);
-        List<ProductParam> productParams = productParamSetter.generate(number * INDEX_PRODUCT_PARAM);
+        List<ProductParam> productParams = productParamSetter.generate(number * INDEX_PRODUCT);
 
         List<Region> regions = regionSetter.generate(number * INDEX_REGION);
 
