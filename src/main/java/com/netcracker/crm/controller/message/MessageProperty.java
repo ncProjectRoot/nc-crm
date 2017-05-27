@@ -17,6 +17,9 @@ public final class MessageProperty {
     public static final String SUCCESS_PASSWORD_UPDATED = "success.password-update";
     public static final String SUCCESS_PRODUCT_CREATED = "success.product-create";
     public static final String SUCCESS_PRODUCT_UPDATE = "success.product-update";
+    public static final String SUCCESS_PRODUCT_PARAM_CREATED = "success.productParam-create";
+    public static final String SUCCESS_PRODUCT_PARAM_UPDATED = "success.productParam-update";
+    public static final String SUCCESS_PRODUCT_PARAM_DELETED = "success.productParam-delete";    
     public static final String SUCCESS_DISCOUNT_CREATED = "success.discount-create";
     public static final String SUCCESS_DISCOUNT_UPDATED = "success.discount-update";
     public static final String SUCCESS_GROUP_CREATED = "success.group-create";

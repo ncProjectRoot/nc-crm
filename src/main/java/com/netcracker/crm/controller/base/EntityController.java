@@ -29,12 +29,13 @@ public class EntityController {
     private final GroupService groupService;
     private final UserService userService;
     private final RegionService regionService;
+    private final ProductParamService productParamService;
 
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
                             OrderService orderService, DiscountService discountService, GroupService groupService,
-                            UserService userService, RegionService regionService) {
+                            UserService userService, RegionService regionService, ProductParamService productParamService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
@@ -42,6 +43,7 @@ public class EntityController {
         this.groupService = groupService;
         this.userService = userService;
         this.regionService = regionService;
+        this.productParamService = productParamService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -76,8 +78,9 @@ public class EntityController {
                 }
                 model.put("hasProduct", orderService.hasCustomerProduct(id, user.getId()));
             }
-        }
+        }        
         model.put("product", productService.getProductsById(id));
+        model.put("productParams", productParamService.getAllByProductId(id));
         return "product";
     }
 
