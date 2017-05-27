@@ -4,7 +4,6 @@ import com.netcracker.crm.domain.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,8 +23,12 @@ import static com.netcracker.crm.domain.model.UserRole.*;
 @Component(value = "successHandler")
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
+    private final RedirectStrategy redirectStrategy;
+
     @Autowired
-    private RedirectStrategy redirectStrategy;
+    public AuthenticationSuccessHandlerImpl(RedirectStrategy redirectStrategy) {
+        this.redirectStrategy = redirectStrategy;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -57,14 +60,6 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
             return;
         }
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-    }
-
-    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
-        this.redirectStrategy = redirectStrategy;
-    }
-
-    protected RedirectStrategy getRedirectStrategy() {
-        return redirectStrategy;
     }
 
     private boolean hasAnyRole(GrantedAuthority grantedAuthority) {

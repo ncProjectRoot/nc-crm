@@ -17,17 +17,15 @@ public class OrderScheduler {
     public OrderScheduler(OrderCache orderCache) {
         this.orderCache = orderCache;
     }
-//  Hint for cron scheduler
-//   second, minute, hour, day of month, month, day(s) of week
 
-    @Scheduled(cron = "0 */1 * * * *")
-    public void orderForActivate(){
+    @Scheduled(cron = "${scheduler.cache.fill}")
+    public void orderForActivate() {
         orderCache.fillCache();
     }
 
 
-    @Scheduled(cron = "0 */45 * * * *")
-    public void cleanCache(){
+    @Scheduled(cron = "${scheduler.cache.clean}")
+    public void cleanCache() {
         orderCache.cleanCache();
     }
 }

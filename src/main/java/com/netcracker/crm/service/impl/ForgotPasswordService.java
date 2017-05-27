@@ -20,14 +20,18 @@ import javax.mail.MessagingException;
 @Service
 public class ForgotPasswordService {
 
-    @Autowired
-    private RecoveryPasswordSender recoveryPasswordSender;
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final RecoveryPasswordSender recoveryPasswordSender;
+    private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder;
 
     private static final int PASSWORD_LENGTH = 10;
+
+    @Autowired
+    public ForgotPasswordService(RecoveryPasswordSender recoveryPasswordSender, UserDao userDao, PasswordEncoder passwordEncoder) {
+        this.recoveryPasswordSender = recoveryPasswordSender;
+        this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User checkEmailAndPhone(String email, String phone) throws NoSuchEmailException {
         User user = ifExistEmail(email);

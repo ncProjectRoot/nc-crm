@@ -25,8 +25,13 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
     private static final long TIME_OUT = 300000L;
     private static final long MINUTE_IN_MILLISECONDS = 60000L;
 
+    private final UserAttemptsDao userAttemptsDao;
+
     @Autowired
-    private UserAttemptsDao userAttemptsDao;
+    public LimitLoginAuthenticationProvider(UserAttemptsDao userAttemptsDao, UserDetailsService userDetailsService) {
+        super.setUserDetailsService(userDetailsService);
+        this.userAttemptsDao = userAttemptsDao;
+    }
 
     @Autowired
     public void setUserDetailsService(UserDetailsService userDetailsService) {
