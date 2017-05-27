@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ProductParamDaoImpl implements ProductParamDao{
 
-    private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductParamDaoImpl.class);
 
     private ProductDao productDao;
     
