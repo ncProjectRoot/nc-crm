@@ -1,10 +1,10 @@
 package com.netcracker.crm.controller.base;
 
 import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
 import com.netcracker.crm.security.UserDetailsImpl;
+import com.netcracker.crm.service.entity.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -18,11 +18,19 @@ import java.util.Map;
 @Controller
 public class MainController {
 
+    private final UserService userService;
+
+    @Autowired
+    public MainController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/")
     public String main(Map<String, Object> model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
         model.put("user", user);
+        model.put("avatar", userService.getAvatar(user.getId()));
         return "main";
     }
 

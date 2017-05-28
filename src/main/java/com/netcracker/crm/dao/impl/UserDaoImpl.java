@@ -226,6 +226,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
                 .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
                 .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_IS_ENABLE, rowRequest.getEnable())
                 .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
 
         String sql = rowRequest.getSqlCount();
@@ -251,6 +252,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(RowRequest.PARAM_ROW_OFFSET, rowRequest.getRowOffset())
                 .addValue(PARAM_USER_ROLE_ID, rowRequest.getRoleId())
                 .addValue(PARAM_USER_ACCOUNT_NON_LOCKED, rowRequest.getAccountNonLocked())
+                .addValue(PARAM_USER_IS_ENABLE, rowRequest.getEnable())
                 .addValue(PARAM_USER_CONTACT_PERSON, rowRequest.getContactPerson());
         String sql = rowRequest.getSql();
 
@@ -268,20 +270,20 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<String> findUserLastNamesByPattern(String pattern) {
+    public List<User> findUsersByPattern(String pattern) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%");
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
 
-        return namedJdbcTemplate.queryForList(SQL_FIND_USER_LAST_NAMES_BY_PATTERN, params, String.class);
+        return namedJdbcTemplate.query(SQL_FIND_USER_BY_PATTERN, params, userWithDetailExtractor);
     }
 
     @Override
-    public List<String> findOrgUserLastNamesByPattern(String pattern, User user) {
+    public List<User> findOrgUsersByPattern(String pattern, User user) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(PARAM_USER_LAST_NAME, "%" + pattern + "%")
+                .addValue(PARAM_PATTERN, "%" + pattern + "%")
                 .addValue(PARAM_USER_ID, user.getId());
 
-        return namedJdbcTemplate.queryForList(SQL_FIND_ORG_USER_LAST_NAMES_BY_PATTERN, params, String.class);
+        return namedJdbcTemplate.query(SQL_FIND_ORG_USER_BY_PATTERN, params, userWithDetailExtractor);
     }
 
     private static final class UserWithDetailExtractor implements ResultSetExtractor<List<User>> {
@@ -324,7 +326,6 @@ public class UserDaoImpl implements UserDao {
                     address.setId(addressId);
                     user.setAddress(address);
                 }
-
 
 
                 users.add(user);

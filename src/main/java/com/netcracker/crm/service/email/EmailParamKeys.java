@@ -11,5 +11,7 @@ public enum EmailParamKeys {
     COMPLAINT,
     RECEIVERS,
     SUBJECT,
-    BODY
+    BODY,
+    CHANGE_TYPE,
+    CHANGE_VALUE
 }

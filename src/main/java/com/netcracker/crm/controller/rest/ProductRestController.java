@@ -30,6 +30,8 @@ import java.util.Map;
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageProperty.*;
+import com.netcracker.crm.domain.model.Discount;
+import com.netcracker.crm.service.entity.DiscountService;
 
 /**
  * Created by Pasha on 29.04.2017.
@@ -37,6 +39,7 @@ import static com.netcracker.crm.controller.message.MessageProperty.*;
 @RequestMapping(value = "/products")
 @RestController
 public class ProductRestController {
+    private final DiscountService discountService;
     private final ProductService productService;
     private final BindingResultHandler bindingResultHandler;
     private final ProductValidator productValidator;
@@ -44,9 +47,10 @@ public class ProductRestController {
     private final ResponseGenerator<Product> generator;
 
     @Autowired
-    public ProductRestController(ProductService productService,
+    public ProductRestController(DiscountService discountService, ProductService productService,
                                  BindingResultHandler bindingResultHandler, ProductValidator productValidator,
                                  BulkProductValidator bulkProductValidator, ResponseGenerator<Product> generator) {
+        this.discountService = discountService;
         this.productService = productService;
         this.bindingResultHandler = bindingResultHandler;
         this.productValidator = productValidator;
@@ -87,12 +91,24 @@ public class ProductRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @PutMapping    
+    @RequestMapping(value = "/changeDiscount")
+    public ResponseEntity<?> updateDiscount(ProductDto productDto) {
+        Product product = productService.getProductsById(productDto.getId());
+        Discount changedDisc = product.getDiscount();
+        changedDisc.setActive(!changedDisc.isActive());
+        discountService.update(changedDisc);
+        
+        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);       
+        
+    }
 
     @PutMapping(value = "/status")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
     public ResponseEntity<?> changeStatus(@RequestParam Long productId, @RequestParam Long statusId,
                                           Authentication authentication) {
-        User user = (UserDetailsImpl)  authentication.getPrincipal();
+        User user = (UserDetailsImpl) authentication.getPrincipal();
         boolean result = productService.changeStatus(productId, statusId, user);
         if (result) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -102,7 +118,7 @@ public class ProductRestController {
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
     public ResponseEntity<List<AutocompleteDto>> productNames(String pattern, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
@@ -129,7 +145,7 @@ public class ProductRestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_CUSTOMER', 'ROLE_PMG')")
     public ResponseEntity<Map<String, Object>> productRows(ProductRowRequest productRowRequest, String type, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;

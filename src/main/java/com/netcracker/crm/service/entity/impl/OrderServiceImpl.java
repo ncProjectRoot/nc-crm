@@ -1,11 +1,8 @@
 package com.netcracker.crm.service.entity.impl;
 
-import com.netcracker.crm.dao.HistoryDao;
-import com.netcracker.crm.dao.OrderDao;
-import com.netcracker.crm.domain.model.History;
-import com.netcracker.crm.domain.model.Order;
-import com.netcracker.crm.domain.model.User;
-import com.netcracker.crm.domain.model.UserRole;
+import com.itextpdf.text.DocumentException;
+import com.netcracker.crm.dao.*;
+import com.netcracker.crm.domain.model.*;
 import com.netcracker.crm.domain.real.RealOrder;
 import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.*;
@@ -13,15 +10,19 @@ import com.netcracker.crm.dto.mapper.Mapper;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.OrderMapper;
 import com.netcracker.crm.dto.row.OrderRowDto;
+import com.netcracker.crm.pdf.PDFGenerator;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
-import com.netcracker.crm.security.UserDetailsImpl;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
 import com.netcracker.crm.service.entity.OrderService;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -34,20 +35,30 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final OrderDao orderDao;
     private final HistoryDao historyDao;
     private final OrderLifecycleService lifecycleService;
     private final OrderCache orderCache;
     private final OrderMapper orderMapper;
+    private final PDFGenerator pdfGenerator;
+    private final ProductDao productDao;
+    private final DiscountDao discountDao;
+    private final UserDao userDao;
 
     @Autowired
     public OrderServiceImpl(OrderDao orderDao, HistoryDao historyDao, OrderLifecycleService lifecycleService,
-                            OrderCache orderCache, OrderMapper orderMapper) {
+                            OrderCache orderCache, OrderMapper orderMapper, PDFGenerator pdfGenerator, ProductDao productDao, DiscountDao discountDao, UserDao userDao) {
         this.orderDao = orderDao;
         this.historyDao = historyDao;
         this.lifecycleService = lifecycleService;
         this.orderCache = orderCache;
         this.orderMapper = orderMapper;
+        this.pdfGenerator = pdfGenerator;
+        this.productDao = productDao;
+        this.discountDao = discountDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -117,9 +128,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderViewDto> getCsrActivateOrder(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            Long csrId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+    public List<OrderViewDto> getCsrActivateOrder(Long csrId) {
+        if (csrId != null) {
             return convertMapToList(orderCache.getActivateElement(csrId));
         }
         return null;
@@ -127,37 +137,32 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderViewDto> getCsrPauseOrder(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            Long csrId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+    public List<OrderViewDto> getCsrPauseOrder(Long csrId) {
+        if (csrId != null) {
             return convertMapToList(orderCache.getPauseElement(csrId));
         }
         return null;
     }
 
     @Override
-    public List<OrderViewDto> getCsrResumeOrder(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            Long csrId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+    public List<OrderViewDto> getCsrResumeOrder(Long csrId) {
+        if (csrId != null) {
             return convertMapToList(orderCache.getResumeElement(csrId));
         }
         return null;
     }
 
     @Override
-    public List<OrderViewDto> getCsrDisableOrder(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            Long csrId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+    public List<OrderViewDto> getCsrDisableOrder(Long csrId) {
+        if (csrId != null) {
             return convertMapToList(orderCache.getDisableElement(csrId));
         }
         return null;
     }
 
     @Override
-    public Integer getCsrOrderCount(Authentication authentication) {
-        Object o = authentication.getPrincipal();
-        if (o instanceof UserDetailsImpl) {
-            Long csrId = ((UserDetailsImpl) o).getId();
+    public Integer getCsrOrderCount(Long csrId) {
+        if (csrId != null) {
             return orderCache.getCountElements(csrId);
         }
         return 0;
@@ -177,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
     public Set<OrderHistoryDto> getOrderHistory(Long id) {
         List<History> histories = historyDao.findAllByOrderId(id);
         Set<OrderHistoryDto> orders = new TreeSet<>(orderHistoryDtoComparator);
-        orders.containsAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
+        orders.addAll(ModelMapper.mapList(orderMapper.historyToOrderHistoryDto(), histories, OrderHistoryDto.class));
         return orders;
     }
 
@@ -195,6 +200,28 @@ public class OrderServiceImpl implements OrderService {
             return historyDao.findOrderHistoryBetweenDateChangeByProductIds(fromDate, toDate, graphDto);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public void getPdfReport(Long orderId, HttpServletResponse response) {
+        Order order = orderDao.findById(orderId);
+        User customer = userDao.findById(order.getCustomer().getId());
+        Product product = productDao.findById(order.getProduct().getId());
+        try {
+            Discount discount = null;
+            if (product.getDiscount() != null) {
+                discount = discountDao.findById(product.getDiscount().getId());
+            }
+            byte[] bytePdf = pdfGenerator.generate(order, customer, product, discount);
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=" + orderId + "-order-report.pdf");
+            response.getOutputStream().write(bytePdf);
+            response.getOutputStream().close();
+        } catch (DocumentException | IOException | MessagingException e) {
+            log.error("Error when getting PDF report.", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.Complaint;
+import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.request.ComplaintRowRequest;
 
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ public interface ComplaintDao extends CrudDao<Complaint> {
     Long getComplaintRowsCount(ComplaintRowRequest complaintRowRequest);
 
     List<String> findComplaintsTitleLikeTitle(String likeTitle);
+
+    List<Complaint> findAllByProductIds(List<Long> id, LocalDate from, LocalDate to, int orderByIndex);
 
     List<String> findComplaintsTitleByPmgId(String likeTitle, Long pmgId);
 

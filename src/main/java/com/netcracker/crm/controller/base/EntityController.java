@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +29,13 @@ public class EntityController {
     private final GroupService groupService;
     private final UserService userService;
     private final RegionService regionService;
+    private final ProductParamService productParamService;
 
 
     @Autowired
     public EntityController(ComplaintService complaintService, ProductService productService,
                             OrderService orderService, DiscountService discountService, GroupService groupService,
-                            UserService userService, RegionService regionService) {
+                            UserService userService, RegionService regionService, ProductParamService productParamService) {
         this.complaintService = complaintService;
         this.productService = productService;
         this.orderService = orderService;
@@ -41,6 +43,7 @@ public class EntityController {
         this.groupService = groupService;
         this.userService = userService;
         this.regionService = regionService;
+        this.productParamService = productParamService;
     }
 
     @GetMapping("/*/complaint/{id}")
@@ -75,8 +78,9 @@ public class EntityController {
                 }
                 model.put("hasProduct", orderService.hasCustomerProduct(id, user.getId()));
             }
-        }
+        }        
         model.put("product", productService.getProductsById(id));
+        model.put("productParams", productParamService.getAllByProductId(id));
         return "product";
     }
 
@@ -128,26 +132,22 @@ public class EntityController {
     @RequestMapping(value = "/{role}/user/{id}", method = {RequestMethod.GET})
     public String user(Map<String, Object> model, Authentication authentication,
                        @PathVariable Long id) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
         model.put("user", userService.getUserById(id));
+        model.put("avatar", userService.getAvatar(id));
         return "user";
     }
 
     @RequestMapping(value = "/{role}/profile", method = {RequestMethod.GET})
     public String profile(Map<String, Object> model, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        User user;
-        if (principal instanceof UserDetailsImpl) {
-            user = (UserDetailsImpl) principal;
-        }
+        User user = (User) authentication.getPrincipal();
+        model.put("user", userService.getUserById(user.getId()));
+        model.put("avatar", userService.getAvatar(user.getId()));
+        model.put("isProfile", true);
+        return "user";
+    }
 
-        User user1 = (User) authentication.getPrincipal();
-        long id = user1.getId();
-        model.put("profile", userService.getUserById(id));
-        return "profile";
+    @RequestMapping(path = "/order/{id}/report", method = RequestMethod.GET)
+    public void getPdfFile(@PathVariable("id") Long id, HttpServletResponse response) {
+        orderService.getPdfReport(id, response);
     }
 }

@@ -1,6 +1,6 @@
 package com.netcracker.crm.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by Pasha on 22.04.2017.
@@ -13,7 +13,7 @@ public class UserAttempts {
 
     private int attempts;
 
-    private Date lastModified;
+    private LocalDateTime lastModified;
 
 
     public Integer getId() {
@@ -40,11 +40,21 @@ public class UserAttempts {
         this.attempts = attempts;
     }
 
-    public Date getLastModified() {
+    public LocalDateTime getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(Date lastModified) {
+    public void setLastModified(LocalDateTime lastModified) {
         this.lastModified = lastModified;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAttempts{" +
+                "id=" + id +
+                ", userMail='" + userMail + '\'' +
+                ", attempts=" + attempts +
+                ", lastModified=" + lastModified +
+                '}';
     }
 }

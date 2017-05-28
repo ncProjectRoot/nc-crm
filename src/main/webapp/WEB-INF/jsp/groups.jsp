@@ -9,7 +9,9 @@
         <div class="col s12">
             <ul id="tabs" class="tabs">
                 <li class="tab col s3"><a class="active" href="#all-groups-wrapper">All Groups</a></li>
-                <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
+                </sec:authorize>
             </ul>
         </div>
         <div id="all-groups-wrapper" class="col s12">
@@ -58,6 +60,7 @@
                 </div>
             </div>
         </div>
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
         <div id="create-wrapper" class="col s12">
             <div class="row">
                 <form class="col s12" id="addGroup">
@@ -162,10 +165,35 @@
                 </div>
             </div>
         </div>
+</sec:authorize>
     </div>
 </div>
+<form class="col s12" id="updateDiscountActive" style="display: none">
+    <input type='text' name='id' id='disc_id2'/>
+
+</form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
+
+    function changeBoolValues(id) {
+        var simpleId = id;
+        var id = "#" + id;
+
+        if ($(id).html() == "check") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("clear");
+            $(id).fadeIn(2000);
+        }
+        else if ($(id).html() == "clear") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("check");
+            $(id).fadeIn(2000);
+        }
+        $("#disc_id2").val(simpleId);
+        var url = "/groups/changeDiscount";
+        var form = "#updateDiscountActive";
+        send(form, url, "PUT");
+    }
 
     $('ul#tabs').tabs();
 
@@ -177,13 +205,13 @@
             var disActive = null;
             var tr = $("<tr>");
             tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
-            tr.append($("<td>", {html: '<a href="#group/' + object.id + '">' + object.id + '</a>'}));
+            tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
             tr.append($("<td>", {text: object.discountValue}));
-            if (object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            if(object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             return tr;
         }
@@ -209,12 +237,6 @@
         url: "/products/autocomplete?type=withoutGroup",
         collection: "#selected-products",
         hideInput: "#product-hidden-input"
-    });
-
-    $("#bulk-product-input").karpo_multi_select({
-        url: "/products/autocomplete?type=withoutGroup",
-        collection: "#bulk-selected-products",
-        hideInput: "#bulk-product-hidden-input"
     });
 
     $("#addGroup").on("submit", function (e) {

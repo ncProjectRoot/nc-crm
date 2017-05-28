@@ -6,6 +6,7 @@ import com.netcracker.crm.domain.request.OrderRowRequest;
 import com.netcracker.crm.dto.*;
 import org.springframework.security.core.Authentication;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,16 +33,17 @@ public interface OrderService {
 
     Set<OrderHistoryDto> getOrderHistory(Long id);
 
-    List<OrderViewDto> getCsrActivateOrder(Authentication authentication);
+    List<OrderViewDto> getCsrActivateOrder(Long csrId);
 
-    List<OrderViewDto> getCsrPauseOrder(Authentication authentication);
+    List<OrderViewDto> getCsrPauseOrder(Long csrId);
 
-    List<OrderViewDto> getCsrResumeOrder(Authentication authentication);
+    List<OrderViewDto> getCsrResumeOrder(Long csrId);
 
-    List<OrderViewDto> getCsrDisableOrder(Authentication authentication);
+    List<OrderViewDto> getCsrDisableOrder(Long csrId);
 
-    Integer getCsrOrderCount(Authentication authentication);
+    Integer getCsrOrderCount(Long csrId);
 
     boolean checkAccessToOrder(User customer, Long orderId);
 
+    void getPdfReport(Long orderId, HttpServletResponse response);
 }

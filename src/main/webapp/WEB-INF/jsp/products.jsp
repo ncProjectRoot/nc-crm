@@ -34,7 +34,7 @@
     }
 
     td.discount .percentage {
-        transition: all 1s cubic-bezier(0,1.4,1,1.4);
+        transition: all 1s cubic-bezier(0, 1.4, 1, 1.4);
         display: inline-block;
         width: 50px;
         height: 50px;
@@ -54,7 +54,7 @@
         right: 58px;
     }
 
-    td.discount .percentage.show{
+    td.discount .percentage.show {
         transform: scale(0.7);
     }
 </style>
@@ -68,8 +68,10 @@
                     <li class="tab col s3"><a class="active" href="#order-product-wrapper">Order Product</a></li>
                     <li class="tab col s3"><a class="active" href="#my-product-wrapper">My Active Products</a></li>
                 </sec:authorize>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-product-wrapper">All Products</a></li>
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
                 </sec:authorize>
             </ul>
@@ -135,7 +137,7 @@
                 </div>
             </div>
         </sec:authorize>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
             <div id="all-product-wrapper" class="col s12">
 
                 <div id="table-all-products" class="table-container row">
@@ -143,14 +145,15 @@
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
                             <tr>
-                                <th class="hide-on-med-and-down"></th>
-                                <th>
-                                    <p>
-                                        <input type='checkbox' class='filled-in bulk-select-all'
-                                               id="select-all-checkbox"/>
-                                        <label for='select-all-checkbox'></label>
-                                    </p>
-                                </th>
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                    <th class="hide-on-med-and-down">
+                                        <p>
+                                            <input type='checkbox' class='filled-in bulk-select-all'
+                                                   id="select-all-checkbox"/>
+                                            <label for='select-all-checkbox'></label>
+                                        </p>
+                                    </th>
+                                </sec:authorize>
                                 <th data-field="1">
                                     <a href="#!" class="sorted-element a-dummy">#</a>
                                 </th>
@@ -212,7 +215,8 @@
                     </div>
                 </div>
             </div>
-
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             <div id="create-wrapper" class="col s12">
                 <div class="row">
                     <form class="col s12" id="addProduct">
@@ -270,17 +274,23 @@
                         <div id="bulk-change-modal-title" class="col s3 offset-s2">
                             <h4>Edit Selected Items</h4>
                             <p>Choose field to edit it for each selected item.</p>
-                            <div class="chip bulk-chip" checkbox-id="checkbox-status">Status<i class="chip-close material-icons">close</i></div>
-                            <div class="chip bulk-chip" checkbox-id="checkbox-price">Price<i class="chip-close material-icons">close</i></div>
-                            <div class="chip bulk-chip" checkbox-id="checkbox-discount">Discount<i class="chip-close material-icons">close</i></div>
-                            <div class="chip bulk-chip" checkbox-id="checkbox-group">Group<i class="chip-close material-icons">close</i></div>
-                            <div class="chip bulk-chip" checkbox-id="checkbox-description">Description<i class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-status">Status<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-price">Price<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-discount">Discount<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-group">Group<i
+                                    class="chip-close material-icons">close</i></div>
+                            <div class="chip bulk-chip" checkbox-id="checkbox-description">Description<i
+                                    class="chip-close material-icons">close</i></div>
                         </div>
                         <div class="col s7">
                             <div class="row">
                                 <div class="col s12">
                                     <ul class="tabs">
-                                        <li class="tab col s2 bulk-modal-tab"><a class="active" href="#test1">Status</a></li>
+                                        <li class="tab col s2 bulk-modal-tab"><a class="active" href="#test1">Status</a>
+                                        </li>
                                         <li class="tab col s2 bulk-modal-tab"><a href="#test2">Price</a></li>
                                         <li class="tab col s3 bulk-modal-tab"><a href="#test3">Discount</a></li>
                                         <li class="tab col s2 bulk-modal-tab"><a href="#test4">Group</a></li>
@@ -294,8 +304,10 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">cached</i>
-                                                        <input id="checkbox-status" type="hidden" class="is-changed-checkbox" name="isStatusNameChanged">
-                                                        <select class="bulk-field-change" name="statusName" id="bulk-select-product-status">
+                                                        <input id="checkbox-status" type="hidden"
+                                                               class="is-changed-checkbox" name="isStatusNameChanged">
+                                                        <select class="bulk-field-change" name="statusName"
+                                                                id="bulk-select-product-status">
                                                             <option value="PLANNED" data-value="10"
                                                                     data-after-disabled="11">
                                                                 PLANNED
@@ -315,8 +327,10 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">attach_money</i>
-                                                        <input id="checkbox-price" type="hidden" class="is-changed-checkbox" name="isDefaultPriceChanged">
-                                                        <input class='bulk-field-change validate' type='number' name='defaultPrice'
+                                                        <input id="checkbox-price" type="hidden"
+                                                               class="is-changed-checkbox" name="isDefaultPriceChanged">
+                                                        <input class='bulk-field-change validate' type='number'
+                                                               name='defaultPrice'
                                                                id='bulk-price'/>
                                                         <label for="bulk-price">Price</label>
                                                     </div>
@@ -326,7 +340,8 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">loyalty</i>
-                                                        <input id="checkbox-discount" type="hidden" class="is-changed-checkbox" name="isDiscountIdChanged">
+                                                        <input id="checkbox-discount" type="hidden"
+                                                               class="is-changed-checkbox" name="isDiscountIdChanged">
                                                         <input type="text" id="bulk-discount-input"
                                                                class="bulk-field-change autocomplete">
                                                         <input type="hidden" id="bulk-discount-hidden-input"
@@ -340,8 +355,10 @@
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
                                                         <i class="material-icons prefix">bubble_chart</i>
-                                                        <input id="checkbox-group" type="hidden" class="is-changed-checkbox" name="isGroupIdChanged">
-                                                        <input type="text" id="bulk-group-input" class="bulk-field-change autocomplete">
+                                                        <input id="checkbox-group" type="hidden"
+                                                               class="is-changed-checkbox" name="isGroupIdChanged">
+                                                        <input type="text" id="bulk-group-input"
+                                                               class="bulk-field-change autocomplete">
                                                         <input type="hidden" id="bulk-group-hidden-input"
                                                                name="groupId"/>
                                                         <label for="group-input">Selected group: <span
@@ -352,7 +369,8 @@
                                             <div id="test5" class="col s12">
                                                 <div class="row edit-selected-items">
                                                     <div class="input-field col s12">
-                                                        <input id="checkbox-description" type="hidden" class="is-changed-checkbox" name="isDescriptionChanged">
+                                                        <input id="checkbox-description" type="hidden"
+                                                               class="is-changed-checkbox" name="isDescriptionChanged">
                                                         <i class="material-icons prefix">description</i>
                                                         <textarea id="bulk-desc-product" name="description"
                                                                   class="bulk-field-change materialize-textarea"></textarea>
@@ -396,8 +414,55 @@
 
     </div>
 </div>
+<form class="col s12" id="updateDiscountActive" style="display: none">
+    <input type='text' name='id' id='disc_id2'/>      
+</form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
+    function changeBoolValues(id) {
+        var simpleId = id;
+        var id = "#" + id;
+
+        if ($(id).html() == "check") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("clear");
+            $(id).fadeIn(2000);
+        }
+        else if ($(id).html() == "clear") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("check");
+            $(id).fadeIn(2000);
+        }
+        
+        $("#disc_id2").val(simpleId);
+               
+        var url = "/products/changeDiscount";
+        var form = "#updateDiscountActive";
+        send(form, url, "PUT");
+    }
+    
+    function changeGroupBoolValues(id) {
+        var simpleId = id;
+        var id = "#" + id;
+
+        if ($(id).html() == "check") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("clear");
+            $(id).fadeIn(2000);
+        }
+        else if ($(id).html() == "clear") {
+            document.getElementById(simpleId).style.display = "none";
+            $(id).html("check");
+            $(id).fadeIn(2000);
+        }
+        
+        $("#disc_id2").val(simpleId);
+               
+        var url = "/groups/changeDiscount";
+        var form = "#updateDiscountActive";
+        send(form, url, "PUT");
+    }
+    
     //TODO: help me
     $(document).ready(function () {
         $('.scrollspy').scrollSpy();
@@ -449,38 +514,40 @@
             })
         }
     });
-
+    </sec:authorize>
     //////// all ////////
 
-
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
     $("#table-all-products").karpo_table({
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         bulkUrl: "/products/bulk",
         mapper: function (object) {
             var tr = $("<tr>");
+            <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             tr.append($("<td  class='hide-on-med-and-down'><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            </sec:authorize>
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#product/" + object.id
             })));
             tr.append($("<td>", {text: object.title}));
             tr.append($("<td>", {text: object.status}));
-            var priceTd =  $("<td>");
+            var priceTd = $("<td>");
             var price = $("<span>", {text: object.price});
             if (object.discountActive || object.groupDiscountActive) {
                 var allPercentage = 0;
                 var tooltipHtml = "";
                 if (object.discountActive) {
                     allPercentage += object.discountPercentage;
-                    tooltipHtml +=  "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
+                    tooltipHtml += "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
                 }
                 if (object.groupDiscountActive) {
                     allPercentage += object.groupDiscountPercentage;
-                    tooltipHtml +=  "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
+                    tooltipHtml += "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
                 }
-                allPercentage = allPercentage > 99 ? 99: allPercentage;
-                priceTd =  $("<td>", {
+                allPercentage = allPercentage > 99 ? 99 : allPercentage;
+                priceTd = $("<td>", {
                     "data-tooltip": tooltipHtml
                 });
                 price.addClass("old-price");
@@ -503,8 +570,8 @@
                 href: "#discount/" + object.discount
             })));
             var disActive = null;
-            if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            if (object.discountActive != null)
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             tr.append($("<td>").append($("<a>", {
                 text: object.groupName,
@@ -515,8 +582,8 @@
                 href: "#discount/" + object.groupDiscount
             })));
             var groupDisActive = null;
-            if(object.groupDiscountActive != null)
-                groupDisActive = (object.groupDiscountActive == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+            if (object.groupDiscountActive != null)
+                groupDisActive = (object.groupDiscountActive == true) ? "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group +")' class='material-icons prefix'>check</i>" : "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group +")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: groupDisActive}));
             return tr;
         },
@@ -528,8 +595,10 @@
             });
         }
     });
+    </sec:authorize>
 
-//    $('#bulk-select-product-status').karpo_status(12).disabled(14);
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+    //    $('#bulk-select-product-status').karpo_status(12).disabled(14);
     $('#bulk-discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#bulk-selected-discount",
@@ -558,21 +627,21 @@
             })
             tr.append($("<td>").append(aId));
             tr.append($("<td>", {text: object.title}));
-            var priceTd =  $("<td>");
+            var priceTd = $("<td>");
             var price = $("<span>", {text: object.price});
             if (object.discountActive || object.groupDiscountActive) {
                 var allPercentage = 0;
                 var tooltipHtml = "";
                 if (object.discountActive) {
                     allPercentage += object.discountPercentage;
-                    tooltipHtml +=  "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
+                    tooltipHtml += "<p>" + object.discountTitle + " - " + object.discountPercentage + "%</p>";
                 }
                 if (object.groupDiscountActive) {
                     allPercentage += object.groupDiscountPercentage;
-                    tooltipHtml +=  "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
+                    tooltipHtml += "<p>" + object.groupDiscountTitle + " - " + object.groupDiscountPercentage + "%</p>";
                 }
-                allPercentage = allPercentage > 99 ? 99: allPercentage;
-                priceTd =  $("<td>", {
+                allPercentage = allPercentage > 99 ? 99 : allPercentage;
+                priceTd = $("<td>", {
                     "data-tooltip": tooltipHtml
                 });
                 price.addClass("old-price");

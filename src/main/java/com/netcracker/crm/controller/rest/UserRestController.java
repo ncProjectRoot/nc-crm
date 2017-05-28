@@ -70,24 +70,13 @@ public class UserRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /*@PutMapping("/{contactPerson}/{userId}")
-    public ResponseEntity<?> updateUser(Boolean contactPerson, Long userId) {
-        
-        User updatingUser = userService.getUserById(userId);
-        updatingUser.setContactPerson(contactPerson);
-        User user = userService.update(updatingUser);
-
-        if (user.getId() > 0) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
-        }
-        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
-    
     @PutMapping("/contactPerson")
-    public ResponseEntity<?> updateUser(UserDto userDto) {
-        
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
+    public ResponseEntity<?> updateUserContactPerson(UserDto userDto) {
+
         User updatingUser = userService.getUserById(userDto.getId());
         updatingUser.setContactPerson(userDto.isContactPerson());
+        updatingUser.setEnable(userDto.isEnable());
         User user = userService.update(updatingUser);
 
         if (user.getId() > 0) {
@@ -95,20 +84,29 @@ public class UserRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
     @PutMapping
-    public ResponseEntity<?> updateUserContactPerson(@Valid UserDto userDto) {
+    public ResponseEntity<?> updateUser(@Valid UserDto userDto) {
 
         User user = userService.update(userDto);
-
         if (user.getId() > 0) {
             return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_USER_UPDATED, HttpStatus.OK);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updateUserPassword(String oldPassword, String newPassword, Authentication authentication) {
+        User user = (UserDetailsImpl) authentication.getPrincipal();
+        if (userService.updatePassword(user, oldPassword, newPassword)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_PASSWORD_UPDATED, HttpStatus.OK);
+        }
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') " +
+            "or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<Map<String, Object>> getUsers(UserRowRequest userRowRequest, Authentication authentication,
                                                         @RequestParam(required = false) boolean individual) {
         Object principal = authentication.getPrincipal();
@@ -117,26 +115,11 @@ public class UserRestController {
     }
 
     @GetMapping("/autocomplete")
-    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN') or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG') " +
+            "or hasRole('ROLE_CUSTOMER') and principal.contactPerson==true")
     public ResponseEntity<List<AutocompleteDto>> getLastNames(String pattern, Authentication authentication) {
         Object principal = authentication.getPrincipal();
         User user = (UserDetailsImpl) principal;
         return new ResponseEntity<>(userService.getUserLastNamesByPattern(pattern, user), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/avatar")
-    public ResponseEntity<String> getAvatar(@PathVariable Long id) {
-        String avatar = userService.getAvatar(id);
-        if (avatar != null) {
-            return new ResponseEntity<>(avatar, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping("/avatar")
-    public ResponseEntity<String> getAvatar(Authentication authentication) {
-        User user = (UserDetailsImpl) authentication.getPrincipal();
-        String avatar = userService.getAvatar(user.getId());
-        return new ResponseEntity<>(avatar, HttpStatus.OK);
     }
 }

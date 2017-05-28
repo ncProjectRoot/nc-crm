@@ -4,16 +4,21 @@ import com.netcracker.crm.dao.HistoryDao;
 import com.netcracker.crm.dao.OrderDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.UserDao;
-import com.netcracker.crm.domain.model.*;
-import com.netcracker.crm.domain.real.RealOrder;
-import com.netcracker.crm.dto.OrderDto;
+import com.netcracker.crm.domain.model.History;
+import com.netcracker.crm.domain.model.Order;
+import com.netcracker.crm.domain.model.User;
 import com.netcracker.crm.scheduler.cacher.impl.OrderCache;
+import com.netcracker.crm.service.email.AbstractEmailSender;
+import com.netcracker.crm.service.email.EmailParam;
+import com.netcracker.crm.service.email.EmailParamKeys;
+import com.netcracker.crm.service.email.EmailType;
 import com.netcracker.crm.service.entity.OrderLifecycleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import javax.mail.MessagingException;
 
 /**
  * Created by bpogo on 5/10/2017.
@@ -25,22 +30,28 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
     private final ProductDao productDao;
     private final UserDao userDao;
     private final OrderCache orderCache;
+    private final AbstractEmailSender sender;
 
     @Autowired
     public OrderLifecycleServiceImpl(OrderDao orderDao, HistoryDao historyDao,
-                                     ProductDao productDao, UserDao userDao, OrderCache orderCache) {
+                                     ProductDao productDao, UserDao userDao, OrderCache orderCache,
+                                     @Qualifier("orderSender") AbstractEmailSender sender) {
         this.orderDao = orderDao;
         this.historyDao = historyDao;
         this.productDao = productDao;
         this.userDao = userDao;
         this.orderCache = orderCache;
+        this.sender = sender;
     }
 
     @Override
     public boolean createOrder(Order order) {
         History history = order.getState().newOrder();
-
-        return saveCondition(order, history);
+        if (saveCondition(order, history)){
+            sendOrderStatus(order);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -53,7 +64,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (csr != null || order != null) {
             order.setCsr(csr);
             History history = order.getState().processOrder();
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -67,7 +81,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (order != null) {
             History history = order.getState().activateOrder();
             orderCache.removeFromActivateCache(order.getCsr().getId(), orderId);
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -81,7 +98,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (order != null) {
             History history = order.getState().pauseOrder();
             orderCache.removeFromPauseCache(order.getCsr().getId(), orderId);
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -95,7 +115,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (order != null) {
             History history = order.getState().resumeOrder();
             orderCache.removeFromResumeCache(order.getCsr().getId(), orderId);
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -109,7 +132,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         if (order != null) {
             History history = order.getState().disableOrder();
             orderCache.removeFromDisableCache(order.getCsr().getId(), orderId);
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -122,7 +148,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().requestToResumeOrder();
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -135,7 +164,10 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().requestToPauseOrder();
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
@@ -148,12 +180,26 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
         Order order = orderDao.findById(orderId);
         if (order != null) {
             History history = order.getState().requestToDisableOrder();
-            return saveCondition(order, history);
+            if (saveCondition(order, history)){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }
 
     private boolean saveCondition(Order order, History history) {
         return historyDao.create(history) != null && orderDao.update(order) != null;
+    }
+
+
+    private void sendOrderStatus(Order order){
+        EmailParam emailParam = new EmailParam(EmailType.ORDER_STATUS);
+        emailParam.put(EmailParamKeys.ORDER, order);
+        try {
+            sender.send(emailParam);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

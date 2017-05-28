@@ -161,6 +161,40 @@ ALTER TABLE product
 -- ALTER TABLE product
 --     ADD CONSTRAINT product__UN UNIQUE ( discount_id ) ;
 
+CREATE TABLE product_param 
+    ( 
+     id BIGSERIAL  NOT NULL , 
+     param_name VARCHAR (50)  NOT NULL , 
+     value VARCHAR (50)  NOT NULL , 
+     product_id INTEGER  NOT NULL 
+    ) 
+;
+
+
+CREATE INDEX product_param__IDX ON product_param 
+    ( 
+     param_name ASC 
+    ) 
+;
+
+ALTER TABLE product_param 
+    ADD CONSTRAINT product_param_PK PRIMARY KEY ( id ) ;
+
+ALTER TABLE product_param 
+    ADD CONSTRAINT product_param__UN UNIQUE ( product_id , param_name ) ;
+
+ALTER TABLE product_param 
+    ADD CONSTRAINT product_param_product_FK FOREIGN KEY 
+    ( 
+     product_id
+    ) 
+    REFERENCES product 
+    ( 
+     id
+    ) 
+    ON DELETE CASCADE 
+;
+
 
 CREATE TABLE region
 (
@@ -568,8 +602,6 @@ INSERT INTO public.statuses (id, name) VALUES (11, 'REQUEST_TO_DISABLE');
 INSERT INTO public.statuses (id, name) VALUES (12, 'PLANNED');
 INSERT INTO public.statuses (id, name) VALUES (13, 'ACTUAL');
 INSERT INTO public.statuses (id, name) VALUES (14, 'OUTDATED');
-
-
 
 CREATE OR REPLACE FUNCTION update_product(ids               BIGINT [], new_discount_id BIGINT,
                                           new_group_id      BIGINT,

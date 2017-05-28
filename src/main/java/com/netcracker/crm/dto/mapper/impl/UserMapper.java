@@ -42,6 +42,8 @@ public class UserMapper {
             model.setEmail(dto.getEmail());
             model.setPhone(dto.getPhone());
             model.setContactPerson(dto.isContactPerson());
+            model.setEnable(dto.isEnable());
+            model.setAccountNonLocked(dto.isAccountNonLocked());
             if (dto.getUserRole() != null) {
                 model.setUserRole(UserRole.valueOf(dto.getUserRole()));
             }
@@ -94,6 +96,7 @@ public class UserMapper {
             rowDto.setContactPerson(model.isContactPerson());
             rowDto.setUserRole(model.getUserRole().getFormattedName());
             rowDto.setAccountNonLocked(model.isAccountNonLocked());
+            rowDto.setEnable(model.isEnable());
 
             Organization organization = model.getOrganization();
             if (organization != null) {
@@ -107,9 +110,10 @@ public class UserMapper {
         };
     }
 
-    public Mapper<String, AutocompleteDto> modelLastNameToAutocomplete() {
-        return (modelLastName, autocompleteDto) -> {
-            autocompleteDto.setValue(modelLastName);
+    public Mapper<User, AutocompleteDto> modelLastNameToAutocomplete() {
+        return (model, autocompleteDto) -> {
+            autocompleteDto.setId(model.getId());
+            autocompleteDto.setValue(model.getFirstName() + " " + model.getLastName());
         };
     }
 

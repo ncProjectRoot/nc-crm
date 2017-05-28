@@ -34,11 +34,6 @@ public class CustomerController {
         return "home";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Map<String, Object> model) {
-        return "dashboard/customer";
-    }
-
     @GetMapping("/organization")
     public String users(Map<String, Object> model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -69,6 +64,11 @@ public class CustomerController {
         List<Order> orders = orderService.findByCustomer(customer);
         model.put("orders", orders);
         return "complaints";
+    }
+
+    @GetMapping("/settings")
+    public String settings(Map<String, Object> model) {
+        return "settings";
     }
 
 }

@@ -25,7 +25,7 @@ public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    private static final String TEMPLATE_PACKAGE = "classpath:email/?????";
+    private static final String TEMPLATE_PACKAGE = "email/?????";
 
     public abstract void send(EmailParam emailParam) throws MessagingException, IncorrectEmailElementException;
 
@@ -49,4 +49,24 @@ public abstract class AbstractEmailSender {
         return stringBuilder.toString();
     }
 
+//    for local profile
+//    public String getTemplate(String template) {
+//        String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
+//        log.debug("Getting email template " + concreteTemplate);
+//        StringBuilder stringBuilder = new StringBuilder();
+//        File file = new File(getClass().getClassLoader().getResource(concreteTemplate).getFile());
+//        if (file.exists()) {
+//            try {
+//                List<String> lines = Files.readAllLines(Paths.get(file.getCanonicalPath()));
+//                for (String line : lines) {
+//                    stringBuilder.append(line);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            log.error("File " + concreteTemplate + " not found");
+//        }
+//        return stringBuilder.toString();
+//    }
 }
