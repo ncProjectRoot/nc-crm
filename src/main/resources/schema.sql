@@ -611,6 +611,20 @@ END
 '
 LANGUAGE plpgsql;
 
-
+CREATE OR REPLACE FUNCTION update_groups(ids            BIGINT [], new_discount_id BIGINT)
+  RETURNS INT AS
+'
+DECLARE rows_updated INT;
+BEGIN
+  UPDATE groups
+  SET
+    discount_id   = COALESCE(new_discount_id, discount_id)
+  WHERE id IN (SELECT *
+               FROM unnest(ids));
+  GET DIAGNOSTICS rows_updated = ROW_COUNT;
+  RETURN rows_updated;
+END
+'
+LANGUAGE plpgsql;
 
 COMMIT;

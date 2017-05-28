@@ -5,11 +5,13 @@ import com.netcracker.crm.dao.GroupDao;
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.RegionGroupsDao;
 import com.netcracker.crm.domain.model.*;
+import com.netcracker.crm.domain.real.RealDiscount;
 import com.netcracker.crm.domain.real.RealGroup;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
 import com.netcracker.crm.dto.GroupTableDto;
+import com.netcracker.crm.dto.bulk.GroupBulkDto;
 import com.netcracker.crm.dto.mapper.ModelMapper;
 import com.netcracker.crm.dto.mapper.impl.GroupMapper;
 import com.netcracker.crm.service.entity.GroupService;
@@ -19,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -132,12 +131,32 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> getGroupsByDiscountId(Long id, User user) {
         List<Group> groups = new ArrayList<>();
         UserRole role = user.getUserRole();
-        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR ) || role.equals(UserRole.ROLE_PMG)) {
+        if (role.equals(UserRole.ROLE_ADMIN) || role.equals(UserRole.ROLE_CSR) || role.equals(UserRole.ROLE_PMG)) {
             groups = groupDao.findByDiscountId(id);
         } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
             groups = groupDao.findByDiscountIdAndCustomerId(id, user.getId());
         }
         return groups;
+    }
+
+    @Override
+    @Transactional
+    public boolean bulkUpdate(GroupBulkDto bulkDto) {
+        RealGroup groupTemplate = getBulkGroup(bulkDto);
+        Set<Long> groupIDs = new HashSet<>();
+        if (bulkDto.getItemIds() != null) groupIDs.addAll(bulkDto.getItemIds());
+
+        return groupDao.bulkUpdate(groupIDs, groupTemplate);
+    }
+
+    private RealGroup getBulkGroup(GroupBulkDto bulkDto) {
+        RealGroup groupTemplate = new RealGroup();
+        if (bulkDto.isDiscountIdChanged()) {
+            Discount discount = new RealDiscount();
+            discount.setId(bulkDto.getDiscountId());
+            groupTemplate.setDiscount(discount);
+        }
+        return groupTemplate;
     }
 
 }

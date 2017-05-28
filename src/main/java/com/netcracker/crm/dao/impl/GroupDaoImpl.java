@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.netcracker.crm.dao.impl.sql.GroupSqlQuery.*;
 
@@ -201,6 +202,17 @@ public class GroupDaoImpl implements GroupDao {
                 .addValue(PARAM_GROUP_DISCOUNT_ID, discountId)
                 .addValue(PARAM_GROUP_CUSTOMER_ID, customerId);
         return namedJdbcTemplate.query(SQL_FIND_GROUP_BY_DISCOUNT_ID_AND_CUSTOMER_ID, params, groupExtractor);
+    }
+
+    @Override
+    public boolean bulkUpdate(Set<Long> groupIDs, RealGroup group) {
+        Long discountId = null;
+        if (group.getDiscount() != null) discountId = group.getDiscount().getId();
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_GROUP_IDS, groupIDs)
+                .addValue(PARAM_GROUP_DISCOUNT_ID, discountId);
+        return namedJdbcTemplate.queryForObject(SQL_GROUP_BULK_UPDATE, params, Integer.class) == groupIDs.size();
     }
 
     private Long getDiscountId(Discount discount) {

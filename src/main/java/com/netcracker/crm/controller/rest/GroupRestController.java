@@ -5,6 +5,8 @@ import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
+import com.netcracker.crm.dto.bulk.DiscountBulkDto;
+import com.netcracker.crm.dto.bulk.GroupBulkDto;
 import com.netcracker.crm.service.entity.GroupService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.GroupValidator;
@@ -21,9 +23,7 @@ import java.util.Map;
 
 import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
 import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
-import static com.netcracker.crm.controller.message.MessageProperty.ERROR_SERVER_ERROR;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_CREATED;
-import static com.netcracker.crm.controller.message.MessageProperty.SUCCESS_GROUP_UPDATE;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -38,7 +38,7 @@ public class GroupRestController {
 
     @Autowired
     public GroupRestController(GroupService groupService, GroupValidator groupValidator,
-                                  ResponseGenerator<Group> generator, BindingResultHandler bindingResultHandler) {
+                               ResponseGenerator<Group> generator, BindingResultHandler bindingResultHandler) {
         this.groupService = groupService;
         this.groupValidator = groupValidator;
         this.generator = generator;
@@ -47,27 +47,27 @@ public class GroupRestController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<?> createGroup(@Valid GroupDto groupDto, BindingResult bindingResult){
+    public ResponseEntity<?> createGroup(@Valid GroupDto groupDto, BindingResult bindingResult) {
         groupValidator.validate(groupDto, bindingResult);
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }
         Group group = groupService.create(groupDto);
-        if (group.getId() > 0){
-            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE,SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
+        if (group.getId() > 0) {
+            return generator.getHttpResponse(group.getId(), SUCCESS_MESSAGE, SUCCESS_GROUP_CREATED, HttpStatus.CREATED);
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping(value = "/autocomplete")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern){
+    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern) {
         return new ResponseEntity<>(groupService.getAutocompleteGroup(pattern), HttpStatus.OK);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> getGroupRows(GroupRowRequest request){
+    public ResponseEntity<Map<String, Object>> getGroupRows(GroupRowRequest request) {
         return new ResponseEntity<>(groupService.getGroupPage(request), HttpStatus.OK);
     }
 
@@ -84,4 +84,13 @@ public class GroupRestController {
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @PutMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity groupBulkUpdate(GroupBulkDto bulkDto) {
+        if (groupService.bulkUpdate(bulkDto)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_GROUP_BULK_UPDATED, HttpStatus.OK);
+        }
+
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
