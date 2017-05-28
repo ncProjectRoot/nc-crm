@@ -158,10 +158,16 @@
     .modal-content h4 {
         margin-top: 20px;
     }
-    
+
     .parameter {
+        font-size: 16pt;
         display: inline-block; 
         width: 500px;
+    }
+    
+    #productParamValue {
+        font-size: 16pt;
+        color: darkgray;        
     }
 
 
@@ -311,10 +317,14 @@
                     <div class="collapsible-body">
                         <c:forEach var="productParam" items="${productParams}">
                             <h5 class="message_block">
-                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"><a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
-                                    <span class='parameter'>${productParam.paramName}: ${productParam.value} </span>
-                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                <span class='parameter'>
                                     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                        <a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
+                                        ${productParam.paramName}:  
+                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                        <span id='productParamValue'>${productParam.value}</span>
+                                    </span>
+                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                                     <div onclick="deleteParam('${productParam.id}')" class=" waves-effect waves-light btn-flat btn-small" ><i class='material-icons prefix'><i class="material-icons">backspace</i></i></div>
                                 </sec:authorize>                                
                             </h5>                            
@@ -333,8 +343,8 @@
                 <h4>New Parameter</h4>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
-                    <label for="param_name">Title</label>
-                    <input class="validate" id="param_name" type="text" name="paramName">
+                    <input class="validate" id='param_name' type='text' name='paramName'>
+                    <label for="paramName">Title</label>                    
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
@@ -379,7 +389,7 @@
     function fillEditForm(id, name, value) {
         $("#edit_param_id").val(id);
         $("#edit_param_name").val(name);
-        $("#edit_param_value").val(value);        
+        $("#edit_param_value").val(value);
     }
 
     $("#add_param-form").on("submit", function (e) {
@@ -388,12 +398,12 @@
         var value = $('#param_value').val();
         if (name.length < 0 || name.length > 20) {
             Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value < 0 || value > 20) {
+        } else if (value.length < 0 || value.length > 20) {
             Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
         } else {
             var url = "/productParams";
             var form = "#add_param-form";
-            send(form, url, "POST").done(function (id) {                
+            send(form, url, "POST").done(function (id) {
                 $('.modal').modal('close');
                 $(window).trigger('hashchange');
             })
@@ -407,28 +417,28 @@
         var value = $('#edit_param_value').val();
         if (name.length < 0 || name.length > 20) {
             Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value < 0 || value > 20) {
+        } else if (value.length < 0 || value.length > 20) {
             Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
         } else {
             var url = "/productParams";
             var form = "#edit_param-form";
-            send(form, url, "PUT").done(function (id) {                
+            send(form, url, "PUT").done(function (id) {
                 $('.modal').modal('close');
-                $(window).trigger('hashchange')                
+                $(window).trigger('hashchange')
             })
         }
     }
     );
 
     function deleteParam(id) {
-        var url = "/productParams/"+id;
+        var url = "/productParams/" + id;
         var form;
-        send(form, url, "DELETE").done(function (id) {            
+        send(form, url, "DELETE").done(function (id) {
             $('.modal').modal('close');
             $(window).trigger('hashchange');
         })
     }
-    
+
     $('.collapsible').collapsible();
     <c:if test="${product.discount.isActive() || product.group.discount.isActive()}">
 
