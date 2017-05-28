@@ -161,13 +161,13 @@
 
     .parameter {
         font-size: 16pt;
-        display: inline-block; 
+        display: inline-block;
         width: 500px;
     }
-    
+
     #productParamValue {
         font-size: 16pt;
-        color: darkgray;        
+        color: darkgray;
     }
 
 
@@ -318,19 +318,22 @@
                         <c:forEach var="productParam" items="${productParams}">
                             <h5 class="message_block">
                                 <span class='parameter'>
-                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                        <a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
-                                        ${productParam.paramName}:  
-                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                        ${productParam.paramName}:
+                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
                                         <span id='productParamValue'>${productParam.value}</span>
                                     </span>
                                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                    <div onclick="deleteParam('${productParam.id}')" class=" waves-effect waves-light btn-flat btn-small" ><i class='material-icons prefix'><i class="material-icons">backspace</i></i></div>
-                                </sec:authorize>                                
-                            </h5>                            
+                                    <div onclick="deleteParam('${productParam.id}')"
+                                         class=" waves-effect waves-light btn-flat btn-small"><i
+                                            class='material-icons prefix'><i class="material-icons">backspace</i></i>
+                                    </div>
+                                </sec:authorize>
+                            </h5>
                         </c:forEach>
                         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                            <h5 class="message_block"><a href="#add_param" class="btn-floating waves-effect waves-light btn-small"><i class="material-icons">add</i></a></h5>
+                            <h5 class="message_block"><a href="#add_param"
+                                                         class="btn-floating waves-effect waves-light btn-small"><i
+                                    class="material-icons">add</i></a></h5>
                         </sec:authorize>
                     </div>
                 </li>
@@ -343,49 +346,35 @@
                 <h4>New Parameter</h4>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
-                    <input class="validate" id='param_name' type='text' name='paramName'>
-                    <label for="paramName">Title</label>                    
+                    <input class="validate autocomplete" id='param_name' type='text' name='paramName'>
+                    <input type="hidden" id="param-hidden-input" name="id"/>
+                    <label for="param_name">Name</label>
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
                     <input id='param_value' class='validate' type='text' name='value'/>
-                    <label for="value">Value</label>
-                </div>                
+                    <label for="param_value">Value</label>
+                </div>
             </div>
             <input value='${product.id}' type="hidden" name="productId"/>
             <div class="modal-footer center-align">
-                <button class="btn waves-effect waves-light" id="submit-add-productParam" type="submit" name="action">Create parameter
+                <button class="btn waves-effect waves-light" id="submit-add-productParam" type="submit" name="action">
+                    Create parameter
                     <i class="material-icons right">send</i>
                 </button>
             </div>
         </form>
-    </div>                        
-    <div id="edit_param" class="modal modal-fixed-footer status-modal two">
-        <form id="edit_param-form">
-            <input id="edit_param_id" type="hidden" name="id"/>
-            <div class="modal-content row">
-                <h4>Edit Parameter</h4>
-                <div class='input-field col s7'>
-                    <i class="material-icons prefix">title</i>
-                    <label for="paramName">Title</label>
-                    <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName'>
-                </div>
-                <div class='input-field col s7'>
-                    <i class="material-icons prefix">description</i>
-                    <input id="edit_param_value" placeholder=" " class='validate' type='text' name='value'/>
-                    <label for="value">Value</label>
-                </div>                
-            </div>
-            <input id="edit_product_id" value='${product.id}' type="hidden" name="productId"/>
-            <div class="modal-footer center-align">
-                <button class="btn waves-effect waves-light" id="submit-edite-productParam" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                </button>
-            </div>
-        </form>
-    </div>              
+    </div>
 </div>
 <script>
+
+    $('#param_name').karpo_autocomplete_only_name({
+        url: "/productParams/autocomplete",
+        label: "#selected-param",
+        defaultValue: "${productParam.id} ${productParam.paramName}",
+        hideInput: "#param-hidden-input"
+    });
+
     function fillEditForm(id, name, value) {
         $("#edit_param_id").val(id);
         $("#edit_param_name").val(name);
@@ -393,41 +382,24 @@
     }
 
     $("#add_param-form").on("submit", function (e) {
-        e.preventDefault();
-        var name = $('#param_name').val();
-        var value = $('#param_value').val();
-        if (name.length < 0 || name.length > 20) {
-            Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value.length < 0 || value.length > 20) {
-            Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
-        } else {
-            var url = "/productParams";
-            var form = "#add_param-form";
-            send(form, url, "POST").done(function (id) {
-                $('.modal').modal('close');
-                $(window).trigger('hashchange');
-            })
-        }
-    }
-    );
+            e.preventDefault();
+            var name = $('#param_name').val();
+            var value = $('#param_value').val();
+            if (name.length < 0 || name.length > 20) {
+                Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
+            } else if (value.length < 0 || value.length > 20) {
+                Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
+            } else {
+                var url = "/productParams";
+                var form = "#add_param-form";
 
-    $("#edit_param-form").on("submit", function (e) {
-        e.preventDefault();
-        var name = $('#edit_param_name').val();
-        var value = $('#edit_param_value').val();
-        if (name.length < 0 || name.length > 20) {
-            Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
-        } else if (value.length < 0 || value.length > 20) {
-            Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
-        } else {
-            var url = "/productParams";
-            var form = "#edit_param-form";
-            send(form, url, "PUT").done(function (id) {
-                $('.modal').modal('close');
-                $(window).trigger('hashchange')
-            })
+                document.getElementById('param-hidden-input').value = '';
+                send(form, url, "POST").done(function (id) {
+                    $('.modal').modal('close');
+                    $(window).trigger('hashchange');
+                })
+            }
         }
-    }
     );
 
     function deleteParam(id) {
@@ -444,12 +416,12 @@
 
     var allPercentage = 0;
 
-        <c:if test="${product.discount.isActive()}">
+    <c:if test="${product.discount.isActive()}">
     allPercentage += ${product.discount.percentage};
-        </c:if>
-        <c:if test="${product.group.discount.isActive()}">
+    </c:if>
+    <c:if test="${product.group.discount.isActive()}">
     allPercentage += ${product.group.discount.percentage};
-        </c:if>
+    </c:if>
 
     allPercentage = allPercentage > 99 ? 99 : allPercentage;
     $(".percentage").text(allPercentage + "%");
@@ -462,10 +434,10 @@
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
 
-        <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
+    <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
     $('.modal').modal({
-        opacity: .5
-    }
+            opacity: .5
+        }
     );
     $('.datepicker').pickadate({
         selectMonths: true,
@@ -493,16 +465,16 @@
             $('.modal').modal('close');
         })
     })
-            ;
-        </c:if>
+    ;
+    </c:if>
     </sec:authorize>
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     $('.modal').modal({
-        opacity: .5, // Opacity of modal background
-        endingTop: '8%' // Starting top style attribute
-    }
+            opacity: .5, // Opacity of modal background
+            endingTop: '8%' // Starting top style attribute
+        }
     );
 
 
@@ -513,60 +485,60 @@
         url: "/discounts/autocomplete",
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
-                hideInput: "#discount-hidden-input"
+        hideInput: "#discount-hidden-input"
+    });
+    $('#group-input').karpo_autocomplete({
+        url: "/groups/autocomplete/",
+        label: "#selected-group",
+        defaultValue: "${product.group.id} ${product.group.name}",
+        hideInput: "#group-hidden-input"
+    });
+
+    $('.materialize-textarea').trigger('autoresize');
+    Materialize.updateTextFields();
+
+    $("#change-form").on("submit", function (e) {
+        e.preventDefault();
+        send("#change-form", "/products", "PUT").done(function () {
+            $('.modal').modal('close');
+            $(window).trigger('hashchange')
+        })
+    });
+
+    $.ajaxSetup({
+        complete: $(function () {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(header, token);
             });
-            $('#group-input').karpo_autocomplete({
-                url: "/groups/autocomplete/",
-                label: "#selected-group",
-                defaultValue: "${product.group.id} ${product.group.name}",
-                        hideInput: "#group-hidden-input"
-                    });
+        })
+    });
 
-                    $('.materialize-textarea').trigger('autoresize');
-                    Materialize.updateTextFields();
-
-                    $("#change-form").on("submit", function (e) {
-                        e.preventDefault();
-                        send("#change-form", "/products", "PUT").done(function () {
-                            $('.modal').modal('close');
-                            $(window).trigger('hashchange')
-                        })
-                    });
-
-                    $.ajaxSetup({
-                        complete: $(function () {
-                            var token = $("meta[name='_csrf']").attr("content");
-                            var header = $("meta[name='_csrf_header']").attr("content");
-                            $(document).ajaxSend(function (e, xhr, options) {
-                                xhr.setRequestHeader(header, token);
-                            });
-                        })
-                    });
-
-                    $("#change-status-form").on("submit", function (e) {
-                        e.preventDefault();
-                        $.ajax({
-                            url: "/products/status",
-                            type: 'PUT',
-                            data: {
-                                productId: ${product.id},
-                                statusId: $('#select_product_status').val()
-                            },
-                            statusCode: {
-                                200: function (data) {
-                                    Materialize.toast('You have changed status of product!', 5000, 'rounded');
-                                },
-                                400: function (data) {
-                                    Materialize.toast("Something wrong!", 3000, 'rounded');
-                                    setTimeout(function () {
-                                        window.location.reload();
-                                    }, 3000);
-                                }
-                            }
-                        });
-                        $('.modal').modal('close');
-                        $(window).trigger('hashchange')
-                    });
+    $("#change-status-form").on("submit", function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/products/status",
+            type: 'PUT',
+            data: {
+                productId: ${product.id},
+                statusId: $('#select_product_status').val()
+            },
+            statusCode: {
+                200: function (data) {
+                    Materialize.toast('You have changed status of product!', 5000, 'rounded');
+                },
+                400: function (data) {
+                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
+                }
+            }
+        });
+        $('.modal').modal('close');
+        $(window).trigger('hashchange')
+    });
 
     </sec:authorize>
 

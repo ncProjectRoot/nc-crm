@@ -1,46 +1,45 @@
 package com.netcracker.crm.controller.rest;
 
-import static com.netcracker.crm.controller.message.MessageHeader.*;
-import static com.netcracker.crm.controller.message.MessageProperty.*;
 import com.netcracker.crm.controller.message.ResponseGenerator;
 import com.netcracker.crm.domain.model.ProductParam;
+import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.ProductParamDto;
 import com.netcracker.crm.service.entity.ProductParamService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.ProductParamValidator;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static com.netcracker.crm.controller.message.MessageHeader.ERROR_MESSAGE;
+import static com.netcracker.crm.controller.message.MessageHeader.SUCCESS_MESSAGE;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
- *
  * @author YARUS
  */
 @RestController
 @RequestMapping(value = "/productParams")
 public class ProductParamRestController {
-    private final ProductParamService productParamService;  
+    private final ProductParamService productParamService;
     private final ProductParamValidator productParamValidator;
     private final ResponseGenerator<ProductParam> generator;
     private final BindingResultHandler bindingResultHandler;
-    
+
     @Autowired
     public ProductParamRestController(ProductParamService productParamService, ProductParamValidator productParamValidator, ResponseGenerator<ProductParam> generator, BindingResultHandler bindingResultHandler) {
-        this.productParamService = productParamService; 
+        this.productParamService = productParamService;
         this.productParamValidator = productParamValidator;
         this.generator = generator;
         this.bindingResultHandler = bindingResultHandler;
     }
-    
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> create(@Valid ProductParamDto productParamDto, BindingResult bindingResult) {
@@ -67,7 +66,7 @@ public class ProductParamRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
     @DeleteMapping
     @RequestMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
@@ -77,5 +76,10 @@ public class ProductParamRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
+    @GetMapping("/autocomplete")
+    @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN', 'ROLE_PMG')")
+    public ResponseEntity<List<AutocompleteDto>> getAutocompleteDto(String pattern) {
+        return new ResponseEntity<>(productParamService.getAutocompleteDto(pattern), HttpStatus.OK);
+    }
 }

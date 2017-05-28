@@ -2,16 +2,10 @@ package com.netcracker.crm.dao.impl;
 
 import com.netcracker.crm.dao.ProductDao;
 import com.netcracker.crm.dao.ProductParamDao;
-import static com.netcracker.crm.dao.impl.sql.ProductParamSqlQuery.*;
 import com.netcracker.crm.domain.model.Product;
 import com.netcracker.crm.domain.model.ProductParam;
 import com.netcracker.crm.domain.proxy.ProductProxy;
 import com.netcracker.crm.domain.real.RealProductParam;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +17,34 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.netcracker.crm.dao.impl.sql.DiscountSqlQuery.PARAM_PATTERN;
+import static com.netcracker.crm.dao.impl.sql.ProductParamSqlQuery.*;
+
 /**
- *
  * @author YARUS
  */
 @Repository
-public class ProductParamDaoImpl implements ProductParamDao{
+public class ProductParamDaoImpl implements ProductParamDao {
 
     private static final Logger log = LoggerFactory.getLogger(ProductParamDaoImpl.class);
 
     private ProductDao productDao;
-    
+
     private SimpleJdbcInsert productParamInsert;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private ProductParamWithDetailExtractor productParamWithDetailExtractor;
-    
+
     @Autowired
     public ProductParamDaoImpl(ProductDao productDao) {
-        this.productDao = productDao;        
+        this.productDao = productDao;
     }
-    
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -50,7 +52,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
                 .withTableName(PARAM_PRODUCT_PARAM_TABLE)
                 .usingGeneratedKeyColumns(PARAM_PRODUCT_PARAM_ID);
         productParamWithDetailExtractor = new ProductParamWithDetailExtractor(productDao);
-    }      
+    }
 
     @Override
     public Long create(ProductParam productParam) {
@@ -58,7 +60,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
             return null;
         }
 
-        Long productId = getProductId(productParam.getProduct());        
+        Long productId = getProductId(productParam.getProduct());
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_NAME, productParam.getParamName())
@@ -85,7 +87,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
         }
         return null;
     }
-    
+
     @Override
     public Long update(ProductParam productParam) {
         Long productParamId = productParam.getId();
@@ -93,7 +95,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
             return null;
         }
         Long productId = getProductId(productParam.getProduct());
-        
+
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_ID, productParamId)
                 .addValue(PARAM_PRODUCT_PARAM_NAME, productParam.getParamName())
@@ -148,13 +150,20 @@ public class ProductParamDaoImpl implements ProductParamDao{
         }
         return productParam;
     }
-    
+
     @Override
     public List<ProductParam> findAllByParamName(String paramName) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_NAME, paramName);
 
-        return namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAM_BY_NAME, params, productParamWithDetailExtractor);        
+        return namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAM_BY_NAME, params, productParamWithDetailExtractor);
+    }
+
+    @Override
+    public List<ProductParam> findByIdOrTitle(String pattern) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PARAM_PATTERN, "%" + pattern + "%");
+        return namedJdbcTemplate.query(SQL_FIND_PARAM_BY_ID_OR_NAME, params, productParamWithDetailExtractor);
     }
 
     @Override
@@ -163,10 +172,10 @@ public class ProductParamDaoImpl implements ProductParamDao{
                 .addValue(PARAM_PRODUCT_PARAM_PRODUCT_ID, id);
         return namedJdbcTemplate.query(SQL_FIND_PRODUCT_PARAMS_BY_PRODUCT_ID, params, productParamWithDetailExtractor);
     }
-    
+
     private static final class ProductParamWithDetailExtractor implements ResultSetExtractor<List<ProductParam>> {
 
-        private ProductDao productDao;        
+        private ProductDao productDao;
 
         public ProductParamWithDetailExtractor(ProductDao productDao) {
             this.productDao = productDao;
@@ -179,7 +188,7 @@ public class ProductParamDaoImpl implements ProductParamDao{
                 ProductParam productParam = new RealProductParam();
                 productParam.setId(rs.getLong(PARAM_PRODUCT_PARAM_ID));
                 productParam.setParamName(rs.getString(PARAM_PRODUCT_PARAM_NAME));
-                productParam.setValue(rs.getString(PARAM_PRODUCT_PARAM_VALUE));                                
+                productParam.setValue(rs.getString(PARAM_PRODUCT_PARAM_VALUE));
 
                 long productId = rs.getLong(PARAM_PRODUCT_PARAM_PRODUCT_ID);
                 if (productId != 0) {
