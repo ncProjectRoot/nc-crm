@@ -318,6 +318,8 @@
                         <c:forEach var="productParam" items="${productParams}">
                             <h5 class="message_block">
                                 <span class='parameter'>
+                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                    <a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
                                         ${productParam.paramName}:
                                     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
                                         <span id='productParamValue'>${productParam.value}</span>
@@ -365,6 +367,30 @@
             </div>
         </form>
     </div>
+    <div id="edit_param" class="modal modal-fixed-footer status-modal two">
+        <form id="edit_param-form">
+            <input id="edit_param_id" type="hidden" name="id"/>
+            <div class="modal-content row">
+                <h4>Edit Parameter</h4>
+                <div class='input-field col s7'>
+                    <i class="material-icons prefix">title</i>
+                    <label for="paramName">Title</label>
+                    <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName' readonly>
+                </div>
+                <div class='input-field col s7'>
+                    <i class="material-icons prefix">description</i>
+                    <input id="edit_param_value" placeholder=" " class='validate' type='text' name='value'/>
+                    <label for="value">Value</label>
+                </div>
+            </div>
+            <input id="edit_product_id" value='${product.id}' type="hidden" name="productId"/>
+            <div class="modal-footer center-align">
+                <button class="btn waves-effect waves-light" id="submit-edite-productParam" type="submit" name="action">Update
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <script>
 
@@ -397,6 +423,25 @@
                 send(form, url, "POST").done(function (id) {
                     $('.modal').modal('close');
                     $(window).trigger('hashchange');
+                })
+            }
+        }
+    );
+
+    $("#edit_param-form").on("submit", function (e) {
+            e.preventDefault();
+            var name = $('#edit_param_name').val();
+            var value = $('#edit_param_value').val();
+            if (name.length < 0 || name.length > 20) {
+                Materialize.toast("Please enter a title more 0 and less 20 characters", 10000, 'rounded');
+            } else if (value.length < 0 || value.length > 20) {
+                Materialize.toast("Please enter a value more 0 and less 20 characters", 10000, 'rounded');
+            } else {
+                var url = "/productParams";
+                var form = "#edit_param-form";
+                send(form, url, "PUT").done(function (id) {
+                    $('.modal').modal('close');
+                    $(window).trigger('hashchange')
                 })
             }
         }

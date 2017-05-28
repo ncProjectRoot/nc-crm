@@ -285,8 +285,7 @@ jQuery.fn.karpo_autocomplete_only_name = function (params) {
                 delete dataAutocomplete[key];
             }
             array.forEach(function (element) {
-                // document.getElementById('param-hidden-input').value = element.id;
-                dataAutocomplete[element.id + " " + element.value] = null;
+                dataAutocomplete[element.value] = null;
             });
         });
     });
