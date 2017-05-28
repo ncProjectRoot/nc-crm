@@ -76,6 +76,7 @@ public class UserRestController {
 
         User updatingUser = userService.getUserById(userDto.getId());
         updatingUser.setContactPerson(userDto.isContactPerson());
+        updatingUser.setEnable(userDto.isEnable());
         User user = userService.update(updatingUser);
 
         if (user.getId() > 0) {

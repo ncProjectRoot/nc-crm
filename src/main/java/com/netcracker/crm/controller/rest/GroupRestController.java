@@ -5,6 +5,8 @@ import com.netcracker.crm.domain.model.Group;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.AutocompleteDto;
 import com.netcracker.crm.dto.GroupDto;
+import com.netcracker.crm.dto.bulk.DiscountBulkDto;
+import com.netcracker.crm.dto.bulk.GroupBulkDto;
 import com.netcracker.crm.service.entity.GroupService;
 import com.netcracker.crm.validation.BindingResultHandler;
 import com.netcracker.crm.validation.impl.GroupValidator;
@@ -30,6 +32,7 @@ import com.netcracker.crm.dto.DiscountDto;
 import com.netcracker.crm.service.entity.DiscountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.netcracker.crm.controller.message.MessageProperty.*;
 
 /**
  * Created by Pasha on 01.05.2017.
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @RequestMapping(value = "/groups")
 public class GroupRestController {
     private static final Logger log = LoggerFactory.getLogger(UserRestController.class);
-    
+
     private final DiscountService discountService;
     private final GroupService groupService;
     private final ResponseGenerator<Group> generator;
@@ -93,17 +96,26 @@ public class GroupRestController {
         }
         return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
-    @PutMapping    
+
+    @PutMapping
     @RequestMapping(value = "/changeDiscount")
     public ResponseEntity<?> updateDiscount(GroupDto groupDto) {
         Group group = groupService.getGroupById(groupDto.getId());
         Discount changedDisc = group.getDiscount();
         changedDisc.setActive(!changedDisc.isActive());
         discountService.update(changedDisc);
-        
-        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);       
-        
+
+        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_DISCOUNT_UPDATED, HttpStatus.OK);
+
     }
 
+    @PutMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')")
+    public ResponseEntity groupBulkUpdate(GroupBulkDto bulkDto) {
+        if (groupService.bulkUpdate(bulkDto)) {
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_GROUP_BULK_UPDATED, HttpStatus.OK);
+        }
+
+        return generator.getHttpResponse(ERROR_MESSAGE, ERROR_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

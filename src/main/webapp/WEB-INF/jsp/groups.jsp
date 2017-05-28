@@ -20,6 +20,13 @@
                     <table class="striped responsive-table centered ">
                         <thead>
                         <tr>
+                            <th>
+                                <p>
+                                    <input type='checkbox' class='filled-in bulk-select-all'
+                                           id="select-all-checkbox"/>
+                                    <label for='select-all-checkbox'></label>
+                                </p>
+                            </th>
                             <th data-field="1">
                                 <a href="#!" class="sorted-element a-dummy">#</a>
                             </th>
@@ -53,57 +60,121 @@
                 </div>
             </div>
         </div>
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-            <div id="create-wrapper" class="col s12">
+<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <div id="create-wrapper" class="col s12">
+            <div class="row">
+                <form class="col s12" id="addGroup">
+                    <div class="row">
+                        <div class='input-field col s12 m6'>
+                            <i class="material-icons prefix">short_text</i>
+                            <input class='validate' type='text' name='name' id='group_name'/>
+                            <label for="group_name">Name</label>
+                        </div>
+                        <div class="input-field col s12 m6">
+                            <i class="material-icons prefix">loyalty</i>
+                            <input type="text" id="discount-input" class="autocomplete">
+                            <input type="hidden" id="discount-hidden-input" name="discountId"/>
+                            <label for="discount-input">Selected discount: <span id="selected-discount"></span></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 m6">
+                            <i class="material-icons prefix">view_list</i>
+                            <input type="text" id="product-input" class="autocomplete">
+                            <input type="hidden" id="product-hidden-input" name="products"/>
+                            <label for="product-input">Select products</label>
+                        </div>
+                        <div class="col s12 m6">
+                            <ul id="selected-products" class="collection"></ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m6">
+                            <button class="btn waves-effect waves-light" type="submit" id="submit-group" name="action">
+                                Create Group
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="bulk-change-modal" class="modal bottom-sheet">
+            <div class="modal-content">
                 <div class="row">
-                    <form class="col s12" id="addGroup">
+                    <div id="bulk-change-modal-title" class="col s3 offset-s2">
+                        <h4>Edit Selected Items</h4>
+                        <p>Choose field to edit it for each selected item.</p>
+                        <div class="chip bulk-chip" checkbox-id="checkbox-discount">Discount<i
+                                class="chip-close material-icons">close</i></div>
+                    </div>
+                    <div class="col s7">
                         <div class="row">
-                            <div class='input-field col s12 m6'>
-                                <i class="material-icons prefix">short_text</i>
-                                <input class='validate' type='text' name='name' id='group_name'/>
-                                <label for="group_name">Name</label>
+                            <div class="col s12">
+                                <ul class="tabs">
+                                    <li class="tab col s6 bulk-modal-tab"><a href="#test1">Discount</a></li>
+                                </ul>
                             </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">loyalty</i>
-                                <input type="text" id="discount-input" class="autocomplete">
-                                <input type="hidden" id="discount-hidden-input" name="discountId"/>
-                                <label for="discount-input">Selected discount: <span
-                                        id="selected-discount"></span></label>
-                            </div>
+                            <form id="bulk-change-form">
+                                <div class="row col s12">
+                                    <div class="col s8">
+                                        <div id="test1" class="col s12">
+                                            <div class="row edit-selected-items">
+                                                <div class="input-field col s12">
+                                                    <i class="material-icons prefix">loyalty</i>
+                                                    <input id="checkbox-discount" type="hidden"
+                                                           class="is-changed-checkbox" name="isDiscountIdChanged">
+                                                    <input type="text" id="bulk-discount-input"
+                                                           class="bulk-field-change autocomplete">
+                                                    <input type="hidden" id="bulk-discount-hidden-input"
+                                                           name="discountId"/>
+                                                    <label for="bulk-discount-input">Selected discount: <span
+                                                            id="bulk-selected-discount"></span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col s4">
+                                        <input type="hidden" name="itemIds" id="bulk-item-ids">
+                                        <button id="bulk-submit" type="submit" name="action"
+                                                class="btn waves-effect waves-light">Edit
+                                            <i class="material-icons right">replay</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">view_list</i>
-                                <input type="text" id="product-input" class="autocomplete">
-                                <input type="hidden" id="product-hidden-input" name="products"/>
-                                <label for="product-input">Select products</label>
-                            </div>
-                            <div class="col s12 m6">
-                                <ul id="selected-products" class="collection"></ul>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12 m6">
-                                <button class="btn waves-effect waves-light" type="submit" id="submit-group"
-                                        name="action">
-                                    Create Group
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </sec:authorize>
+        </div>
+
+
+        <div id="bulk-card" class="row">
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="card-content center-align">
+                        <span class="card-title">Items Selected</span>
+                        <h5 class="selected-items">0</h5>
+                    </div>
+                    <div class="card-action center-align">
+                        <a id="bulk-change-btn" class="a-dummy" href="#!">Edit</a>
+                        <a id="bulk-cancel-btn" class="a-dummy" href="#!">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+</sec:authorize>
     </div>
 </div>
 <form class="col s12" id="updateDiscountActive" style="display: none">
     <input type='text' name='id' id='disc_id2'/>
-      
+
 </form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
-    
+
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
@@ -117,8 +188,8 @@
             document.getElementById(simpleId).style.display = "none";
             $(id).html("check");
             $(id).fadeIn(2000);
-        }        
-        $("#disc_id2").val(simpleId);               
+        }
+        $("#disc_id2").val(simpleId);
         var url = "/groups/changeDiscount";
         var form = "#updateDiscountActive";
         send(form, url, "PUT");
@@ -129,16 +200,18 @@
     $("#table-all-groups").karpo_table({
         urlSearch: "/groups/autocomplete",
         urlTable: "/groups",
+        bulkUrl: "/groups/bulk",
         mapper: function (object) {
-            var disActive = null;                        
-            var tr = $("<tr>");            
+            var disActive = null;
+            var tr = $("<tr>");
+            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));
             tr.append($("<td>", {text: object.discountName}));
             tr.append($("<td>", {text: object.discountValue}));
             if(object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";            
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             return tr;
         }
@@ -151,6 +224,13 @@
         label: "#selected-discount",
         defaultValue: "${product.discount.id} ${product.discount.title}",
         hideInput: "#discount-hidden-input"
+    });
+
+    $('#bulk-discount-input').karpo_autocomplete({
+        url: "/discounts/autocomplete",
+        label: "#bulk-selected-discount",
+        defaultValue: "${product.discount.id} ${product.discount.title}",
+        hideInput: "#bulk-discount-hidden-input"
     });
 
     $("#product-input").karpo_multi_select({

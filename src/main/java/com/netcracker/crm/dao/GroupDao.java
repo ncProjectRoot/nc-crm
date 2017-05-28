@@ -2,10 +2,12 @@ package com.netcracker.crm.dao;
 
 
 import com.netcracker.crm.domain.model.Group;
+import com.netcracker.crm.domain.real.RealGroup;
 import com.netcracker.crm.domain.request.GroupRowRequest;
 import com.netcracker.crm.dto.GroupTableDto;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Melnyk_Dmytro
@@ -26,4 +28,6 @@ public interface GroupDao extends CrudDao<Group> {
     List<Group> findByDiscountId(Long id);
 
     List<Group> findByDiscountIdAndCustomerId(Long discountId, Long customerId);
+
+    boolean bulkUpdate(Set<Long> groupIDs, RealGroup groupTemplate);
 }

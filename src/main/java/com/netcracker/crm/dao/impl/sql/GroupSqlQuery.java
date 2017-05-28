@@ -18,6 +18,8 @@ public final class GroupSqlQuery {
     public static final String PARAM_GROUP_ROW_DISCOUNT_ACTIVE = "active";
     public static final String PARAM_GROUP_ROW_PRODUCT_COUNT = "products";
 
+    //BULK
+    public static final String PARAM_GROUP_IDS = "group_ids";
 
     public static final String PARAM_PATTERN = "pattern";
 
@@ -60,6 +62,8 @@ public final class GroupSqlQuery {
     public static final String SQL_GET_GROUP_COUNT = "SELECT count(*) " +
             "FROM groups;";
 
+    public static final String SQL_GROUP_BULK_UPDATE = "" +
+            "SELECT update_groups(ARRAY [:group_ids ] :: BIGINT[], :discount_id);";
 }
 
 
