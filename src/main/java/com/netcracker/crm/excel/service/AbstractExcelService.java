@@ -46,7 +46,7 @@ public abstract class AbstractExcelService<T> {
         excelBuilder.createSheet("Chart");
         setDateTitle(excelBuilder, map.keySet(), 30);
         setChartData(map.values(), excelBuilder, 31);
-        excelDrawer.drawChart(excelBuilder.getSheet(), 1, 1, range.length * 2, 25, map);
+        excelDrawer.drawChart(excelBuilder.getSheet(), 1, 1, 15, 25, map);
     }
 
     private void setDateTitle(ExcelBuilder excelBuilder, Set<LocalDate> dates, int rowNumber) {

@@ -62,6 +62,7 @@
     function fetchMessages(url) {
         $.get("/messages/" + url).success(function (data) {
             var ul = $('#' + url);
+            var iconName = defineIcon(url);
             ul.children().remove();
             var header = '';
             if (url !== 'activate') {
@@ -72,8 +73,8 @@
             $.each(data, function (i, item) {
                 var div = $("<div>").addClass("row");
 
-                var button_to_order = $('<a class="waves-effect waves-light btn right" href="#order/' + item.id + '">Move to order</a>');
-                var button = $('<a class="waves-effect waves-light btn right" id="' + getStatus(item.status) + item.id + '" >' + getStatus(item.status) + '</a>');
+                var button_to_order = $('<a class="waves-effect waves-light btn right" href="#order/' + item.id + '">Move to order <i class="material-icons right">move_to_inbox</i></a>');
+                var button = $('<a class="waves-effect waves-light btn right" id="' + getStatus(item.status) + item.id + '" >' + getStatus(item.status) + '<i class="material-icons right">' + iconName + '</i></a>');
 
                 if (item.timeOver) {
                     button.addClass("red");
@@ -97,6 +98,18 @@
         })
     }
 
+    function defineIcon(type) {
+        if (type == 'activate') {
+            return 'done';
+        } else if (type == 'resume') {
+            return 'refresh';
+        } else if (type == 'pause') {
+            return 'pause';
+        } else if (type == 'disable') {
+            return 'archive';
+        }
+    }
+    
     function submitOrder(id, status) {
         var url = '/orders/' + id + '/' + getStatus(status);
         sendPut(id, url, getStatus(status));

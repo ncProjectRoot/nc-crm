@@ -15,7 +15,7 @@
         color: darkblue;
     }
 
-    #date {
+    .date {
         text-decoration: underline;
     }
 
@@ -26,23 +26,32 @@
     .name {
         color: darkblue;
     }
+
+    .history {
+        width: calc(100% - 20px * 2);
+        margin: 0 auto;
+        font-size: 17px;
+    }
+
+    #status{
+        color: darkblue;
+    }
 </style>
 <div class="content-body z-depth-1" data-page-name="Order #${order.id}">
-    <a class="waves-effect waves-light btn-large" id="status">${order.status.name.replaceAll("_", " ")}</a>
+    <h2  id="status">${order.status.name.replaceAll("_", " ")}</h2>
     <div class="section">
-        <h5>Product title : <span class="title">${order.product.title}</span></h5>
+        <h5>Product : <a href="#product/${order.product.id}" class="title">${order.product.title}</a></h5>
     </div>
     <div class="section">
-        <h5>Customer : <span class="name">${order.customer.firstName} ${order.customer.lastName}</span></h5>
+        <h5>Customer : <a href="#user/${order.customer.id}" class="name">${order.customer.firstName} ${order.customer.lastName}</a></h5>
     </div>
     <div class="section">
-        <h5>Order date : <span>${order.date.toString().replace("T", " ")}</span></h5>
+        <h5>Order date : <span class="date">${order.date.toString().replace("T", " ")}</span></h5>
+        <c:if test="${order.status == 'PROCESSING'}">
+            <h5>Prefered date : <span class="date">${order.preferedDate.toString().replace("T", " ")}</span></h5>
+        </c:if>
     </div>
-    <c:if test="${order.status == 'PROCESSING'}">
-        <div class="section">
-            <h5>Prefered date : <span>${order.preferedDate.toString().replace("T", " ")}</span></h5>
-        </div>
-    </c:if>
+
 
     <div class="row">
         <div class="section">
@@ -59,16 +68,24 @@
                     <c:if test="${user.id == order.csr.id}">
                         <c:choose>
                             <c:when test="${order.status == 'PROCESSING'}">
-                                <a class="waves-effect waves-light btn" id="csr_activate">activate</a>
+                                <a class="waves-effect waves-light btn" id="csr_activate">activate
+                                    <i class="material-icons right">done</i>
+                                </a>
                             </c:when>
                             <c:when test="${order.status == 'REQUEST_TO_RESUME'}">
-                                <a class="waves-effect waves-light btn" id="csr_resume">resume</a>
+                                <a class="waves-effect waves-light btn" id="csr_resume">resume
+                                    <i class="material-icons right">refresh</i>
+                                </a>
                             </c:when>
                             <c:when test="${order.status == 'REQUEST_TO_PAUSE'}">
-                                <a class="waves-effect waves-light btn" id="csr_pause">pause</a>
+                                <a class="waves-effect waves-light btn" id="csr_pause">pause
+                                    <i class="material-icons right">pause</i>
+                                </a>
                             </c:when>
                             <c:when test="${order.status == 'REQUEST_TO_DISABLE'}">
-                                <a class="waves-effect waves-light btn" id="csr_disable">disable</a>
+                                <a class="waves-effect waves-light btn" id="csr_disable">disable
+                                    <i class="material-icons right">archive</i>
+                                </a>
                             </c:when>
                         </c:choose>
                     </c:if>
@@ -80,12 +97,20 @@
                 <div class="section">
                     <c:choose>
                         <c:when test="${order.status == 'ACTIVE'}">
-                            <a class="waves-effect waves-light btn" id="customer_pause">pause</a>
-                            <a class="waves-effect waves-light btn" id="customer_disable">disable</a>
+                            <a class="waves-effect waves-light btn" id="customer_pause">pause
+                                <i class="material-icons right">pause</i>
+                            </a>
+                            <a class="waves-effect waves-light btn" id="customer_disable">disable
+                                <i class="material-icons right">archive</i>
+                            </a>
                         </c:when>
                         <c:when test="${order.status == 'PAUSED'}">
-                            <a class="waves-effect waves-light btn" id="customer_resume">activate</a>
-                            <a class="waves-effect waves-light btn" id="customer_disable">disable</a>
+                            <a class="waves-effect waves-light btn" id="customer_resume">activate
+                                <i class="material-icons right">done</i>
+                            </a>
+                            <a class="waves-effect waves-light btn" id="customer_disable">disable
+                                <i class="material-icons right">archive</i>
+                            </a>
                         </c:when>
                     </c:choose>
                 </div>
@@ -93,10 +118,11 @@
         </div>
     </div>
 
-    <a href="/order/${order.id}/report" class="waves-effect waves-light btn">Get PDF Report</a>
-
+    <a href="/order/${order.id}/report" class="waves-effect waves-light btn">Get PDF Report
+        <i class="material-icons right">save</i>
+    </a>
 </div>
-<div class="row">
+<div class="history z-depth-1">
     <ul class="collection" id="history">
     </ul>
 </div>
@@ -112,7 +138,7 @@
             historyUL.children().remove();
             $.each(data, function (i, item) {
                 var li = $("<li>").addClass("collection-item")
-                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - <span id='date'>" + item.dateChangeStatus
+                    .append("Status - <span>" + item.oldStatus + "</span>, time change status - <span class='date'>" + item.dateChangeStatus
                         + "</span>, message - " + item.descChangeStatus);
                 historyUL.append(li);
             });
