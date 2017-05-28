@@ -14,13 +14,13 @@
             <ul id="tabs" class="tabs">
                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-users-wrapper">All Users</a></li>
-                </sec:authorize>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    </sec:authorize>
+                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a id="link-create-wrapper" href="#create-wrapper">Create</a></li>
-                </sec:authorize>
-                <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+                    </sec:authorize>
+                    <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#my-users-wrapper">My Users</a></li>
-                </sec:authorize>
+                    </sec:authorize>
             </ul>
         </div>
         <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
@@ -29,66 +29,66 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                            <tr>
-                                <th data-field="1">
-                                    <a href="#!" class="sorted-element a-dummy">#</a>
-                                </th>
-                                <th data-field="2">
-                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
-                                </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
-                                </th>
-                                <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
-                                </th>
-                                <th class="th-dropdown" data-field="enable">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-active' data-default-name="Active">
-                                        Active
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-active" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
-                                    </ul>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
-                                </th>
-                                <th data-field="6">
-                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
-                                </th>
-                                <th class="th-dropdown" data-field="roleId">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-user-role' data-default-name="User Role">
-                                        User Role
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-user-role" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
-                                    </ul>
-                                </th>
-                                <th class="th-dropdown" data-field="contactPerson">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
-                                        Contact Person
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-contact-person" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">No</a></li>
-                                    </ul>
-                                </th>
-                                <th data-field="9">
-                                    <a href="#!" class="sorted-element a-dummy">Address</a>
-                                </th>
-                                <th data-field="10">
-                                    <a href="#!" class="sorted-element a-dummy">Organization</a>
-                                </th>
+                                <tr>
+                                    <th data-field="1">
+                                        <a href="#!" class="sorted-element a-dummy">#</a>
+                                    </th>
+                                    <th data-field="2">
+                                        <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                    </th>
+                                    <th data-field="3">
+                                        <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                    </th>
+                                    <th data-field="4">
+                                        <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                    </th>
+                                    <th class="th-dropdown" data-field="enable">
+                                        <a class='dropdown-button a-dummy' href='#'
+                                           data-activates='dropdown-all-active' data-default-name="Active">
+                                            Active
+                                        </a>
+                                        <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-active" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                            </ul>
+                            </th>
+                            <th data-field="5">
+                                <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                            </th>
+                            <th data-field="6">
+                                <a href="#!" class="sorted-element a-dummy">Phone</a>
+                            </th>
+                            <th class="th-dropdown" data-field="roleId">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-all-user-role' data-default-name="User Role">
+                                    User Role
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-user-role" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="1">Admin</a></li>
+                                <li><a href="#" class="a-dummy" data-value="2">Customer</a></li>
+                                <li><a href="#" class="a-dummy" data-value="3">CSR</a></li>
+                                <li><a href="#" class="a-dummy" data-value="4">PMG</a></li>
+                            </ul>
+                            </th>
+                            <th class="th-dropdown" data-field="contactPerson">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-all-contact-person' data-default-name="Contact Person">
+                                    Contact Person
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-contact-person" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="true">Yes</a></li>
+                                <li><a href="#" class="a-dummy" data-value="false">No</a></li>
+                            </ul>
+                            </th>
+                            <th data-field="9">
+                                <a href="#!" class="sorted-element a-dummy">Address</a>
+                            </th>
+                            <th data-field="10">
+                                <a href="#!" class="sorted-element a-dummy">Organization</a>
+                            </th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -192,29 +192,29 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                            <tr>
-                                <th data-field="1">
-                                    <a href="#!" class="sorted-element a-dummy">#</a>
-                                </th>
-                                <th data-field="2">
-                                    <a href="#!" class="sorted-element a-dummy">First Name</a>
-                                </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Middle Name</a>
-                                </th>
-                                <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">Last Name</a>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">E-mail</a>
-                                </th>
-                                <th data-field="6">
-                                    <a href="#!" class="sorted-element a-dummy">Phone</a>
-                                </th>
-                                <th data-field="9">
-                                    <a href="#!" class="sorted-element a-dummy">Address</a>
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th data-field="1">
+                                        <a href="#!" class="sorted-element a-dummy">#</a>
+                                    </th>
+                                    <th data-field="2">
+                                        <a href="#!" class="sorted-element a-dummy">First Name</a>
+                                    </th>
+                                    <th data-field="3">
+                                        <a href="#!" class="sorted-element a-dummy">Middle Name</a>
+                                    </th>
+                                    <th data-field="4">
+                                        <a href="#!" class="sorted-element a-dummy">Last Name</a>
+                                    </th>
+                                    <th data-field="5">
+                                        <a href="#!" class="sorted-element a-dummy">E-mail</a>
+                                    </th>
+                                    <th data-field="6">
+                                        <a href="#!" class="sorted-element a-dummy">Phone</a>
+                                    </th>
+                                    <th data-field="9">
+                                        <a href="#!" class="sorted-element a-dummy">Address</a>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -231,6 +231,7 @@
     <div class="modal-content row">
         <input id="user_id2" type="hidden" name="id"/>
         <input id="user_contactPerson2" type="hidden" name="contactPerson"/>
+        <input id="user_contactActive2" type="hidden" name="enable"/>
     </div>
     <div class="modal-footer center-align">
         <button class="btn waves-effect waves-light" id="submit-update-user" type="submit" name="action">
@@ -244,7 +245,6 @@
 <script>
 
     $('ul#tabs').tabs({
-
         onShow: function () {
             $('#map').locationpicker({
                 location: {
@@ -337,9 +337,16 @@
             tr.append($("<td>", {html: temp}));
             temp = "<span id='lastName" + object.id + "'>" + object.lastName + "</span>";
             tr.append($("<td>", {html: temp}));
-            if (object.enable != null)
-                userActive = (object.enable == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
-            tr.append($("<td>", {html: userActive}));
+            if (object.enable != null){
+                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    userActive = (object.enable == true) ? "<i id='active" + object.id + "' onclick='changeActiveBoolValues(" + object.id + ", \"active\")' class='material-icons prefix'>check</i>" : "<i id='active" + object.id + "' onclick='changeActiveBoolValues(" + object.id + ", \"active\")' class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+                <sec:authorize access="hasAnyRole('ROLE_PMG')">
+                    userActive = (object.enable == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
+                </sec:authorize>
+            }
+            temp = "<span id='userActive" + object.id + "'>" + userActive + "</span>";
+            tr.append($("<td>", {html: temp}));
             temp = "<span id='email" + object.id + "'>" + object.email + "</span>";
             tr.append($("<td>", {html: temp}));
             temp = "<span id='phone" + object.id + "'>" + object.phone + "</span>";
@@ -347,12 +354,12 @@
             temp = "<span id='userRole" + object.id + "'>" + object.userRole + "</span>";
             tr.append($("<td>", {html: temp}));
             if (object.contactPerson != null) {
-                <sec:authorize access="hasAnyRole('ROLE_PMG')">
+        <sec:authorize access="hasAnyRole('ROLE_PMG')">
                 contactPerson = (object.contactPerson == true) ? "<i class='material-icons prefix'>check</i>" : "<i class='material-icons prefix'>clear</i>";
-                </sec:authorize>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' style='cursor: pointer;' class='material-icons prefix'>clear</i>";
-                </sec:authorize>
+        </sec:authorize>
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                contactPerson = (object.contactPerson == true) ? "<i id='" + object.id + "' onclick='changeActiveBoolValues(" + object.id + ", \"contactPerson\")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeActiveBoolValues(" + object.id + ", \"contactPerson\")' style='cursor: pointer;' class='material-icons prefix'>clear</i>";
+        </sec:authorize>
             }
             temp = "<span id='contactPerson" + object.id + "'>" + contactPerson + "</span>";
             tr.append($("<td>", {html: temp}));
@@ -367,27 +374,46 @@
     });
     </sec:authorize>
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-    function changeBoolValues(id) {
-        var simpleId = id;
-        var id = "#" + id;
+    function changeActiveBoolValues(id, triger) {
+        var contactPersonSimpleId = id;
+        var contactPersonId = "#" + contactPersonSimpleId;
+        var activeSimpleId = "active" + id;
+        var activeId = "#" + activeSimpleId;
 
-        if ($(id).html() == "check") {
-            document.getElementById(simpleId).style.display = "none";
-            $(id).html("clear");
-            $(id).fadeIn(2000);
-        }
-        else if ($(id).html() == "clear") {
-            document.getElementById(simpleId).style.display = "none";
-            $(id).html("check");
-            $(id).fadeIn(2000);
+        if (triger == 'contactPerson') {
+            if ($(contactPersonId).html() == "check") {
+                document.getElementById(contactPersonSimpleId).style.display = "none";
+                $(contactPersonId).html("clear");
+                $(contactPersonId).fadeIn(2000);
+            }
+            else if ($(contactPersonId).html() == "clear") {
+                document.getElementById(contactPersonSimpleId).style.display = "none";
+                $(contactPersonId).html("check");
+                $(contactPersonId).fadeIn(2000);
+            }
+        } else if (triger == 'active') {
+            if ($(activeId).html() == "check") {
+                document.getElementById(activeSimpleId).style.display = "none";
+                $(activeId).html("clear");
+                $(activeId).fadeIn(2000);
+            }
+            else if ($(activeId).html() == "clear") {
+                document.getElementById(activeSimpleId).style.display = "none";
+                $(activeId).html("check");
+                $(activeId).fadeIn(2000);
+            }
         }
 
-        $("#user_id2").val($("#" + "id" + simpleId).html());
-        if ($(id).html() == "check")
+        $("#user_id2").val($("#" + "id" + id).html());
+        if ($(contactPersonId).html() == "check")
             $("#user_contactPerson2").val(true);
-        if ($(id).html() == "clear")
+        if ($(contactPersonId).html() == "clear")
             $("#user_contactPerson2").val(false);
-        //$("#user_contactPerson2").val($("#"+"contactPerson"+simpleId).html());
+
+        if ($(activeId).html() == "check")
+            $("#user_contactActive2").val(true);
+        if ($(activeId).html() == "clear")
+            $("#user_contactActive2").val(false);
 
         var url = "/users/contactPerson";
         var form = "#update-user-form2";
