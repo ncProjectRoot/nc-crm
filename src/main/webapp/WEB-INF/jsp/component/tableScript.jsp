@@ -354,7 +354,6 @@
             if (isSubArray(selectedItemsID, allItemsID)) {
                 $('.bulk-select-all').prop('checked', true);
             } else {
-                console.log("$('.bulk-select-all').prop('checked', false);")
                 $('.bulk-select-all').prop('checked', false);
             }
         }
@@ -402,6 +401,7 @@
             selectedItemsID = [];
             card.css("display", "none");
             tableContainer.find(".bulk-table").addClass("striped");
+            $('.bulk-select-all').prop('checked', false);
         }
 
         function setCheckboxes() {
