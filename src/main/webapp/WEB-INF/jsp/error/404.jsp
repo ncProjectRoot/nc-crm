@@ -9,30 +9,27 @@
         align-items: center;
     }
 
-    .welcome-h1 {
+    .message-h1 {
         font-size: 3.2rem;
         text-align: center;
     }
 
-    .welcome-h2 {
+    .message-h2 {
         font-size: 2.8rem;
         text-align: center;
     }
 
     @media (max-width: 700px)  {
-        .welcome-h1 {
+        .message-h1 {
             font-size: 20px;
         }
 
-        .welcome-h2 {
+        .message-h2 {
             font-size: 18px;
         }
     }
 </style>
-<div class="content-body z-depth-1" data-page-name="Home">
-    <h1 class="welcome-h1">Welcome, <span class="user-name">!</span></h1>
-    <h2 class="welcome-h2">Use toolbar for navigation. Good luck!</h2>
+<div class="content-body z-depth-1" data-page-name="404">
+    <h1 class="message-h1">404</h1>
+    <h2 class="message-h2">page not found</h2>
 </div>
-<script>
-    $(".welcome-h1 .user-name").html($("#user-name").html());
-</script>

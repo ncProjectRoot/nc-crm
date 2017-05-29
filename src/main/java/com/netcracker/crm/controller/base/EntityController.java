@@ -74,7 +74,7 @@ public class EntityController {
             user = (UserDetailsImpl) principal;
             if (user.getUserRole() == UserRole.ROLE_CUSTOMER) {
                 if (!productService.hasCustomerAccessToProduct(id, user.getId())) {
-                    return "error/403"; //TODO: error/403.jsp
+                    return "error/403";
                 }
                 model.put("hasProduct", orderService.hasCustomerProduct(id, user.getId()));
             }

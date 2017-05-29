@@ -65,24 +65,26 @@ function downloadContent() {
     var $contentBody = $(".content-body-wrapper");
     $contentBody.removeClass("content-body-visible");
     $(".progress").addClass("progress-active");
-    $.get("/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1))
-        .success(function (data) {
-            window.setTimeout(function () {
-                $contentBody.html(data);
-                $(".progress").removeClass("progress-active");
-                $contentBody.addClass("content-body-visible");
-                var pageName = $contentBody.find(".content-body").data("page-name");
-                $("#current-page").text(pageName);
-                document.title = pageName;
-            }, 500);
-        }).error(function (e) {
-        window.setTimeout(function () {
-            $contentBody.html(e.status);
-            $("#current-page").text(e.status);
-            $(".progress").removeClass("progress-active");
-            $contentBody.addClass("content-body-visible");
-        }, 500);
+    $.get({
+        url: "/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1),
+        dataType: "html"
+    }).success(function (data) {
+        changeContent(data)
+    }).error(function (e) {
+        changeContent(e.responseText)
     });
+}
+
+function changeContent(content) {
+    var $contentBody = $(".content-body-wrapper");
+    window.setTimeout(function () {
+        $contentBody.html(content);
+        $(".progress").removeClass("progress-active");
+        $contentBody.addClass("content-body-visible");
+        var pageName = $contentBody.find(".content-body").data("page-name");
+        $("#current-page").text(pageName);
+        document.title = pageName;
+    }, 500);
 }
 
 function send(form, url, type) {

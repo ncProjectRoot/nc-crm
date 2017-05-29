@@ -462,11 +462,8 @@
         var form = "#updateDiscountActive";
         send(form, url, "PUT");
     }
-    
-    //TODO: help me
-    $(document).ready(function () {
-        $('.scrollspy').scrollSpy();
-    });
+
+    $('.scrollspy').scrollSpy();
     $('ul#tabs').tabs({
         onShow: function (tab) {
         }
