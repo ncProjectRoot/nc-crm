@@ -70,6 +70,7 @@ public class OrderDaoImpl implements OrderDao {
         }
         Long customerId = order.getCustomer().getId();
         Long productId = order.getProduct().getId();
+        Long csrId = getUserId(order.getCsr());
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_DATE_FINISH, order.getDate())
@@ -77,7 +78,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_ORDER_STATUS, order.getStatus().getId())
                 .addValue(PARAM_CUSTOMER_ID, customerId)
                 .addValue(PARAM_PRODUCT_ID, productId)
-                .addValue(PARAM_CSR_ID, order.getCsr());
+                .addValue(PARAM_CSR_ID, csrId);
 
         long newId = orderInsert.executeAndReturnKey(params)
                 .longValue();

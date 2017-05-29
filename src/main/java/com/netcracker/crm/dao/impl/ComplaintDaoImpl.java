@@ -64,6 +64,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
             return null;
         }
         Long customerId = complaint.getCustomer().getId();
+        Long pmgId = getUserId(complaint.getPmg());
         Long orderId = complaint.getOrder().getId();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
@@ -71,7 +72,7 @@ public class ComplaintDaoImpl implements ComplaintDao {
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
                 .addValue(PARAM_COMPLAINT_DATE, complaint.getDate())
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, customerId)
-                .addValue(PARAM_COMPLAINT_PMG_ID, complaint.getPmg())
+                .addValue(PARAM_COMPLAINT_PMG_ID, pmgId)
                 .addValue(PARAM_COMPLAINT_ORDER_ID, orderId);
 
         long newId = complaintInsert.executeAndReturnKey(params)
@@ -112,6 +113,13 @@ public class ComplaintDaoImpl implements ComplaintDao {
             log.error("Complaint was not updated.");
             return null;
         }
+    }
+
+    private Long getUserId(User user) {
+        if (user != null) {
+            return user.getId();
+        }
+        return null;
     }
 
     @Override

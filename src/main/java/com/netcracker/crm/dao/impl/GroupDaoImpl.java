@@ -65,7 +65,7 @@ public class GroupDaoImpl implements GroupDao {
         if (group.getId() != null) {
             return null;
         }
-        Long discountId = group.getDiscount().getId();
+        Long discountId = getDiscountId(group.getDiscount());
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_GROUP_NAME, group.getName())
                 .addValue(PARAM_GROUP_DISCOUNT_ID, discountId);
