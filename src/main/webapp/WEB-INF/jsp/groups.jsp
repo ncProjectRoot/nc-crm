@@ -222,14 +222,20 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: {
+            id: 0${product.discount.id},
+            value: "${product.discount.title}"
+        },
         hideInput: "#discount-hidden-input"
     });
 
     $('#bulk-discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#bulk-selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: {
+            id: 0${product.discount.id},
+            value: "${product.discount.title}"
+        },
         hideInput: "#bulk-discount-hidden-input"
     });
 

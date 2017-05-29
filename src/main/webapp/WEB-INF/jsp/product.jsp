@@ -374,13 +374,13 @@
                 <h4>Edit Parameter</h4>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
-                    <label for="paramName">Title</label>
+                    <label for="edit_param_name">Title</label>
                     <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName'>
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
                     <input id="edit_param_value" placeholder=" " class='validate' type='text' name='value'/>
-                    <label for="value">Value</label>
+                    <label for="edit_param_value">Value</label>
                 </div>
             </div>
             <input id="edit_product_id" value='${product.id}' type="hidden" name="productId"/>
@@ -394,11 +394,15 @@
 </div>
 <script>
 
-    $('#param_name').karpo_autocomplete_only_name({
+    $('#param_name').karpo_autocomplete({
         url: "/productParams/autocomplete",
         label: "#selected-param",
-        defaultValue: "${productParam.id} ${productParam.paramName}",
-        hideInput: "#param-hidden-input"
+        defaultValue: {
+            id: 0${productParam.id},
+            value: "${productParam.paramName}"
+        },
+        hideInput: "#param-hidden-input",
+        hideInputType: "value"
     });
 
     function fillEditForm(id, name, value) {
@@ -529,13 +533,19 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: {
+            id: 0${product.discount.id},
+            value: "${product.discount.title}"
+        },
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete/",
         label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
+        defaultValue: {
+            id: 0${product.group.id},
+            value: "${product.group.name}"
+        },
         hideInput: "#group-hidden-input"
     });
 

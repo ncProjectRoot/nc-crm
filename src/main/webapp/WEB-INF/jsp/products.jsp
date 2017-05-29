@@ -480,13 +480,11 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#selected-group",
-        defaultValue: "",
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
@@ -602,13 +600,11 @@
     $('#bulk-discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#bulk-selected-discount",
-        defaultValue: "",
         hideInput: "#bulk-discount-hidden-input"
     });
     $('#bulk-group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#bulk-selected-group",
-        defaultValue: "",
         hideInput: "#bulk-group-hidden-input"
     });
 
