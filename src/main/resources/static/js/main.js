@@ -222,21 +222,28 @@ jQuery.fn.karpo_multi_select = function (params) {
     var dataAutocomplete = {"null": null};
     var selected = [];
     var selectedVal = [];
+    var ajaxData = [];
 
     autocomplete.on("input", function (event) {
         var typedText = autocomplete.val();
         $.get(params.url, {pattern: typedText}, function (array) {
+            ajaxData = array;
             for (key in dataAutocomplete) {
                 delete dataAutocomplete[key];
             }
             array.forEach(function (element) {
-                dataAutocomplete[element.id + " " + element.value] = null;
+                dataAutocomplete[element.value] = null;
             });
         });
     });
 
     this.addSelected = function (val) {
-        var id = parseFloat(val.substring(0, val.indexOf(" ")));
+        var id;
+        ajaxData.forEach(function (element) {
+            if (element.value == val) {
+                id = element.id;
+            }
+        });
         if (selected.indexOf(id) == -1) {
             selected.push(id);
             selectedVal.push(val)
