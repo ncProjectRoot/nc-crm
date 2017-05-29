@@ -53,10 +53,10 @@
 
     .order-btn {
         position: absolute;
-        left: 165px;
+        left: 0;
         right: 0;
-        top: 125px;
         margin: 0 auto;
+        width: 120px;
     }
 
     .div-price {
@@ -252,34 +252,6 @@
         <div class="divider"></div>
         <div class="section">
             <h5 class="status ${product.status.name} field">${product.status.name}</h5>
-            <sec:authorize access="hasRole('ROLE_CUSTOMER')">
-                <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
-                    <a class="btn-floating btn-large waves-effect waves-light green darken-4 order-btn" href="#order"><i
-                            class="material-icons">attach_money</i></a>
-                    <div id="order" class="modal bottom-sheet">
-                        <div class="modal-content">
-                            <h4>Order</h4>
-                            <div class="input-field col s12">
-                                <form id="order-form">
-                                    <div class="input-field col s4">
-                                        <input name="preferredDate" id="preferred-date" type="date" class="datepicker">
-                                        <label for="preferred-date">Preferred date</label>
-                                    </div>
-                                    <div class="input-field col s12">
-                                        <label for="timepicker_ampm_dark">Preferred time</label>
-                                        <input name="preferredTime" id="timepicker_ampm_dark" class="timepicker"
-                                               type="time">
-                                    </div>
-                                    <input name="productId" type="hidden" value="${product.id}"/>
-                                    <button class="btn waves-effect waves-light" type="submit" name="action">Pay
-                                        <i class="material-icons left">attach_money</i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </c:if>
-            </sec:authorize>
             <h6 class="group field">${product.group.name}</h6>
         </div>
         <div class="section">
@@ -319,9 +291,11 @@
                             <h5 class="message_block">
                                 <span class='parameter'>
                                     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                    <a href="#edit_param" onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
+                                    <a href="#edit_param"
+                                       onclick="fillEditForm('${productParam.id}', '${productParam.paramName}', '${productParam.value}')"></sec:authorize>
                                         ${productParam.paramName}:
-                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
+                                        <sec:authorize
+                                                access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')"></a></sec:authorize>
                                         <span id='productParamValue'>${productParam.value}</span>
                                     </span>
                                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
@@ -340,6 +314,38 @@
                     </div>
                 </li>
             </ul>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+            <sec:authorize access="hasRole('ROLE_CUSTOMER')">
+                <c:if test="${product.status == 'ACTUAL' && !hasProduct}">
+                    <a class="btn btn-large waves-effect waves-light green darken-4 order-btn" href="#order">
+                        Order
+                    </a>
+                    <div id="order" class="modal bottom-sheet">
+                        <div class="modal-content">
+                            <h4>Order</h4>
+                            <div class="input-field col s12">
+                                <form id="order-form">
+                                    <div class="input-field col s4">
+                                        <input name="preferredDate" id="preferred-date" type="date" class="datepicker">
+                                        <label for="preferred-date">Preferred date</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <label for="timepicker_ampm_dark">Preferred time</label>
+                                        <input name="preferredTime" id="timepicker_ampm_dark" class="timepicker"
+                                               type="time">
+                                    </div>
+                                    <input name="productId" type="hidden" value="${product.id}"/>
+                                    <button class="btn waves-effect waves-light" type="submit" name="action">
+                                        Pay
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </c:if>
+            </sec:authorize>
         </div>
     </div>
     <div id="add_param" class="modal modal-fixed-footer status-modal two">
@@ -375,7 +381,7 @@
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
                     <label for="edit_param_name">Title</label>
-                    <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName'>
+                    <input id="edit_param_name" placeholder=" " class="validate" type="text" name='paramName'>
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
@@ -385,7 +391,8 @@
             </div>
             <input id="edit_product_id" value='${product.id}' type="hidden" name="productId"/>
             <div class="modal-footer center-align">
-                <button class="btn waves-effect waves-light" id="submit-edite-productParam" type="submit" name="action">Update
+                <button class="btn waves-effect waves-light" id="submit-edite-productParam" type="submit" name="action">
+                    Update
                     <i class="material-icons right">send</i>
                 </button>
             </div>

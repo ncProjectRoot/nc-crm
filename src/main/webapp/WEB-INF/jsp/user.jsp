@@ -59,7 +59,8 @@
     }
 
 </style>
-<div class="content-body z-depth-1" data-page-name="User #${user.id}" data-latitude="${user.address.latitude}" data-longitude="${user.address.longitude}">
+<div class="content-body z-depth-1" data-page-name="User #${user.id}" data-latitude="${user.address.latitude}"
+     data-longitude="${user.address.longitude}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
         <a class="modal-trigger teal-text text-darken-3 change-trigger" href="#update"><i class='material-icons medium'>cached</i></a>
         <div id="update" class="modal modal-fixed-footer">
@@ -109,7 +110,7 @@
                                value="${user.phone}"/>
                         <label for="user_phone" class="active">Phone</label>
                     </div>
-                    <input type="hidden" name="accountNonLocked" >
+                    <input type="hidden" name="accountNonLocked">
                     <div class="switch col s12">
                         <label>
                             Disactivate
@@ -152,16 +153,19 @@
                 </div>
             </div>
         </div>
-        <div class="section col s10 m8 map-wrapper">
-            <div class="divider"></div>
-            <div class="section">
-                <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+        <c:if test="${user.userRole == 'ROLE_CUSTOMER'}">
+            <div class="section col s10 m8 map-wrapper">
+                <div class="divider"></div>
+                <div class="section">
+                    <div class="customer-field" id="map" style="width: auto; height: 270px;"></div>
+                </div>
             </div>
-        </div>
+        </c:if>
     </div>
 </div>
 <script>
 
+    <c:if test="${user.userRole == 'ROLE_CUSTOMER'}">
     $('#map').locationpicker({
         location: {
             latitude: $(".content-body").data("latitude"),
@@ -172,8 +176,9 @@
         enableReverseGeocode: true,
         draggable: false
     });
+    </c:if>
 
-    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     $('.modal').modal({
             opacity: .5, // Opacity of modal background
