@@ -63,8 +63,9 @@ public class ComplaintsListener {
         String role = getRole(complaint.getPmg());
         history.setDescChangeStatus("Status was changed by " + role + " with id " +
                 complaint.getPmg().getId());
-        saveStatusAndHistory(complaint, history);
-        event.setDone(true);
+        if(saveStatusAndHistory(complaint, history)){
+            event.setDone(true);
+        }
     }
 
     private void sendMail(Complaint complaint) {
@@ -90,9 +91,12 @@ public class ComplaintsListener {
         return history;
     }
 
-    private void saveStatusAndHistory(Complaint complaint, History history) {
-        complaintDao.update(complaint);
-        historyDao.create(history);
-        sendMail(complaint);
+    private boolean saveStatusAndHistory(Complaint complaint, History history) {
+        boolean result = false;
+        if(complaintDao.update(complaint)>0 && historyDao.create(history)>0) {
+            sendMail(complaint);
+            result = true;
+        }
+        return result;
     }
 }

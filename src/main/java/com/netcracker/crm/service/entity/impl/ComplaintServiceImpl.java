@@ -220,7 +220,7 @@ public class ComplaintServiceImpl implements ComplaintService {
         } else if (role.equals(UserRole.ROLE_CSR)) {
             return false;
         } else if (role.equals(UserRole.ROLE_CUSTOMER)) {
-            Long count = null;
+            Long count;
             if (customer.isContactPerson()) {
                 count = complaintDao.checkOwnershipOfContactPerson(complaintId, customer.getId());
             } else {
