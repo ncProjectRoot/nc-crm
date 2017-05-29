@@ -20,8 +20,8 @@
                     <table class="striped responsive-table centered ">
                         <thead>
                         <tr>
-                            <th>
-                                <p>
+                            <th class="hide-on-med-and-down">
+                                <p class='bulk-checkbox-wrapper'>
                                     <input type='checkbox' class='filled-in bulk-select-all'
                                            id="select-all-checkbox"/>
                                     <label for='select-all-checkbox'></label>
@@ -204,7 +204,7 @@
         mapper: function (object) {
             var disActive = null;
             var tr = $("<tr>");
-            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            tr.append($("<td class='hide-on-med-and-down'><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             tr.append($("<td>", {html: '<a href="#group/'+ object.id +'">' + object.id + '</a>'}));
             tr.append($("<td>", {text: object.name}));
             tr.append($("<td>", {text: object.numberProducts}));

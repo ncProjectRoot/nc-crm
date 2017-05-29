@@ -31,8 +31,8 @@
                             <thead>
                             <tr>
                                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                    <th>
-                                        <p>
+                                    <th class="hide-on-med-and-down">
+                                        <p class='bulk-checkbox-wrapper'>
                                             <input type='checkbox' class='filled-in bulk-select-all'
                                                    id="select-all-checkbox"/>
                                             <label for='select-all-checkbox'></label>
@@ -354,7 +354,7 @@
             var tr = $("<tr>");
             temp = "<span id='id" + object.id + "'>" + object.id + "</span>";
             <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-            tr.append($("<td><p><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
+            tr.append($("<td class='hide-on-med-and-down'><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
             </sec:authorize>
             tr.append($("<td>").append($("<a>", {
                 html: temp,

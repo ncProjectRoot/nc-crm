@@ -147,7 +147,7 @@
                             <tr>
                                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                                     <th class="hide-on-med-and-down">
-                                        <p>
+                                        <p class='bulk-checkbox-wrapper'>
                                             <input type='checkbox' class='filled-in bulk-select-all'
                                                    id="select-all-checkbox"/>
                                             <label for='select-all-checkbox'></label>
