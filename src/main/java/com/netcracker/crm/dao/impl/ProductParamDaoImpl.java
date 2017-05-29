@@ -60,7 +60,7 @@ public class ProductParamDaoImpl implements ProductParamDao {
             return null;
         }
 
-        Long productId = getProductId(productParam.getProduct());
+        Long productId = productParam.getProduct().getId();
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_NAME, productParam.getParamName())
@@ -75,18 +75,6 @@ public class ProductParamDaoImpl implements ProductParamDao {
         return newId;
     }
 
-    private Long getProductId(Product product) {
-        if (product != null) {
-            Long productId = product.getId();
-            if (productId != null) {
-                return productId;
-            }
-            productId = productDao.create(product);
-
-            return productId;
-        }
-        return null;
-    }
 
     @Override
     public Long update(ProductParam productParam) {
@@ -94,7 +82,7 @@ public class ProductParamDaoImpl implements ProductParamDao {
         if (productParamId == null) {
             return null;
         }
-        Long productId = getProductId(productParam.getProduct());
+        Long productId = productParam.getProduct().getId();
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_PARAM_ID, productParamId)

@@ -130,24 +130,14 @@ public class RegionGroupsDaoImpl implements RegionGroupsDao {
 
     private Long getRegionId(Region region) {
         if (region != null) {
-            Long regionId = region.getId();
-            if (regionId != null) {
-                return regionId;
-            }
-            regionId = regionDao.create(region);
-            return regionId;
+            return region.getId();
         }
         return null;
     }
 
     private Long getGroupId(Group group) {
         if (group != null) {
-            Long groupId = group.getId();
-            if (groupId != null) {
-                return groupId;
-            }
-            groupId = groupDao.create(group);
-            return groupId;
+            return group.getId();
         }
         return null;
     }

@@ -68,9 +68,8 @@ public class OrderDaoImpl implements OrderDao {
         if (order.getId() != null) {
             return null;
         }
-        Long customerId = getUserId(order.getCustomer());
-        Long productId = getProductId(order.getProduct());
-        Long csrId = getUserId(order.getCsr());
+        Long customerId = order.getCustomer().getId();
+        Long productId = order.getProduct().getId();
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_ORDER_DATE_FINISH, order.getDate())
@@ -78,7 +77,7 @@ public class OrderDaoImpl implements OrderDao {
                 .addValue(PARAM_ORDER_STATUS, order.getStatus().getId())
                 .addValue(PARAM_CUSTOMER_ID, customerId)
                 .addValue(PARAM_PRODUCT_ID, productId)
-                .addValue(PARAM_CSR_ID, csrId);
+                .addValue(PARAM_CSR_ID, order.getCsr());
 
         long newId = orderInsert.executeAndReturnKey(params)
                 .longValue();
@@ -90,26 +89,7 @@ public class OrderDaoImpl implements OrderDao {
 
     private Long getUserId(User user) {
         if (user != null) {
-            Long userId = user.getId();
-            if (userId != null) {
-                return userId;
-            }
-            userId = userDao.create(user);
-
-            return userId;
-        }
-        return null;
-    }
-
-    private Long getProductId(Product product) {
-        if (product != null) {
-            Long productId = product.getId();
-            if (productId != null) {
-                return productId;
-            }
-            productId = productDao.create(product);
-
-            return productId;
+            return user.getId();
         }
         return null;
     }
@@ -162,8 +142,8 @@ public class OrderDaoImpl implements OrderDao {
         if (orderId == null) {
             return null;
         }
-        Long customerId = getUserId(order.getCustomer());
-        Long productId = getProductId(order.getProduct());
+        Long customerId = order.getCustomer().getId();
+        Long productId = order.getProduct().getId();
         Long csrId = getUserId(order.getCsr());
 
         SqlParameterSource params = new MapSqlParameterSource()

@@ -143,21 +143,19 @@ public class ProductDaoImpl implements ProductDao {
     public Product findById(Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_ID, id);
-
-        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_ID, params, productWithDetailExtractor);
-        Product product = null;
-        if (allProduct.size() != 0) {
-            product = allProduct.get(0);
-        }
-        return product;
+        return findBySqlParameterSource(params, SQL_FIND_PRODUCT_BY_ID);
     }
 
     @Override
     public Product findByTitle(String title) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_PRODUCT_TITLE, title);
+        return findBySqlParameterSource(params, SQL_FIND_PRODUCT_BY_TITLE);
+    }
 
-        List<Product> allProduct = namedJdbcTemplate.query(SQL_FIND_PRODUCT_BY_TITLE, params, productWithDetailExtractor);
+
+    private Product findBySqlParameterSource(SqlParameterSource params, String sql){
+        List<Product> allProduct = namedJdbcTemplate.query(sql, params, productWithDetailExtractor);
         Product product = null;
         if (allProduct.size() != 0) {
             product = allProduct.get(0);
@@ -306,13 +304,7 @@ public class ProductDaoImpl implements ProductDao {
 
     private Long getDiscountId(Discount discount) {
         if (discount != null) {
-            Long discountId = discount.getId();
-            if (discountId != null) {
-                return discountId;
-            }
-            discountId = discountDao.create(discount);
-
-            return discountId;
+            return discount.getId();
         }
         return null;
     }

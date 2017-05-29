@@ -190,14 +190,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     private Long getOrgId(Organization org) {
-        if (org == null)
-            return null;
-        Long orgId = org.getId();
-        if (orgId != null) {
-            return orgId;
+        Long orgId = null;
+        if (org != null) {
+            orgId = org.getId();
+            if (orgId != null) {
+                return orgId;
+            }
+            orgId = organizationDao.create(org);
         }
-        orgId = organizationDao.create(org);
-
         return orgId;
     }
 

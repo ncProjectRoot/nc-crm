@@ -63,18 +63,15 @@ public class ComplaintDaoImpl implements ComplaintDao {
         if (complaint.getId() != null) {
             return null;
         }
-
-        Long customerId = getUserId(complaint.getCustomer());
-        Long pmgId = getUserId(complaint.getPmg());
-        Long orderId = getOrderId(complaint.getOrder());
-
+        Long customerId = complaint.getCustomer().getId();
+        Long orderId = complaint.getOrder().getId();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_TITLE, complaint.getTitle())
                 .addValue(PARAM_COMPLAINT_MESSAGE, complaint.getMessage())
                 .addValue(PARAM_COMPLAINT_STATUS_ID, complaint.getStatus().getId())
                 .addValue(PARAM_COMPLAINT_DATE, complaint.getDate())
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, customerId)
-                .addValue(PARAM_COMPLAINT_PMG_ID, pmgId)
+                .addValue(PARAM_COMPLAINT_PMG_ID, complaint.getPmg())
                 .addValue(PARAM_COMPLAINT_ORDER_ID, orderId);
 
         long newId = complaintInsert.executeAndReturnKey(params)
@@ -92,9 +89,9 @@ public class ComplaintDaoImpl implements ComplaintDao {
         if (complaintId == null) {
             return null;
         }
-        Long customerId = getUserId(complaint.getCustomer());
-        Long pmgId = getUserId(complaint.getPmg());
-        Long orderId = getOrderId(complaint.getOrder());
+        Long customerId = complaint.getCustomer().getId();
+        Long pmgId = complaint.getPmg().getId();
+        Long orderId = complaint.getOrder().getId();
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_ID, complaintId)
@@ -173,32 +170,6 @@ public class ComplaintDaoImpl implements ComplaintDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(PARAM_COMPLAINT_CUSTOMER_ID, id);
         return namedJdbcTemplate.query(SQL_FIND_ALL_COMPLAINT_BY_CUSTOMER_ID, params, complaintWithDetailExtractor);
-    }
-
-    private Long getUserId(User user) {
-        if (user != null) {
-            Long userId = user.getId();
-            if (userId != null) {
-                return userId;
-            }
-            userId = userDao.create(user);
-
-            return userId;
-        }
-        return null;
-    }
-
-    private Long getOrderId(Order order) {
-        if (order != null) {
-            Long orderId = order.getId();
-            if (orderId != null) {
-                return orderId;
-            }
-            orderId = orderDao.create(order);
-
-            return orderId;
-        }
-        return null;
     }
 
     @Override

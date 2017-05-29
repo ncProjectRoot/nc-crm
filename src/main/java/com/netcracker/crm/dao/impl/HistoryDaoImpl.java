@@ -85,36 +85,21 @@ public class HistoryDaoImpl implements HistoryDao {
 
     private Long getOrderId(Order order) {
         if (order != null) {
-            Long orderId = order.getId();
-            if (orderId != null) {
-                return orderId;
-            } else {
-                return orderDao.create(order);
-            }
+            return order.getId();
         }
         return null;
     }
 
     private Long getComplaintId(Complaint complaint) {
         if (complaint != null) {
-            Long complaintId = complaint.getId();
-            if (complaintId != null) {
-                return complaintId;
-            } else {
-                return complaintDao.create(complaint);
-            }
+            return complaint.getId();
         }
         return null;
     }
 
     private Long getProductId(Product product) {
         if (product != null) {
-            Long productId = product.getId();
-            if (productId != null) {
-                return productId;
-            } else {
-                return productDao.create(product);
-            }
+            return product.getId();
         }
         return null;
     }
