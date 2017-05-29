@@ -291,7 +291,6 @@
         $('#order-input').karpo_autocomplete({
             url: "/orders/users/${user.id}",
             label: "#selected-order",
-            defaultValue: " ",
             hideInput: "#order-hidden-input"
         });
 

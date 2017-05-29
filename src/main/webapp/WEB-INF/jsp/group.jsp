@@ -117,7 +117,10 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${group.discount.id} ${group.discount.title}",
+        defaultValue: {
+            id: 0${group.discount.id},
+            value: "${group.discount.title}"
+        },
         hideInput: "#discount-hidden-input"
     });
 

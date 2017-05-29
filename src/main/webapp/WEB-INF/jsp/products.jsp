@@ -147,7 +147,7 @@
                             <tr>
                                 <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                                     <th class="hide-on-med-and-down">
-                                        <p>
+                                        <p class='bulk-checkbox-wrapper'>
                                             <input type='checkbox' class='filled-in bulk-select-all'
                                                    id="select-all-checkbox"/>
                                             <label for='select-all-checkbox'></label>
@@ -462,11 +462,8 @@
         var form = "#updateDiscountActive";
         send(form, url, "PUT");
     }
-    
-    //TODO: help me
-    $(document).ready(function () {
-        $('.scrollspy').scrollSpy();
-    });
+
+    $('.scrollspy').scrollSpy();
     $('ul#tabs').tabs({
         onShow: function (tab) {
         }
@@ -480,13 +477,11 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "",
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#selected-group",
-        defaultValue: "",
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
@@ -602,13 +597,11 @@
     $('#bulk-discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#bulk-selected-discount",
-        defaultValue: "",
         hideInput: "#bulk-discount-hidden-input"
     });
     $('#bulk-group-input').karpo_autocomplete({
         url: "/groups/autocomplete",
         label: "#bulk-selected-group",
-        defaultValue: "",
         hideInput: "#bulk-group-hidden-input"
     });
 

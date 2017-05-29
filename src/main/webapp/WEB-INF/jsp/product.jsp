@@ -394,11 +394,15 @@
 </div>
 <script>
 
-    $('#param_name').karpo_autocomplete_only_name({
+    $('#param_name').karpo_autocomplete({
         url: "/productParams/autocomplete",
         label: "#selected-param",
-        defaultValue: "${productParam.id} ${productParam.paramName}",
-        hideInput: "#param-hidden-input"
+        defaultValue: {
+            id: 0${productParam.id},
+            value: "${productParam.paramName}"
+        },
+        hideInput: "#param-hidden-input",
+        hideInputType: "value"
     });
 
     function fillEditForm(id, name, value) {
@@ -529,13 +533,19 @@
     $('#discount-input').karpo_autocomplete({
         url: "/discounts/autocomplete",
         label: "#selected-discount",
-        defaultValue: "${product.discount.id} ${product.discount.title}",
+        defaultValue: {
+            id: 0${product.discount.id},
+            value: "${product.discount.title}"
+        },
         hideInput: "#discount-hidden-input"
     });
     $('#group-input').karpo_autocomplete({
         url: "/groups/autocomplete/",
         label: "#selected-group",
-        defaultValue: "${product.group.id} ${product.group.name}",
+        defaultValue: {
+            id: 0${product.group.id},
+            value: "${product.group.name}"
+        },
         hideInput: "#group-hidden-input"
     });
 

@@ -35,7 +35,7 @@ import static com.netcracker.crm.dao.impl.sql.ProductSqlQuery.*;
  */
 @Repository
 public class ProductDaoImpl implements ProductDao {
-    private static final Logger log = LoggerFactory.getLogger(DiscountDaoImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductDaoImpl.class);
 
     private DiscountDao discountDao;
     private GroupDao groupDao;

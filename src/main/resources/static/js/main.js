@@ -65,24 +65,26 @@ function downloadContent() {
     var $contentBody = $(".content-body-wrapper");
     $contentBody.removeClass("content-body-visible");
     $(".progress").addClass("progress-active");
-    $.get("/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1))
-        .success(function (data) {
-            window.setTimeout(function () {
-                $contentBody.html(data);
-                $(".progress").removeClass("progress-active");
-                $contentBody.addClass("content-body-visible");
-                var pageName = $contentBody.find(".content-body").data("page-name");
-                $("#current-page").text(pageName);
-                document.title = pageName;
-            }, 500);
-        }).error(function (e) {
-        window.setTimeout(function () {
-            $contentBody.html(e.status);
-            $("#current-page").text(e.status);
-            $(".progress").removeClass("progress-active");
-            $contentBody.addClass("content-body-visible");
-        }, 500);
+    $.get({
+        url: "/" + $(".menu-item-user").data("user-role") + "/" + location.hash.substr(1),
+        dataType: "html"
+    }).success(function (data) {
+        changeContent(data)
+    }).error(function (e) {
+        changeContent(e.responseText)
     });
+}
+
+function changeContent(content) {
+    var $contentBody = $(".content-body-wrapper");
+    window.setTimeout(function () {
+        $contentBody.html(content);
+        $(".progress").removeClass("progress-active");
+        $contentBody.addClass("content-body-visible");
+        var pageName = $contentBody.find(".content-body").data("page-name");
+        $("#current-page").text(pageName);
+        document.title = pageName;
+    }, 500);
 }
 
 function send(form, url, type) {
@@ -144,12 +146,12 @@ jQuery.fn.karpo_status = function (activeStatusId) {
 jQuery.fn.karpo_autocomplete = function (params) {
     var autocomplete = $(this[0]);
     var dataAutocomplete = {"null": null};
+    var ajaxData = [];
     var deleter;
-    if (params.defaultValue.length > 1) {
-        var defaultObject = convert(params.defaultValue);
-        $(params.label).text("#" + params.defaultValue);
-        autocomplete.val(params.defaultValue);
-        $(params.hideInput).val(defaultObject.id);
+    if (params.defaultValue && params.defaultValue.value.length > 0) {
+        $(params.label).text("#" + params.defaultValue.value);
+        autocomplete.val(params.defaultValue.value);
+        $(params.hideInput).val(valueForHideInput(params.defaultValue));
         toggleDeleter("show");
     } else {
         $(params.hideInput).val(0);
@@ -157,22 +159,28 @@ jQuery.fn.karpo_autocomplete = function (params) {
     autocomplete.on("input", function (event) {
         var typedText = autocomplete.val();
         $.get(params.url, {pattern: typedText}, function (array) {
+            ajaxData = array;
             for (key in dataAutocomplete) {
                 delete dataAutocomplete[key];
             }
             array.forEach(function (element) {
-                dataAutocomplete[element.id + " " + element.value] = null;
+                dataAutocomplete[element.value] = null;
             });
         });
     });
     autocomplete.autocomplete({
         data: dataAutocomplete,
         onAutocomplete: function (val) {
+            var currentElement;
+            ajaxData.forEach(function (element) {
+                if (element.value == val) {
+                    currentElement = element;
+                }
+            });
             $(params.label).text("#" + val);
-            var id = convert(val).id;
-            $(params.hideInput).val(id);
+            $(params.hideInput).val(valueForHideInput(currentElement));
             toggleDeleter("show");
-            autocomplete.trigger("onAutocompleteItem", id);
+            autocomplete.trigger("onAutocompleteItem", currentElement.id);
         },
         limit: Infinity,
         minLength: 1
@@ -199,10 +207,11 @@ jQuery.fn.karpo_autocomplete = function (params) {
         toggleDeleter("hide");
     }
 
-    function convert(val) {
-        return {
-            id: parseFloat(val.substring(0, val.indexOf(" "))),
-            value: val.substring(val.indexOf(" ") + 1, val.length)
+    function valueForHideInput(valueForHideInput) {
+        if (params.hideInputType == "value") {
+            return valueForHideInput.value;
+        } else {
+            return valueForHideInput.id;
         }
     }
 
@@ -265,72 +274,3 @@ jQuery.fn.karpo_multi_select = function (params) {
 
 
 };
-jQuery.fn.karpo_autocomplete_only_name = function (params) {
-    var autocomplete = $(this[0]);
-    var dataAutocomplete = {"null": null};
-    var deleter;
-    if (params.defaultValue.length > 1) {
-        var defaultObject = convert(params.defaultValue);
-        $(params.label).text("#" + params.defaultValue);
-        autocomplete.val(params.defaultValue);
-        $(params.hideInput).val(defaultObject.id);
-        toggleDeleter("show");
-    } else {
-        $(params.hideInput).val(0);
-    }
-    autocomplete.on("input", function (event) {
-        var typedText = autocomplete.val();
-        $.get(params.url, {pattern: typedText}, function (array) {
-            for (key in dataAutocomplete) {
-                delete dataAutocomplete[key];
-            }
-            array.forEach(function (element) {
-                dataAutocomplete[element.value] = null;
-            });
-        });
-    });
-    autocomplete.autocomplete({
-        data: dataAutocomplete,
-        onAutocomplete: function (val) {
-            $(params.label).text(val);
-            var id = convert(val).id;
-            $(params.hideInput).val(id);
-            toggleDeleter("show");
-            autocomplete.trigger("onAutocompleteItem", id);
-        },
-        limit: Infinity,
-        minLength: 1
-    });
-    function toggleDeleter(type) {
-        if (type == "hide") {
-            $(params.label).next().remove();
-            deleter.off("click", deleteValue);
-            deleter = null;
-        } else if (type == "show") {
-            if (!deleter) {
-                deleter = $("<i class='material-icons tiny deleter'>delete_forever</i>");
-                $(params.label).after(deleter)
-                deleter.on("click", deleteValue);
-            }
-        }
-    }
-
-    function deleteValue() {
-        $(params.label).text("#");
-        autocomplete.val("");
-        $(params.hideInput).val(0);
-        autocomplete.trigger("onAutocompleteDeleteItem");
-        toggleDeleter("hide");
-    }
-
-    function convert(val) {
-        return {
-            id: parseFloat(val.substring(0, val.indexOf(" "))),
-            value: val.substring(val.indexOf(" ") + 1, val.length)
-        }
-    }
-
-    return autocomplete;
-};
-
-

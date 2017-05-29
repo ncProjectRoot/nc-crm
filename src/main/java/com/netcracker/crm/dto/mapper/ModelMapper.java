@@ -25,14 +25,8 @@ public class ModelMapper {
 
     public static <F, T> List<T> mapList(Mapper<F, T> mapper, List<F> from, Class<T> toClass) {
         List<T> result = new ArrayList<>();
-        try {
-            for (F f : from) {
-                T to = toClass.newInstance();
-                mapper.configure(f, to);
-                result.add(to);
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+        for (F f : from) {
+            result.add(map(mapper, f, toClass));
         }
         return result;
     }

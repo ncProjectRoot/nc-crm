@@ -44,7 +44,6 @@
     $('#regions-input').karpo_autocomplete({
         url: "/regions/autocomplete",
         label: "#selected-regions",
-        defaultValue: "",
         hideInput: "#regions-hidden-input"
     }).on("onAutocompleteItem", function (event, id) {
         var $contentRegion = $("#region-page-wrapper");
