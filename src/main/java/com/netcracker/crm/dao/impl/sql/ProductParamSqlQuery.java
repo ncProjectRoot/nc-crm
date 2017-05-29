@@ -31,7 +31,12 @@ public class ProductParamSqlQuery {
             + "FROM product_param "
             + "WHERE product_id = :product_id "
             + "ORDER BY id;";
-    
+
+    public static final String SQL_FIND_PARAM_BY_ID_OR_NAME = "SELECT DISTINCT ON (param_name) id, param_name, value, product_id " +
+            "FROM product_param " +
+            "WHERE concat(id, ' ', param_name) ILIKE :pattern " +
+            "ORDER BY param_name, id;";
+
     public static final String SQL_DELETE_PRODUCT_PARAM = "DELETE FROM product_param WHERE id = :id;";
     
 }

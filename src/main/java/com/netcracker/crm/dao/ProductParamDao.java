@@ -6,16 +6,17 @@
 package com.netcracker.crm.dao;
 
 import com.netcracker.crm.domain.model.ProductParam;
+
 import java.util.List;
 
 /**
- *
  * @author YARUS
  */
-public interface ProductParamDao extends CrudDao<ProductParam>{
+public interface ProductParamDao extends CrudDao<ProductParam> {
     List<ProductParam> findAllByParamName(String paramName);
-    
+
     List<ProductParam> findAllByProductId(Long id);
-    
-    
+
+    List<ProductParam> findByIdOrTitle(String pattern);
+
 }

@@ -164,9 +164,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public boolean changeStatus(Long productId, Long statusId, User user) {
-        if (statusId.equals(ProductStatus.ACTUAL.getId())) {
+        if (ProductStatus.ACTUAL.getId().equals(statusId)) {
             return changeStatusToActual(productId, user);
-        } else if (statusId.equals(ProductStatus.OUTDATED.getId())) {
+        } else if (ProductStatus.OUTDATED.getId().equals(statusId)) {
             return changeStatusToOutdated(productId, user);
         }
         throw new UnsupportedChangingStatusException("Product with id "

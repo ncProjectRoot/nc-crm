@@ -166,7 +166,7 @@ CREATE TABLE product_param
      id BIGSERIAL  NOT NULL , 
      param_name VARCHAR (50)  NOT NULL , 
      value VARCHAR (50)  NOT NULL , 
-     product_id INTEGER  NOT NULL 
+     product_id INTEGER
     ) 
 ;
 

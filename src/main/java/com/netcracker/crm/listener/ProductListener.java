@@ -54,8 +54,9 @@ public class ProductListener {
         String role = getRole(user);
         history.setDescChangeStatus("Status was changed by " + role + " with id " +
                 user.getId());
-        saveStatusAndHistory(product, history);
-        event.setDone(true);
+        if(saveStatusAndHistory(product, history)){
+            event.setDone(true);
+        }
     }
 
     private String getRole(User user) {
@@ -71,8 +72,11 @@ public class ProductListener {
         return history;
     }
 
-    private void saveStatusAndHistory(Product product, History history) {
-        productDao.update(product);
-        historyDao.create(history);
+    private boolean saveStatusAndHistory(Product product, History history) {
+        boolean result = false;
+        if (productDao.update(product) > 0 && historyDao.create(history) > 0) {
+            result = true;
+        }
+        return result;
     }
 }
