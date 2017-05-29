@@ -374,13 +374,13 @@
                 <h4>Edit Parameter</h4>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
-                    <label for="paramName">Title</label>
+                    <label for="edit_param_name">Title</label>
                     <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName'>
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
                     <input id="edit_param_value" placeholder=" " class='validate' type='text' name='value'/>
-                    <label for="value">Value</label>
+                    <label for="edit_param_value">Value</label>
                 </div>
             </div>
             <input id="edit_product_id" value='${product.id}' type="hidden" name="productId"/>

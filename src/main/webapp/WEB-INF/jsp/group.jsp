@@ -83,7 +83,8 @@
             </div>
             <div class="row">
                 <div class="section products center">
-                    <ul class="collection">
+                    <ul class="collection with-header">
+                        <div class="collection-header"><h5>Products :</h5></div>
                         <c:forEach items="${products}" var="product">
                             <li class="collection-item"><a href="#product/${product.id}">${product.title}</a>
                                 - ${product.status}</li>
