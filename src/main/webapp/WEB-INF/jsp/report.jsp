@@ -172,6 +172,8 @@
         $ordersFromDate.set('select', lastWeek);
         $ordersToDate.start();
         $ordersToDate.set('select', today);
+        $ordersToDate.set('min', lastWeek);
+
 
         $('.order-datepicker').on('change', function () {
             if ($(this).attr('id') === 'from-date-order') {
@@ -207,6 +209,7 @@
         $complaintsFromDate.set('select', lastWeek);
         $complaintsToDate.start();
         $complaintsToDate.set('select', today);
+        $complaintsToDate.set('min', lastWeek);
 
         $('.complaint-datepicker').on('change', function () {
             if ($(this).attr('id') === 'from-date-complaint') {

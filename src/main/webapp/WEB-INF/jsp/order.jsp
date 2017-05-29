@@ -60,12 +60,14 @@
                 <input type="hidden" id="csrfToken" value="${_csrf.token}"/>
                 <input type="hidden" id="csrfHeader" value="${_csrf.headerName}"/>
                 <div class="section">
-                    <sec:authorize access="hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')">
+                    <sec:authorize access="hasAnyRole('ROLE_CSR')">
                         <c:if test="${order.status == 'NEW'}">
-                            <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept</a>
+                            <a class="waves-effect waves-light btn" type="submit" id="csr_accept">accept
+                                <i class="material-icons right">assignment_turned_in</i>
+                            </a>
                         </c:if>
                     </sec:authorize>
-                    <c:if test="${user.id == order.csr.id}">
+                    <c:if test="${user.id == order.csr.id or user.userRole == 'ROLE_ADMIN'}">
                         <c:choose>
                             <c:when test="${order.status == 'PROCESSING'}">
                                 <a class="waves-effect waves-light btn" id="csr_activate">activate
@@ -168,7 +170,7 @@
     $('#csr_disable').on('click', function () {
         $('#csr_disable').remove();
         sendPut("/orders/" + ${order.id} +"/disable");
-        $('#status').text('DISABLE');
+        $('#status').text('DISABLED');
     });
     //    CUSTOMER
     $('#customer_pause').on('click', function () {

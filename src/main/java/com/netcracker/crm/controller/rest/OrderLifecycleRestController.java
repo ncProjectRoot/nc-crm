@@ -81,9 +81,9 @@ public class OrderLifecycleRestController {
 
         boolean success = lifecycleService.disableOrder(id);
         if (success) {
-            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_ORDER_PAUSE, HttpStatus.OK);
+            return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_ORDER_DISABLE, HttpStatus.OK);
         }
-        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_ORDER_NOT_PAUSE, HttpStatus.OK);
+        return generator.getHttpResponse(SUCCESS_MESSAGE, SUCCESS_ORDER_NOT_DISABLE, HttpStatus.OK);
     }
 
     @PutMapping("/orders/{id}/request-disable")

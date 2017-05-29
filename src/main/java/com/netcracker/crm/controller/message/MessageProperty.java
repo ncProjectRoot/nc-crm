@@ -40,6 +40,7 @@ public final class MessageProperty {
     public static final String SUCCESS_ORDER_ACTIVATE = "success.order-activate";
     public static final String SUCCESS_ORDER_RESUME = "success.order-resume";
     public static final String SUCCESS_ORDER_PAUSE = "success.order-pause";
+    public static final String SUCCESS_ORDER_DISABLE = "success.order-disable";
     public static final String SUCCESS_ORDER_REQUEST_DISABLE = "success.order-request-disable";
     public static final String SUCCESS_ORDER_REQUEST_PAUSE = "success.order-request-pause";
     public static final String SUCCESS_ORDER_REQUEST_RESUME = "success.order-request-resume";
@@ -49,6 +50,7 @@ public final class MessageProperty {
     public static final String SUCCESS_ORDER_NOT_ACTIVATE = "success.order-not-activate";
     public static final String SUCCESS_ORDER_NOT_RESUME = "success.order-not-resume";
     public static final String SUCCESS_ORDER_NOT_PAUSE = "success.order-not-pause";
+    public static final String SUCCESS_ORDER_NOT_DISABLE = "success.order-not-disable";
     public static final String SUCCESS_ORDER_ERROR_REQUEST_DISABLE = "success.order-error-request-disable";
     public static final String SUCCESS_ORDER_ERROR_REQUEST_PAUSE = "success.order-error-request-pause";
     public static final String SUCCESS_ORDER_ERROR_REQUEST_RESUME = "success.order-error-request-resume";
