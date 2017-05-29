@@ -57,7 +57,7 @@ public class ProductParamRestController {
     @PutMapping
     @PreAuthorize("hasAnyRole('ROLE_CSR', 'ROLE_ADMIN')")
     public ResponseEntity<?> update(@Valid ProductParamDto productParamDto, BindingResult bindingResult) {
-        productParamValidator.validate(productParamDto, bindingResult);
+        productParamValidator.validateOnEdit(productParamDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return bindingResultHandler.handle(bindingResult);
         }

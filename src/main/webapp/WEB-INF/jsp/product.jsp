@@ -375,7 +375,7 @@
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">title</i>
                     <label for="paramName">Title</label>
-                    <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName' readonly>
+                    <input id="edit_param_name" placeholder=" "  class="validate" type="text" name='paramName'>
                 </div>
                 <div class='input-field col s7'>
                     <i class="material-icons prefix">description</i>
