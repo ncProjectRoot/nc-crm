@@ -43,7 +43,7 @@ public class DiscountMapper {
     public Mapper<Discount, AutocompleteDto> modelToAutocomplete() {
         return (model, autocompleteDto) -> {
             autocompleteDto.setId(model.getId());
-            autocompleteDto.setValue(model.getTitle());
+            autocompleteDto.setValue(model.getTitle() + " " + model.getPercentage() + "%");
         };
     }
 }
