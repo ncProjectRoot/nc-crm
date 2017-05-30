@@ -424,7 +424,9 @@
 
         function isSubArray(x, y) {
             if (x.length === 0 || y.length === 0) return false;
-            return y.reduce((included, num) => included && x.includes(num), true);
+            return y.reduce(function (included, num) {
+                return included && x.includes(num)
+            }, true);
         }
 
         return {
