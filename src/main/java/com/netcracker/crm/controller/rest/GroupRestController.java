@@ -98,9 +98,9 @@ public class GroupRestController {
     }
 
     @PutMapping
-    @RequestMapping(value = "/changeDiscount")
-    public ResponseEntity<?> updateDiscount(GroupDto groupDto) {
-        Group group = groupService.getGroupById(groupDto.getId());
+    @RequestMapping(value = "/{id}")
+    public ResponseEntity<?> updateDiscount(@PathVariable Long id) {
+        Group group = groupService.getGroupById(id);
         Discount changedDisc = group.getDiscount();
         changedDisc.setActive(!changedDisc.isActive());
         discountService.update(changedDisc);

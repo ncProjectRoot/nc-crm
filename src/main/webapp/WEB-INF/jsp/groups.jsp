@@ -168,10 +168,6 @@
 </sec:authorize>
     </div>
 </div>
-<form class="col s12" id="updateDiscountActive" style="display: none">
-    <input type='text' name='id' id='disc_id2'/>
-
-</form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
 
@@ -189,15 +185,19 @@
             $(id).html("check");
             $(id).fadeIn(2000);
         }
-        $("#disc_id2").val(simpleId);
-        var url = "/groups/changeDiscount";
-        var form = "#updateDiscountActive";
+        
+        var url =  "/groups/" + simpleId;  
+        var form;
         send(form, url, "PUT");
+        
+        setTimeout(function () {
+            tableAllGroups.reloadTable();            
+        }, 100);
     }
 
     $('ul#tabs').tabs();
 
-    $("#table-all-groups").karpo_table({
+    tableAllGroups = $("#table-all-groups").karpo_table({
         urlSearch: "/groups/autocomplete",
         urlTable: "/groups",
         bulkUrl: "/groups/bulk",

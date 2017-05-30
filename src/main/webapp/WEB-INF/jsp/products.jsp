@@ -67,13 +67,13 @@
                 <sec:authorize access="hasRole('ROLE_CUSTOMER')">
                     <li class="tab col s3"><a class="active" href="#order-product-wrapper">Order Product</a></li>
                     <li class="tab col s3"><a class="active" href="#my-product-wrapper">My Active Products</a></li>
-                </sec:authorize>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
+                    </sec:authorize>
+                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
                     <li class="tab col s3"><a class="active" href="#all-product-wrapper">All Products</a></li>
-                </sec:authorize>
-                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                    </sec:authorize>
+                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
                     <li class="tab col s3"><a href="#create-wrapper">Create</a></li>
-                </sec:authorize>
+                    </sec:authorize>
             </ul>
         </div>
         <sec:authorize access="hasRole('ROLE_CUSTOMER')">
@@ -82,23 +82,23 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                            <tr>
-                                <th data-field="1">
-                                    <a href="#!" class="sorted-element a-dummy">#</a>
-                                </th>
-                                <th data-field="2">
-                                    <a href="#!" class="sorted-element a-dummy">Title</a>
-                                </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Price</a>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">Group</a>
-                                </th>
-                                <th>
-                                    <a href="#!" class="a-dummy">Action</a>
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th data-field="1">
+                                        <a href="#!" class="sorted-element a-dummy">#</a>
+                                    </th>
+                                    <th data-field="2">
+                                        <a href="#!" class="sorted-element a-dummy">Title</a>
+                                    </th>
+                                    <th data-field="3">
+                                        <a href="#!" class="sorted-element a-dummy">Price</a>
+                                    </th>
+                                    <th data-field="5">
+                                        <a href="#!" class="sorted-element a-dummy">Group</a>
+                                    </th>
+                                    <th>
+                                        <a href="#!" class="a-dummy">Action</a>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -110,26 +110,26 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered ">
                             <thead>
-                            <tr>
-                                <th data-field="1">
-                                    <a href="#!" class="sorted-element a-dummy">#</a>
-                                </th>
-                                <th data-field="2">
-                                    <a href="#!" class="sorted-element a-dummy">Title</a>
-                                </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Price</a>
-                                </th>
-                                <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">Product Discount</a>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">Group</a>
-                                </th>
-                                <th data-field="6">
-                                    <a href="#!" class="sorted-element a-dummy">Group Discount</a>
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th data-field="1">
+                                        <a href="#!" class="sorted-element a-dummy">#</a>
+                                    </th>
+                                    <th data-field="2">
+                                        <a href="#!" class="sorted-element a-dummy">Title</a>
+                                    </th>
+                                    <th data-field="3">
+                                        <a href="#!" class="sorted-element a-dummy">Price</a>
+                                    </th>
+                                    <th data-field="4">
+                                        <a href="#!" class="sorted-element a-dummy">Product Discount</a>
+                                    </th>
+                                    <th data-field="5">
+                                        <a href="#!" class="sorted-element a-dummy">Group</a>
+                                    </th>
+                                    <th data-field="6">
+                                        <a href="#!" class="sorted-element a-dummy">Group Discount</a>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -144,70 +144,70 @@
                     <div class="table-wrapper col s11 center-align">
                         <table class="striped responsive-table centered bulk-table">
                             <thead>
-                            <tr>
-                                <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-                                    <th class="hide-on-med-and-down">
-                                        <p class='bulk-checkbox-wrapper'>
-                                            <input type='checkbox' class='filled-in bulk-select-all'
-                                                   id="select-all-checkbox"/>
-                                            <label for='select-all-checkbox'></label>
-                                        </p>
-                                    </th>
-                                </sec:authorize>
-                                <th data-field="1">
-                                    <a href="#!" class="sorted-element a-dummy">#</a>
+                                <tr>
+                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+                                        <th class="hide-on-med-and-down">
+                                <p class='bulk-checkbox-wrapper'>
+                                    <input type='checkbox' class='filled-in bulk-select-all'
+                                           id="select-all-checkbox"/>
+                                    <label for='select-all-checkbox'></label>
+                                </p>
                                 </th>
-                                <th data-field="2">
-                                    <a href="#!" class="sorted-element a-dummy">Title</a>
-                                </th>
-                                <th class="th-dropdown" data-field="statusId">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-product-status' data-default-name="Product Status">
-                                        Product Status
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-product-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="12">Planned</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="13">Actual</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
-                                    </ul>
-                                </th>
-                                <th data-field="3">
-                                    <a href="#!" class="sorted-element a-dummy">Price</a>
-                                </th>
-                                <th data-field="4">
-                                    <a href="#!" class="sorted-element a-dummy">P Discount</a>
-                                </th>
-                                <th class="th-dropdown" data-field="discountActive">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-discount-status'
-                                       data-default-name="Active">
-                                        Active
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-discount-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
-                                    </ul>
-                                </th>
-                                <th data-field="5">
-                                    <a href="#!" class="sorted-element a-dummy">Group</a>
-                                </th>
-                                <th data-field="6">
-                                    <a href="#!" class="sorted-element a-dummy">G Discount</a>
-                                </th>
-                                <th class="th-dropdown" data-field="groupDiscountActive">
-                                    <a class='dropdown-button a-dummy' href='#'
-                                       data-activates='dropdown-all-group-discount-status'
-                                       data-default-name="Active">
-                                        Active
-                                    </a>
-                                    <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
-                                    <ul id="dropdown-all-group-discount-status" class='dropdown-content'>
-                                        <li><a href="#" class="a-dummy" data-value="true">True</a></li>
-                                        <li><a href="#" class="a-dummy" data-value="false">False</a></li>
-                                    </ul>
-                                </th>
+                            </sec:authorize>
+                            <th data-field="1">
+                                <a href="#!" class="sorted-element a-dummy">#</a>
+                            </th>
+                            <th data-field="2">
+                                <a href="#!" class="sorted-element a-dummy">Title</a>
+                            </th>
+                            <th class="th-dropdown" data-field="statusId">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-all-product-status' data-default-name="Product Status">
+                                    Product Status
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-product-status" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="12">Planned</a></li>
+                                <li><a href="#" class="a-dummy" data-value="13">Actual</a></li>
+                                <li><a href="#" class="a-dummy" data-value="14">Outdated</a></li>
+                            </ul>
+                            </th>
+                            <th data-field="3">
+                                <a href="#!" class="sorted-element a-dummy">Price</a>
+                            </th>
+                            <th data-field="4">
+                                <a href="#!" class="sorted-element a-dummy">P Discount</a>
+                            </th>
+                            <th class="th-dropdown" data-field="discountActive">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-all-discount-status'
+                                   data-default-name="Active">
+                                    Active
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-discount-status" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                            </ul>
+                            </th>
+                            <th data-field="5">
+                                <a href="#!" class="sorted-element a-dummy">Group</a>
+                            </th>
+                            <th data-field="6">
+                                <a href="#!" class="sorted-element a-dummy">G Discount</a>
+                            </th>
+                            <th class="th-dropdown" data-field="groupDiscountActive">
+                                <a class='dropdown-button a-dummy' href='#'
+                                   data-activates='dropdown-all-group-discount-status'
+                                   data-default-name="Active">
+                                    Active
+                                </a>
+                                <span class="deleter"><a href="#" class="a-dummy">&#215;</a></span>
+                            <ul id="dropdown-all-group-discount-status" class='dropdown-content'>
+                                <li><a href="#" class="a-dummy" data-value="true">True</a></li>
+                                <li><a href="#" class="a-dummy" data-value="false">False</a></li>
+                            </ul>
+                            </th>
                             </tr>
                             </thead>
                             <tbody></tbody>
@@ -414,53 +414,54 @@
 
     </div>
 </div>
-<form class="col s12" id="updateDiscountActive" style="display: none">
-    <input type='text' name='id' id='disc_id2'/>      
-</form>
 <%@ include file="/WEB-INF/jsp/component/tableScript.jsp" %>
 <script>
     function changeBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
+        var type_value = $(id).html();
 
-        if ($(id).html() == "check") {
+        if (type_value == "check") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("clear");
             $(id).fadeIn(2000);
         }
-        else if ($(id).html() == "clear") {
+        else if (type_value == "clear") {
             document.getElementById(simpleId).style.display = "none";
             $(id).html("check");
             $(id).fadeIn(2000);
         }
         
-        $("#disc_id2").val(simpleId);
-               
-        var url = "/products/changeDiscount";
-        var form = "#updateDiscountActive";
+        var url = "/products/" + simpleId;
+        var form;
         send(form, url, "PUT");
+        setTimeout(function () {
+            tableAllProducts.reloadTable();
+        }, 100);
     }
-    
+
     function changeGroupBoolValues(id) {
         var simpleId = id;
         var id = "#" + id;
-
-        if ($(id).html() == "check") {
-            document.getElementById(simpleId).style.display = "none";
-            $(id).html("clear");
-            $(id).fadeIn(2000);
-        }
-        else if ($(id).html() == "clear") {
-            document.getElementById(simpleId).style.display = "none";
-            $(id).html("check");
-            $(id).fadeIn(2000);
-        }
+        var type_value = $(id).html();
+        if (type_value == "check") {
+                document.getElementById(simpleId).style.display = "none";
+                $(id).html("clear");
+                $(id).fadeIn(2000);
+            }
+            else if (type_value == "clear") {
+                document.getElementById(simpleId).style.display = "none";
+                $(id).html("check");
+                $(id).fadeIn(2000);
+            }
         
-        $("#disc_id2").val(simpleId);
-               
-        var url = "/groups/changeDiscount";
-        var form = "#updateDiscountActive";
+        var url = "/groups/" + simpleId;        
+        var form;
         send(form, url, "PUT");
+        setTimeout(function () {
+            tableAllProducts.reloadTable();
+            
+        }, 100);
     }
 
     $('.scrollspy').scrollSpy();
@@ -468,7 +469,6 @@
         onShow: function (tab) {
         }
     });
-
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
 
     //////// create product ////////
@@ -485,12 +485,8 @@
         hideInput: "#group-hidden-input"
     });
     $('select').material_select();
-
-
     $('.materialize-textarea').trigger('autoresize');
     Materialize.updateTextFields();
-
-
     $("#addProduct").on("submit", function (e) {
         e.preventDefault();
         var title = $('#title').val();
@@ -513,15 +509,15 @@
     //////// all ////////
 
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR', 'ROLE_PMG')">
-    $("#table-all-products").karpo_table({
+    var tableAllProducts = $("#table-all-products").karpo_table({
         urlSearch: "/products/autocomplete?type=all",
         urlTable: "/products",
         bulkUrl: "/products/bulk",
         mapper: function (object) {
             var tr = $("<tr>");
-            <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
+        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
             tr.append($("<td  class='hide-on-med-and-down'><p class='bulk-checkbox-wrapper'><input type='checkbox' class='bulk-checkbox filled-in' id='bulk-table-" + object.id + "' /><label for='bulk-table-" + object.id + "'></label></p></td>"), {});
-            </sec:authorize>
+        </sec:authorize>
             tr.append($("<td>").append($("<a>", {
                 text: object.id,
                 href: "#product/" + object.id
@@ -566,7 +562,7 @@
             })));
             var disActive = null;
             if (object.discountActive != null)
-                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id +")' class='material-icons prefix'>clear</i>";
+                disActive = (object.discountActive == true) ? "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.id + "' onclick='changeBoolValues(" + object.id + ")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: disActive}));
             tr.append($("<td>").append($("<a>", {
                 text: object.groupName,
@@ -578,7 +574,7 @@
             })));
             var groupDisActive = null;
             if (object.groupDiscountActive != null)
-                groupDisActive = (object.groupDiscountActive == true) ? "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group +")' class='material-icons prefix'>check</i>" : "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group +")' class='material-icons prefix'>clear</i>";
+                groupDisActive = (object.groupDiscountActive == true) ? "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group + ")' class='material-icons prefix'>check</i>" : "<i id='" + object.group + "' onclick='changeGroupBoolValues(" + object.group + ")' class='material-icons prefix'>clear</i>";
             tr.append($("<td>", {html: groupDisActive}));
             return tr;
         },
@@ -604,7 +600,6 @@
         label: "#bulk-selected-group",
         hideInput: "#bulk-group-hidden-input"
     });
-
     </sec:authorize>
 
     <sec:authorize access="hasRole('ROLE_CUSTOMER')">
@@ -671,7 +666,6 @@
             });
         }
     });
-
     $("#table-my-products").karpo_table({
         urlSearch: "/products/autocomplete?type=actual",
         urlTable: "/products?type=actual",

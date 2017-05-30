@@ -93,9 +93,9 @@ public class ProductRestController {
     }
     
     @PutMapping    
-    @RequestMapping(value = "/changeDiscount")
-    public ResponseEntity<?> updateDiscount(ProductDto productDto) {
-        Product product = productService.getProductsById(productDto.getId());
+    @RequestMapping(value = "/{id}")
+    public ResponseEntity<?> updateDiscount(@PathVariable Long id) {
+        Product product = productService.getProductsById(id);
         Discount changedDisc = product.getDiscount();
         changedDisc.setActive(!changedDisc.isActive());
         discountService.update(changedDisc);

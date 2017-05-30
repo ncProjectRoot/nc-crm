@@ -56,16 +56,19 @@ public class ProductParamServiceImpl implements ProductParamService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductParam> getAllByProductId(Long id) {
         return productParamDao.findAllByProductId(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductParam> getAllByParamName(String paramName) {
         return productParamDao.findAllByParamName(paramName);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductParam getById(Long id) {
         return productParamDao.findById(id);
     }
