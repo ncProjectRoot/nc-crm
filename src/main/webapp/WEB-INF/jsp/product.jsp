@@ -586,7 +586,7 @@
                     $(window).trigger('hashchange');
                 },
                 400: function (data) {
-                    Materialize.toast("Something wrong!", 3000, 'rounded');
+                    Materialize.toast("Status wasn't changed!", 3000, 'rounded');
                     $(window).trigger('hashchange');
                 }
             }
