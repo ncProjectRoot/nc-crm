@@ -34,6 +34,11 @@ public class MainController {
         return "main";
     }
 
+    @GetMapping("/400")
+    public String badRequest() {
+        return "error/400";
+    }
+
     @GetMapping("/404")
     public String notFound() {
         return "error/404";

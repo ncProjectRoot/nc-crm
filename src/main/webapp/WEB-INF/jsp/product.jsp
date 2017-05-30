@@ -15,12 +15,6 @@
         width: 15%;
     }
 
-    .product-img {
-        position: absolute;
-        right: 0;
-        width: 15%;
-    }
-
     .container {
         padding-top: 50px;
         padding-bottom: 100px;

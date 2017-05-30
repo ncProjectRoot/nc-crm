@@ -44,8 +44,8 @@
         }
     }
 </style>
-<div class="content-body z-depth-1" data-page-name="404">
+<div class="content-body z-depth-1" data-page-name="400">
     <img class="error-img" src="${errorUrl}"/>
-    <h1 class="message-h1">404</h1>
-    <h2 class="message-h2">Not Found Error</h2>
+    <h1 class="message-h1">400</h1>
+    <h2 class="message-h2">Bad Request Error</h2>
 </div>
