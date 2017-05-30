@@ -589,12 +589,11 @@
             statusCode: {
                 200: function (data) {
                     Materialize.toast('You have changed status of product!', 5000, 'rounded');
+                    $(window).trigger('hashchange');
                 },
                 400: function (data) {
                     Materialize.toast("Something wrong!", 3000, 'rounded');
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 3000);
+                    $(window).trigger('hashchange');
                 }
             }
         });

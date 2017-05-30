@@ -237,13 +237,17 @@ jQuery.fn.karpo_multi_select = function (params) {
         });
     });
 
-    this.addSelected = function (val) {
+    this.addSelected = function (val, idSelected) {
         var id;
-        ajaxData.forEach(function (element) {
-            if (element.value == val) {
-                id = element.id;
-            }
-        });
+        if (idSelected) {
+            id = idSelected
+        } else {
+            ajaxData.forEach(function (element) {
+                if (element.value == val) {
+                    id = element.id;
+                }
+            });
+        }
         if (selected.indexOf(id) == -1) {
             selected.push(id);
             selectedVal.push(val)

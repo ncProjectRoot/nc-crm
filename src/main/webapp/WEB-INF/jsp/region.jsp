@@ -54,7 +54,7 @@
     });
 
     <c:forEach items="${groups}" var="group">
-    $groupInput.addSelected("${group.id}" + " " + "${group.name}");
+    $groupInput.addSelected("${group.name}", ${group.id});
     </c:forEach>
 
     $("#form-update-region").on("submit", function (e) {

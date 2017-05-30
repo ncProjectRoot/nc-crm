@@ -133,7 +133,7 @@
 
     function fillCollection() {
         <c:forEach items="${products}" var="product">
-        $groupProductSelect.addSelected("${product.id}" + " " + "${product.title}");
+        $groupProductSelect.addSelected("${product.title}", ${product.id});
         </c:forEach>
     }
     fillCollection();
