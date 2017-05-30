@@ -179,7 +179,7 @@
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
-                        window.location.reload();
+                        $(window).trigger('hashchange');
                     }, 3000);
                 }
             }
@@ -204,7 +204,7 @@
                     $(".progress").removeClass("progress-active");
                     Materialize.toast("Something wrong!", 3000, 'rounded');
                     setTimeout(function () {
-                        window.location.reload();
+                        $(window).trigger('hashchange');
                     }, 3000);
                 }
             }
