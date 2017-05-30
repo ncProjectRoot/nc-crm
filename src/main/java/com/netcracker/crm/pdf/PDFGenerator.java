@@ -100,13 +100,13 @@ public class PDFGenerator {
         infoTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         infoTable.addCell(new Paragraph("Customer information:", BOLD_FONT));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Subtotal: " + price + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph("Subtotal: " + price + " $", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(fName + " " + lName, SIMPLE_FONT));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Discount: " + (price * discount / 100) + " UAH", SIMPLE_FONT));
+        infoTable.addCell(new Paragraph("Discount: " + (price * discount / 100) + " $", SIMPLE_FONT));
         infoTable.addCell(new Paragraph(phone));
         infoTable.addCell("");
-        infoTable.addCell(new Paragraph("Total order: " + (price * (100 - discount) / 100) + " UAH", BOLD_FONT));
+        infoTable.addCell(new Paragraph("Total order: " + (price * (100 - discount) / 100) + " $", BOLD_FONT));
         infoTable.addCell(email);
         infoTable.addCell("");
         infoTable.addCell("");
@@ -127,7 +127,7 @@ public class PDFGenerator {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         table.addCell("Name");
         table.addCell("Description");
-        table.addCell("Price, UAH");
+        table.addCell("Price, $");
 
         cell.setRowspan(3);
         table.addCell(name);

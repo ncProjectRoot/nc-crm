@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
 
-    #email-wrapper, #password-wrapper {
+    #password-wrapper {
         padding-top: 50px;
         padding-bottom: 50px;
     }
@@ -18,7 +18,6 @@
         <div class="col s12">
             <ul id="tabs" class="tabs">
                 <li class="tab col s3"><a class="active" href="#password-wrapper">Password</a></li>
-                <li class="tab col s3"><a href="#email-wrapper">Email</a></li>
             </ul>
         </div>
         <div id="password-wrapper" class="col s12">
@@ -46,31 +45,6 @@
                 </div>
             </form>
         </div>
-        <div id="email-wrapper" class="col s12">
-            <form id="update-email">
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <input id="old-email" type="email" class="validate">
-                        <label for="old-email">Old Email</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <input id="password" type="password" class="validate">
-                        <label for="password">Password</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <input id="new-email" type="email" class="validate">
-                        <label for="new-email">New Email</label>
-                    </div>
-                </div>
-                <div class="row center-align">
-                    <button class="btn waves-effect waves-light" type="submit" name="action">Update</button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 <script>
@@ -90,9 +64,5 @@
             })
         }
     });
-
-    $("#update-email").on("submit",  function (e) {
-        e.preventDefault();
-    })
 
 </script>

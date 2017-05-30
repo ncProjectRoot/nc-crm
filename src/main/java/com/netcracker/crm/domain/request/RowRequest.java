@@ -21,7 +21,7 @@ public abstract class RowRequest {
     private Long rowLimit;
     private Long rowOffset;
 
-    private final String[] columns;
+    private String[] columns;
     private String[] keywordsArray;
     private boolean appendedWhere;
 
