@@ -68,7 +68,7 @@ public class OrderSetter extends AbstractSetter<Order> {
 
 
     private LocalDateTime getOrderDate() {
-        return LocalDateTime.now().minusDays(random.nextInt(150) + 10);
+        return LocalDateTime.now().minusDays(random.nextInt(150) + 1);
     }
 
     private LocalDateTime getPreferDate() {
