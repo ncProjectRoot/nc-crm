@@ -54,7 +54,7 @@
 </style>
 <div class="content-body z-depth-1" data-page-name="Discount #${discount.id}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-        <a class="modal-trigger brown-text change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>
+        <a class="modal-trigger teal-text text-darken-3 change-trigger" href="#update"><i class='material-icons medium'>settings</i></a>
         <div id="update" class="modal modal-fixed-footer">
             <form id="update-discount-form">
                 <div class="modal-content row">

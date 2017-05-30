@@ -46,10 +46,12 @@ public class OrderLifecycleServiceImpl implements OrderLifecycleService {
 
     @Override
     public boolean createOrder(Order order) {
-        History history = order.getState().newOrder();
-        if (saveCondition(order, history)){
-            sendOrderStatus(order);
-            return true;
+        if (orderDao.create(order) != null) {
+            History history = order.getState().newOrder();
+            if (historyDao.create(history) != null){
+                sendOrderStatus(order);
+                return true;
+            }
         }
         return false;
     }

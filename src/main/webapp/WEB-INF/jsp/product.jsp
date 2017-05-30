@@ -53,8 +53,9 @@
 
     .order-btn {
         position: absolute;
-        left: 0;
+        left: 165px;
         right: 0;
+        top: 125px;
         margin: 0 auto;
         width: 120px;
     }
@@ -174,7 +175,7 @@
 </style>
 <div class="content-body z-depth-1" data-page-name="Product #${product.id}">
     <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_CSR')">
-        <a class="modal-trigger brown-text change-trigger" href="#change"><i class='material-icons medium'>settings</i></a>
+        <a class="modal-trigger teal-text text-darken-3 change-trigger" href="#change"><i class='material-icons medium'>settings</i></a>
         <div id="change" class="modal modal-fixed-footer">
             <form id="change-form">
                 <div class="modal-content row">
@@ -217,7 +218,7 @@
             </form>
         </div>
         <c:if test="${product.status.name!='OUTDATED'}">
-            <a class="modal-trigger brown-text change-status-trigger" href="#change-status"><i
+            <a class="modal-trigger teal-text text-darken-3 change-status-trigger" href="#change-status"><i
                     class='material-icons medium'>cached</i></a>
             <div id="change-status" class="modal modal-fixed-footer status-modal">
                 <form id="change-status-form">
