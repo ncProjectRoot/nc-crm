@@ -148,49 +148,29 @@
     }
     //            CSR
     $('#csr_accept').on('click', function () {
-        $('#csr_accept').remove();
         sendPut("/orders/" + ${order.id} +"/accept");
-        $('#status').text('PROCESSING');
     });
     $('#csr_activate').on('click', function () {
-        $('#csr_activate').remove();
         sendPut("/orders/" + ${order.id} +"/activate");
-        $('#status').text('ACTIVE');
     });
     $('#csr_resume').on('click', function () {
-        $('#csr_resume').remove();
         sendPut("/orders/" + ${order.id} +"/resume");
-        $('#status').text('ACTIVE');
     });
     $('#csr_pause').on('click', function () {
-        $('#csr_pause').remove();
         sendPut("/orders/" + ${order.id} +"/pause");
-        $('#status').text('PAUSE');
     });
     $('#csr_disable').on('click', function () {
-        $('#csr_disable').remove();
         sendPut("/orders/" + ${order.id} +"/disable");
-        $('#status').text('DISABLED');
     });
     //    CUSTOMER
     $('#customer_pause').on('click', function () {
-        $('#customer_pause').remove();
-        $('#customer_disable').remove();
         sendPut("/orders/" + ${order.id} +"/request-pause");
-        $('#status').text('REQUEST TO PAUSE');
     });
     $('#customer_disable').on('click', function () {
-        $('#customer_disable').remove();
-        $('#customer_resume').remove();
-        $('#customer_pause').remove();
         sendPut("/orders/" + ${order.id} +"/request-disable");
-        $('#status').text('REQUEST TO DISABLE');
     });
     $('#customer_resume').on('click', function () {
-        $('#customer_resume').remove();
-        $('#customer_disable').remove();
         sendPut("/orders/" + ${order.id} +"/request-resume");
-        $('#status').text('REQUEST TO RESUME');
     });
     //    PUT FUNCTION
     function sendPut(url) {
@@ -207,9 +187,11 @@
                 200: function (data) {
                     Materialize.toast(xhr.getResponseHeader("successMessage"), 10000);
                     fetchHistory();
+                    $(window).trigger('hashchange');
                 },
                 400: function (data) {
                     Materialize.toast(xhr.getResponseHeader("errorMessage"), 10000);
+                    $(window).trigger('hashchange');
                 }
             }
         });
