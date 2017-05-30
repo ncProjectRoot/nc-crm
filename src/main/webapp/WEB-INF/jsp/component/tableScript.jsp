@@ -426,5 +426,11 @@
             if (x.length === 0 || y.length === 0) return false;
             return y.reduce((included, num) => included && x.includes(num), true);
         }
+
+        return {
+            reloadTable: function () {
+                downloadTable();
+            }
+        }
     };
 </script>
