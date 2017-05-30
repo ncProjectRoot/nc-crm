@@ -23,12 +23,8 @@ import static com.netcracker.crm.domain.model.UserRole.*;
 @Component(value = "successHandler")
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
-    private final RedirectStrategy redirectStrategy;
-
     @Autowired
-    public AuthenticationSuccessHandlerImpl(RedirectStrategy redirectStrategy) {
-        this.redirectStrategy = redirectStrategy;
-    }
+    private RedirectStrategy redirectStrategy;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
