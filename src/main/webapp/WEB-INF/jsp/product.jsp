@@ -53,9 +53,8 @@
 
     .order-btn {
         position: absolute;
-        left: 165px;
+        left: 0;
         right: 0;
-        top: 125px;
         margin: 0 auto;
         width: 120px;
     }
