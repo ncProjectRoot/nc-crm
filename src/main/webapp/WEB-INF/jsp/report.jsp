@@ -225,13 +225,15 @@
     $("#user-input").karpo_multi_select({
         url: "/users/autocomplete",
         collection: "#selected-users",
-        hideInput: "#user-hidden-input"
+        hideInput: "#user-hidden-input",
+        elementUrl: "#user/"
     });
 
     $("#product-input").karpo_multi_select({
         url: "/products/autocomplete?type=all",
         collection: "#selected-products",
-        hideInput: "#product-hidden-input"
+        hideInput: "#product-hidden-input",
+        elementUrl: "#product/"
     });
 
     Materialize.updateTextFields();

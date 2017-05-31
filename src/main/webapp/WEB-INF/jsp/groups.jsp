@@ -242,7 +242,8 @@
     $("#product-input").karpo_multi_select({
         url: "/products/autocomplete?type=withoutGroup",
         collection: "#selected-products",
-        hideInput: "#product-hidden-input"
+        hideInput: "#product-hidden-input",
+        elementUrl: "#product/"
     });
 
     $("#addGroup").on("submit", function (e) {

@@ -363,7 +363,8 @@
     var $productsForOrdersMultiSelect = $("#product-input-for-orders").karpo_multi_select({
         url: "/products/autocomplete?type=all",
         collection: "#selected-products-for-orders",
-        hideInput: "#product-hidden-input-for-orders"
+        hideInput: "#product-hidden-input-for-orders",
+        elementUrl: "#product/"
     });
 
     var chartistLineOrders;
@@ -450,7 +451,8 @@
     var $productsForComplaintsMultiSelect = $("#product-input-for-complaints").karpo_multi_select({
         url: "/products/autocomplete?type=all",
         collection: "#selected-products-for-complaints",
-        hideInput: "#product-hidden-input-for-complaints"
+        hideInput: "#product-hidden-input-for-complaints",
+        elementUrl: "#product/"
     });
 
     var chartistLineComplaints;
