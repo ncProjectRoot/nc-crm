@@ -50,7 +50,8 @@
     var $groupInput = $("#group-input").karpo_multi_select({
         url: "/groups/autocomplete",
         collection: "#selected-groups",
-        hideInput: "#group-hidden-input"
+        hideInput: "#group-hidden-input",
+        elementUrl: "#group/"
     });
 
     <c:forEach items="${groups}" var="group">

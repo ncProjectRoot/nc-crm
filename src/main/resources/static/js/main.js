@@ -252,7 +252,12 @@ jQuery.fn.karpo_multi_select = function (params) {
             selected.push(id);
             selectedVal.push(val)
             var $deleter = $('<a href="#!" class="secondary-content a-dummy"><i class="material-icons">delete_forever</i></a>');
-            var $div = $('<div>', {text: val}).append($deleter);
+            var $div;
+            if (params.elementUrl) {
+                $div = $('<a>', {text: val, href: params.elementUrl + id}).append($deleter);
+            } else {
+                $div = $('<div>', {text: val}).append($deleter);
+            }
             $(params.collection).append($('<li class="collection-item"></li>').append($div));
             $deleter.data("id", id);
             $(params.hideInput).val(selected);
