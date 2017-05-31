@@ -25,14 +25,14 @@ public abstract class AbstractEmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEmailSender.class);
 
-    private static final String TEMPLATE_PACKAGE = "email/?????";
+    private static final String TEMPLATE_PACKAGE = "email/concreteTemplate";
 
     public abstract void send(EmailParam emailParam) throws MessagingException, IncorrectEmailElementException;
 
     protected abstract void checkEmailMap(EmailParam emailParam) throws IncorrectEmailElementException;
 
     public String getTemplate(String template) {
-        String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
+        String concreteTemplate = TEMPLATE_PACKAGE.replace("concreteTemplate", template);
         log.debug("Getting email template " + concreteTemplate);
         StringBuilder stringBuilder = new StringBuilder();
         try {
@@ -51,7 +51,7 @@ public abstract class AbstractEmailSender {
 
 //    for local profile
 //    public String getTemplate(String template) {
-//        String concreteTemplate = TEMPLATE_PACKAGE.replace("?????", template);
+//        String concreteTemplate = TEMPLATE_PACKAGE.replace("concreteTemplate", template);
 //        log.debug("Getting email template " + concreteTemplate);
 //        StringBuilder stringBuilder = new StringBuilder();
 //        File file = new File(getClass().getClassLoader().getResource(concreteTemplate).getFile());

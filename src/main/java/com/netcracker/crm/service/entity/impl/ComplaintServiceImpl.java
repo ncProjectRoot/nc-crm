@@ -60,7 +60,6 @@ public class ComplaintServiceImpl implements ComplaintService {
         complaint.setDate(LocalDateTime.now());
         complaint.setStatus(ComplaintStatus.OPEN);
         Long id = complaintDao.create(complaint);
-        complaint.setId(id);
         publisher.publishEvent(new CreateComplaintEvent(this, complaint));
         return complaint;
     }
