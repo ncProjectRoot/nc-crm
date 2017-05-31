@@ -19,7 +19,9 @@ public abstract class AbstractExcelService<T> {
     private final ExcelDrawer excelDrawer;
 
     public abstract Map<ExcelMapKey, List<?>> convertToMap(List<T> objects);
+
     public abstract Map<LocalDate, Map<String, Integer>> prepareDataChart(LocalDate[] range, List<T> objects);
+
     public abstract String[] getTitles();
 
     public AbstractExcelService(ExcelDrawer excelDrawer) {
@@ -145,8 +147,8 @@ public abstract class AbstractExcelService<T> {
         return list.get(index);
     }
 
-    public Long[] checkId(Long[] id){
-        if (id == null || id.length == 0){
+    public Long[] checkId(Long[] id) {
+        if (id == null || id.length == 0) {
             id = new Long[]{0L};
         }
         return id;

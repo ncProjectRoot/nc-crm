@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,19 +59,19 @@ public class OrderExcelServiceImpl extends AbstractExcelService<Order> implement
 
     public Map<LocalDate, Map<String, Integer>> prepareDataChart(LocalDate[] range, List<Order> orders) {
         Map<LocalDate, Map<String, Integer>> result = new LinkedHashMap<>();
-        LocalDate temp = null;
+        LocalDateTime temp = null;
         for (LocalDate date : range) {
+            LocalDateTime dateTime = LocalDateTime.of(date, LocalTime.MIN);
             Map<String, Integer> products = new LinkedHashMap<>();
             for (Order order : orders) {
-                LocalDate orderDate = order.getDate().toLocalDate();
+                LocalDateTime orderDate = order.getDate();
                 int value = 0;
-                if ((temp == null && date.isAfter(orderDate))
-                        || (temp != null && date.isAfter(orderDate) && temp.isBefore(orderDate))) {
+                if ((dateTime.isAfter(orderDate) && orderDate.isAfter(temp)) || (temp == null && dateTime.isAfter(orderDate))) {
                     value = 1;
                 }
                 products.merge(order.getProduct().getTitle(), value, (a, b) -> a + b);
             }
-            temp = LocalDate.from(date);
+            temp = LocalDateTime.from(dateTime);
             result.put(date, products);
         }
         return result;
